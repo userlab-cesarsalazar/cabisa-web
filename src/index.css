@@ -1,0 +1,1383 @@
+:root {
+  --warning: #ffb12a;
+  --grey-variant: #999999;
+  --grey: grey;
+  --light-gray: #cdcdcd;
+  --cabisa-dark-blue: #041929;
+  --cabisa-yellow: #fdc902;
+  --cabisa-light-blue: #177fce;
+
+  --cabisa-green: #01c01e;
+  --cabisa-green-light: #041929;
+}
+/*/APP CSS INTEGRATION/*/
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+/*/APP CSS INTEGRATION/*/
+
+body {
+  background: white;
+  overflow: hidden;
+}
+
+.logo {
+  background: var(--cabisa-green-light);
+  top: 0;
+  width: 120px;
+  height: 31px;
+  margin: 0;
+  text-align: center;
+}
+
+.ant-layout .ant-layout-has-sider .site-layout-background {
+  padding: 0 0;
+}
+
+.ant-layout-header {
+  background: white;
+  height: 67px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.ant-layout-content {
+  padding: 0 0;
+}
+
+.site-layout-background {
+  height: 94vh;
+  padding: 0px;
+  background: white !important;
+}
+
+.Section__sectionFooterSecondaryContent___Nj41Q {
+  display: none;
+}
+.Hint__hint___2XngB {
+  display: none;
+}
+
+.hide-component {
+  display: none !important;
+}
+
+.show-component {
+  display: block !important;
+}
+
+.show-flex-component {
+  display: flex !important;
+}
+
+.label-bold {
+  font-weight: 700;
+}
+
+.label-bold-500 {
+  font-weight: 500;
+}
+
+.highlighted-text {
+  color: red;
+}
+
+.response-margins {
+  margin-right: 15px;
+  margin-left: 15px;
+}
+
+.center-flex-div {
+  display: flex !important;
+  align-items: center!important;
+  justify-content: center!important;
+}
+
+.ant-table-content {
+  overflow-x: auto;
+}
+
+.sider {
+  background-color: white;
+  height: calc(100vh - 55px);
+}
+
+.ant-layout-content {
+  height: 100%;
+}
+
+.ant-layout-footer {
+  height: 30px;
+  background: white !important;
+}
+
+/*custome styles*/
+
+/*USER OPTIONS*/
+.user-options-container {
+  display: none;
+  background: white;
+  flex-direction: column;
+  position: absolute;
+  width: 158px;
+  margin-left: 190px;
+  -webkit-box-shadow: 1px 5px 40px 1px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 1px 5px 40px 1px rgba(0, 0, 0, 0.5);
+  box-shadow: 1px 5px 40px 1px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+
+.logo.center-flex-div.user-options:hover .user-options-container {
+  display: flex;
+}
+
+.user-options-container-collapse {
+  margin-left: 130px;
+}
+
+.user-options-container:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border: 9px solid transparent;
+  border-right-color: white;
+  border-left: 0;
+  margin-top: -9px;
+  margin-left: -9px;
+}
+
+.user-options-items {
+  margin: 10px;
+  cursor: pointer;
+}
+
+.user-options-items a {
+  color: rgba(0, 0, 0, 0.65) !important;
+}
+
+/*DIVIDER CUSTOM STYLE*/
+.divider-enterprise-margins {
+  margin: 10px 0 10px 0px !important;
+  border-top: 1px solid grey !important;
+  width: 100% !important;
+  min-width: 100% !important;
+}
+
+.divider-custom-margins {
+  margin: 0 0 0 8px !important;
+  border-top: 1px solid grey !important;
+  width: 90% !important;
+  min-width: 90% !important;
+}
+
+.divider-custom-margins-nav {
+  margin: auto !important;
+  border-top: 2px solid lightgrey !important;
+  width: 90% !important;
+  min-width: 90% !important;
+}
+
+/*END DIVIDER CUSTOM STYLE*/
+
+.ant-layout-sider-light {
+  background-color: var(--cabisa-green-light) !important;
+}
+
+.fold-unfold-menu {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 35px;
+  width: 35px;
+  background: var(--cabisa-dark-blue);
+  border-radius: 100%;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  left: 100%;
+  transform: translateX(-50%);
+}
+
+/*CUSTOM MENU ITEMS*/
+.ant-menu {
+  background: var(--cabisa-green-light) !important;
+}
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+  background-color: var(--cabisa-light-blue) !important;
+  border-radius: 10px;
+  margin: auto !important;
+  color: white;
+}
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item {
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 14px;
+  margin: auto;
+}
+
+.ant-menu-inline .ant-menu-item::after {
+  border-right: 3px solid var(--cabisa-light-blue) !important;
+}
+
+.menu-user-img {
+  height: 35px;
+  width: 35px;
+}
+
+.ant-menu-item a {
+  /*color: var(--cabisa-yellow) !important;*/
+  color: white !important;
+}
+
+.ant-menu-item-selected a {
+  color: white !important;
+}
+
+.ant-menu-inline .ant-menu-item {
+  width: calc(90% + 1px) !important;
+}
+
+.ant-menu-inline-collapsed .ant-menu-item {
+  width: calc(60% + 1px) !important;
+  padding: 0 17px !important;
+}
+
+.ant-menu-item.ant-menu-item-selected .ant-menu-item .anticon {
+  color: white !important;
+}
+
+.ant-menu-item-selected a span {
+  color: white !important;
+}
+/*END CUSTOM MENU ITEMS*/
+
+.title-cabisa.new-button {
+  background-color: var(--cabisa-light-blue);
+  border-radius: 15px;
+  box-sizing: content-box;
+  color: white;
+  font-weight: bold;
+  padding: 5px 30px;
+  border-color: var(--cabisa-light-blue);
+}
+.new-button:hover {
+  background-color: var(--cabisa-light-blue) !important;
+  color: white !important;
+}
+
+.new-button:focus {
+  background-color: var(--cabisa-light-blue) !important;
+  color: white !important;
+}
+/*GENERAL CUSTOM STYLES*/
+.text-right {
+  text-align: right !important;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.text-bold {
+  font-weight: bold !important;
+}
+
+.margin-top-30 {
+  margin-top: 30px;
+}
+
+.margin-top-40 {
+  margin-top: 40px;
+}
+.margin-top-15 {
+  margin-top: 15px !important;
+}
+
+.load-more-info-btn {
+  border-radius: 20px !important;
+  width: 20% !important;
+  min-width: 200px !important;
+  color: var(--grey) !important;
+  border-color: lightgrey !important;
+  font-weight: 700 !important;
+  height: 35px !important;
+}
+/*END GENERAL CUSTOM STYLES*/
+
+/*INPUTS CUSTOM STYLES*/
+.ant-select-lg .ant-select-selection--single,
+.ant-input.ant-input-lg,
+.ant-calendar-range-picker-input {
+  border-radius: 8px !important;
+  font-size: 14px;
+  border: solid 1px lightgrey;
+}
+
+.ant-input-affix-wrapper.ant-input-affix-wrapper-lg {
+  border-radius: 8px !important;
+}
+
+.ant-input-affix-wrapper.ant-input-affix-wrapper-lg:hover {
+  border: solid 1px lightgrey;
+}
+
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused {
+  border-color: lightgrey !important;
+  box-shadow: none !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:active,
+input:-webkit-autofill:focus {
+  background-color: #ffffff !important;
+  color: #555 !important;
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #555555 !important;
+}
+
+.single-select .ant-select-selector,
+.single-select .ant-select-disabled,
+*.ant-select-disabled {
+  border-radius: 8px !important;
+  font-size: 14px;
+}
+
+/*END INPUTS CUSTOM STYLES*/
+
+/*ENTERPRISE CUSTOM STYLES*/
+.enterprise-settings-button {
+  background: white !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+/*END ENTERPRISE CUSTOM STYLES*/
+
+/*CUSTOM CARD*/
+.card-border-radius {
+  border-radius: 10px !important;
+  border: solid 1px lightgrey !important;
+}
+/*END CUSTOM CARD*/
+
+/*CUSTOM TABLE*/
+.CustomTableClass .ant-table-thead > tr > th {
+  background-color: white;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: none;
+}
+.CustomTableClass .ant-table .ant-table-tbody > tr > td {
+  text-align: center;
+  color: grey;
+  cursor: pointer;
+  position: relative;
+}
+/*END CUSTOM TABLE*/
+
+/*LOGIN STYLES*/
+.login-row-container {
+  min-height: 100vh;
+  background-color: var(--cabisa-dark-blue);
+}
+
+.login-button-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container {
+  background-color: white;
+  padding: 30px 30px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+  border: solid 1px lightgrey;
+}
+.bottom-login.login-btn {
+  background-color: var(--cabisa-light-blue);
+  border-radius: 15px;
+  box-sizing: content-box;
+  color: white;
+  font-weight: bold;
+  padding: 5px 30px;
+  border-color: var(--cabisa-light-blue);
+}
+.login-btn:hover {
+  background-color: var(--cabisa-light-blue) !important;
+  color: white !important;
+}
+
+.login-btn:focus {
+  background-color: var(--cabisa-light-blue) !important;
+  color: white !important;
+}
+.login-btn-link {
+  font-size: 10px !important;
+  text-align: center !important;
+  font-weight: bold !important;
+  color: grey !important;
+}
+.ant-form-item-no-colon[for='login-form_username'],
+.ant-form-item-no-colon[for='login-form_password'] {
+  font-weight: 500;
+  color: grey;
+}
+
+.login-logo-lg {
+  height: 100%;
+  width: 400px;
+  margin-bottom: 30px;
+}
+/*END LOGIN STYLES*/
+
+/*USERS STYLES*/
+.title-space-field {
+  padding-bottom: 5px;
+}
+
+.section-space-field {
+  padding-bottom: 15px;
+}
+
+.title-space-top {
+  padding-top: 15px;
+}
+
+.section-space-list {
+  padding-top: 20px;
+}
+
+.title-space-bottom {
+  padding-bottom: 10px !important;
+}
+
+.section-space-list-bottom {
+  padding-bottom: 20px;
+}
+
+.ant-transfer-list,
+.ant-transfer-list-header {
+  border-radius: 8px !important;
+}
+
+.cancel-button {
+  color: red !important;
+  margin-right: 15px;
+}
+
+.divider-custom-margins-users {
+  margin: 16px 0 !important;
+  border-top: 1px solid lightgrey !important;
+}
+.divider-custom-top-margins-users {
+  margin: 0px 0 !important;
+  border-top: 1px solid lightgrey !important;
+}
+.ant-checkbox-checked::after {
+  border: 1px solid var(--cabisa-green) !important;
+}
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--cabisa-light-blue) !important;
+  border-color: var(--cabisa-light-blue) !important;
+}
+.ant-transfer-operation .ant-btn.ant-btn-primary:not(:disabled) {
+  background: var(--cabisa-green);
+  border-color: var(--cabisa-green);
+}
+.ant-checkbox-indeterminate .ant-checkbox-inner::after {
+  background: var(--cabisa-green) !important;
+}
+/*END USERS STYLES*/
+
+/*ENTERPRISE STYLES*/
+.radio-group .ant-radio-button-wrapper:first-child {
+  border-radius: 8px 0 0 8px;
+  width: 55px;
+}
+
+.radio-group .ant-radio-button-wrapper:last-child {
+  border-radius: 0 8px 8px 0;
+  width: 55px;
+}
+
+.radio-group.ant-radio-group-solid .ant-radio-button-wrapper:first-child.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  color: #fff;
+  background: #ff1716;
+  border-color: #ff1716;
+}
+
+.radio-group.ant-radio-group-solid .ant-radio-button-wrapper:last-child.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  color: #fff;
+  background: #00c01d;
+  border-color: #00c01d;
+}
+
+.radio-group .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)::before {
+  background-color: #ffffff;
+}
+
+.ratio-button-labels {
+  margin-left: 10px;
+  margin-top: 8px;
+  display: block;
+}
+/*END ENTERPRISE STYLES*/
+
+/*TABLE CUSTOM STYLES*/
+.cabisa-table-search-icon {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.cabisa-table-search {
+  width: 70%;
+  height: 40px;
+}
+
+.cabisa-table-setting-button {
+  color: var(--cabisa-green);
+  font-size: 25px;
+}
+/*END TABLE CUSTOM STYLES*/
+
+/*SHOPS STYLES*/
+.shops-container-tabs {
+  min-height: 62vh;
+  height: 62vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.shop-add-turn {
+  width: 100%;
+  color: var(--cabisa-green) !important;
+  border-color: var(--cabisa-green) !important;
+  border-radius: 8px !important;
+}
+
+.single-time-picker {
+  width: 100% !important;
+  border-radius: 8px !important;
+  height: 37px !important;
+}
+
+#cabisaInventoryTabs .ant-tabs-tab {
+  padding: 1em 2em;
+  margin: 0;
+  color: black !important;
+}
+
+#cabisaShopTabs .ant-tabs-tab.ant-tabs-tab-active,
+#cabisaConfigurationTabs .ant-tabs-tab.ant-tabs-tab-active {
+  color: black !important;
+}
+
+#cabisaInventoryTabs .ant-tabs-ink-bar,
+#cabisaShopTabs .ant-tabs-ink-bar,
+#cabisaConfigurationTabs .ant-tabs-ink-bar {
+  background: var(--cabisa-green) !important;
+}
+/*END SHOPS STYLES*/
+
+/*CONFIGURATION STYLES*/
+.empty-section-container {
+  height: 50vh;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+.empty-section {
+  background: white;
+  height: 75px;
+  width: 350px;
+  text-align: center;
+  border: solid 2px #c7c7c7;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-section-message {
+  width: 200px;
+  font-weight: 500;
+  color: var(--grey-variant);
+}
+/*END CONFIGURATION STYLES*/
+
+/*CUSTOM STYLE FOR POPOVER*/
+.ant-popover.ant-popover-placement-left {
+  z-index: auto !important;
+}
+/*END CUSTOM STYLE FOR POPOVER*/
+
+/*PRODUCTS STYLES*/
+.table-settings-button {
+  background: white !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--cabisa-green) !important;
+}
+
+.product-margin-header-button {
+  margin-right: 15px !important;
+}
+
+.product-header-elements-container {
+  display: flex !important;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+@media (max-width: 767px) {
+  .product-header-elements-container {
+    margin-top: 15px;
+  }
+}
+
+.presentation-ratio-button-labels {
+  margin-top: 8px;
+  display: block;
+}
+
+.products-container-tabs {
+  min-height: 62vh;
+  height: 62vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.ant-row.sku-label-season-element {
+  margin-top: 25px;
+}
+
+/*//custom multiple-select*/
+
+.single-select.product-custom-select .ant-select-selector > .ant-select-selection-item {
+  background: var(--cabisa-green);
+  color: white;
+  border-radius: 5px;
+}
+.single-select.product-custom-select .ant-select-selector > .ant-select-selection-item .ant-select-selection-item-remove {
+  color: white;
+}
+
+.products-container-combo-tabs {
+  min-height: 80vh;
+  height: 80vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+/*END PRODUCTS STYLES*/
+
+/*CONFIGURATION STYLES*/
+.config-margin-header-button {
+  margin-right: 15px;
+}
+/*END CONFIGURATION STYLES*/
+
+/*CLIENTS STYLES*/
+.date-picker-custom {
+  width: 100% !important;
+  border-radius: 10px !important;
+}
+
+.ant-picker-large .ant-picker-input > input {
+  font-size: 14px !important;
+  padding: 1px !important;
+}
+/*END CLIENTS STYLES*/
+
+/*POS STYLES*/
+#cabisaPosTabs .ant-tabs-tab {
+  padding: 1.2em 1.5em;
+  margin: 0;
+  color: var(--grey);
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid var(--light-gray);
+  background: #fff;
+  font-weight: 500;
+}
+#cabisaPosTabs > div.ant-tabs-nav > div.ant-tabs-nav-wrap > div > div:nth-child(5),
+#cabisaPosTabs > div.ant-tabs-nav > div.ant-tabs-nav-wrap > div > div:nth-child(6) {
+  display: none !important;
+}
+#cabisaPosTabs .ant-tabs-tab.ant-tabs-tab-active {
+  color: var(--cabisa-green) !important;
+  background: var(--cabisa-green-light) !important;
+}
+#cabisaPosTabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--cabisa-green) !important;
+}
+#cabisaPosTabs .ant-tabs-tab.ant-tabs-tab-disabled {
+  background: #eee;
+}
+#cabisaPosTabs .ant-tabs-tab-disabled .icon-tabs-pos > span {
+  color: var(--grey);
+}
+#cabisaPosTabs .ant-tabs-content-holder {
+  border: 1px solid var(--light-gray);
+  margin-left: 15px;
+  border-radius: 5px;
+}
+#cabisaPosTabs .icon-tabs-pos {
+  display: flex;
+  align-items: center;
+}
+#cabisaPosTabs .icon-tabs-pos > span {
+  color: var(--cabisa-green);
+  font-size: 25px;
+}
+#cabisaPosTabs-tab-5,
+#cabisaPosTabs-tab-6 {
+  display: none;
+}
+#cabisaPosTabs .ant-tabs-content {
+  height: 100%;
+}
+#cabisaPosTabs-panel-5,
+#cabisaPosTabs-panel-6 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+#cabisaPosTabs-panel-6,
+#cabisaPosTabs-panel-6 .empty-section {
+  background: #eee;
+}
+#cabisaPosTabs-panel-5 .icon-tab-disabled {
+  font-size: 100px;
+  color: var(--light-gray);
+}
+#cabisaPosTabs-panel-5 .text-tab-disabled {
+  color: var(--grey);
+  font-weight: 500;
+}
+.pos-store-information {
+  font-weight: 500;
+  color: var(--grey);
+}
+.pos-store-information .store-spacer {
+  margin: 0px 10px;
+}
+.pos-store-information .store-name {
+  color: black;
+}
+.pos-store-information .store-payment-methods {
+  display: flex;
+  justify-content: space-between;
+}
+.pos-store-information .store-payment-methods div {
+  display: inline-block;
+}
+.pos-store-information .store-payment-methods div span {
+  color: var(--light-gray);
+}
+.ant-tabs-tabpane-active {
+  padding: 20px 25px !important;
+  min-height: 70vh;
+}
+#cabisaPosTabs .dashed-border-button {
+  width: unset;
+}
+.total-product {
+  border: none !important;
+  background: none !important;
+  color: #000 !important;
+  font-weight: 500;
+}
+#cabisaPosTabs .ant-row.sell-row {
+  height: 100%;
+}
+.footer-sell {
+  align-self: flex-end;
+}
+.footer-sell .next-button {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.footer-sell .next-button > div {
+  margin-right: 30px;
+  font-size: 12px;
+  color: var(--light-gray);
+  text-align: right;
+}
+.footer-sell .next-button > div span {
+  display: block;
+  font-size: 32px;
+  line-height: 24px;
+  font-weight: 600;
+  color: #000;
+}
+.footer-sell .next-button > button {
+  padding: 5px 50px;
+}
+#cabisaPosTabs .ant-card {
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border: 1px solid var(--light-gray);
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  cursor: pointer;
+}
+#cabisaPosTabs .ant-card-body {
+  font-weight: 500;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 13px 20px;
+  color: var(--cabisa-green);
+}
+#cabisaPosTabs .ant-card-body span {
+  font-size: 40px;
+}
+#cabisaPosTabs .ant-row.ant-row-top .active {
+  background: var(--cabisa-green-light);
+}
+#cabisaPosTabs .cash-change {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#cabisaPosTabs .cash-change span {
+  font-size: 25px;
+  font-weight: 500;
+  margin-left: 10px;
+  color: var(--grey);
+}
+#cabisaPosTabs textarea.ant-input {
+  border-radius: 10px;
+}
+#cabisaPosTabs .client-info > * {
+  margin-bottom: 15px;
+}
+#cabisaPosTabs .sell-divider {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  height: 275px;
+  border: 1px solid var(--light-gray);
+}
+#cabisaPosTabs .total-bill {
+  margin: 40px 0;
+  display: flex;
+  justify-content: center;
+}
+#cabisaPosTabs .total-bill > div {
+  text-align: right;
+}
+#cabisaPosTabs .total-bill > div span {
+  display: block;
+  color: #000;
+  font-size: 50px;
+  line-height: 40px;
+  font-weight: 500;
+}
+#cabisaPosTabs .back-button {
+  padding: 5px 20px;
+  background: #eee;
+  border-color: var(--light-gray);
+  color: var(--cabisa-green);
+  margin-right: 5px;
+}
+#cabisaPosTabs .back-button:hover {
+  background: #eee !important;
+  color: var(--cabisa-green) !important;
+}
+#cabisaPosTabs .back-button + button {
+  padding: 5px 30px;
+}
+#cabisaPosTabs .title-receivable {
+  font-weight: 500;
+  color: #000;
+}
+#cabisaPosTabs .pay-receivable {
+  padding: 5px 20px;
+  border-radius: 5px;
+  border: 1px solid var(--light-gray);
+  font-weight: 500;
+  color: var(--cabisa-green);
+  background: var(--cabisa-green-light);
+}
+#cabisaPosTabs .pay-buttons {
+  text-align: right;
+}
+#cabisaPosTabs .pay-receivable.new-deposit {
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+.deposit-modal .ant-modal-footer,
+.invoice-modal .ant-modal-footer {
+  display: none;
+}
+.deposit-images {
+  margin-top: 25px;
+  padding: 0 8px;
+}
+.deposit-images .ant-card-body {
+  width: 100%;
+  height: 100%;
+  padding: 10px !important;
+  position: relative;
+}
+.deposit-images .ant-card-body img {
+  width: 100%;
+  object-fit: contain;
+  height: 100%;
+}
+.deposit-images .ant-card-body div {
+  width: 100%;
+  height: 100%;
+}
+#cabisaPosTabs .deposit-images .ant-card {
+  border-radius: 0;
+  width: 130px;
+  height: 130px;
+  margin-right: 25px;
+}
+.add-deposit-modal .deposit-images .ant-card {
+  border-radius: 0;
+  width: 100px;
+  height: 100px;
+  margin-right: 25px;
+}
+.add-deposit-image .ant-card-body {
+  color: var(--light-gray) !important;
+  position: relative;
+}
+.add-deposit-image .ant-card-body span {
+  font-size: 30px !important;
+  margin-bottom: 10px;
+}
+.sellList-modal {
+  width: 280px !important;
+}
+.sellList-modal .ant-modal-content {
+  border-radius: 5px;
+  padding: 5px 0;
+}
+.sellList-modal .ant-modal-close-x {
+  display: none;
+}
+.sellList-modal .ant-modal-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.sellList-modal .ant-modal-body span {
+  font-weight: 500;
+  color: #000;
+  text-align: center;
+}
+.sellList-modal .ant-modal-body .anticon {
+  font-size: 60px;
+  color: red;
+  margin-bottom: 15px;
+}
+.sellList-modal .ant-modal-footer {
+  text-align: center;
+}
+.sellList-modal .cancel-button {
+  border: none;
+  box-shadow: none;
+}
+.pos-drawer .title-space-field {
+  font-size: 13px;
+}
+.pos-drawer .pay-receivable {
+  width: 100%;
+  height: 37px;
+  border-radius: 7px;
+  border: 1px solid var(--light-gray);
+  font-weight: 500;
+  color: var(--cabisa-green);
+  background: var(--cabisa-green-light);
+}
+.pos-drawer .pay-receivable:hover,
+.pos-drawer .pay-receivable:focus {
+  color: var(--cabisa-green);
+  background: var(--cabisa-green-light);
+  border-color: var(--light-gray);
+}
+.pos-drawer .section-space-list-bottom.title-space-top {
+  text-align: center;
+}
+.pos-drawer .total-quantity {
+  text-align: right;
+  color: #000;
+  font-weight: 500;
+}
+.pos-drawer .total-quantity.isOk {
+  color: var(--cabisa-green);
+}
+.pos-drawer .total-quantity.isnotOk {
+  color: red;
+}
+.pos-drawer .final-section {
+  margin-top: 20px;
+}
+.pos-drawer .sell-divider {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  left: 50%;
+  border-left: 1px solid var(--light-gray);
+}
+#cabisaPosTabs .cabisa-table-search {
+  width: 100% !important;
+}
+#cabisaPosTabs .payment-methods {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/*END POS STYLES*/
+
+/*CASHREGISTER STYLES*/
+.cashRegister-tab .empty-section {
+  width: 400px;
+}
+/*END CASHREGISTER STYLES*/
+
+.customSearch .ant-input-prefix {
+  display: none;
+}
+
+.ant-input-search > .ant-input-group > .ant-input-group-addon:last-child .ant-input-search-button{
+  border-radius: 0 8px 8px 0 !important;
+  margin-left: -12px !important;
+  z-index: 99;
+}
+
+.m-0 {
+  margin: 0 !important;
+}
+
+.mr-3 {
+  margin-right: 2em;
+}
+
+.p-0 {
+  padding: 0 !important;
+}
+
+.px-0 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.pl-1 {
+  padding-left: 0.5em !important;
+}
+
+.pl-2 {
+  padding-left: 1em !important;
+}
+
+#inventory-list .ant-list-item {
+  padding: 0;
+  border: none;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.w-100 {
+  width: 100% !important;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.ant-drawer-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.no-ajustar-btn {
+  background: var(--warning) !important;
+  border-color: var(--warning) !important;
+}
+
+.dashed-border-button {
+  position: relative;
+  height: 50px;
+  width: 300px;
+  cursor: pointer;
+}
+
+.dashed-border-button .svg {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 100%;
+}
+
+.dashed-border-button .path {
+  fill: none;
+  stroke: var(--cabisa-green);
+  stroke-width: 5;
+  stroke-dasharray: 15, 15;
+}
+
+.dashed-border-button .text {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  padding: 10px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cabisa-green);
+  font-weight: bold;
+}
+
+/*#reset-pass-drawer .ant-drawer-body {*/
+/*  display: flex;*/
+/*  flex-direction: column;*/
+/*  justify-content: space-between;*/
+/*  padding-right: 10em;*/
+/*}*/
+
+#edit-permissions-table .ant-table-content {
+  overflow: hidden;
+}
+
+.ant-checkbox-inner {
+  background-color: var(--light-gray) !important;
+}
+
+.no-ajustar-btn:hover {
+  background-color: var(--warning) !important;
+}
+
+.ant-menu-item a:hover {
+  color: var(--cabisa-light-blue) !important;
+}
+
+/* IMAGE UPLOAD STYLES */
+.image-upload {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 100;
+}
+
+#image-upload-input {
+  opacity: 0;
+  border: none;
+  outline: none;
+}
+
+.deposit-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #00000099;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  display: none;
+}
+
+.ant-card-body:hover .deposit-image-overlay,
+.button:hover .deposit-image-overlay,
+.deposit-image-overlay.visible {
+  display: flex;
+}
+
+.deposit-image-overlay .button,
+.deposit-image-overlay .button:focus {
+  padding: 0.25em;
+  margin: 0.25em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: white;
+  height: min-content;
+}
+
+.deposit-image-overlay .button:hover {
+  background: none;
+  border: none;
+  color: var(--cabisa-green);
+}
+
+#deposits-table .images-container,
+.add-deposit-modal .images-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70px;
+}
+
+#deposits-table .images-container .ant-card,
+.add-deposit-modal .images-container .ant-card {
+  margin: 0 0.25em;
+  height: 100%;
+  border-radius: 0;
+}
+#deposits-table .images-container .ant-card-body,
+.add-deposit-modal .images-container .ant-card {
+  padding: 0.25em;
+  height: 100%;
+}
+#deposits-table .images-container .ant-card-body img,
+.add-deposit-modal .images-container .ant-card-body img {
+  height: 100%;
+}
+.add-deposit-modal .ant-card-body {
+  font-weight: 500;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 13px 20px;
+  color: var(--cabisa-green);
+}
+.add-deposit-image .ant-card-body {
+  color: var(--light-gray) !important;
+  position: relative;
+}
+.ant-modal-footer .cancel-button {
+  border: none;
+  box-shadow: none;
+}
+/* END IMAGE UPLOAD STYLES */
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn,
+.ant-tabs-tab-btn:active, .ant-tabs-tab-btn:focus {
+  color: #000 !important;
+}
+
+#deposits-table .images-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 55px;
+}
+#deposits-table .images-container .ant-card {
+  margin: 0 .25em;
+  height: 100%;
+  border-radius: 0;
+}
+#deposits-table .images-container .ant-card-body {
+  padding: .25em;
+  height: 100%;
+}
+#deposits-table .images-container .ant-card-body img {
+  height: 100%;
+}
+.ant-tabs-tab-btn:active,
+.ant-tabs-tab-btn:focus {
+  color: #000 !important;
+}
+
+.ant-select-item-empty button {
+  background-color: var(--cabisa-green);
+  border-color: var(--cabisa-green);
+  border-radius: 5px;
+  color: white;
+}
+
+.loading-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff80;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.invoice-modal {
+  width: 80vw !important;
+  max-width: 1000px;
+}
+
+.invoice-modal object {
+  height: 80vh;
+  width: 100%;
+}
+
+.ant-tabs-tab:hover {
+  color: #000000A6 !important;
+}
