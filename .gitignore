@@ -1,1 +1,12 @@
-/node_modules/
+node_modules
+.vscode/
+.idea/
+*.iml
+.env
+dev.env
+prod.env
+.DS_Store
+config.*.json
+
+package-lock.json
+
