@@ -9,19 +9,19 @@ import { Context } from './context'
 const history = createBrowserHistory()
 
 function App() {
-    const [{users}] = useContext(Context)
-    if (!users.id) {
-        history.push('/')
-        return <Login />
-    }
+  const [{ users }] = useContext(Context)
+  if (!users.id) {
+    history.push('/')
+    return <Login />
+  }
 
-    return (
-        <Router history={history} >
-            <Switch>
-                <Route render={props => <AppRouter {...props} />} />
-            </Switch>
-        </Router>
-    )
+  return (
+    <Router history={history}>
+      <Switch>
+        <Route render={props => <AppRouter {...props} />} />
+      </Switch>
+    </Router>
+  )
 }
 
 export default App
