@@ -1,6 +1,9 @@
 import Users from '../pages/users/usersIndex'
 import Clients from '../pages/clients/clientsIndex'
 import Generic from '../pages/genericPage'
+import Sales from '../pages/sales/salesIndex'
+import UsersView from '../pages/users/userView'
+import ClientView from '../pages/clients/clientView'
 
 const menu_routes = [
   {
@@ -30,8 +33,11 @@ const menu_routes = [
     key: 'sales',
     icon: 'pos',
     route: '/sales',
-    component: Generic,
+    component: Sales,
     profilePermissions: [53],
+    routeGroup: [
+      /^(\/sales)|(\/sales\/)|(\/salesView)|(\/salesView\/)|(\/salesView\/[a-zA-z0-9]*)/i,
+    ],
   },
   {
     name: 'Inventario',
@@ -59,4 +65,26 @@ const menu_routes = [
   },
 ]
 
-export { menu_routes }
+const menu_sub_routes = [
+  {
+    route: '/users',
+    component: Users,
+  },
+  {
+    route: '/clients',
+    component: Clients,
+  },
+  {
+    route: '/userView',
+    component: UsersView,
+  },
+  {
+    route: '/clientView',
+    component: ClientView,
+  },
+  {
+    route: '/sales',
+    component: Sales,
+  },
+]
+export { menu_routes, menu_sub_routes }
