@@ -2,13 +2,13 @@ import React, { useState, useContext } from 'react'
 import { withRouter } from 'react-router'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { Layout, Divider } from 'antd'
+import { createBrowserHistory } from 'history'
 
 import 'antd/dist/antd.css'
 import './index.css'
 import MenuView from './components/Menu'
-import { menu_routes } from './components/Menu_routes'
+import { menu_sub_routes } from './components/Menu_routes'
 import { Context, useStore } from './context'
-
 //componentes
 import Avatar from './components/Avatar'
 import ResetPassword from './pages/login/ResetPassword'
@@ -17,39 +17,15 @@ import CabisaLayout from './components/Layout'
 import MenuUnfoldOutlined from '@ant-design/icons/lib/icons/MenuUnfoldOutlined'
 import MenuFoldOutlined from '@ant-design/icons/lib/icons/MenuFoldOutlined'
 
-// page-components
-import Users from './pages/users/usersIndex'
-import UsersView from './pages/users/userView'
-import Clients from './pages/clients/clientsIndex'
-import ClientView from './pages/clients/clientView'
-import Generic from './pages/genericPage'
-
+const history = createBrowserHistory()
 const { Content, Sider } = Layout
 
 function Router(props) {
   const [state, dispatch] = useContext(Context)
   const { hasPermissions } = useStore(state)
   const [collapsed, setCollapsed] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [loading] = useState(false)
   const [showResetPassword, setShowResetPassword] = useState(false)
-  const [routes, setRoutes] = useState([
-    {
-      route: '/users',
-      component: Users,
-    },
-    {
-      route: '/clients',
-      component: Clients,
-    },
-    {
-      route: '/userView',
-      component: UsersView,
-    },
-    {
-      route: '/clientView',
-      component: ClientView,
-    },
-  ])
 
   const onCollapse = () => {
     setCollapsed(!collapsed)
@@ -57,28 +33,8 @@ function Router(props) {
 
   const logout = async () => {
     console.log('logout')
-    // setLoading(true)
-    // await loginSrc
-    //     .closeSession()
-    //     .then(response => {
-    //         src.sessionApp(null, 'remove')
-    //         dispatch({ type: 'AUTH' })
-    //         setLoading(false)
-    //         message.success('Adios!')
-    //     })
-    //     .catch(err => {
-    //         setLoading(false)
-    //         message.error('Ocurrio un error al cerrar la sesion!')
-    //     })
-    //
-    // history.go(0)
   }
 
-  const pushRoutesWithPermissions = (route, component, action, resource) => {
-    this.setState(prevState => ({
-      routes: [...prevState['routes'], { route, component }],
-    }))
-  }
   return (
     <div>
       <CabisaLayout>
@@ -129,7 +85,7 @@ function Router(props) {
               <UISpinner />
             ) : (
               <Switch>
-                {routes.map((r, i) => (
+                {menu_sub_routes.map((r, i) => (
                   <Route exact key={i} path={r.route} component={r.component} />
                 ))}
                 <Redirect to='/users' />
