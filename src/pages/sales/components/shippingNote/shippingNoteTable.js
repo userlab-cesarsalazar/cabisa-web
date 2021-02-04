@@ -16,11 +16,12 @@ import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
 
 // Context
-import { Context, useStore } from '../../../context'
+// import { Context, useStore } from '../../../context'
+import { Context, useStore } from '../../../../context'
 
 const { Search } = Input
 
-function UserTable(props) {
+function ShippingNoteTable(props) {
   const [state] = useContext(Context)
   const { hasPermissions } = useStore(state)
 
@@ -38,67 +39,50 @@ function UserTable(props) {
 
   const columns = [
     {
-      title: 'Nombre',
-      dataIndex: '_name', // Field that is goint to be rendered
-      key: '_name',
+      title: 'No. de boleta',
+      dataIndex: '_ticketId', // Field that is goint to be rendered
+      key: '_ticketId',
       render: text => <span>{text}</span>,
     },
     {
-      title: 'Email',
-      dataIndex: '_email', // Field that is goint to be rendered
-      key: '_nit',
+      title: 'Empresa',
+      dataIndex: '_enterprise', // Field that is goint to be rendered
+      key: '_enterprise',
       render: text => <span>{text}</span>,
     },
     {
-      title: 'Telefono',
-      dataIndex: '_phone', // Field that is goint to be rendered
-      key: '_phone',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: 'Rol',
-      dataIndex: '_rolName', // Field that is goint to be rendered
-      key: '_username',
+      title: 'Proyecto',
+      dataIndex: '_project', // Field that is goint to be rendered
+      key: '_project',
       render: text => <span>{text}</span>,
     },
     {
       title: '',
-      dataIndex: '_id', // Field that is goint to be rendered
-      key: '_id',
+      dataIndex: 'id', // Field that is goint to be rendered
+      key: 'id',
       render: (row, data) => (
         <span>
           {
             <Popover
               placement='left'
+              style={{ zIndex: 'auto' }}
               content={
                 <div>
-                  {hasPermissions([7]) && (
-                    <>
-                      <span
-                        className={'user-options-items'}
-                        onClick={() => handlerEditRow(data)}
-                      >
-                        Editar
-                      </span>
-                      <Divider
-                        className={'divider-enterprise-margins'}
-                        type={'horizontal'}
-                      />
-                      <span
-                        className={'user-options-items'}
-                        onClick={() => props.handlerEditPermissions(data)}
-                      >
-                        Editar permisos
-                      </span>{' '}
-                    </>
+                  {hasPermissions([63]) && (
+                    <span
+                      className={'user-options-items'}
+                      onClick={() => handlerEditRow(data)}
+                    >
+                      Ver Detalles
+                    </span>
                   )}
-                  {hasPermissions([7]) && hasPermissions([8]) && (
+                  {hasPermissions([63]) && hasPermissions([64]) && (
                     <Divider
                       className={'divider-enterprise-margins'}
                       type={'horizontal'}
                     />
                   )}
-                  {hasPermissions([8]) && (
+                  {hasPermissions([64]) && (
                     <Popconfirm
                       title='Estas seguro de borrar el elemento selccionado?'
                       onConfirm={() => handlerDeleteRow(data)}
@@ -112,7 +96,7 @@ function UserTable(props) {
               }
               trigger='click'
             >
-              {(hasPermissions([7]) || hasPermissions([8])) && (
+              {(hasPermissions([63]) || hasPermissions([64])) && (
                 <Button
                   shape={'circle'}
                   className={'enterprise-settings-button'}
@@ -147,13 +131,37 @@ function UserTable(props) {
             <Row>
               <Col xs={24} sm={24} md={24} lg={24}>
                 <Table
-                  scroll={{ y: 320 }}
+                  scroll={{ y: 250 }}
                   loading={props.loading}
                   className={'CustomTableClass'}
                   dataSource={props.dataSource}
                   columns={columns}
                   pagination={false}
-                  rowKey='_id'
+                  rowKey='id'
+                  expandable={{
+                    expandedRowRender: record => (
+                      <div className={'text-left'}>
+                        <p>
+                          <b>Encargado </b>{' '}
+                          {record._manager !== null ? record._manager : ''}{' '}
+                        </p>
+                        <p>
+                          <b>Direccion: </b>{' '}
+                          {record._address !== null ? record._address : ''}{' '}
+                        </p>
+                        <p>
+                          <b>Telefono: </b>{' '}
+                          {record._phone !== null ? record._phone : ''}{' '}
+                        </p>
+                      </div>
+                    ),
+                    expandIcon: ({ expanded, onExpand, record }) =>
+                      expanded ? (
+                        <DownOutlined onClick={e => onExpand(record, e)} />
+                      ) : (
+                        <RightOutlined onClick={e => onExpand(record, e)} />
+                      ),
+                  }}
                 />
               </Col>
             </Row>
@@ -164,4 +172,4 @@ function UserTable(props) {
   )
 }
 
-export default UserTable
+export default ShippingNoteTable
