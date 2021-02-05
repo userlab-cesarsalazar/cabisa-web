@@ -4,6 +4,9 @@ import Generic from '../pages/genericPage'
 import Sales from '../pages/sales/salesIndex'
 import UsersView from '../pages/users/userView'
 import ClientView from '../pages/clients/clientView'
+import ShippingNoteView from '../pages/sales/components/shippingNote/shippingNoteView'
+
+import ReceiptNoteView from '../pages/sales/components/receiptNote/receiptNoteView'
 
 const menu_routes = [
   {
@@ -36,7 +39,7 @@ const menu_routes = [
     component: Sales,
     profilePermissions: [53],
     routeGroup: [
-      /^(\/sales)|(\/sales\/)|(\/salesView)|(\/salesView\/)|(\/salesView\/[a-zA-z0-9]*)/i,
+      /^(\/sales)|(\/sales\/)|(\/receiptNoteView)|(\/receiptNoteView\/)|(\/receiptNoteView\/[a-zA-z0-9]*)|(\/shippingNoteView)|(\/shippingNoteView\/)|(\/shippingNoteView\/[a-zA-z0-9]*)/i,
     ],
   },
   {
@@ -85,6 +88,14 @@ const menu_sub_routes = [
   {
     route: '/sales',
     component: Sales,
+  },
+  {
+    route: '/receiptNoteView',
+    component: ReceiptNoteView,
+  },
+  {
+    route: '/shippingNoteView',
+    component: ShippingNoteView,
   },
 ]
 export { menu_routes, menu_sub_routes }

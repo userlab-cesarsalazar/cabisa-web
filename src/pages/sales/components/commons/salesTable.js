@@ -21,7 +21,7 @@ import { Context, useStore } from '../../../../context'
 
 const { Search } = Input
 
-function ShippingNoteTable(props) {
+function SalesTable(props) {
   const [state] = useContext(Context)
   const { hasPermissions } = useStore(state)
 
@@ -124,6 +124,11 @@ function ShippingNoteTable(props) {
             onSearch={e => getFilteredData(e)}
           />
         </Col>
+        <Col xs={6} sm={6} md={6} lg={6} className='text-right'>
+          <Button className='title-cabisa new-button' onClick={props.newNote}>
+            {props.buttonTitle}
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col xs={24} sm={24} md={24} lg={24}>
@@ -172,4 +177,4 @@ function ShippingNoteTable(props) {
   )
 }
 
-export default ShippingNoteTable
+export default SalesTable

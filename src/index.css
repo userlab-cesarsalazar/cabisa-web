@@ -1381,3 +1381,7 @@ input:-webkit-autofill:focus {
 .ant-tabs-tab:hover {
   color: #000000A6 !important;
 }
+
+.ant-layout-content{
+  overflow: auto !important;
+}
