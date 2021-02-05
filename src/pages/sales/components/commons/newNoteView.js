@@ -1,17 +1,7 @@
 import React from 'react'
-import {
-  Col,
-  Divider,
-  Input,
-  Row,
-  Typography,
-  DatePicker,
-  Table,
-  Card,
-} from 'antd'
+import { Col, Divider, Input, Row, DatePicker, Table, Card } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import HeaderPage from '../../../../components/HeaderPage'
-const { Title } = Typography
 const { TextArea } = Input
 
 const columns = [
@@ -64,22 +54,22 @@ function NewNoteView(props) {
               <Input placeholder={'Empresa'} size={'large'} />
             </Col>
             <Col xs={8} sm={8} md={8} lg={8}>
-              <div className={'title-space-field'}>Direccion</div>
-              <Input placeholder={'Empresa'} size={'large'} />
+              <div className={'title-space-field'}>Dirección</div>
+              <Input placeholder={'Dirección'} size={'large'} />
             </Col>
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Telefono</div>
-              <Input placeholder={'Empresa'} size={'large'} type={'number'} />
+              <Input placeholder={'Telefono'} size={'large'} type={'number'} />
             </Col>
           </Row>
           <Row gutter={16} className={'section-space-field'}>
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Proyecto</div>
-              <Input placeholder={'Empresa'} size={'large'} type={'number'} />
+              <Input placeholder={'Proyecto'} size={'large'} type={'number'} />
             </Col>
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Encargado</div>
-              <Input placeholder={'Empresa'} size={'large'} />
+              <Input placeholder={'Encargado'} size={'large'} />
             </Col>
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Fecha</div>
