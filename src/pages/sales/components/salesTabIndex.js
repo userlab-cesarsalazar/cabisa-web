@@ -1,6 +1,7 @@
 import React from 'react'
 import { Tabs } from 'antd'
 import ShippingNote from './shippingNote/shippingNoteIndex'
+import ReceiptNote from './receiptNote/receiptNoteIndex'
 const { TabPane } = Tabs
 
 function SalesTabIndex() {
@@ -11,7 +12,7 @@ function SalesTabIndex() {
           <ShippingNote />
         </TabPane>
         <TabPane tab='Nota de recibo' key='2'>
-          <h1>nota de recibo</h1>
+          <ReceiptNote />
         </TabPane>
       </Tabs>
     </>

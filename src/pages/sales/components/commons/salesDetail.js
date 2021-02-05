@@ -12,48 +12,49 @@ import {
 import FooterButtons from '../../../../components/FooterButtons'
 const { Title } = Typography
 const { TextArea } = Input
-function ShippingNoteDetail(props) {
-  const columns = [
-    {
-      title: 'Codigo',
-      dataIndex: '_code', // Field that is goint to be rendered
-      key: '_code',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: 'Serie',
-      dataIndex: '_serie', // Field that is goint to be rendered
-      key: '_serie',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: 'Cantidad',
-      dataIndex: '_quantity', // Field that is goint to be rendered
-      key: '_quantity',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: 'Equipo',
-      dataIndex: '_equipment', // Field that is goint to be rendered
-      key: '_equipment',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: 'Estado equipo',
-      dataIndex: '_equipmentState', // Field that is goint to be rendered
-      key: '_equipmentState',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: 'Combustible / Horometro',
-      dataIndex: '_fuel_horometer', // Field that is goint to be rendered
-      key: '_fuel_horometer',
-      render: text => <span>{text}</span>,
-    },
-  ]
 
+const SalesDetailColumns = [
+  {
+    title: 'Codigo',
+    dataIndex: '_code', // Field that is goint to be rendered
+    key: '_code',
+    render: text => <span>{text}</span>,
+  },
+  {
+    title: 'Serie',
+    dataIndex: '_serie', // Field that is goint to be rendered
+    key: '_serie',
+    render: text => <span>{text}</span>,
+  },
+  {
+    title: 'Cantidad',
+    dataIndex: '_quantity', // Field that is goint to be rendered
+    key: '_quantity',
+    render: text => <span>{text}</span>,
+  },
+  {
+    title: 'Equipo',
+    dataIndex: '_equipment', // Field that is goint to be rendered
+    key: '_equipment',
+    render: text => <span>{text}</span>,
+  },
+  {
+    title: 'Estado equipo',
+    dataIndex: '_equipmentState', // Field that is goint to be rendered
+    key: '_equipmentState',
+    render: text => <span>{text}</span>,
+  },
+  {
+    title: 'Combustible / Horometro',
+    dataIndex: '_fuel_horometer', // Field that is goint to be rendered
+    key: '_fuel_horometer',
+    render: text => <span>{text}</span>,
+  },
+]
+
+function SalesDetail(props) {
   const saveData = () => {
-    console.log('save')
+    props.saveButtonEdit()
   }
   return (
     <>
@@ -106,7 +107,7 @@ function ShippingNoteDetail(props) {
                 loading={props.loading}
                 className={'CustomTableClass'}
                 dataSource={props.dataSource}
-                columns={columns}
+                columns={SalesDetailColumns}
                 pagination={false}
                 rowKey='id'
               />
@@ -139,4 +140,4 @@ function ShippingNoteDetail(props) {
     </>
   )
 }
-export default ShippingNoteDetail
+export default SalesDetail
