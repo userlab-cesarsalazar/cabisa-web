@@ -14,7 +14,7 @@ function ReceiptNoteView() {
   return (
     <div>
       <NewNoteView
-        saveDate={SaveReceiptData}
+        saveData={SaveReceiptData}
         cancelButton={Cancel}
         title={'Nueva nota de recibo'}
       />

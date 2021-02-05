@@ -14,7 +14,7 @@ function ShippingNoteView() {
   return (
     <div>
       <NewNoteView
-        saveDate={SaveData}
+        saveData={SaveData}
         cancelButton={CancelButton}
         title={'Nueva nota de envio'}
       />

@@ -75,21 +75,21 @@ function SalesDetail(props) {
             </Col>
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Direccion</div>
-              <Input placeholder={'Empresa'} size={'large'} />
+              <Input placeholder={'Direccion'} size={'large'} />
             </Col>
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Telefono</div>
-              <Input placeholder={'Empresa'} size={'large'} type={'number'} />
+              <Input placeholder={'Telefono'} size={'large'} type={'number'} />
             </Col>
           </Row>
           <Row gutter={16} className={'section-space-field'}>
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Proyecto</div>
-              <Input placeholder={'Empresa'} size={'large'} type={'number'} />
+              <Input placeholder={'Proyecto'} size={'large'} type={'number'} />
             </Col>
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Encargado</div>
-              <Input placeholder={'Empresa'} size={'large'} />
+              <Input placeholder={'Encargado'} size={'large'} />
             </Col>
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Fecha</div>
