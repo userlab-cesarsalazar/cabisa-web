@@ -10,10 +10,11 @@ const history = createBrowserHistory()
 
 function App() {
   const [{ users }] = useContext(Context)
-  // if (!users.id) {
-  //   history.push('/')
-  //   return <Login />
-  // }
+
+  if (!users.id) {
+    history.push('/')
+    return <Login />
+  }
 
   return (
     <Router history={history}>
