@@ -5,8 +5,11 @@ import Sales from '../pages/sales/salesIndex'
 import UsersView from '../pages/users/userView'
 import ClientView from '../pages/clients/clientView'
 import ShippingNoteView from '../pages/sales/components/shippingNote/shippingNoteView'
-
 import ReceiptNoteView from '../pages/sales/components/receiptNote/receiptNoteView'
+
+import Inventory from '../pages/inventory/inventoryIndex'
+import InventoryView from '../pages/inventory/inventoryView'
+import genericPage from '../pages/genericPage'
 
 const menu_routes = [
   {
@@ -14,7 +17,6 @@ const menu_routes = [
     key: 'users',
     icon: 'users',
     route: '/users',
-    component: Users,
     profilePermissions: [5],
     routeGroup: [
       /^(\/users)|(\/users\/)|(\/userView)|(\/userView\/)|(\/userView\/[a-zA-z0-9]*)/i,
@@ -25,7 +27,6 @@ const menu_routes = [
     key: 'clients',
     icon: 'clients',
     route: '/clients',
-    component: Clients,
     profilePermissions: [61],
     routeGroup: [
       /^(\/clients)|(\/clients\/)|(\/clientView)|(\/clientView\/)|(\/clientView\/[a-zA-z0-9]*)/i,
@@ -36,7 +37,6 @@ const menu_routes = [
     key: 'sales',
     icon: 'pos',
     route: '/sales',
-    component: Sales,
     profilePermissions: [53],
     routeGroup: [
       /^(\/sales)|(\/sales\/)|(\/receiptNoteView)|(\/receiptNoteView\/)|(\/receiptNoteView\/[a-zA-z0-9]*)|(\/shippingNoteView)|(\/shippingNoteView\/)|(\/shippingNoteView\/[a-zA-z0-9]*)/i,
@@ -47,24 +47,30 @@ const menu_routes = [
     key: 'inventory',
     icon: 'products',
     route: '/inventory',
-    component: Generic,
     profilePermissions: [25],
+    routeGroup: [
+      /^(\/inventory)|(\/inventory\/)|(\/inventoryView)|(\/inventoryView\/)|(\/inventoryView\/[a-zA-z0-9]*)/i,
+    ],
   },
   {
     name: 'Facturacion',
-    key: 'shops',
+    key: 'billing',
     icon: 'inventory',
-    route: '/shops',
-    component: Generic,
+    route: '/billing',
     profilePermissions: [9],
+    routeGroup: [
+      /^(\/billing)|(\/billing\/)|(\/billingView)|(\/billingView\/)|(\/billingView\/[a-zA-z0-9]*)/i,
+    ],
   },
   {
     name: 'Reportes',
-    key: 'cash-register',
+    key: 'reports',
     icon: 'cashRegister',
-    route: '/cash-register',
-    component: Generic,
+    route: '/reports',
     profilePermissions: [53],
+    routeGroup: [
+      /^(\/reports)|(\/reports\/)|(\/reportsView)|(\/reportsView\/)|(\/reportsView\/[a-zA-z0-9]*)/i,
+    ],
   },
 ]
 
@@ -96,6 +102,22 @@ const menu_sub_routes = [
   {
     route: '/shippingNoteView',
     component: ShippingNoteView,
+  },
+  {
+    route: '/inventory',
+    component: Inventory,
+  },
+  {
+    route: '/inventoryView',
+    component: InventoryView,
+  },
+  {
+    route: '/billing',
+    component: genericPage,
+  },
+  {
+    route: '/reports',
+    component: genericPage,
   },
 ]
 export { menu_routes, menu_sub_routes }

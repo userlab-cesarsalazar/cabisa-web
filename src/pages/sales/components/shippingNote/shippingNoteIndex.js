@@ -37,7 +37,7 @@ function ShippingNote(props) {
   }, [])
 
   const loadInfo = () => {
-    setTimeout(() => setLoading(false), 2000)
+    setTimeout(() => setLoading(false), 500)
     setTimeout(() => setDataSource(_dataSource), 500)
   }
 

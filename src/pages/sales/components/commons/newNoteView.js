@@ -113,8 +113,8 @@ function NewNoteView(props) {
         <FooterButtons
           saveData={props.saveData}
           cancelButton={props.cancelButton}
-          edit={true}
-          cancelLink='/users'
+          edit={false}
+          cancelLink='/sales'
         />
       </Card>
     </>
