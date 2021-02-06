@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import HeaderPage from '../../components/HeaderPage'
-import ClientTable from './components/clientTable'
-import ClientsDrawer from '../clients/components/clientsDrawer'
+import InventoryTable from './components/inventoryTable'
+import InventoryDrawer from './components/inventoryDrawer'
 import LoadMoreButton from '../../components/LoadMoreButton'
 
-function Clients(props) {
-  const [visible, setVisible] = useState(false)
+function Inventory(props) {
   const [editMode, setEditMode] = useState(false)
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
   const [existMoreInfo, setExistMoreInfo] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
 
   const dataDummy = {
     data: {
@@ -18,70 +18,52 @@ function Clients(props) {
       data: [
         {
           id: 1,
-          name: 'Pedro Ju\u00e1rez',
-          type: 'INDIVIDUAL',
-          nit: '526398',
-          address: 'Direcci\u00f3n de prueba',
-          sales: 'Cesar Salazar',
-          shops: 'Luis de leon',
-          email: 'test@cabisa.com',
-          phone: '22229998',
+          code: '234-123',
+          serie: 'LKJ-1234-4545-VBNN',
+          description: 'ITEM DE PRUEBA',
+          price: '100',
         },
         {
           id: 2,
-          name: 'Company',
-          type: 'CORPORATION',
-          nit: '45128965',
-          address: '4-58 Calle Esperanza , zona 11',
-          email: 'test@cabisa.com',
-          phone: '22229998',
+          code: '234-123',
+          serie: 'LKJ-1234-4545-VBNN',
+          description: 'ITEM DE PRUEBA',
+          price: '100',
         },
         {
           id: 3,
-          name: 'Test',
-          type: 'CORPORATION',
-          country_id: 1,
-          nit: '121212',
-          uuid: '4ee8c9ee-cbee-4222-a14d-3665e78f5e01',
-          address: 'Ciudad',
-          sales: 'Cesar Salazar',
-          shops: 'Luis de leon',
-          email: 'test@cabisa.com',
-          phone: '22229998',
+          code: '234-123',
+          serie: 'LKJ-1234-4545-VBNN',
+          description: 'ITEM DE PRUEBA',
+          price: '100',
         },
         {
           id: 4,
-          name: 'Pablo Henrique',
-          type: 'INDIVIDUAL',
-          country_id: 1,
-          nit: '5222362',
-          uuid: '40fa3855-c3eb-44af-b850-f2b5d8d07cea',
-          address: 'zona 11 ciudad',
-          sales: 'Cesar Salazar',
-          shops: 'Luis de leon',
-          email: 'test@cabisa.com',
-          phone: '22229998',
+          code: '234-123',
+          serie: 'LKJ-1234-4545-VBNN',
+          description: 'ITEM DE PRUEBA',
+          price: '100',
         },
       ],
     },
   }
 
   const showDrawer = () => {
-    props.history.push('/clientView')
+    props.history.push('/inventoryView')
   }
   const onClose = () => {
-    setVisible(false)
+    setIsVisible(false)
   }
 
   useEffect(() => {
-    setVisible(false)
+    setIsVisible(false)
     setLoading(false)
     loadData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadData = () => {
-    setVisible(false)
+    setIsVisible(false)
     setLoading(true)
     setTimeout(() => setLoading(false), 500)
     setTimeout(() => setDataSource(setClientData(dataDummy.data.data)), 500)
@@ -109,7 +91,7 @@ function Clients(props) {
 
   const EditRow = data => {
     setEditDataDrawer(data)
-    setVisible(true)
+    setIsVisible(true)
     setEditMode(true)
   }
 
@@ -121,19 +103,19 @@ function Clients(props) {
   const onSaveButton = (method, data, dataId) => {
     setExistMoreInfo(false)
     setLoading(true)
-    setVisible(false)
+    setIsVisible(false)
     setTimeout(() => setLoading(false), 1000)
   }
 
   return (
     <>
       <HeaderPage
-        titleButton={'Nuevo Cliente'}
-        title={'Clientes'}
+        titleButton={'Nuevo Item'}
+        title={'Inventario'}
         showDrawer={showDrawer}
         permissions={6}
       />
-      <ClientTable
+      <InventoryTable
         dataSource={dataSource}
         loading={loading}
         handlerTextSearch={searchTextFinder}
@@ -144,9 +126,9 @@ function Clients(props) {
         handlerButton={handlerMoreButton}
         moreInfo={existMoreInfo}
       />
-      <ClientsDrawer
+      <InventoryDrawer
         closable={onClose}
-        visible={visible}
+        visible={isVisible}
         edit={editMode}
         editData={editDataDrawer}
         cancelButton={onClose}
@@ -156,4 +138,4 @@ function Clients(props) {
   )
 }
 
-export default Clients
+export default Inventory

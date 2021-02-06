@@ -134,7 +134,7 @@ function SalesDetail(props) {
           saveData={saveData}
           cancelButton={props.cancelButton}
           edit={true}
-          cancelLink='/users'
+          cancelLink=''
         />
       </Drawer>
     </>

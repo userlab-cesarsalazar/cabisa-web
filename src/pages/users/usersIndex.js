@@ -46,9 +46,10 @@ function Users(props) {
   }, [])
 
   const loadUserData = () => {
-    setLoading(false)
+    setLoading(true)
     setVisible(false)
-    setDataSource(getUsers(dataDummy))
+    setTimeout(() => setLoading(false), 500)
+    setTimeout(() => setDataSource(getUsers(dataDummy)), 500)
   }
 
   const EditRow = data => {

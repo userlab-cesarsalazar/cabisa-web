@@ -54,7 +54,7 @@ function ReceiptNote(props) {
   }, [])
 
   const loadInfo = () => {
-    setTimeout(() => setLoading(false), 2000)
+    setTimeout(() => setLoading(false), 500)
     setTimeout(() => setDataSourceReceipt(dataSource), 500)
   }
 
