@@ -31,7 +31,6 @@ function ShippingNote(props) {
   const [existMoreInfo, setExistMoreInfo] = useState(false)
 
   useEffect(() => {
-    console.log('cargando shiping note')
     loadInfo()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

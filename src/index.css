@@ -292,7 +292,76 @@ body {
 .ant-menu-item-selected a span {
   color: white !important;
 }
-/*END CUSTOM MENU ITEMS*/
+
+/*VERTICAL MENU*/
+.ant-menu-submenu-placement-rightTop{
+  top:50px !important;
+  padding-left: 5px;
+  background: #f0f8ff00 !important;
+}
+
+.ant-menu.ant-menu-sub.ant-menu-vertical{
+  border-radius: 10px !important;
+  padding: 10px;
+}
+
+.ant-menu-inline-collapsed .ant-menu-submenu-title{
+  padding-left: 0px !important;
+}
+
+.ant-menu-submenu-title{
+  padding-right: 50px !important;
+}
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-submenu-selected {
+  background-color: var(--cabisa-light-blue) !important;
+  border-radius: 10px;
+  margin: auto !important;
+  color: white;
+}
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-submenu {
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 14px;
+  margin: auto;
+}
+
+.ant-menu-vertical .ant-menu-submenu::after {
+  border-right: 3px solid var(--cabisa-light-blue) !important;
+}
+
+.ant-menu-submenu span:nth-child(2) {
+  color: white !important;
+  padding-left: 10px;
+}
+
+.ant-menu-submenu-selected span:nth-child(2) {
+  color: white !important;
+}
+
+.ant-menu-vertical .ant-menu-submenu {
+  width: calc(99% + 2px) !important;
+}
+
+.ant-menu-inline-collapsed .ant-menu-submenu {
+  width: calc(60% + 5px) !important;
+  padding: 0 17px !important;
+}
+
+.ant-menu-submenu.ant-menu-submenu-selected .anticon {
+  color: white !important;
+}
+
+.ant-menu-submenu-arrow {
+  color: white !important;
+}
+
+
+/*END VERTICAL MENU*/
+
+
+  /*END CUSTOM MENU ITEMS*/
 
 .title-cabisa.new-button {
   background-color: var(--cabisa-light-blue);
