@@ -13,19 +13,35 @@ import {
 } from '@ant-design/icons'
 import { Link, useHistory } from 'react-router-dom'
 import { menu_routes } from './Menu_routes'
+const { SubMenu } = Menu
 
 function MenuView() {
   const history = useHistory()
   const [key, setKey] = useState('')
+  let subMenuMatch
 
   useEffect(() => {
     let actualPath = menu_routes.find(
       m =>
         menuRouterFunction(m.routeGroup, m.route) === history.location.pathname
     )
-    setKey(actualPath.key)
+    if (actualPath.sub_menu) {
+      actualPath.routeGroup.forEach(regexp => {
+        if (regexp.test(history.location.pathname)) {
+          subMenuMatch = actualPath.sub_menu.find(
+            m => m.route === history.location.pathname
+          )
+        }
+      })
+      setKey(subMenuMatch.key)
+    } else {
+      setKey(actualPath.key)
+    }
   }, [])
 
+  const setKeyValue = key => {
+    setKey(key)
+  }
   const menuRouterFunction = (regexpArray, defaultRoute) => {
     let someOneMatch = false
     regexpArray.forEach(regexp => {
@@ -33,6 +49,7 @@ function MenuView() {
         someOneMatch = true
       }
     })
+
     return someOneMatch ? history.location.pathname : defaultRoute
   }
 
@@ -103,24 +120,60 @@ function MenuView() {
 
   return (
     <Menu
-      mode='inline'
+      mode='vertical'
       selectedKeys={[key]}
       style={{ height: '100%', paddingTop: '20px', border: 'none' }}
     >
       {menu_routes &&
         menu_routes.length > 0 &&
-        menu_routes.map((option, i) => (
-          <Menu.Item
-            key={option.key}
-            icon={returnIcon()}
-            onClick={() => setKey(option.key)}
-          >
-            <Link to={option.route}>
-              {returnIcon(option.icon)}
-              <span style={{ paddingLeft: '13px' }}>{option.name}</span>
-            </Link>
-          </Menu.Item>
-        ))}
+        menu_routes.map(
+          (option, i) =>
+            option.sub_menu ? (
+              <SubMenu
+                key={option.key}
+                icon={returnIcon(option.icon)}
+                title={option.name}
+              >
+                {option.sub_menu.map((subMenuOption, index) => {
+                  return (
+                    <Menu.Item
+                      key={subMenuOption.key}
+                      onClick={() => setKeyValue(subMenuOption.key)}
+                    >
+                      <Link to={subMenuOption.route}>
+                        {returnIcon(option.icon)}
+                        <span style={{ paddingLeft: '13px' }}>
+                          {subMenuOption.name}
+                        </span>
+                      </Link>
+                    </Menu.Item>
+                  )
+                })}
+              </SubMenu>
+            ) : (
+              <Menu.Item
+                key={option.key}
+                icon={returnIcon()}
+                onClick={() => setKey(option.key)}
+              >
+                <Link to={option.route}>
+                  {returnIcon(option.icon)}
+                  <span style={{ paddingLeft: '13px' }}>{option.name}</span>
+                </Link>
+              </Menu.Item>
+            )
+
+          // <Menu.Item
+          //   key={option.key}
+          //   icon={returnIcon()}
+          //   onClick={() => setKey(option.key)}
+          // >
+          //   <Link to={option.route}>
+          //     {returnIcon(option.icon)}
+          //     <span style={{ paddingLeft: '13px' }}>{option.name}</span>
+          //   </Link>
+          // </Menu.Item>
+        )}
     </Menu>
   )
 }

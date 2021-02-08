@@ -1,15 +1,21 @@
 import Users from '../pages/users/usersIndex'
 import Clients from '../pages/clients/clientsIndex'
-import Generic from '../pages/genericPage'
 import Sales from '../pages/sales/salesIndex'
 import UsersView from '../pages/users/userView'
 import ClientView from '../pages/clients/clientView'
 import ShippingNoteView from '../pages/sales/components/shippingNote/shippingNoteView'
 import ReceiptNoteView from '../pages/sales/components/receiptNote/receiptNoteView'
-
 import Inventory from '../pages/inventory/inventoryIndex'
 import InventoryView from '../pages/inventory/inventoryView'
+
+//Reports
+import ReportMachine from '../pages/reports/reportMachine/reportMachineIndex'
+import ReportInventory from '../pages/reports/reportInventory/reportInventoryIndex'
+import ReportClient from '../pages/reports/reportClient/reportClientIndex'
+
 import genericPage from '../pages/genericPage'
+
+import { report_sections } from './report_sections'
 
 const menu_routes = [
   {
@@ -53,6 +59,17 @@ const menu_routes = [
     ],
   },
   {
+    name: 'Reportes',
+    key: 'reports',
+    icon: 'cashRegister',
+    route: '/reports',
+    profilePermissions: [53],
+    routeGroup: [
+      /^(\/reportInventory)|(\/reportAccountsReceivable)|(\/reportAccountClient)|(\/reportsView\/)|(\/reportsView\/[a-zA-z0-9]*)|(\/reportMachineHistory)|(\/reportMachineHistory\/)|(\/reportMachineHistoryView)|(\/reportMachineHistoryView\/)|(\/reportMachineHistoryView\/[a-zA-z0-9]*)/i,
+    ],
+    sub_menu: report_sections,
+  },
+  {
     name: 'Facturacion',
     key: 'billing',
     icon: 'inventory',
@@ -60,16 +77,6 @@ const menu_routes = [
     profilePermissions: [9],
     routeGroup: [
       /^(\/billing)|(\/billing\/)|(\/billingView)|(\/billingView\/)|(\/billingView\/[a-zA-z0-9]*)/i,
-    ],
-  },
-  {
-    name: 'Reportes',
-    key: 'reports',
-    icon: 'cashRegister',
-    route: '/reports',
-    profilePermissions: [53],
-    routeGroup: [
-      /^(\/reports)|(\/reports\/)|(\/reportsView)|(\/reportsView\/)|(\/reportsView\/[a-zA-z0-9]*)/i,
     ],
   },
 ]
@@ -116,7 +123,19 @@ const menu_sub_routes = [
     component: genericPage,
   },
   {
-    route: '/reports',
+    route: '/reportMachineHistory',
+    component: ReportMachine,
+  },
+  {
+    route: '/reportInventory',
+    component: ReportInventory,
+  },
+  {
+    route: '/reportAccountClient',
+    component: ReportClient,
+  },
+  {
+    route: '/reportAccountsReceivable',
     component: genericPage,
   },
 ]
