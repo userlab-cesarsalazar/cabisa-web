@@ -670,8 +670,8 @@ input:-webkit-autofill:focus {
 }
 .shop-add-turn {
   width: 100%;
-  color: var(--cabisa-green) !important;
-  border-color: var(--cabisa-green) !important;
+  color: var(--cabisa-light-blue) !important;
+  border-color: var(--cabisa-light-blue) !important;
   border-radius: 8px !important;
 }
 
