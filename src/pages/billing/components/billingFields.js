@@ -23,6 +23,7 @@ function BillingFields(props) {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState(null)
   const [address, setAddress] = useState('')
+  const [serviceType, setServiceType] = useState('')
   // const [serie, setSerie] = useState('')
   const [dataSource, setDataSource] = useState([...props.dataDetail])
   const [items, setItems] = useState(0)
@@ -46,6 +47,7 @@ function BillingFields(props) {
       setItems(dataSource.length)
       setTotalBilling(totalBilling.sub_total)
       onSelectUser(1)
+      setServiceType(1)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.visible])
@@ -186,7 +188,7 @@ function BillingFields(props) {
       ),
     },
     {
-      title: 'Tipo de servicio',
+      title: 'Producto',
       dataIndex: 'type_service', // Field that is goint to be rendered
       key: 'type_service',
       render: (text, record, indexRow) => (
@@ -194,7 +196,7 @@ function BillingFields(props) {
           disabled={props.edit}
           value={record.type_service}
           className={'single-select'}
-          placeholder={'Elegir tipo servicio'}
+          placeholder={'Producto'}
           size={'large'}
           style={{ width: '100%', height: '40px' }}
           getPopupContainer={trigger => trigger.parentNode}
@@ -202,9 +204,9 @@ function BillingFields(props) {
             handleChangeValues(event, indexRow, record._id, 'type_service')
           }
         >
-          <Option value={0}>Maquinaria</Option>
-          <Option value={1}>Equipo</Option>
-          <Option value={2}>Servicio</Option>
+          <Option value={0}>ITEM DE PRUEBA 1</Option>
+          <Option value={1}>ITEM DE PRUEBA 2</Option>
+          <Option value={2}>ITEM DE PRUEBA 3</Option>
         </Select>
       ),
     },
@@ -376,7 +378,7 @@ function BillingFields(props) {
           </Col>
         </Row>
         <Row gutter={16} className={'section-space-field'}>
-          <Col xs={24} sm={24} md={24} lg={24}>
+          <Col xs={12} sm={12} md={12} lg={12}>
             <div className={'title-space-field'}>Direccion</div>
             <Input
               disabled
@@ -386,6 +388,23 @@ function BillingFields(props) {
               style={{ height: '40px' }}
               onChange={value => setAddress(value.target.value)}
             />
+          </Col>
+          <Col xs={12} sm={12} md={12} lg={12}>
+            <div className={'title-space-field'}>Tipo de servicio</div>
+            <Select
+              disabled={props.edit}
+              value={serviceType}
+              className={'single-select'}
+              placeholder={'Elegir tipo servicio'}
+              size={'large'}
+              style={{ width: '100%', height: '40px' }}
+              getPopupContainer={trigger => trigger.parentNode}
+              onSelect={value => setServiceType(value)}
+            >
+              <Option value={0}>Maquinaria</Option>
+              <Option value={1}>Equipo</Option>
+              <Option value={2}>Servicio</Option>
+            </Select>
           </Col>
         </Row>
         {/*End Fields section*/}
