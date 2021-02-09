@@ -13,6 +13,10 @@ import ReportMachine from '../pages/reports/reportMachine/reportMachineIndex'
 import ReportInventory from '../pages/reports/reportInventory/reportInventoryIndex'
 import ReportClient from '../pages/reports/reportClient/reportClientIndex'
 
+//billing
+import Billing from '../pages/billing/billingIndex'
+import BillingView from '../pages/billing/billingView'
+
 import genericPage from '../pages/genericPage'
 
 import { report_sections } from './report_sections'
@@ -59,6 +63,16 @@ const menu_routes = [
     ],
   },
   {
+    name: 'Facturacion',
+    key: 'billing',
+    icon: 'inventory',
+    route: '/billing',
+    profilePermissions: [9],
+    routeGroup: [
+      /^(\/billing)|(\/billing\/)|(\/billingView)|(\/billingView\/)|(\/billingView\/[a-zA-z0-9]*)/i,
+    ],
+  },
+  {
     name: 'Reportes',
     key: 'reports',
     icon: 'cashRegister',
@@ -68,16 +82,6 @@ const menu_routes = [
       /^(\/reportInventory)|(\/reportAccountsReceivable)|(\/reportAccountClient)|(\/reportsView\/)|(\/reportsView\/[a-zA-z0-9]*)|(\/reportMachineHistory)|(\/reportMachineHistory\/)|(\/reportMachineHistoryView)|(\/reportMachineHistoryView\/)|(\/reportMachineHistoryView\/[a-zA-z0-9]*)/i,
     ],
     sub_menu: report_sections,
-  },
-  {
-    name: 'Facturacion',
-    key: 'billing',
-    icon: 'inventory',
-    route: '/billing',
-    profilePermissions: [9],
-    routeGroup: [
-      /^(\/billing)|(\/billing\/)|(\/billingView)|(\/billingView\/)|(\/billingView\/[a-zA-z0-9]*)/i,
-    ],
   },
 ]
 
@@ -120,7 +124,11 @@ const menu_sub_routes = [
   },
   {
     route: '/billing',
-    component: genericPage,
+    component: Billing,
+  },
+  {
+    route: '/billingView',
+    component: BillingView,
   },
   {
     route: '/reportMachineHistory',
