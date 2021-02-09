@@ -8,6 +8,7 @@ import {
   Row,
   Select,
   Statistic,
+  Tag,
   Typography,
 } from 'antd'
 
@@ -17,6 +18,12 @@ const { Title } = Typography
 const { Option } = Select
 
 function BillingFields(props) {
+  const productDummy = [
+    { id: 0, name: 'ITEM PRUEBA 1', price: 100 },
+    { id: 1, name: 'ITEM PRUEBA 2', price: 200 },
+    { id: 2, name: 'ITEM PRUEBA 3', price: 300 },
+  ]
+
   const [name, setName] = useState('')
   const [nit, setNit] = useState('')
   const [clientTypeID, setClientTypeID] = useState(null)
@@ -24,6 +31,7 @@ function BillingFields(props) {
   const [phone, setPhone] = useState(null)
   const [address, setAddress] = useState('')
   const [serviceType, setServiceType] = useState('')
+  const [paymentMethod, setPaymentMethod] = useState('')
   // const [serie, setSerie] = useState('')
   const [dataSource, setDataSource] = useState([...props.dataDetail])
   const [items, setItems] = useState(0)
@@ -48,6 +56,7 @@ function BillingFields(props) {
       setTotalBilling(totalBilling.sub_total)
       onSelectUser(1)
       setServiceType(1)
+      setPaymentMethod(1)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.visible])
@@ -111,9 +120,16 @@ function BillingFields(props) {
         break
       case 'type_service':
         tmpState[indexRow].type_service = value
+        tmpState[indexRow].unit_price = productDummy.filter(
+          dat => dat.id === value
+        )[0].price
+        tmpState[indexRow].sub_total =
+          tmpState[indexRow].quantity *
+          productDummy.filter(dat => dat.id === value)[0].price
         break
       case 'description':
         tmpState[indexRow].description = value
+
         break
       case 'unit_price':
         tmpState[indexRow].unit_price = value
@@ -201,12 +217,19 @@ function BillingFields(props) {
           style={{ width: '100%', height: '40px' }}
           getPopupContainer={trigger => trigger.parentNode}
           onSelect={event =>
-            handleChangeValues(event, indexRow, record._id, 'type_service')
+            handleChangeValues(event, indexRow, record, 'type_service')
           }
         >
-          <Option value={0}>ITEM DE PRUEBA 1</Option>
-          <Option value={1}>ITEM DE PRUEBA 2</Option>
-          <Option value={2}>ITEM DE PRUEBA 3</Option>
+          {productDummy.map((data, i) => {
+            return (
+              <Option key={i} value={data.id}>
+                {data.name}
+              </Option>
+            )
+          })}
+          {/*<Option value={0}>ITEM DE PRUEBA 1</Option>*/}
+          {/*<Option value={1}>ITEM DE PRUEBA 2</Option>*/}
+          {/*<Option value={2}>ITEM DE PRUEBA 3</Option>*/}
         </Select>
       ),
     },
@@ -378,7 +401,7 @@ function BillingFields(props) {
           </Col>
         </Row>
         <Row gutter={16} className={'section-space-field'}>
-          <Col xs={12} sm={12} md={12} lg={12}>
+          <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Direccion</div>
             <Input
               disabled
@@ -389,7 +412,7 @@ function BillingFields(props) {
               onChange={value => setAddress(value.target.value)}
             />
           </Col>
-          <Col xs={12} sm={12} md={12} lg={12}>
+          <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Tipo de servicio</div>
             <Select
               disabled={props.edit}
@@ -404,6 +427,29 @@ function BillingFields(props) {
               <Option value={0}>Maquinaria</Option>
               <Option value={1}>Equipo</Option>
               <Option value={2}>Servicio</Option>
+            </Select>
+          </Col>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <div className={'title-space-field'}>Metodo de pago</div>
+            <Select
+              disabled={props.edit}
+              value={paymentMethod}
+              className={'single-select'}
+              placeholder={'Metodo de pago'}
+              size={'large'}
+              style={{ width: '100%', height: '40px' }}
+              getPopupContainer={trigger => trigger.parentNode}
+              onSelect={value => setPaymentMethod(value)}
+            >
+              <Option value={0}>
+                <Tag color='geekblue'>Tarjeta debito/credito</Tag>
+              </Option>
+              <Option value={1}>
+                <Tag color='cyan'>Transferencia</Tag>
+              </Option>
+              <Option value={2}>
+                <Tag color='green'>Efectivo</Tag>
+              </Option>
             </Select>
           </Col>
         </Row>
