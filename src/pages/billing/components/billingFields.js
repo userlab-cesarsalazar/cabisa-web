@@ -36,6 +36,7 @@ function BillingFields(props) {
   const [dataSource, setDataSource] = useState([...props.dataDetail])
   const [items, setItems] = useState(0)
   const [totalBilling, setTotalBilling] = useState(0)
+  const [totalBillingOg, setTotalBillingOg] = useState(0)
 
   useEffect(() => {
     // setName(props.edit ? props.editData.name : '')
@@ -54,6 +55,7 @@ function BillingFields(props) {
       })
       setItems(dataSource.length)
       setTotalBilling(totalBilling.sub_total)
+      setTotalBillingOg(totalBilling.sub_total)
       onSelectUser(1)
       setServiceType(1)
       setPaymentMethod(1)
@@ -105,11 +107,11 @@ function BillingFields(props) {
           })
         : 0
     setTotalBilling(totalBilling.sub_total)
+    setTotalBillingOg(totalBilling.sub_total)
   }
 
   const handleChangeValues = (value, indexRow, key, type) => {
     let tmpState = [...dataSource]
-
     switch (type) {
       case 'quantity':
         tmpState[indexRow].quantity = value
@@ -155,8 +157,17 @@ function BillingFields(props) {
       }
     })
     setTotalBilling(totalBilling.sub_total)
+    setTotalBillingOg(totalBilling.sub_total)
   }
   // END DINAMIC TABLE HANDLERS
+
+  const calculateDiscount = value => {
+    let totalWithDiscount =
+      value && totalBillingOg > 0 && totalBillingOg > value
+        ? totalBillingOg - value
+        : totalBillingOg
+    setTotalBilling(totalWithDiscount)
+  }
 
   const columnsDynamicTable = [
     {
@@ -404,7 +415,7 @@ function BillingFields(props) {
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Direccion</div>
             <Input
-              disabled
+              disabled={props.edit}
               value={address}
               placeholder={'Escribir direccion'}
               size={'large'}
@@ -455,19 +466,35 @@ function BillingFields(props) {
         </Row>
         {/*End Fields section*/}
         <Divider className={'divider-custom-margins-users'} />
-        <Row gutter={16} className={'section-space-list'}>
-          <Col xs={12} sm={12} md={12} lg={12}>
+        <Row
+          gutter={16}
+          className={'section-space-list'}
+          justify='space-between'
+          align='middle'
+        >
+          <Col xs={12} sm={12} md={12} lg={18}>
             <h1>Detalle Factura</h1>
           </Col>
-          <Col xs={6} sm={6} md={6} lg={6} style={{ textAlign: 'right' }}>
-            <div className={'title-space-field'}>
-              <Statistic title='Total Items :' value={items} />
+          <Col
+            xs={12}
+            sm={12}
+            md={12}
+            lg={6}
+            style={{ display: 'flex', justifyContent: 'flex-end' }}
+          >
+            <div
+              style={{ marginRight: '15px', marginTop: '10px' }}
+              className={'title-space-field'}
+            >
+              <b>Descuento:</b>
             </div>
-          </Col>
-          <Col xs={6} sm={6} md={6} lg={6} style={{ textAlign: 'right' }}>
-            <div className={'title-space-field'}>
-              <Statistic title='Total Factura :' value={totalBilling} />
-            </div>
+            <Input
+              type={'number'}
+              placeholder={'Aplicar Descuento'}
+              size={'large'}
+              onChange={value => calculateDiscount(value.target.value)}
+              style={{ height: '40px', width: '75%' }}
+            />
           </Col>
         </Row>
         <Divider className={'divider-custom-margins-users'} />
@@ -482,6 +509,19 @@ function BillingFields(props) {
             >
               Agregar Detalle
             </Button>
+          </Col>
+        </Row>
+        <Divider className={'divider-custom-margins-users'} />
+        <Row gutter={16} style={{ textAlign: 'right' }} justify='end'>
+          <Col span={8} offset={8} style={{ textAlign: 'right' }}>
+            <div className={'title-space-field'}>
+              <Statistic title='Total Items :' value={items} />
+            </div>
+          </Col>
+          <Col span={4} style={{ textAlign: 'right' }}>
+            <div className={'title-space-field'}>
+              <Statistic title='Total Factura :' value={totalBilling} />
+            </div>
           </Col>
         </Row>
         <Divider className={'divider-custom-margins-users'} />
