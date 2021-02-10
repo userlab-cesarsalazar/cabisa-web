@@ -79,7 +79,7 @@ const menu_routes = [
     route: '/reports',
     profilePermissions: [53],
     routeGroup: [
-      /^(\/reportInventory)|(\/reportAccountsReceivable)|(\/reportAccountClient)|(\/reportsView\/)|(\/reportsView\/[a-zA-z0-9]*)|(\/reportMachineHistory)|(\/reportMachineHistory\/)|(\/reportMachineHistoryView)|(\/reportMachineHistoryView\/)|(\/reportMachineHistoryView\/[a-zA-z0-9]*)/i,
+      /^(\/reportInventory)|(\/reportAccountsReceivable)|(\/reportAccountClient)|(\/reportEquipmentService)|(\/reportMachineHistory)|(\/reportMonthlyBill)|(\/reportShipping)|(\/reportSales)|(\/reportCommissions)|(\/reportCostSellingEquipment)/i,
     ],
     sub_menu: report_sections,
   },
@@ -144,6 +144,30 @@ const menu_sub_routes = [
   },
   {
     route: '/reportAccountsReceivable',
+    component: genericPage,
+  },
+  {
+    route: '/reportEquipmentService',
+    component: genericPage,
+  },
+  {
+    route: '/reportMonthlyBill',
+    component: genericPage,
+  },
+  {
+    route: '/reportShipping',
+    component: genericPage,
+  },
+  {
+    route: '/reportSales',
+    component: genericPage,
+  },
+  {
+    route: '/reportCommissions',
+    component: genericPage,
+  },
+  {
+    route: '/reportCostSellingEquipment',
     component: genericPage,
   },
 ]

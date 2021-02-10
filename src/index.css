@@ -429,6 +429,11 @@ body {
   border: solid 1px lightgrey;
 }
 
+.ant-input[disabled] {
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.45) !important;
+}
+
 .ant-input-affix-wrapper.ant-input-affix-wrapper-lg {
   border-radius: 8px !important;
 }
@@ -459,7 +464,10 @@ input:-webkit-autofill:focus {
   border-radius: 8px !important;
   font-size: 14px;
 }
-
+.ant-select-disabled .ant-select-selector{
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.45) !important;
+}
 /*END INPUTS CUSTOM STYLES*/
 
 /*ENTERPRISE CUSTOM STYLES*/
