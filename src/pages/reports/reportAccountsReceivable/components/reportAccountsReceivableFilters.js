@@ -7,7 +7,9 @@ const { Option } = Select
 
 function ReportAccountsReceivableFilters() {
   
-  return(<Row gutter={16}>
+  return(
+    <>
+    <Row gutter={16}>
     <Col xs={6} sm={6} md={6} lg={6}>
       <Search
         prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
@@ -56,7 +58,8 @@ function ReportAccountsReceivableFilters() {
         <Option value={1}>Empresa</Option>
       </Select>
     </Col>
-  </Row>)
+  </Row>
+      </>)
     
 }
 export default ReportAccountsReceivableFilters
