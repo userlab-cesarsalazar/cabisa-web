@@ -12,6 +12,7 @@ import InventoryView from '../pages/inventory/inventoryView'
 import ReportMachine from '../pages/reports/reportMachine/reportMachineIndex'
 import ReportInventory from '../pages/reports/reportInventory/reportInventoryIndex'
 import ReportClient from '../pages/reports/reportClient/reportClientIndex'
+import ReportAccountsReceivable from '../pages/reports/reportAccountsReceivable/reportAccountsReceivableIndex'
 
 //billing
 import Billing from '../pages/billing/billingIndex'
@@ -144,7 +145,7 @@ const menu_sub_routes = [
   },
   {
     route: '/reportAccountsReceivable',
-    component: genericPage,
+    component: ReportAccountsReceivable,
   },
   {
     route: '/reportEquipmentService',

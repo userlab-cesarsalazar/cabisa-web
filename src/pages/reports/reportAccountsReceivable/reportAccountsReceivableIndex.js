@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import GenericTable from '../../../components/genericTable'
 import { Button, Divider, Popconfirm, Popover, Tag } from 'antd'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
@@ -6,7 +6,7 @@ import ReportAccountsReceivableFilters from './components/reportAccountsReceivab
 import HeaderPage from '../../../components/HeaderPage'
 
 function ReportAccountsReceivable() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [dataSource, setDataSource] = useState([])
 
   const data = [
@@ -22,7 +22,7 @@ function ReportAccountsReceivable() {
       observation: 'Cliente nuevo etc.... 1234567890',
     },
     {
-      id: 3,
+      id: 2,
       client_name: 'Luis de leon',
       client_type: 2,
       amount: '5000.00',
@@ -139,11 +139,21 @@ function ReportAccountsReceivable() {
     },
   ]
 
+  const filterData = data => {
+    console.log('DATA FILTERS', data)
+  }
+
+  useEffect(() => {
+    setDataSource(data)
+    setLoading(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <>
       <HeaderPage title={'Reporte - Cuentas por cobrar'} />
-      <ReportAccountsReceivableFilters />
-      <GenericTable data={data} loading={loading} columns={columns} />
+      <ReportAccountsReceivableFilters filterData={filterData} />
+      <GenericTable data={dataSource} loading={loading} columns={columns} />
     </>
   )
 }
