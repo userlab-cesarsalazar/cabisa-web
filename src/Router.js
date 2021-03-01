@@ -1,14 +1,13 @@
-import React, { useState, useContext } from 'react'
+import React, { useState } from 'react'
 import { withRouter } from 'react-router'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { Layout, Divider } from 'antd'
-import { createBrowserHistory } from 'history'
-
+import { Auth, Cache } from 'aws-amplify'
 import 'antd/dist/antd.css'
 import './index.css'
 import MenuView from './components/Menu'
 import { menu_sub_routes } from './components/Menu_routes'
-import { Context, useStore } from './context'
+
 //componentes
 import Avatar from './components/Avatar'
 import ResetPassword from './pages/login/ResetPassword'
@@ -17,12 +16,9 @@ import CabisaLayout from './components/Layout'
 import MenuUnfoldOutlined from '@ant-design/icons/lib/icons/MenuUnfoldOutlined'
 import MenuFoldOutlined from '@ant-design/icons/lib/icons/MenuFoldOutlined'
 
-const history = createBrowserHistory()
 const { Content, Sider } = Layout
 
 function Router(props) {
-  const [state, dispatch] = useContext(Context)
-  const { hasPermissions } = useStore(state)
   const [collapsed, setCollapsed] = useState(false)
   const [loading] = useState(false)
   const [showResetPassword, setShowResetPassword] = useState(false)
@@ -33,6 +29,14 @@ function Router(props) {
 
   const logout = async () => {
     console.log('logout')
+    Auth.signOut()
+      .then(() => {
+        Cache.clear()
+        window.location.reload(false)
+      })
+      .catch(err => {
+        console.log('error', err)
+      })
   }
 
   return (
