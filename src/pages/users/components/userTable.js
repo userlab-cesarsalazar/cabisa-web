@@ -10,8 +10,6 @@ import {
   Divider,
   Popconfirm,
 } from 'antd'
-import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
-import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
 

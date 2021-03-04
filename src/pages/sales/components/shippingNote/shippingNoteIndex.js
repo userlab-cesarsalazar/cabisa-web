@@ -25,7 +25,6 @@ const _detailData = []
 
 function ShippingNote(props) {
   const [dataSource, setDataSource] = useState([])
-  const [dataDetail, setDDataDetail] = useState([])
   const [loading, setLoading] = useState(true)
   const [visible, setVisible] = useState(false)
   const [existMoreInfo, setExistMoreInfo] = useState(false)
