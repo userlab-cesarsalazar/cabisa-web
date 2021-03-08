@@ -152,6 +152,14 @@ function InventoryTable(props) {
             </Option>
           </Select>
         </Col>
+        <Col xs={6} sm={6} md={6} lg={6} style={{ textAlign: 'right' }}>
+          <Button
+            className='title-cabisa new-button'
+            onClick={props.showDraweTbl}
+          >
+            Nuevo Item
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col xs={24} sm={24} md={24} lg={24}>

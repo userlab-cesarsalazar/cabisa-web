@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import FooterButtons from '../../../components/FooterButtons'
-import { Col, Divider, Input, message, Row, Typography } from 'antd'
+import {
+  Col,
+  Divider,
+  Input,
+  message,
+  Row,
+  Select,
+  Tag,
+  Typography,
+} from 'antd'
 const { Title } = Typography
+const { Option } = Select
 
 function InventoryFields(props) {
   const [code, setCode] = useState('')
@@ -74,7 +84,7 @@ function InventoryFields(props) {
           </Col>
         </Row>
         <Row gutter={16} className={'section-space-field'}>
-          <Col xs={12} sm={12} md={12} lg={12}>
+          <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Descripcion</div>
             <Input
               value={description}
@@ -83,7 +93,7 @@ function InventoryFields(props) {
               onChange={value => setDescription(value.target.value)}
             />
           </Col>
-          <Col xs={12} sm={12} md={12} lg={12}>
+          <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Costo</div>
             <Input
               type={'number'}
@@ -92,6 +102,23 @@ function InventoryFields(props) {
               size={'large'}
               onChange={value => setPrice(value.target.value)}
             />
+          </Col>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <div className={'title-space-field'}>Tipo de servicio</div>
+            <Select
+              className={'single-select'}
+              placeholder={'Tipo de servicio'}
+              size={'large'}
+              style={{ width: '100%', height: '40px' }}
+              getPopupContainer={trigger => trigger.parentNode}
+            >
+              <Option value={0}>
+                <Tag color='#87d068'>Servicio</Tag>
+              </Option>
+              <Option value={1}>
+                <Tag color='#f50'>Equipo</Tag>
+              </Option>
+            </Select>
           </Col>
         </Row>
         {/*End Fields section*/}
