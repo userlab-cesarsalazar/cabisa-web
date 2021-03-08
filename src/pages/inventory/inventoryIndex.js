@@ -22,6 +22,8 @@ function Inventory(props) {
           serie: 'LKJ-1234-4545-VBNN',
           description: 'ITEM DE PRUEBA',
           price: '100',
+          engine: 'SRC-ASDFASD8234-23423',
+          type: 0,
         },
         {
           id: 2,
@@ -29,6 +31,8 @@ function Inventory(props) {
           serie: 'LKJ-1234-4545-VBNN',
           description: 'ITEM DE PRUEBA',
           price: '100',
+          engine: 'SRC-ASDFASD8234-23423',
+          type: 0,
         },
         {
           id: 3,
@@ -36,6 +40,8 @@ function Inventory(props) {
           serie: 'LKJ-1234-4545-VBNN',
           description: 'ITEM DE PRUEBA',
           price: '100',
+          engine: 'SRC-ASDFASD8234-23423',
+          type: 1,
         },
         {
           id: 4,
@@ -43,6 +49,8 @@ function Inventory(props) {
           serie: 'LKJ-1234-4545-VBNN',
           description: 'ITEM DE PRUEBA',
           price: '100',
+          engine: 'SRC-ASDFASD8234-23423',
+          type: 0,
         },
       ],
     },

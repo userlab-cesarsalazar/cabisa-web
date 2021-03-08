@@ -9,11 +9,14 @@ import {
   Popover,
   Divider,
   Popconfirm,
+  Tag,
+  Select,
 } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
 
 const { Search } = Input
+const { Option } = Select
 
 function InventoryTable(props) {
   const columns = [
@@ -30,10 +33,32 @@ function InventoryTable(props) {
       render: text => <span>{text}</span>,
     },
     {
+      title: '# Motor',
+      dataIndex: 'engine', // Field that is goint to be rendered
+      key: 'engine',
+      render: text => <span>{text}</span>,
+    },
+    {
       title: 'Descripcion',
       dataIndex: 'description', // Field that is goint to be rendered
       key: 'description',
       render: text => <span>{text}</span>,
+    },
+    {
+      title: 'Categoria',
+      dataIndex: 'type', // Field that is goint to be rendered
+      key: 'type',
+      render: text => (
+        <span>
+          {text === 0 ? (
+            <Tag color='#87d068'>Servicio</Tag>
+          ) : text === 1 ? (
+            <Tag color='#f50'>Equipo</Tag>
+          ) : (
+            ''
+          )}
+        </span>
+      ),
     },
     {
       title: 'Costo',
@@ -100,16 +125,32 @@ function InventoryTable(props) {
 
   return (
     <>
-      <Row>
-        <Col xs={18} sm={18} md={18} lg={18}>
+      <Row gutter={16}>
+        <Col xs={10} sm={10} md={10} lg={10}>
           <Search
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
             placeholder='Presiona enter para buscar'
             className={'cabisa-table-search customSearch'}
-            style={{ width: '70%', height: '40px' }}
+            style={{ width: '100%', height: '40px' }}
             size={'large'}
             onSearch={e => getFilteredData(e)}
           />
+        </Col>
+        <Col xs={8} sm={8} md={8} lg={8}>
+          <Select
+            className={'single-select'}
+            placeholder={'Categoria'}
+            size={'large'}
+            style={{ width: '100%', height: '40px' }}
+            getPopupContainer={trigger => trigger.parentNode}
+          >
+            <Option value={0}>
+              <Tag color='#87d068'>Servicio</Tag>
+            </Option>
+            <Option value={1}>
+              <Tag color='#f50'>Equipo</Tag>
+            </Option>
+          </Select>
         </Col>
       </Row>
       <Row>
