@@ -6,7 +6,7 @@ import { withRouter } from 'react-router'
 import { Button, Divider, Popconfirm, Popover, Tag } from 'antd'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
 
-function InventoryModule(props) {
+function InventoryWarehouse(props) {
   const [editMode, setEditMode] = useState(false)
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
@@ -21,11 +21,11 @@ function InventoryModule(props) {
         {
           id: 1,
           code: '234-123',
-          serie: 'LKJ-1234-4545-VBNN',
+          serie: 'LKJ-1234-4545-VBNN-000',
           description: 'ITEM DE PRUEBA',
           price: '100',
           engine: 'SRC-ASDFASD8234-23423',
-          type: 0,
+          type: 2,
         },
         {
           id: 2,
@@ -34,16 +34,7 @@ function InventoryModule(props) {
           description: 'ITEM DE PRUEBA',
           price: '100',
           engine: 'SRC-ASDFASD8234-23423',
-          type: 0,
-        },
-        {
-          id: 3,
-          code: '234-123',
-          serie: 'LKJ-1234-4545-VBNN',
-          description: 'ITEM DE PRUEBA',
-          price: '100',
-          engine: 'SRC-ASDFASD8234-23423',
-          type: 1,
+          type: 2,
         },
         {
           id: 4,
@@ -52,13 +43,13 @@ function InventoryModule(props) {
           description: 'ITEM DE PRUEBA',
           price: '100',
           engine: 'SRC-ASDFASD8234-23423',
-          type: 0,
+          type: 2,
         },
       ],
     },
   }
 
-  const inventoryColumns = [
+  const wareHouseColumns = [
     {
       title: 'Codigo',
       dataIndex: 'code', // Field that is goint to be rendered
@@ -69,12 +60,6 @@ function InventoryModule(props) {
       title: '# Serie',
       dataIndex: 'serie', // Field that is goint to be rendered
       key: 'serie',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: '# Motor',
-      dataIndex: 'engine', // Field that is goint to be rendered
-      key: 'engine',
       render: text => <span>{text}</span>,
     },
     {
@@ -153,8 +138,9 @@ function InventoryModule(props) {
   ]
 
   const showDrawer = () => {
-    props.history.push('/inventoryView')
+    props.history.push('/inventoryView/warehouse')
   }
+
   const onClose = () => {
     setIsVisible(false)
   }
@@ -193,6 +179,14 @@ function InventoryModule(props) {
     return _data
   }
 
+  const onSaveButton = (method, data, dataId) => {
+    setExistMoreInfo(false)
+    setLoading(true)
+    setIsVisible(false)
+    setTimeout(() => setLoading(false), 1000)
+  }
+
+  //START: table handler
   const EditRow = data => {
     setEditDataDrawer(data)
     setIsVisible(true)
@@ -203,31 +197,24 @@ function InventoryModule(props) {
     setLoading(true)
     setTimeout(() => setLoading(false), 1000)
   }
-
-  const onSaveButton = (method, data, dataId) => {
-    setExistMoreInfo(false)
-    setLoading(true)
-    setIsVisible(false)
-    setTimeout(() => setLoading(false), 1000)
-  }
+  //END: table handler
 
   return (
     <>
       <InventoryTable
-        warehouse={false}
+        warehouse={true}
         showDraweTbl={showDrawer}
         dataSource={dataSource}
         loading={loading}
         handlerTextSearch={searchTextFinder}
-        handlerEditRow={EditRow}
-        handlerDeleteRow={DeleteRow}
-        columns={inventoryColumns}
+        columns={wareHouseColumns}
       />
       <LoadMoreButton
         handlerButton={handlerMoreButton}
         moreInfo={existMoreInfo}
       />
       <InventoryDrawer
+        warehouse={true}
         closable={onClose}
         visible={isVisible}
         edit={editMode}
@@ -239,4 +226,4 @@ function InventoryModule(props) {
   )
 }
 
-export default withRouter(InventoryModule)
+export default withRouter(InventoryWarehouse)

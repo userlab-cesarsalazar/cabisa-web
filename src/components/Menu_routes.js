@@ -124,6 +124,10 @@ const menu_sub_routes = [
     component: InventoryView,
   },
   {
+    route: '/inventoryView/warehouse',
+    component: InventoryView,
+  },
+  {
     route: '/billing',
     component: Billing,
   },

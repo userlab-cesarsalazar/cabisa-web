@@ -33,6 +33,7 @@ function InventoryDrawer(props) {
       width={800}
     >
       <InventoryFields
+        warehouse={props.warehouse}
         saveUserData={onSaveBtn}
         visible={props.visible}
         edit={props.edit}

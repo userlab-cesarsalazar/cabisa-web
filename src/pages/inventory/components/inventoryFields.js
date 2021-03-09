@@ -106,6 +106,8 @@ function InventoryFields(props) {
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Tipo de servicio</div>
             <Select
+              defaultValue={props.warehouse && 2}
+              disabled={props.warehouse}
               className={'single-select'}
               placeholder={'Tipo de servicio'}
               size={'large'}
@@ -118,6 +120,11 @@ function InventoryFields(props) {
               <Option value={1}>
                 <Tag color='#f50'>Equipo</Tag>
               </Option>
+              {props.warehouse && (
+                <Option value={2}>
+                  <Tag color='#f50'>Repuesto</Tag>
+                </Option>
+              )}
             </Select>
           </Col>
         </Row>
