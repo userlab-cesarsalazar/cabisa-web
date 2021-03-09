@@ -118,13 +118,6 @@ function InventoryModule(props) {
 
   return (
     <>
-      <HeaderPage
-        cleanHeader={true}
-        titleButton={'Nuevo Item'}
-        title={''}
-        showDrawer={showDrawer}
-        permissions={6}
-      />
       <InventoryTable
         showDraweTbl={showDrawer}
         dataSource={dataSource}
