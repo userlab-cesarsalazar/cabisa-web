@@ -8,9 +8,11 @@ import { Cache } from 'aws-amplify'
 const history = createBrowserHistory()
 
 function App() {
+
   if (!Cache.getItem('currentSession')) {
     return <Login />
   }
+
 
   return (
     <Router history={history}>
