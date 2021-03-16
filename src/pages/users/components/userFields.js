@@ -33,7 +33,7 @@ function UserFields(props) {
   const [username, setUserName] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [rolesList, setRolesList] = useState(rolesDummy)
+  const [rolesList, setRolesList] = useState([])
   const [loading, setLoading] = useState(true)
 
   const loadUserInformation = () => {
@@ -56,6 +56,7 @@ function UserFields(props) {
 
   const getRoles = () => {
     setLoading(false)
+    setRolesList(rolesDummy)
   }
 
   const saveData = () => {

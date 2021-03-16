@@ -12,7 +12,12 @@ function HeaderPage(props) {
   }
 
   return (
-    <Row type='flex' justify='center' align='top' className='margin-top-40'>
+    <Row
+      type='flex'
+      justify='center'
+      align='top'
+      className={props.cleanHeader ? 'margin-clean-top' : 'margin-top-40'}
+    >
       <>
         <Col xs={24} sm={24} md={12} lg={20}>
           <Title>{props.title}</Title>

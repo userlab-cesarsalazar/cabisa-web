@@ -1,6 +1,7 @@
 import React from 'react'
-import { Drawer } from 'antd'
+import { Button, Col, Drawer, Row } from 'antd'
 import InventoryFields from './inventoryFields'
+import InventoryHistory from './invetoryHistory'
 
 function InventoryDrawer(props) {
   const onSaveBtn = (method, data, id) => {
@@ -9,6 +10,19 @@ function InventoryDrawer(props) {
     console.log('data', data)
     console.log('id', id)
   }
+
+  const dataDummy = [
+    {
+      id: 1,
+      date: '2021-03-09',
+      description: 'Ejemplo de descripcion historial..',
+    },
+    {
+      id: 2,
+      date: '2021-03-09',
+      description: 'Ejemplo de descripcion historial..2',
+    },
+  ]
 
   return (
     <Drawer
@@ -19,12 +33,14 @@ function InventoryDrawer(props) {
       width={800}
     >
       <InventoryFields
+        warehouse={props.warehouse}
         saveUserData={onSaveBtn}
         visible={props.visible}
         edit={props.edit}
         editData={props.editData}
         cancelButton={props.cancelButton}
       />
+      <InventoryHistory dataDetail={dataDummy} />
     </Drawer>
   )
 }

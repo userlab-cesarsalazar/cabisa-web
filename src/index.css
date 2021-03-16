@@ -99,6 +99,10 @@ body {
   display: none !important;
 }
 
+.stash-component {
+  visibility: hidden !important;
+}
+
 .show-component {
   display: block !important;
 }
@@ -404,6 +408,10 @@ body {
 
 .margin-top-40 {
   margin-top: 40px;
+}
+
+.margin-clean-top {
+  margin-top: 0px !important;
 }
 .margin-top-15 {
   margin-top: 15px !important;

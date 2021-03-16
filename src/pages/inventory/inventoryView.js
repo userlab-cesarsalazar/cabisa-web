@@ -2,6 +2,7 @@ import React from 'react'
 import HeaderPage from '../../components/HeaderPage'
 import { Card } from 'antd'
 import InventoryFields from './components/inventoryFields'
+import InventoryHistory from './components/invetoryHistory'
 
 function InventoryView(props) {
   const saveData = (method, data, user_id) => {
@@ -22,6 +23,7 @@ function InventoryView(props) {
           data={props.editData}
           cancelButton={props.cancelButton}
         />
+        <InventoryHistory dataDetail={[]} />
       </Card>
     </>
   )

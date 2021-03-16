@@ -37,6 +37,7 @@ function MenuView() {
     } else {
       setKey(actualPath.key)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const setKeyValue = key => {

@@ -1,17 +1,14 @@
-import React, { useState, useContext } from 'react'
-import { Form, Input, Button, Row, message } from 'antd'
-import { Context } from '../../context'
+import React, { useState } from 'react'
+import { Modal, Form, Input, Button, Row, message, Col } from 'antd'
+import { Auth, Cache } from 'aws-amplify'
+import '../../amplify_config'
 
 function Login() {
-  const [_, dispatch] = useContext(Context) // eslint-disable-line
+  const [cognitoUserInfo, setCognitoUserInfo] = useState(null)
   const [loading, setLoading] = useState(false)
-  const userDummy = {
-    id: '01',
-    email: 'luis.deleon@userlab.co',
-    first_name: 'Luis',
-    last_name: 'De leon',
-    avatar: '',
-  }
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [newPass, setNewPass] = useState('')
+  const [confirmPass, setConfirmPass] = useState('')
 
   const handleSubmit = async value => {
     try {
@@ -22,13 +19,35 @@ function Login() {
       if (!usernameE || !passwordE) {
         throw 'Debes ingresar usuario y contraseña'
       } else {
-        setLoading(false)
-        dispatch({
-          type: 'USERS FETCHED',
-          payload: userDummy,
-        })
-        setLoading(false)
-        console.log('Ingresar')
+        Auth.signIn(usernameE, passwordE)
+          .then(user => {
+            console.log('signIn response', user)
+
+            if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
+              setCognitoUserInfo(user)
+              setIsModalVisible(true)
+              return
+            }
+
+            let profile = {
+              token: '',
+              userName: '',
+            }
+            profile.token = user.signInUserSession.accessToken.jwtToken
+            profile.userName = user.attributes.name
+            Cache.setItem('currentSession', profile)
+            message.success('Bienvenido!')
+            window.location.reload(false)
+          })
+          .catch(e => {
+            if (
+              e.message.indexOf('UserMigration failed') > -1 ||
+              e.message.indexOf('Incorrect') > -1
+            ) {
+              message.error('Usuario/Password incorrectos')
+              setLoading(false)
+            }
+          })
       }
     } catch (err) {
       setLoading(false)
@@ -38,6 +57,33 @@ function Login() {
 
   const onFinishFailed = errorInfo => {
     errorInfo.errorFields.map(error => message.error(error.errors))
+  }
+
+  const confirmUser = () => {
+    if (newPass === '') {
+      return message.error('Debes ingresar tu Nueva contraseña')
+    }
+
+    if (newPass !== confirmPass) {
+      return message.error('Contraseñas no coinciden')
+    }
+
+    Auth.completeNewPassword(cognitoUserInfo, confirmPass, {
+      name: cognitoUserInfo.username,
+    })
+      .then(_ => {
+        setIsModalVisible(false)
+        message.success('Bien.. Ahora puedes Iniciar session!')
+      })
+      .catch(err => {
+        console.log(err)
+        message.error('Ha ocurrido un error vuelve a intentarlo')
+      })
+  }
+
+  const cancelModal = () => {
+    setLoading(false)
+    setIsModalVisible(false)
   }
 
   return (
@@ -124,6 +170,31 @@ function Login() {
           </Form>
         </div>
       </div>
+
+      <Modal
+        title='Ingresa tu nueva contraseña'
+        visible={isModalVisible}
+        onOk={confirmUser}
+        onCancel={cancelModal}
+      >
+        <Row gutter={16} className={'section-space-field'}>
+          <Col xs={12} sm={12} md={12} lg={12}>
+            <Input.Password
+              placeholder={'Ingrese Nueva contraseña'}
+              value={newPass}
+              onChange={value => setNewPass(value.target.value)}
+            />
+          </Col>
+          <Col xs={12} sm={12} md={12} lg={12}>
+            <Input.Password
+              type={'password'}
+              placeholder={'Confirmar contraseña'}
+              value={confirmPass}
+              onChange={value => setConfirmPass(value.target.value)}
+            />
+          </Col>
+        </Row>
+      </Modal>
     </Row>
   )
 }
