@@ -104,7 +104,7 @@ function InventoryFields(props) {
             />
           </Col>
           <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Tipo de servicio</div>
+            <div className={'title-space-field'}>Categoria</div>
             <Select
               defaultValue={props.warehouse && 2}
               disabled={props.warehouse}
