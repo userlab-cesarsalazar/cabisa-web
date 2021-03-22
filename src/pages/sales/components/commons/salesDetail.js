@@ -66,7 +66,7 @@ function SalesDetail(props) {
         width={800}
       >
         <div>
-          <Title> {'Nota de envio'} </Title>
+          <Title> {'Detalle Nota de servicio'} </Title>
           <Divider className={'divider-custom-margins-users'} />
           <Row gutter={16} className={'section-space-field'}>
             <Col xs={8} sm={8} md={8} lg={8}>

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import SalesView from '../commons/salesView'
+import ServiceView from '../commons/serviceView'
+import ServiceNoteView from './serviceNoteView'
 import { withRouter } from 'react-router'
 const _dataSource = [
   {
     id: 1,
     _ticketId: '001831',
-    _enterprise: 'Empresas Ejemplo',
+    _enterprise: 'Empresas Ejemplo servicio',
     _project: 'Proyecto ejemplo',
     _manager: 'Luis de leon',
     _phone: 55459429,
@@ -69,12 +70,12 @@ function ServiceNote(props) {
   }
 
   const NewNoteShipping = () => {
-    props.history.push('/shippingNoteView')
+    props.history.push('/serviceNoteView')
   }
 
   return (
     <>
-      <SalesView
+      <ServiceView
         dataSource={dataSource}
         loading={loading}
         editRow={EditRow}

@@ -4,7 +4,7 @@ import LoadMoreButton from '../../../../components/LoadMoreButton'
 import SalesTable from '../commons/salesTable'
 import SalesDetail from '../commons/salesDetail'
 
-function SalesView(props) {
+function ServiceView(props) {
   return (
     <>
       <SalesTable
@@ -30,4 +30,4 @@ function SalesView(props) {
     </>
   )
 }
-export default SalesView
+export default ServiceView

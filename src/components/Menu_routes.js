@@ -4,6 +4,7 @@ import Sales from '../pages/sales/salesIndex'
 import UsersView from '../pages/users/userView'
 import ClientView from '../pages/clients/clientView'
 import ShippingNoteView from '../pages/sales/components/shippingNote/shippingNoteView'
+import ServiceNoteView from '../pages/sales/components/serviceNote/serviceNoteView'
 import ReceiptNoteView from '../pages/sales/components/receiptNote/receiptNoteView'
 import Inventory from '../pages/inventory/inventoryIndex'
 import InventoryView from '../pages/inventory/inventoryView'
@@ -50,7 +51,7 @@ const menu_routes = [
     route: '/sales',
     profilePermissions: [53],
     routeGroup: [
-      /^(\/sales)|(\/sales\/)|(\/receiptNoteView)|(\/receiptNoteView\/)|(\/receiptNoteView\/[a-zA-z0-9]*)|(\/shippingNoteView)|(\/shippingNoteView\/)|(\/shippingNoteView\/[a-zA-z0-9]*)/i,
+      /^(\/sales)|(\/sales\/)|(\/receiptNoteView)|(\/receiptNoteView\/)|(\/receiptNoteView\/[a-zA-z0-9]*)|(\/serviceNoteView)|(\/shippingNoteView\/)/i,
     ],
   },
   {
@@ -114,6 +115,10 @@ const menu_sub_routes = [
   {
     route: '/shippingNoteView',
     component: ShippingNoteView,
+  },
+  {
+    route: '/serviceNoteView',
+    component: ServiceNoteView,
   },
   {
     route: '/inventory',

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import SalesView from '../commons/salesView'
+import SalesView from '../commons/serviceView'
 import { withRouter } from 'react-router'
 const _dataSource = [
   {
