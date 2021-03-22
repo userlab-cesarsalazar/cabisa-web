@@ -9,6 +9,7 @@ import {
   Popover,
   Divider,
   Popconfirm,
+  DatePicker,
 } from 'antd'
 import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
@@ -16,7 +17,6 @@ import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
 
 // Context
-// import { Context, useStore } from '../../../context'
 import { Context, useStore } from '../../../../context'
 
 const { Search } = Input
@@ -113,15 +113,21 @@ function SalesTable(props) {
 
   return (
     <>
-      <Row>
-        <Col xs={18} sm={18} md={18} lg={18}>
+      <Row gutter={16}>
+        <Col xs={10} sm={10} md={10} lg={10}>
           <Search
             className={'customSearch'}
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
             placeholder='Presiona enter para buscar'
-            style={{ width: '70%', height: '40px' }}
+            style={{ height: '40px' }}
             size={'large'}
             onSearch={e => getFilteredData(e)}
+          />
+        </Col>
+        <Col xs={8} sm={8} md={8} lg={8}>
+          <DatePicker
+            placeholder={'Fecha'}
+            style={{ width: '100%', height: '40px', borderRadius: '8px' }}
           />
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} className='text-right'>

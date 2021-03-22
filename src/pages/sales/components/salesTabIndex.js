@@ -1,7 +1,5 @@
 import React from 'react'
 import { Tabs } from 'antd'
-//import ShippingNote from './shippingNote/shippingNoteView'
-//import ReceiptNote from './receiptNote/receiptNoteIndex'
 import ServiceNote from './serviceNote/serviceNoteIndex'
 const { TabPane } = Tabs
 
