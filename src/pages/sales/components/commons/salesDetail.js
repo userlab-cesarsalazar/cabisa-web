@@ -71,6 +71,8 @@ const SalesDetailColumns = [
 ]
 
 function SalesDetail(props) {
+  const [dataSourceTable, setDataSourceTable] = useState([])
+
   const saveData = () => {
     props.saveButtonEdit()
   }
@@ -158,7 +160,6 @@ function SalesDetail(props) {
     },
   ]
 
-  const [dataSourceTable, setDataSourceTable] = useState([])
   // DINAMIC TABLE HANDLERS
   const handlerAddItem = () => {
     setDataSourceTable(
@@ -195,6 +196,7 @@ function SalesDetail(props) {
     setDataSourceTable(tmpState)
   }
   // END DINAMIC TABLE HANDLERS
+
   return (
     <>
       <Drawer
