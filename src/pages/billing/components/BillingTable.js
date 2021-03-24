@@ -100,11 +100,11 @@ function BillingTable(props) {
                     type={'horizontal'}
                   />
                   <Popconfirm
-                    title='Estas seguro de borrar el elemento selccionado?'
+                    title='Estas seguro de anular el elemento selccionado?'
                     okText='Si'
                     cancelText='No'
                   >
-                    <span className={'user-options-items'}>Eliminar</span>
+                    <span className={'user-options-items'}>Anular factura</span>
                   </Popconfirm>
                 </div>
               }

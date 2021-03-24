@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import HeaderPage from '../../components/HeaderPage'
 import { Card } from 'antd'
 import InventoryFields from './components/inventoryFields'
@@ -17,6 +17,7 @@ function InventoryView(props) {
       <HeaderPage titleButton={'Nuevo Item'} title={'Crear Item'} />
       <Card className={'card-border-radius margin-top-15'}>
         <InventoryFields
+          warehouse={props.location.pathname.includes('warehouse')}
           saveUserData={saveData}
           visible={true}
           edit={false}
