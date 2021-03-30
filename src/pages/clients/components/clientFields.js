@@ -12,8 +12,8 @@ function ClientFields(props) {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState(null)
   const [address, setAddress] = useState('')
-  const [sales, setSales] = useState('')
-  const [shops, setShops] = useState('')
+  const [payments_man, setPayments_man] = useState('')
+  const [business_man, setBusiness_man] = useState('')
 
   useEffect(() => {
     setName(props.edit ? props.editData.name : '')
@@ -22,8 +22,8 @@ function ClientFields(props) {
     setEmail(props.edit ? props.editData.email : '')
     setPhone(props.edit ? props.editData.phone : '')
     setAddress(props.edit ? props.editData.address : '')
-    setSales(props.edit ? props.editData.sales : '')
-    setShops(props.edit ? props.editData.shops : '')
+    setBusiness_man(props.edit ? props.editData.business_man : '')
+    setPayments_man(props.edit ? props.editData.payments_man : '')
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.visible])
@@ -31,15 +31,33 @@ function ClientFields(props) {
   const saveData = () => {
     let validate = false
     if (
-      [name, clientTypeID, nit, address, email, phone, shops, sales].includes(
-        ''
-      ) ||
-      [name, clientTypeID, nit, address, email, phone, sales, shops].includes(
-        null
-      ) ||
-      [name, clientTypeID, nit, address, email, phone, sales, shops].includes(
-        undefined
-      )
+      [
+        name,
+        clientTypeID,
+        nit,
+        address,
+        phone,
+        business_man,
+        payments_man,
+      ].includes('') ||
+      [
+        name,
+        clientTypeID,
+        nit,
+        address,
+        phone,
+        business_man,
+        payments_man,
+      ].includes(null) ||
+      [
+        name,
+        clientTypeID,
+        nit,
+        address,
+        phone,
+        business_man,
+        payments_man,
+      ].includes(undefined)
     ) {
       message.warning('Todos los campos son obligatorios')
     } else if (
@@ -49,28 +67,32 @@ function ClientFields(props) {
       nit.includes('+')
     ) {
       message.warning('El campo NIT solo acepta valores numéricos')
-    } else if (!Utils.validateEmail(email)) {
-      message.warning('Ingresa un email valido')
-    } else if (
-      !Number(phone) ||
-      phone.includes('.') ||
-      phone.includes('-') ||
-      phone.includes('+')
-    ) {
-      message.warning('El campo Telefono solo acepta valores numéricos')
-    } else {
+    }
+    // else if (!Utils.validateEmail(email)) {
+    //   message.warning('Ingresa un email valido')
+    // }
+    // else if (
+    //   !Number(phone) ||
+    //   phone.includes('.') ||
+    //   phone.includes('-') ||
+    //   phone.includes('+')
+    // ) {
+    //   message.warning('El campo Telefono solo acepta valores numéricos')
+    // }
+    else {
       validate = true
     }
 
     const data = {
       name: name,
-      type: clientTypeID,
+      //type: clientTypeID,
+      nit,
       address: address,
-      nit: nit,
-      email,
       phone,
-      sales,
-      shops,
+      alternative_phone: phone,
+      // email,
+      business_man,
+      payments_man,
     }
     if (validate)
       props.saveUserData(
@@ -161,19 +183,19 @@ function ClientFields(props) {
           <Col xs={12} sm={8} md={12} lg={12}>
             <div className={'title-space-field'}>Encargado Compras</div>
             <Input
-              value={sales}
+              value={business_man}
               size={'large'}
               placeholder={'Encargado Compras'}
-              onChange={val => setSales(val.target.value)}
+              onChange={val => setBusiness_man(val.target.value)}
             />
           </Col>
           <Col xs={12} sm={12} md={12} lg={12}>
             <div className={'title-space-field'}>Encargado Pagos</div>
             <Input
-              value={shops}
+              value={payments_man}
               size={'large'}
               placeholder={'Encargado Pagos'}
-              onChange={val => setShops(val.target.value)}
+              onChange={val => setPayments_man(val.target.value)}
             />
           </Col>
         </Row>
