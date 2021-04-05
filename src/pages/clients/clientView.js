@@ -10,7 +10,7 @@ function ClientView(props) {
   const saveData = (method, data, user_id) => {
     if (!method) {
       setViewLoading(true)
-      ClientsSrc.createUser(data)
+      ClientsSrc.createClient(data)
         .then(_ => {
           message.success('Usuario creado.')
           props.history.push('/clients')

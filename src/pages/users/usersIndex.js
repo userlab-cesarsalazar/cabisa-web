@@ -1,6 +1,7 @@
 //libraries
 import React, { useEffect, useState } from 'react'
 import { message } from 'antd'
+import UsersSrc from './usersSrc'
 
 //components
 import UserTable from '../users/components/userTable'
@@ -50,6 +51,14 @@ function Users(props) {
     setVisible(false)
     setTimeout(() => setLoading(false), 500)
     setTimeout(() => setDataSource(getUsers(dataDummy)), 500)
+    UsersSrc.getUsers()
+      .then(data => {
+        console.log('data users', data)
+      })
+      .catch(err => {
+        console.log('ERROR GET USERS', err)
+        message.error('No se pudo obtener la informacion.')
+      })
   }
 
   const EditRow = data => {

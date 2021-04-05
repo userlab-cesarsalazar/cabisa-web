@@ -33,14 +33,14 @@ function Clients(props) {
   const loadData = () => {
     setVisible(false)
     setLoading(true)
-    ClientsSrc.getUsers()
+    ClientsSrc.getClients()
       .then(data => {
         setDataSource(setClientData(data.message))
         setLoading(false)
       })
       .catch(err => {
         console.log(err)
-        return message.error('No se pudo obtener la data')
+        message.error('No se pudo obtener la informacion.')
       })
   }
 
