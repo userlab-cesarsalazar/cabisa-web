@@ -9,18 +9,17 @@ const { TabPane } = Tabs
 const { Title } = Typography
 
 function Inventory() {
-  useEffect(() => {
-    getProducts()
-  }, [])
-
   const [inventoryProducts, setInventoryProducts] = useState([])
   const [inventoryWarehouse, setInventoryWarehouse] = useState([])
+
+    useEffect(() => {
+        getProducts()
+    }, [])
 
   const getProducts = () => {
     //GET ALL PRODUCTOS
     InvetorySrc.getProducts()
       .then(result => {
-        console.log('PRODUCTOS', result)
         setInventoryProducts(
           result.message.filter(data => data.category_id === 1)
         )
@@ -39,10 +38,10 @@ function Inventory() {
       <HeaderPage titleButton={''} title={'Inventario'} />
       <Tabs id={'generalInventory'} defaultActiveKey='1'>
         <TabPane tab='Servicio - Equipo' key='1'>
-          <InventoryModule title={'Inventario'} />
+          <InventoryModule title={'Inventario'} dataSource={inventoryProducts}/>
         </TabPane>
         <TabPane tab='Repuestos/Bodega' key='2'>
-          <InventoryWarehouse title={'Repuestos - Bodega'} />
+          <InventoryWarehouse title={'Repuestos - Bodega'} dataSource={inventoryWarehouse}/>
         </TabPane>
       </Tabs>
     </>

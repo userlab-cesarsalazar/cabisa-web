@@ -1,15 +1,30 @@
 import React, { useEffect } from 'react'
 import HeaderPage from '../../components/HeaderPage'
-import { Card } from 'antd'
+import {Card, message} from 'antd'
 import InventoryFields from './components/inventoryFields'
 import InventoryHistory from './components/invetoryHistory'
+import InventorySrc from './invetorySrc'
 
 function InventoryView(props) {
   const saveData = (method, data, user_id) => {
     console.log('Save new Item')
-    console.log('data', data)
-    console.log('method', method)
-    console.log('user_id', user_id)
+      let newDataObj = {
+          "name": data.description,
+          "category_id": data.category,
+          "service_type_id": data.service,
+          "code": data.code,
+          "serial_number": data.serie,
+          "cost": data.price
+      }
+
+    InventorySrc.createProduct(newDataObj).then(result=>{
+
+
+    }).catch(err=>{
+        message.warning('No se ha podido guardar la informacion.')
+    })
+
+
   }
 
   return (

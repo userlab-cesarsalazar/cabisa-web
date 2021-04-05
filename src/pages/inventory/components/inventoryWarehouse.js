@@ -14,41 +14,6 @@ function InventoryWarehouse(props) {
   const [loading, setLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
 
-  const dataDummy = {
-    data: {
-      current_page: 1,
-      data: [
-        {
-          id: 1,
-          code: '234-123',
-          serie: 'LKJ-1234-4545-VBNN-000',
-          description: 'ITEM DE PRUEBA',
-          price: '100',
-          engine: 'SRC-ASDFASD8234-23423',
-          type: 2,
-        },
-        {
-          id: 2,
-          code: '234-123',
-          serie: 'LKJ-1234-4545-VBNN',
-          description: 'ITEM DE PRUEBA',
-          price: '100',
-          engine: 'SRC-ASDFASD8234-23423',
-          type: 2,
-        },
-        {
-          id: 4,
-          code: '234-123',
-          serie: 'LKJ-1234-4545-VBNN',
-          description: 'ITEM DE PRUEBA',
-          price: '100',
-          engine: 'SRC-ASDFASD8234-23423',
-          type: 2,
-        },
-      ],
-    },
-  }
-
   const wareHouseColumns = [
     {
       title: 'Codigo',
@@ -58,27 +23,27 @@ function InventoryWarehouse(props) {
     },
     {
       title: '# Serie',
-      dataIndex: 'serie', // Field that is goint to be rendered
-      key: 'serie',
+      dataIndex: 'serial_number', // Field that is goint to be rendered
+      key: 'serial_number',
       render: text => <span>{text}</span>,
     },
     {
       title: 'Descripcion',
-      dataIndex: 'description', // Field that is goint to be rendered
-      key: 'description',
+      dataIndex: 'name', // Field that is goint to be rendered
+      key: 'name',
       render: text => <span>{text}</span>,
     },
     {
-      title: 'Categoria',
-      dataIndex: 'type', // Field that is goint to be rendered
-      key: 'type',
+      title: 'Servicio',
+      dataIndex: 'service_type_id', // Field that is goint to be rendered
+      key: 'service_type_id',
       render: text => (
         <span>
-          {text === 0 ? (
+          {text === 1 ? (
             <Tag color='#87d068'>Servicio</Tag>
-          ) : text === 1 ? (
-            <Tag color='#f50'>Equipo</Tag>
           ) : text === 2 ? (
+            <Tag color='#f50'>Equipo</Tag>
+          ) : text === 3 ? (
             <Tag color='#f50'>Repuesto</Tag>
           ) : (
             ''
@@ -88,8 +53,8 @@ function InventoryWarehouse(props) {
     },
     {
       title: 'Costo',
-      dataIndex: 'price', // Field that is goint to be rendered
-      key: 'price',
+      dataIndex: 'cost', // Field that is goint to be rendered
+      key: 'cost',
       render: text => <span>{text}</span>,
     },
     {
@@ -156,7 +121,7 @@ function InventoryWarehouse(props) {
     setIsVisible(false)
     setLoading(true)
     setTimeout(() => setLoading(false), 500)
-    setTimeout(() => setDataSource(setClientData(dataDummy.data.data)), 500)
+    setTimeout(() => setDataSource(setClientData(props.dataSource)), 500)
   }
 
   const handlerMoreButton = () => {
