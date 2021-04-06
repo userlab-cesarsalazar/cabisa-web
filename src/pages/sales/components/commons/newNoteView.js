@@ -5,12 +5,12 @@ import {
   Input,
   Row,
   DatePicker,
-  Table,
   Card,
   Button,
   Select,
   Popconfirm,
 } from 'antd'
+
 import FooterButtons from '../../../../components/FooterButtons'
 import HeaderPage from '../../../../components/HeaderPage'
 import DynamicTable from '../../../../components/DynamicTable'

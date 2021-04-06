@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { message, Tabs, Typography } from 'antd'
+import { message, Tabs } from 'antd'
 import InventoryModule from './components/inventoryModule'
 import InventoryWarehouse from './components/inventoryWarehouse'
 import HeaderPage from '../../components/HeaderPage'
 import InvetorySrc from './invetorySrc'
 
 const { TabPane } = Tabs
-const { Title } = Typography
+
 
 function Inventory() {
   const [inventoryProducts, setInventoryProducts] = useState([])
@@ -14,6 +14,7 @@ function Inventory() {
 
     useEffect(() => {
         getProducts()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
   const getProducts = () => {
@@ -33,15 +34,30 @@ function Inventory() {
       })
   }
 
+  const deleteProduct = data => {
+      InvetorySrc.deleteProduct(data).then(_=>{
+          message.success('Elemento eliminado')
+          getProducts()
+      }).catch(err=>{
+          console.log('ERROR ON DELETE ELEMENT',err)
+      })
+  }
+
   return (
     <>
       <HeaderPage titleButton={''} title={'Inventario'} />
       <Tabs id={'generalInventory'} defaultActiveKey='1'>
         <TabPane tab='Servicio - Equipo' key='1'>
-          <InventoryModule title={'Inventario'} dataSource={inventoryProducts}/>
+          <InventoryModule title={'Inventario'}
+                           dataSource={inventoryProducts}
+                           closeAfterSave={getProducts} deleteItemModule={deleteProduct}/>
         </TabPane>
         <TabPane tab='Repuestos/Bodega' key='2'>
-          <InventoryWarehouse title={'Repuestos - Bodega'} dataSource={inventoryWarehouse}/>
+          <InventoryWarehouse title={'Repuestos - Bodega'}
+                              dataSource={inventoryWarehouse}
+                              closeAfterSaveWareHouse={getProducts}
+                              deleteItemWareHouse={deleteProduct}
+          />
         </TabPane>
       </Tabs>
     </>

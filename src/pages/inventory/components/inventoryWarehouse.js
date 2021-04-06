@@ -55,7 +55,7 @@ function InventoryWarehouse(props) {
       title: 'Costo',
       dataIndex: 'cost', // Field that is goint to be rendered
       key: 'cost',
-      render: text => <span>{text}</span>,
+      render: text => <span>{text.toFixed(2)}</span>,
     },
     {
       title: '',
@@ -102,6 +102,13 @@ function InventoryWarehouse(props) {
     },
   ]
 
+  useEffect(() => {
+    setIsVisible(false)
+    setLoading(false)
+    loadData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.dataSource])
+
   const showDrawer = () => {
     props.history.push('/inventoryView/warehouse')
   }
@@ -109,13 +116,6 @@ function InventoryWarehouse(props) {
   const onClose = () => {
     setIsVisible(false)
   }
-
-  useEffect(() => {
-    setIsVisible(false)
-    setLoading(false)
-    loadData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   const loadData = () => {
     setIsVisible(false)
@@ -144,13 +144,10 @@ function InventoryWarehouse(props) {
     return _data
   }
 
-  const onSaveButton = (method, data, dataId) => {
-    setExistMoreInfo(false)
-    setLoading(true)
+  const onCloseAfterSaveWarehouse = () => {
     setIsVisible(false)
-    setTimeout(() => setLoading(false), 1000)
+    props.closeAfterSaveWareHouse()
   }
-
   //START: table handler
   const EditRow = data => {
     setEditDataDrawer(data)
@@ -160,7 +157,7 @@ function InventoryWarehouse(props) {
 
   const DeleteRow = data => {
     setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
+    props.deleteItemWareHouse({id:data.id})
   }
   //END: table handler
 
@@ -185,10 +182,9 @@ function InventoryWarehouse(props) {
         edit={editMode}
         editData={editDataDrawer}
         cancelButton={onClose}
-        saveButton={onSaveButton}
+        closeAfterSave={onCloseAfterSaveWarehouse}
       />
     </>
   )
 }
-
 export default withRouter(InventoryWarehouse)

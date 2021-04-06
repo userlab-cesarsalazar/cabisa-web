@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ServiceView from '../commons/serviceView'
-import ServiceNoteView from './serviceNoteView'
+
 import { withRouter } from 'react-router'
 const _dataSource = [
   {

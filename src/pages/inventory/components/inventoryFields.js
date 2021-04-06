@@ -18,15 +18,15 @@ function InventoryFields(props) {
   const [serie, setSerie] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
-  const [service, setService] = useState('')
+  const [service, setService] = useState(null)
 
   useEffect(() => {
-    let serviceWarehouse = props.warehouse ? 3:null
+    let serviceWarehouse = props.warehouse ? 3 : null
     setCode(props.edit ? props.editData.code : '')
-    setSerie(props.edit ? props.editData.serie : '')
-    setDescription(props.edit ? props.editData.description : '')
-    setPrice(props.edit ? props.editData.price : '')
-    setService(props.edit ? props.editData.service : serviceWarehouse)
+    setSerie(props.edit ? props.editData.serial_number : '')
+    setDescription(props.edit ? props.editData.name : '')
+    setPrice(props.edit ? props.editData.cost : '')
+    setService(props.edit ? props.editData.service_type_id : serviceWarehouse)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.visible])
 
@@ -112,6 +112,7 @@ function InventoryFields(props) {
             <div className={'title-space-field'}>Categoria</div>
             <Select
               defaultValue={props.warehouse && 3}
+              value={service}
               disabled={props.warehouse}
               className={'single-select'}
               placeholder={'Tipo de servicio'}

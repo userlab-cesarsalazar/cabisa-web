@@ -13,7 +13,6 @@ function InventoryModule(props) {
   const [existMoreInfo, setExistMoreInfo] = useState(false)
   const [loading, setLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
-
   const inventoryColumns = [
     {
       title: 'Codigo',
@@ -61,7 +60,7 @@ function InventoryModule(props) {
       title: 'Costo',
       dataIndex: 'cost', // Field that is goint to be rendered
       key: 'cost',
-      render: text => <span>{text}</span>,
+      render: text => <span>{text.toFixed(2)}</span>,
     },
     {
       title: '',
@@ -108,19 +107,25 @@ function InventoryModule(props) {
     },
   ]
 
-  const showDrawer = () => {
-    props.history.push('/inventoryView')
-  }
-  const onClose = () => {
-    setIsVisible(false)
-  }
-
   useEffect(() => {
     setIsVisible(false)
     setLoading(false)
     loadData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.dataSource])
+
+  const showDrawer = () => {
+    props.history.push('/inventoryView')
+  }
+
+  const onClose = () => {
+    setIsVisible(false)
+  }
+
+  const onCloseAfterSave = () => {
+    setIsVisible(false)
+    props.closeAfterSave()
+  }
 
   const loadData = () => {
     setIsVisible(false)
@@ -149,6 +154,7 @@ function InventoryModule(props) {
     return _data
   }
 
+//START: table handler
   const EditRow = data => {
     setEditDataDrawer(data)
     setIsVisible(true)
@@ -157,15 +163,9 @@ function InventoryModule(props) {
 
   const DeleteRow = data => {
     setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
+    props.deleteItemModule({id:data.id})
   }
-
-  const onSaveButton = (method, data, dataId) => {
-    setExistMoreInfo(false)
-    setLoading(true)
-    setIsVisible(false)
-    setTimeout(() => setLoading(false), 1000)
-  }
+//END: table handler
 
   return (
     <>
@@ -184,12 +184,13 @@ function InventoryModule(props) {
         moreInfo={existMoreInfo}
       />
       <InventoryDrawer
+        warehouse={false}
         closable={onClose}
         visible={isVisible}
         edit={editMode}
         editData={editDataDrawer}
         cancelButton={onClose}
-        saveButton={onSaveButton}
+        closeAfterSave={onCloseAfterSave}
       />
     </>
   )
