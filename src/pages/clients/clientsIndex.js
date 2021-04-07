@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import HeaderPage from '../../components/HeaderPage'
 import ClientTable from './components/clientTable'
 import ClientsDrawer from '../clients/components/clientsDrawer'
-import LoadMoreButton from '../../components/LoadMoreButton'
 
 //api
 import ClientsSrc from './clientsSrc'
@@ -13,7 +12,6 @@ function Clients(props) {
   const [editMode, setEditMode] = useState(false)
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
-  const [existMoreInfo, setExistMoreInfo] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const showDrawer = () => {
@@ -46,7 +44,6 @@ function Clients(props) {
 
   const searchTextFinder = data => {
     setLoading(true)
-    console.log(data)
     ClientsSrc.getClientsFilter(data).then(resp=>{
       setDataSource(setClientData(resp.message))
       setLoading(false)
@@ -55,7 +52,6 @@ function Clients(props) {
       console.log(err)
       message.error('No se pudo obtener la informacion.')
     })
-    //setTimeout(() => setLoading(false), 1000)
   }
 
   const setClientData = data => {

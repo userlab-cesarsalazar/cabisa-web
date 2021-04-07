@@ -158,7 +158,6 @@ function UserTable(props) {
                   className={'CustomTableClass'}
                   dataSource={props.dataSource}
                   columns={columns}
-                  pagination={false}
                   rowKey='id'
                   pagination={{ pageSize: 5 }}
                 />

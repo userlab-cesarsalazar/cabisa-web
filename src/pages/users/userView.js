@@ -1,4 +1,4 @@
-import Reac,{useState} from 'react'
+import React,{useState} from 'react'
 import { withRouter } from 'react-router'
 import {Card, message, Spin} from 'antd'
 import UsersSrc from './usersSrc'
@@ -16,8 +16,8 @@ function UserView(props) {
       setLoading(true)
       try{
           //let user = `cabisa-user-${Date.now()}`
-          let awsUsercreate = true //await createUserCognito(user,data.password,data.email)
-          if (!awsUsercreate)
+          let awsUserCreate = true //await createUserCognito(user,data.password,data.email)
+          if (!awsUserCreate)
               throw 'Error on aws cognito create user'
 
           UsersSrc.createUser(data).then(_=>{
