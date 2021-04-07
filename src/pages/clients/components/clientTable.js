@@ -8,7 +8,7 @@ import {
   Card,
   Popover,
   Divider,
-  Popconfirm,
+  Popconfirm, Tag,
 } from 'antd'
 import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
@@ -32,14 +32,14 @@ function ClientTable(props) {
     },
     {
       title: 'Tipo',
-      dataIndex: 'type', // Field that is goint to be rendered
-      key: 'type',
+      dataIndex: 'client_type', // Field that is goint to be rendered
+      key: 'client_type',
       render: text => (
         <span>
           {text === 'INDIVIDUAL'
-            ? 'Persona individual'
-            : text === 'CORPORATION'
-            ? 'Empresa'
+            ? <Tag color='geekblue'>Persona individual</Tag>
+            : text === 'COMPANY'
+            ?  <Tag color='cyan'>Empresa</Tag>
             : ''}
         </span>
       ),
@@ -156,10 +156,10 @@ function ClientTable(props) {
               <Col xs={24} sm={24} md={24} lg={24}>
                 <Table
                   scroll={{ y: 320 }}
+                  pagination={{ pageSize: 5 }}
                   className={'CustomTableClass'}
                   dataSource={props.dataSource}
                   columns={columns}
-                  pagination={false}
                   loading={props.loading}
                   rowKey='id'
                   expandable={{

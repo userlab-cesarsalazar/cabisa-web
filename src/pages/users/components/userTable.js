@@ -8,7 +8,7 @@ import {
   Card,
   Popover,
   Divider,
-  Popconfirm,
+  Popconfirm, Tag,
 } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
@@ -37,27 +37,35 @@ function UserTable(props) {
   const columns = [
     {
       title: 'Nombre',
-      dataIndex: '_name', // Field that is goint to be rendered
-      key: '_name',
+      dataIndex: 'full_name', // Field that is goint to be rendered
+      key: 'full_name',
       render: text => <span>{text}</span>,
     },
     {
       title: 'Email',
-      dataIndex: '_email', // Field that is goint to be rendered
-      key: '_nit',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: 'Telefono',
-      dataIndex: '_phone', // Field that is goint to be rendered
-      key: '_phone',
+      dataIndex: 'email', // Field that is goint to be rendered
+      key: 'email',
       render: text => <span>{text}</span>,
     },
     {
       title: 'Rol',
-      dataIndex: '_rolName', // Field that is goint to be rendered
-      key: '_username',
-      render: text => <span>{text}</span>,
+      dataIndex: 'rol_id', // Field that is goint to be rendered
+      key: 'rol_id',
+      render: text => (
+          <span>
+          {text === 1 ? (
+              <Tag color='#187fce'>Administrador</Tag>
+          ) : text === 2 ? (
+              <Tag color='#87d067'>Vendedor</Tag>
+          ) : text === 3 ? (
+              <Tag color='#f50'>Bodega</Tag>
+          ) : text === 4 ? (
+              <Tag color='#fec842'>Operador</Tag>
+          ) : (
+              ''
+          )}
+        </span>
+      ),
     },
     {
       title: '',
@@ -151,7 +159,8 @@ function UserTable(props) {
                   dataSource={props.dataSource}
                   columns={columns}
                   pagination={false}
-                  rowKey='_id'
+                  rowKey='id'
+                  pagination={{ pageSize: 5 }}
                 />
               </Col>
             </Row>

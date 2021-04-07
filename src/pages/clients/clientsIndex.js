@@ -44,15 +44,18 @@ function Clients(props) {
       })
   }
 
-  const handlerMoreButton = () => {
-    if (existMoreInfo) {
-      setLoading(true)
-    }
-  }
-
   const searchTextFinder = data => {
     setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
+    console.log(data)
+    ClientsSrc.getClientsFilter(data).then(resp=>{
+      setDataSource(setClientData(resp.message))
+      setLoading(false)
+    }).catch(err => {
+      setLoading(false)
+      console.log(err)
+      message.error('No se pudo obtener la informacion.')
+    })
+    //setTimeout(() => setLoading(false), 1000)
   }
 
   const setClientData = data => {
@@ -100,10 +103,6 @@ function Clients(props) {
         handlerTextSearch={searchTextFinder}
         handlerEditRow={EditRow}
         handlerDeleteRow={DeleteRow}
-      />
-      <LoadMoreButton
-        handlerButton={handlerMoreButton}
-        moreInfo={existMoreInfo}
       />
       <ClientsDrawer
         closable={onClose}

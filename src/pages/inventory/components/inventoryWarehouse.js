@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import InventoryTable from '../components/inventoryTable'
 import InventoryDrawer from '../components/inventoryDrawer'
-import LoadMoreButton from '../../../components/LoadMoreButton'
 import { withRouter } from 'react-router'
 import { Button, Divider, Popconfirm, Popover, Tag } from 'antd'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
@@ -10,7 +9,6 @@ function InventoryWarehouse(props) {
   const [editMode, setEditMode] = useState(false)
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
-  const [existMoreInfo, setExistMoreInfo] = useState(false)
   const [loading, setLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
 
@@ -124,15 +122,8 @@ function InventoryWarehouse(props) {
     setTimeout(() => setDataSource(setClientData(props.dataSource)), 500)
   }
 
-  const handlerMoreButton = () => {
-    if (existMoreInfo) {
-      setLoading(true)
-    }
-  }
-
   const searchTextFinder = data => {
-    setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
+    props.searchWarehouseByTxt(data,'Warehouse')
   }
 
   const setClientData = data => {
@@ -171,10 +162,7 @@ function InventoryWarehouse(props) {
         handlerTextSearch={searchTextFinder}
         columns={wareHouseColumns}
       />
-      <LoadMoreButton
-        handlerButton={handlerMoreButton}
-        moreInfo={existMoreInfo}
-      />
+
       <InventoryDrawer
         warehouse={true}
         closable={onClose}

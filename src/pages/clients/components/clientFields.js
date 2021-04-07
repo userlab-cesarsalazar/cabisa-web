@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import FooterButtons from '../../../components/FooterButtons'
-import { Col, Divider, Input, message, Row, Select, Typography } from 'antd'
-
+import {Col, Divider, Input, message, Row, Select, Tag, Typography} from 'antd'
+import { validateEmail } from '../../../utils/Utils'
 const { Title } = Typography
 const { Option } = Select
 
@@ -16,8 +16,9 @@ function ClientFields(props) {
   const [business_man, setBusiness_man] = useState('')
 
   useEffect(() => {
+    console.log(props.editData)
     setName(props.edit ? props.editData.name : '')
-    setClientTypeID(props.edit ? props.editData.type : null)
+    setClientTypeID(props.edit ? props.editData.client_type : null)
     setNit(props.edit ? props.editData.nit : '')
     setEmail(props.edit ? props.editData.email : '')
     setPhone(props.edit ? props.editData.phone : '')
@@ -68,29 +69,29 @@ function ClientFields(props) {
     ) {
       message.warning('El campo NIT solo acepta valores numéricos')
     }
-    // else if (!Utils.validateEmail(email)) {
-    //   message.warning('Ingresa un email valido')
-    // }
-    // else if (
-    //   !Number(phone) ||
-    //   phone.includes('.') ||
-    //   phone.includes('-') ||
-    //   phone.includes('+')
-    // ) {
-    //   message.warning('El campo Telefono solo acepta valores numéricos')
-    // }
+    else if (!validateEmail(email)) {
+      message.warning('Ingresa un email valido')
+    }
+    else if (
+      !Number(phone) ||
+      phone.toString().includes('.') ||
+      phone.toString().includes('-') ||
+      phone.toString().includes('+')
+    ) {
+      message.warning('El campo Telefono solo acepta valores numéricos')
+    }
     else {
       validate = true
     }
 
     const data = {
       name: name,
-      //type: clientTypeID,
+      client_type: clientTypeID,
       nit,
       address: address,
       phone,
       alternative_phone: phone,
-      // email,
+      email,
       business_man,
       payments_man,
     }
@@ -133,8 +134,8 @@ function ClientFields(props) {
               onChange={value => setClientTypeID(value)}
               getPopupContainer={trigger => trigger.parentNode}
             >
-              <Option value={'INDIVIDUAL'}>Persona individual</Option>
-              <Option value={'CORPORATION'}>Empresa</Option>
+              <Option value={'INDIVIDUAL'}><Tag color='geekblue'>Persona individual</Tag></Option>
+              <Option value={'COMPANY'}><Tag color='cyan'>Empresa</Tag></Option>
             </Select>
           </Col>
         </Row>

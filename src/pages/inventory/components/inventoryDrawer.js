@@ -19,7 +19,8 @@ function InventoryDrawer(props) {
       "service_type_id": data.service,
       "code": data.code,
       "serial_number": data.serie,
-      "cost": data.price
+      "cost": data.price,
+      "engine_number":data.engine_number
     }
     setLoadingDrawer(true)
     InventorySrc.updateProduct(editDataObj).then(_=>{

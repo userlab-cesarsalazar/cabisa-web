@@ -43,14 +43,6 @@ const menu_routes = [
     ],
   },
   {
-    name: 'Ventas',
-    key: 'sales',
-    icon: 'pos',
-    route: '/sales',
-    profilePermissions: [53],
-    routeGroup: [/^(\/sales)|(\/sales\/)|(\/serviceNoteView)/i],
-  },
-  {
     name: 'Inventario',
     key: 'inventory',
     icon: 'products',
@@ -59,6 +51,14 @@ const menu_routes = [
     routeGroup: [
       /^(\/inventory)|(\/inventory\/)|(\/inventoryView)|(\/inventoryView\/)|(\/inventoryView\/[a-zA-z0-9]*)/i,
     ],
+  },
+  {
+    name: 'Ventas',
+    key: 'sales',
+    icon: 'pos',
+    route: '/sales',
+    profilePermissions: [53],
+    routeGroup: [/^(\/sales)|(\/sales\/)|(\/serviceNoteView)/i],
   },
   {
     name: 'Facturacion',

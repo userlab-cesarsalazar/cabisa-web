@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import InventoryTable from '../components/inventoryTable'
 import InventoryDrawer from '../components/inventoryDrawer'
-import LoadMoreButton from '../../../components/LoadMoreButton'
 import { withRouter } from 'react-router'
 import { Button, Divider, Popconfirm, Popover, Tag } from 'antd'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
@@ -10,7 +9,6 @@ function InventoryModule(props) {
   const [editMode, setEditMode] = useState(false)
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
-  const [existMoreInfo, setExistMoreInfo] = useState(false)
   const [loading, setLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const inventoryColumns = [
@@ -28,8 +26,8 @@ function InventoryModule(props) {
     },
     {
       title: '# Motor',
-      dataIndex: 'engine', // Field that is goint to be rendered
-      key: 'engine',
+      dataIndex: 'engine_number', // Field that is goint to be rendered
+      key: 'engine_number',
       render: text => <span>{text}</span>,
     },
     {
@@ -134,15 +132,8 @@ function InventoryModule(props) {
     setTimeout(() => setDataSource(setClientData(props.dataSource)), 500)
   }
 
-  const handlerMoreButton = () => {
-    if (existMoreInfo) {
-      setLoading(true)
-    }
-  }
-
   const searchTextFinder = data => {
-    setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
+  props.searchModuleByTxt(data,'Module')
   }
 
   const setClientData = data => {
@@ -179,10 +170,7 @@ function InventoryModule(props) {
         handlerDeleteRow={DeleteRow}
         columns={inventoryColumns}
       />
-      <LoadMoreButton
-        handlerButton={handlerMoreButton}
-        moreInfo={existMoreInfo}
-      />
+
       <InventoryDrawer
         warehouse={false}
         closable={onClose}

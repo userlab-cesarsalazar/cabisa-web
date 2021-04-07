@@ -19,6 +19,7 @@ function InventoryFields(props) {
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
   const [service, setService] = useState(null)
+  const [engineNumber, setEngineNumber] = useState('')
 
   useEffect(() => {
     let serviceWarehouse = props.warehouse ? 3 : null
@@ -27,6 +28,7 @@ function InventoryFields(props) {
     setDescription(props.edit ? props.editData.name : '')
     setPrice(props.edit ? props.editData.cost : '')
     setService(props.edit ? props.editData.service_type_id : serviceWarehouse)
+    setEngineNumber(props.edit ? props.editData.engine_number : '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.visible])
 
@@ -47,7 +49,8 @@ function InventoryFields(props) {
       description,
       price,
       service,
-      category: props.warehouse ? 2 : 1
+      category: props.warehouse ? 2 : 1,
+      engine_number:engineNumber
     }
 
     if (validate)
@@ -135,6 +138,21 @@ function InventoryFields(props) {
             </Select>
           </Col>
         </Row>
+        {!props.warehouse && (
+            <Row gutter={16} className={'section-space-field'}>
+              <Col xs={8} sm={8} md={8} lg={8}>
+                <div className={'title-space-field'}>Número de Motor</div>
+                <Input
+                    value={engineNumber}
+                    placeholder={'Número de Motor'}
+                    size={'large'}
+                    onChange={value => setEngineNumber(value.target.value)}
+                />
+              </Col>
+            </Row>
+        )}
+
+
         {/*End Fields section*/}
       </div>
       <FooterButtons

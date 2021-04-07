@@ -64,7 +64,7 @@ function InventoryTable(props) {
                   className={'CustomTableClass'}
                   dataSource={props.dataSource}
                   columns={props.columns}
-                  pagination={false}
+                  pagination={{ pageSize: 5 }}
                   loading={props.loading}
                   rowKey='id'
                 />

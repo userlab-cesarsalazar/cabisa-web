@@ -34,6 +34,26 @@ function Inventory() {
       })
   }
 
+  const searchByTxt = (name,type) => {
+      //GET FILTER PRODUCTOS BY NAME
+      InvetorySrc.getProductsFilter(name).then(result => {
+          if(type==='Module'){
+              setInventoryProducts(
+                  result.message.filter(data => data.category_id === 1)
+              )
+          }else{
+              setInventoryWarehouse(
+                  result.message.filter(data => data.category_id === 2)
+              )
+          }
+      })
+          .catch(err => {
+              console.log('ERROR ON GET INVENTORY PRODUCTS', err)
+              message.warning('No se ha podido obtener informacion del inventario.')
+          })
+  }
+
+
   const deleteProduct = data => {
       InvetorySrc.deleteProduct(data).then(_=>{
           message.success('Elemento eliminado')
@@ -49,11 +69,13 @@ function Inventory() {
       <Tabs id={'generalInventory'} defaultActiveKey='1'>
         <TabPane tab='Servicio - Equipo' key='1'>
           <InventoryModule title={'Inventario'}
+                           searchModuleByTxt={searchByTxt}
                            dataSource={inventoryProducts}
                            closeAfterSave={getProducts} deleteItemModule={deleteProduct}/>
         </TabPane>
         <TabPane tab='Repuestos/Bodega' key='2'>
           <InventoryWarehouse title={'Repuestos - Bodega'}
+                              searchWarehouseByTxt={searchByTxt}
                               dataSource={inventoryWarehouse}
                               closeAfterSaveWareHouse={getProducts}
                               deleteItemWareHouse={deleteProduct}

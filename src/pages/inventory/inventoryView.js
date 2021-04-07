@@ -16,7 +16,8 @@ function InventoryView(props) {
           "service_type_id": data.service,
           "code": data.code,
           "serial_number": data.serie,
-          "cost": data.price
+          "cost": data.price,
+          "engine_number":data.engine_number
       }
       setViewLoading(true)
     InventorySrc.createProduct(newDataObj).then(_=>{
