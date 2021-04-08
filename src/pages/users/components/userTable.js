@@ -8,11 +8,13 @@ import {
   Card,
   Popover,
   Divider,
-  Popconfirm, Tag,
+  Popconfirm,
+  Tag,
 } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
-
+import { Cache } from 'aws-amplify'
+import { validatePermissions } from '../../../utils/Utils'
 // Context
 import { Context, useStore } from '../../../context'
 
@@ -52,17 +54,17 @@ function UserTable(props) {
       dataIndex: 'rol_id', // Field that is goint to be rendered
       key: 'rol_id',
       render: text => (
-          <span>
+        <span>
           {text === 1 ? (
-              <Tag color='#187fce'>Administrador</Tag>
+            <Tag color='#187fce'>Administrador</Tag>
           ) : text === 2 ? (
-              <Tag color='#87d067'>Vendedor</Tag>
+            <Tag color='#87d067'>Vendedor</Tag>
           ) : text === 3 ? (
-              <Tag color='#f50'>Bodega</Tag>
+            <Tag color='#f50'>Bodega</Tag>
           ) : text === 4 ? (
-              <Tag color='#fec842'>Operador</Tag>
+            <Tag color='#fec842'>Operador</Tag>
           ) : (
-              ''
+            ''
           )}
         </span>
       ),
@@ -78,7 +80,10 @@ function UserTable(props) {
               placement='left'
               content={
                 <div>
-                  {hasPermissions([7]) && (
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    2
+                  ).permissionsSection[0].edit && (
                     <>
                       <span
                         className={'user-options-items'}
@@ -98,13 +103,19 @@ function UserTable(props) {
                       </span>{' '}
                     </>
                   )}
-                  {hasPermissions([7]) && hasPermissions([8]) && (
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    2
+                  ).permissionsSection[0].edit && (
                     <Divider
                       className={'divider-enterprise-margins'}
                       type={'horizontal'}
                     />
                   )}
-                  {hasPermissions([8]) && (
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    2
+                  ).permissionsSection[0].delete && (
                     <Popconfirm
                       title='Estas seguro de borrar el elemento selccionado?'
                       onConfirm={() => handlerDeleteRow(data)}

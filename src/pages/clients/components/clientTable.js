@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import {
   Table,
   Col,
@@ -8,21 +8,19 @@ import {
   Card,
   Popover,
   Divider,
-  Popconfirm, Tag,
+  Popconfirm,
+  Tag,
 } from 'antd'
 import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
-
-// Context
-import { Context, useStore } from '../../../context'
+import { Cache } from 'aws-amplify'
+import { validatePermissions } from '../../../utils/Utils'
 
 const { Search } = Input
 
 function ClientTable(props) {
-  const [state] = useContext(Context)
-  const { hasPermissions } = useStore(state)
   const columns = [
     {
       title: 'Nombre o Razón social',
@@ -36,11 +34,13 @@ function ClientTable(props) {
       key: 'client_type',
       render: text => (
         <span>
-          {text === 'INDIVIDUAL'
-            ? <Tag color='geekblue'>Persona individual</Tag>
-            : text === 'COMPANY'
-            ?  <Tag color='cyan'>Empresa</Tag>
-            : ''}
+          {text === 'INDIVIDUAL' ? (
+            <Tag color='geekblue'>Persona individual</Tag>
+          ) : text === 'COMPANY' ? (
+            <Tag color='cyan'>Empresa</Tag>
+          ) : (
+            ''
+          )}
         </span>
       ),
     },
@@ -80,7 +80,10 @@ function ClientTable(props) {
               style={{ zIndex: 'auto' }}
               content={
                 <div>
-                  {hasPermissions([63]) && (
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    7
+                  ).permissionsSection[0].edit && (
                     <span
                       className={'user-options-items'}
                       onClick={() => handlerEditRow(data)}
@@ -88,13 +91,23 @@ function ClientTable(props) {
                       Editar
                     </span>
                   )}
-                  {hasPermissions([63]) && hasPermissions([64]) && (
-                    <Divider
-                      className={'divider-enterprise-margins'}
-                      type={'horizontal'}
-                    />
-                  )}
-                  {hasPermissions([64]) && (
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    7
+                  ).permissionsSection[0].delete &&
+                    validatePermissions(
+                      Cache.getItem('currentSession').userPermissions,
+                      7
+                    ).permissionsSection[0].edit && (
+                      <Divider
+                        className={'divider-enterprise-margins'}
+                        type={'horizontal'}
+                      />
+                    )}
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    7
+                  ).permissionsSection[0].delete && (
                     <Popconfirm
                       title='Estas seguro de borrar el elemento selccionado?'
                       onConfirm={() => handlerDeleteRow(data)}
@@ -108,14 +121,9 @@ function ClientTable(props) {
               }
               trigger='click'
             >
-              {(hasPermissions([63]) || hasPermissions([64])) && (
-                <Button
-                  shape={'circle'}
-                  className={'enterprise-settings-button'}
-                >
-                  <MoreOutlined />
-                </Button>
-              )}
+              <Button shape={'circle'} className={'enterprise-settings-button'}>
+                <MoreOutlined />
+              </Button>
             </Popover>
           }
         </span>

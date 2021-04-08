@@ -4,6 +4,8 @@ import InventoryDrawer from '../components/inventoryDrawer'
 import { withRouter } from 'react-router'
 import { Button, Divider, Popconfirm, Popover, Tag } from 'antd'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
+import { Cache } from 'aws-amplify'
+import { validatePermissions } from '../../../utils/Utils'
 
 function InventoryWarehouse(props) {
   const [editMode, setEditMode] = useState(false)
@@ -67,32 +69,64 @@ function InventoryWarehouse(props) {
               style={{ zIndex: 'auto' }}
               content={
                 <div>
-                  <span
-                    className={'user-options-items'}
-                    onClick={() => EditRow(data)}
-                  >
-                    Editar
-                  </span>
-                  <Divider
-                    className={'divider-enterprise-margins'}
-                    type={'horizontal'}
-                  />
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    5
+                  ).permissionsSection[0].edit && (
+                    <span
+                      className={'user-options-items'}
+                      onClick={() => EditRow(data)}
+                    >
+                      Editar
+                    </span>
+                  )}
 
-                  <Popconfirm
-                    title='Estas seguro de borrar el elemento selccionado?'
-                    onConfirm={() => DeleteRow(data)}
-                    okText='Si'
-                    cancelText='No'
-                  >
-                    <span className={'user-options-items'}>Eliminar</span>
-                  </Popconfirm>
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    5
+                  ).permissionsSection[0].edit &&
+                    validatePermissions(
+                      Cache.getItem('currentSession').userPermissions,
+                      5
+                    ).permissionsSection[0].delete && (
+                      <Divider
+                        className={'divider-enterprise-margins'}
+                        type={'horizontal'}
+                      />
+                    )}
+
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    5
+                  ).permissionsSection[0].delete && (
+                    <Popconfirm
+                      title='Estas seguro de borrar el elemento selccionado?'
+                      onConfirm={() => DeleteRow(data)}
+                      okText='Si'
+                      cancelText='No'
+                    >
+                      <span className={'user-options-items'}>Eliminar</span>
+                    </Popconfirm>
+                  )}
                 </div>
               }
               trigger='click'
             >
-              <Button shape={'circle'} className={'enterprise-settings-button'}>
-                <MoreOutlined />
-              </Button>
+              {validatePermissions(
+                Cache.getItem('currentSession').userPermissions,
+                5
+              ).permissionsSection[0].delete ||
+                (validatePermissions(
+                  Cache.getItem('currentSession').userPermissions,
+                  5
+                ).permissionsSection[0].edit && (
+                  <Button
+                    shape={'circle'}
+                    className={'enterprise-settings-button'}
+                  >
+                    <MoreOutlined />
+                  </Button>
+                ))}
             </Popover>
           }
         </span>
@@ -123,7 +157,7 @@ function InventoryWarehouse(props) {
   }
 
   const searchTextFinder = data => {
-    props.searchWarehouseByTxt(data,'Warehouse')
+    props.searchWarehouseByTxt(data, 'Warehouse')
   }
 
   const setClientData = data => {
@@ -148,7 +182,7 @@ function InventoryWarehouse(props) {
 
   const DeleteRow = data => {
     setLoading(true)
-    props.deleteItemWareHouse({id:data.id})
+    props.deleteItemWareHouse({ id: data.id })
   }
   //END: table handler
 

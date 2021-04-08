@@ -88,6 +88,7 @@ function ServiceNote(props) {
         existsMoreInfo={existMoreInfo}
         detailData={_detailData}
         buttonTitle={'Nueva nota de servicio'}
+        permissions={6}
         newNote={NewNoteShipping}
       />
     </>

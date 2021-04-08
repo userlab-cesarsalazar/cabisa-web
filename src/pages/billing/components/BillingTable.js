@@ -15,6 +15,9 @@ import {
 } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
+import { Cache } from 'aws-amplify'
+import { validatePermissions } from '../../../utils/Utils'
+
 const { Search } = Input
 const { Option } = Select
 
@@ -89,23 +92,45 @@ function BillingTable(props) {
               style={{ zIndex: 'auto' }}
               content={
                 <div>
-                  <span
-                    className={'user-options-items'}
-                    onClick={() => handlerEditRow(data)}
-                  >
-                    Ver Detalle
-                  </span>
-                  <Divider
-                    className={'divider-enterprise-margins'}
-                    type={'horizontal'}
-                  />
-                  <Popconfirm
-                    title='Estas seguro de anular el elemento selccionado?'
-                    okText='Si'
-                    cancelText='No'
-                  >
-                    <span className={'user-options-items'}>Anular factura</span>
-                  </Popconfirm>
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    4
+                  ).permissionsSection[0].edit && (
+                    <span
+                      className={'user-options-items'}
+                      onClick={() => handlerEditRow(data)}
+                    >
+                      Ver Detalle
+                    </span>
+                  )}
+
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    4
+                  ).permissionsSection[0].edit &&
+                    validatePermissions(
+                      Cache.getItem('currentSession').userPermissions,
+                      4
+                    ).permissionsSection[0].delete && (
+                      <Divider
+                        className={'divider-enterprise-margins'}
+                        type={'horizontal'}
+                      />
+                    )}
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    4
+                  ).permissionsSection[0].delete && (
+                    <Popconfirm
+                      title='Estas seguro de anular el elemento selccionado?'
+                      okText='Si'
+                      cancelText='No'
+                    >
+                      <span className={'user-options-items'}>
+                        Anular factura
+                      </span>
+                    </Popconfirm>
+                  )}
                 </div>
               }
               trigger='click'

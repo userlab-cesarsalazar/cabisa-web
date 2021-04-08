@@ -9,7 +9,6 @@ import UserDrawer from './components/userDrawer'
 import UserPermissions from './components/userPermissions'
 import { withRouter } from 'react-router'
 
-
 function Users(props) {
   const [dataSource, setDataSource] = useState([])
   const [dataPermissions, setDataPermissions] = useState([])
@@ -31,7 +30,6 @@ function Users(props) {
       .then(data => {
         setLoading(false)
         setDataSource(data.message)
-
       })
       .catch(err => {
         console.log('ERROR GET USERS', err)
@@ -45,7 +43,7 @@ function Users(props) {
     setVisible(true)
     setLoading(false)
     setEditDataDrawer(data)
-    console.log('edita data drawer',data)
+    console.log('edita data drawer', data)
   }
 
   const searchText = data => {
@@ -68,15 +66,16 @@ function Users(props) {
 
   const DeleteRow = data => {
     setLoading(true)
-    UsersSrc.deleteUser({id:data.id}).then(_=>{
-      message.success("Usuario eliminado")
-      loadUserData()
-    }).catch(err=>{
-      setLoading(false)
-      console.log("ERROR ON DELETE USER",err)
-      message.warning('No se ha podido borrar el usuario')
-    })
-
+    UsersSrc.deleteUser({ id: data.id })
+      .then(_ => {
+        message.success('Usuario eliminado')
+        loadUserData()
+      })
+      .catch(err => {
+        setLoading(false)
+        console.log('ERROR ON DELETE USER', err)
+        message.warning('No se ha podido borrar el usuario')
+      })
   }
 
   const editPermissions = data => {
@@ -85,18 +84,20 @@ function Users(props) {
     setShowPermissions(true)
   }
 
-  const saveInformation = data =>{
-    console.log("SAVE INFORMATION")
+  const saveInformation = data => {
+    console.log('SAVE INFORMATION')
     setVisible(false)
     setShowPermissions(false)
     console.log(data)
-    UsersSrc.updateUser(data).then(_=>{
-      message.success('Informacion actualizada')
-      loadUserData()
-    }).catch(err=>{
-      console.log("ERROR ON UPDATE PERMISSIONS",err)
-      message.warning('No se ha podido actualizar la informacion')
-    })
+    UsersSrc.updateUser(data)
+      .then(_ => {
+        message.success('Informacion actualizada')
+        loadUserData()
+      })
+      .catch(err => {
+        console.log('ERROR ON UPDATE PERMISSIONS', err)
+        message.warning('No se ha podido actualizar la informacion')
+      })
   }
 
   return (
@@ -105,7 +106,7 @@ function Users(props) {
         titleButton={'Nuevo usuario'}
         title={'Usuarios'}
         showDrawer={showDrawer}
-        permissions={6}
+        permissions={2}
       />
       <UserTable
         dataSource={dataSource}

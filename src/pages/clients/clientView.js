@@ -25,7 +25,7 @@ function ClientView(props) {
 
   return (
     <Spin spinning={viewLoading}>
-      <HeaderPage titleButton={'Nuevo cliente'} title={'Crear Cliente'} />
+      <HeaderPage title={'Crear Cliente'} permissions={7} />
       <Card className={'card-border-radius margin-top-15'}>
         <ClientFields
           saveUserData={saveData}

@@ -20,7 +20,6 @@ const { SubMenu } = Menu
 function MenuView() {
   const history = useHistory()
   const [key, setKey] = useState('')
-  const [userPermissions, setUserPermissions] = useState(null)
   let subMenuMatch
 
   useEffect(() => {
@@ -40,8 +39,6 @@ function MenuView() {
     } else {
       setKey(actualPath.key)
     }
-    console.log('Current fuck', Cache.getItem('currentSession'))
-    setUserPermissions(Cache.getItem('currentSession').userPermissions)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

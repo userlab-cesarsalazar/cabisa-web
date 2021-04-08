@@ -4,6 +4,8 @@ import InventoryDrawer from '../components/inventoryDrawer'
 import { withRouter } from 'react-router'
 import { Button, Divider, Popconfirm, Popover, Tag } from 'antd'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
+import { Cache } from 'aws-amplify'
+import { validatePermissions } from '../../../utils/Utils'
 
 function InventoryModule(props) {
   const [editMode, setEditMode] = useState(false)
@@ -72,25 +74,45 @@ function InventoryModule(props) {
               style={{ zIndex: 'auto' }}
               content={
                 <div>
-                  <span
-                    className={'user-options-items'}
-                    onClick={() => EditRow(data)}
-                  >
-                    Editar
-                  </span>
-                  <Divider
-                    className={'divider-enterprise-margins'}
-                    type={'horizontal'}
-                  />
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    5
+                  ).permissionsSection[0].edit && (
+                    <span
+                      className={'user-options-items'}
+                      onClick={() => EditRow(data)}
+                    >
+                      Editar
+                    </span>
+                  )}
 
-                  <Popconfirm
-                    title='Estas seguro de borrar el elemento selccionado?'
-                    onConfirm={() => DeleteRow(data)}
-                    okText='Si'
-                    cancelText='No'
-                  >
-                    <span className={'user-options-items'}>Eliminar</span>
-                  </Popconfirm>
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    5
+                  ).permissionsSection[0].edit &&
+                    validatePermissions(
+                      Cache.getItem('currentSession').userPermissions,
+                      5
+                    ).permissionsSection[0].delete && (
+                      <Divider
+                        className={'divider-enterprise-margins'}
+                        type={'horizontal'}
+                      />
+                    )}
+
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    5
+                  ).permissionsSection[0].delete && (
+                    <Popconfirm
+                      title='Estas seguro de borrar el elemento selccionado?'
+                      onConfirm={() => DeleteRow(data)}
+                      okText='Si'
+                      cancelText='No'
+                    >
+                      <span className={'user-options-items'}>Eliminar</span>
+                    </Popconfirm>
+                  )}
                 </div>
               }
               trigger='click'
@@ -133,7 +155,7 @@ function InventoryModule(props) {
   }
 
   const searchTextFinder = data => {
-  props.searchModuleByTxt(data,'Module')
+    props.searchModuleByTxt(data, 'Module')
   }
 
   const setClientData = data => {
@@ -145,7 +167,7 @@ function InventoryModule(props) {
     return _data
   }
 
-//START: table handler
+  //START: table handler
   const EditRow = data => {
     setEditDataDrawer(data)
     setIsVisible(true)
@@ -154,9 +176,9 @@ function InventoryModule(props) {
 
   const DeleteRow = data => {
     setLoading(true)
-    props.deleteItemModule({id:data.id})
+    props.deleteItemModule({ id: data.id })
   }
-//END: table handler
+  //END: table handler
 
   return (
     <>

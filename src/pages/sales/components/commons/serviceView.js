@@ -18,6 +18,7 @@ function ServiceView(props) {
         handlerEditRow={props.editRow}
         handlerDeleteRow={props.deleteRow}
         buttonTitle={props.buttonTitle}
+        permissions={props.permissions}
         newNote={props.newNote}
       />
       <LoadMoreButton
