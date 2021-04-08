@@ -23,6 +23,7 @@ import { report_sections } from './report_sections'
 
 const menu_routes = [
   {
+    id: 2,
     name: 'Usuarios',
     key: 'users',
     icon: 'users',
@@ -33,6 +34,7 @@ const menu_routes = [
     ],
   },
   {
+    id: 7,
     name: 'Clientes',
     key: 'clients',
     icon: 'clients',
@@ -43,6 +45,7 @@ const menu_routes = [
     ],
   },
   {
+    id: 5,
     name: 'Inventario',
     key: 'inventory',
     icon: 'products',
@@ -53,6 +56,7 @@ const menu_routes = [
     ],
   },
   {
+    id: 6,
     name: 'Ventas',
     key: 'sales',
     icon: 'pos',
@@ -61,6 +65,7 @@ const menu_routes = [
     routeGroup: [/^(\/sales)|(\/sales\/)|(\/serviceNoteView)/i],
   },
   {
+    id: 4,
     name: 'Facturacion',
     key: 'billing',
     icon: 'inventory',
@@ -71,6 +76,7 @@ const menu_routes = [
     ],
   },
   {
+    id: 3,
     name: 'Reportes',
     key: 'reports',
     icon: 'cashRegister',

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Modal, Form, Input, Button, Row, message, Col } from 'antd'
 import { Auth, Cache } from 'aws-amplify'
 import '../../amplify_config'
+import UserSrc from '../users/usersSrc'
 
 function Login() {
   const [cognitoUserInfo, setCognitoUserInfo] = useState(null)
@@ -29,15 +30,35 @@ function Login() {
               return
             }
 
-            let profile = {
-              token: '',
-              userName: '',
-            }
-            profile.token = user.signInUserSession.accessToken.jwtToken
-            profile.userName = user.attributes.name
-            Cache.setItem('currentSession', profile)
-            message.success('Bienvenido!')
-            window.location.reload(false)
+            UserSrc.getUsersPermissions(user.attributes.email)
+              .then(userData => {
+                let profileSettings = {
+                  token: '',
+                  userName: '',
+                  userPermissions: null,
+                }
+
+                profileSettings.userPermissions =
+                  userData.message[0].permissions
+                profileSettings.token =
+                  user.signInUserSession.accessToken.jwtToken
+                profileSettings.userName = user.attributes.name
+
+                if (profileSettings.userPermissions === null) {
+                  message.error(
+                    'El usuario no contiene permisos, consulte a su administrador'
+                  )
+                  setLoading(false)
+                } else {
+                  Cache.setItem('currentSession', profileSettings)
+                  message.success('Bienvenido!')
+                  window.location.reload(false)
+                }
+              })
+              .catch(err => {
+                console.log('ERROR ON GET USER PERMISSIONS', err)
+                message.error('Error al obtener permisos del usuario')
+              })
           })
           .catch(e => {
             if (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { withRouter } from 'react-router'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { Layout, Divider } from 'antd'
@@ -22,6 +22,11 @@ function Router(props) {
   const [collapsed, setCollapsed] = useState(false)
   const [loading] = useState(false)
   const [showResetPassword, setShowResetPassword] = useState(false)
+
+  useEffect(() => {
+    let userDataInfo = Cache.getItem('currentSession')
+    console.log(userDataInfo)
+  }, [])
 
   const onCollapse = () => {
     setCollapsed(!collapsed)

@@ -13,11 +13,14 @@ import {
 } from '@ant-design/icons'
 import { Link, useHistory } from 'react-router-dom'
 import { menu_routes } from './Menu_routes'
+import { Cache } from 'aws-amplify'
+import { validatePermissions } from '../utils/Utils'
 const { SubMenu } = Menu
 
 function MenuView() {
   const history = useHistory()
   const [key, setKey] = useState('')
+  const [userPermissions, setUserPermissions] = useState(null)
   let subMenuMatch
 
   useEffect(() => {
@@ -37,6 +40,8 @@ function MenuView() {
     } else {
       setKey(actualPath.key)
     }
+    console.log('Current fuck', Cache.getItem('currentSession'))
+    setUserPermissions(Cache.getItem('currentSession').userPermissions)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -131,6 +136,14 @@ function MenuView() {
           (option, i) =>
             option.sub_menu ? (
               <SubMenu
+                className={
+                  validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    option.id
+                  ).enableSection
+                    ? ''
+                    : 'hide-component'
+                }
                 key={option.key}
                 icon={returnIcon(option.icon)}
                 title={option.name}
@@ -153,6 +166,14 @@ function MenuView() {
               </SubMenu>
             ) : (
               <Menu.Item
+                className={
+                  validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    option.id
+                  ).enableSection
+                    ? ''
+                    : 'hide-component'
+                }
                 key={option.key}
                 icon={returnIcon()}
                 onClick={() => setKey(option.key)}
