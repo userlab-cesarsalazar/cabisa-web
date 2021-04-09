@@ -1,6 +1,8 @@
 import React from 'react'
 import { Table, Col, Input, Button, Row, Card, Tag, Select } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
+import { validatePermissions } from '../../../utils/Utils'
+import { Cache } from 'aws-amplify'
 
 const { Search } = Input
 const { Option } = Select
@@ -46,12 +48,17 @@ function InventoryTable(props) {
           </Select>
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} style={{ textAlign: 'right' }}>
-          <Button
-            className='title-cabisa new-button'
-            onClick={props.showDraweTbl}
-          >
-            Nuevo Item
-          </Button>
+          {validatePermissions(
+            Cache.getItem('currentSession').userPermissions,
+            5
+          ).permissionsSection[0].create && (
+            <Button
+              className='title-cabisa new-button'
+              onClick={props.showDraweTbl}
+            >
+              Nuevo Item
+            </Button>
+          )}
         </Col>
       </Row>
       <Row>
@@ -64,7 +71,7 @@ function InventoryTable(props) {
                   className={'CustomTableClass'}
                   dataSource={props.dataSource}
                   columns={props.columns}
-                  pagination={false}
+                  pagination={{ pageSize: 5 }}
                   loading={props.loading}
                   rowKey='id'
                 />

@@ -1,13 +1,24 @@
-import React from 'react'
-import { Drawer } from 'antd'
+import React, { useState } from 'react'
+import { Spin, Drawer, message } from 'antd'
 import ClientFields from './clientFields'
+import ClientsSrc from '../clientsSrc'
 
 function ClientsDrawer(props) {
+  const [loadingDrawer, setLoadingDrawer] = useState(false)
+
   const onSaveButton = (method, data, id) => {
-    console.log('Edit Client')
-    console.log('method', method)
-    console.log('data', data)
-    console.log('id', id)
+    setLoadingDrawer(true)
+    data.id = id
+    ClientsSrc.updateClient(data)
+      .then(_ => {
+        setLoadingDrawer(false)
+        message.success('Informacion actualizada.')
+        props.saveButton()
+      })
+      .catch(err => {
+        console.log('ERROR ON UPDATE CLIENT', err)
+        message.warning('No se puedo actualizar la informacion.')
+      })
   }
 
   return (
@@ -18,13 +29,15 @@ function ClientsDrawer(props) {
       visible={props.visible}
       width={800}
     >
-      <ClientFields
-        saveUserData={onSaveButton}
-        visible={props.visible}
-        edit={props.edit}
-        editData={props.editData}
-        cancelButton={props.cancelButton}
-      />
+      <Spin spinning={loadingDrawer}>
+        <ClientFields
+          saveUserData={onSaveButton}
+          visible={props.visible}
+          edit={props.edit}
+          editData={props.editData}
+          cancelButton={props.cancelButton}
+        />
+      </Spin>
     </Drawer>
   )
 }

@@ -1,53 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import InventoryTable from '../components/inventoryTable'
 import InventoryDrawer from '../components/inventoryDrawer'
-import LoadMoreButton from '../../../components/LoadMoreButton'
 import { withRouter } from 'react-router'
 import { Button, Divider, Popconfirm, Popover, Tag } from 'antd'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
+import { Cache } from 'aws-amplify'
+import { validatePermissions } from '../../../utils/Utils'
 
 function InventoryWarehouse(props) {
   const [editMode, setEditMode] = useState(false)
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
-  const [existMoreInfo, setExistMoreInfo] = useState(false)
   const [loading, setLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
-
-  const dataDummy = {
-    data: {
-      current_page: 1,
-      data: [
-        {
-          id: 1,
-          code: '234-123',
-          serie: 'LKJ-1234-4545-VBNN-000',
-          description: 'ITEM DE PRUEBA',
-          price: '100',
-          engine: 'SRC-ASDFASD8234-23423',
-          type: 2,
-        },
-        {
-          id: 2,
-          code: '234-123',
-          serie: 'LKJ-1234-4545-VBNN',
-          description: 'ITEM DE PRUEBA',
-          price: '100',
-          engine: 'SRC-ASDFASD8234-23423',
-          type: 2,
-        },
-        {
-          id: 4,
-          code: '234-123',
-          serie: 'LKJ-1234-4545-VBNN',
-          description: 'ITEM DE PRUEBA',
-          price: '100',
-          engine: 'SRC-ASDFASD8234-23423',
-          type: 2,
-        },
-      ],
-    },
-  }
 
   const wareHouseColumns = [
     {
@@ -58,27 +23,27 @@ function InventoryWarehouse(props) {
     },
     {
       title: '# Serie',
-      dataIndex: 'serie', // Field that is goint to be rendered
-      key: 'serie',
+      dataIndex: 'serial_number', // Field that is goint to be rendered
+      key: 'serial_number',
       render: text => <span>{text}</span>,
     },
     {
       title: 'Descripcion',
-      dataIndex: 'description', // Field that is goint to be rendered
-      key: 'description',
+      dataIndex: 'name', // Field that is goint to be rendered
+      key: 'name',
       render: text => <span>{text}</span>,
     },
     {
-      title: 'Categoria',
-      dataIndex: 'type', // Field that is goint to be rendered
-      key: 'type',
+      title: 'Servicio',
+      dataIndex: 'service_type_id', // Field that is goint to be rendered
+      key: 'service_type_id',
       render: text => (
         <span>
-          {text === 0 ? (
+          {text === 1 ? (
             <Tag color='#87d068'>Servicio</Tag>
-          ) : text === 1 ? (
-            <Tag color='#f50'>Equipo</Tag>
           ) : text === 2 ? (
+            <Tag color='#f50'>Equipo</Tag>
+          ) : text === 3 ? (
             <Tag color='#f50'>Repuesto</Tag>
           ) : (
             ''
@@ -88,9 +53,9 @@ function InventoryWarehouse(props) {
     },
     {
       title: 'Costo',
-      dataIndex: 'price', // Field that is goint to be rendered
-      key: 'price',
-      render: text => <span>{text}</span>,
+      dataIndex: 'cost', // Field that is goint to be rendered
+      key: 'cost',
+      render: text => <span>{text.toFixed(2)}</span>,
     },
     {
       title: '',
@@ -104,38 +69,77 @@ function InventoryWarehouse(props) {
               style={{ zIndex: 'auto' }}
               content={
                 <div>
-                  <span
-                    className={'user-options-items'}
-                    onClick={() => EditRow(data)}
-                  >
-                    Editar
-                  </span>
-                  <Divider
-                    className={'divider-enterprise-margins'}
-                    type={'horizontal'}
-                  />
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    5
+                  ).permissionsSection[0].edit && (
+                    <span
+                      className={'user-options-items'}
+                      onClick={() => EditRow(data)}
+                    >
+                      Editar
+                    </span>
+                  )}
 
-                  <Popconfirm
-                    title='Estas seguro de borrar el elemento selccionado?'
-                    onConfirm={() => DeleteRow(data)}
-                    okText='Si'
-                    cancelText='No'
-                  >
-                    <span className={'user-options-items'}>Eliminar</span>
-                  </Popconfirm>
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    5
+                  ).permissionsSection[0].edit &&
+                    validatePermissions(
+                      Cache.getItem('currentSession').userPermissions,
+                      5
+                    ).permissionsSection[0].delete && (
+                      <Divider
+                        className={'divider-enterprise-margins'}
+                        type={'horizontal'}
+                      />
+                    )}
+
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    5
+                  ).permissionsSection[0].delete && (
+                    <Popconfirm
+                      title='Estas seguro de borrar el elemento selccionado?'
+                      onConfirm={() => DeleteRow(data)}
+                      okText='Si'
+                      cancelText='No'
+                    >
+                      <span className={'user-options-items'}>Eliminar</span>
+                    </Popconfirm>
+                  )}
                 </div>
               }
               trigger='click'
             >
-              <Button shape={'circle'} className={'enterprise-settings-button'}>
-                <MoreOutlined />
-              </Button>
+              {validatePermissions(
+                Cache.getItem('currentSession').userPermissions,
+                5
+              ).permissionsSection[0].delete ||
+                (validatePermissions(
+                  Cache.getItem('currentSession').userPermissions,
+                  5
+                ).permissionsSection[0].edit && (
+                  <Button
+                    shape={'circle'}
+                    className={'enterprise-settings-button'}
+                  >
+                    <MoreOutlined />
+                  </Button>
+                ))}
             </Popover>
           }
         </span>
       ),
     },
   ]
+
+  useEffect(() => {
+    setIsVisible(false)
+    setLoading(false)
+    loadData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.dataSource])
 
   const showDrawer = () => {
     props.history.push('/inventoryView/warehouse')
@@ -145,29 +149,15 @@ function InventoryWarehouse(props) {
     setIsVisible(false)
   }
 
-  useEffect(() => {
-    setIsVisible(false)
-    setLoading(false)
-    loadData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   const loadData = () => {
     setIsVisible(false)
     setLoading(true)
     setTimeout(() => setLoading(false), 500)
-    setTimeout(() => setDataSource(setClientData(dataDummy.data.data)), 500)
-  }
-
-  const handlerMoreButton = () => {
-    if (existMoreInfo) {
-      setLoading(true)
-    }
+    setTimeout(() => setDataSource(setClientData(props.dataSource)), 500)
   }
 
   const searchTextFinder = data => {
-    setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
+    props.searchWarehouseByTxt(data, 'Warehouse')
   }
 
   const setClientData = data => {
@@ -179,13 +169,10 @@ function InventoryWarehouse(props) {
     return _data
   }
 
-  const onSaveButton = (method, data, dataId) => {
-    setExistMoreInfo(false)
-    setLoading(true)
+  const onCloseAfterSaveWarehouse = () => {
     setIsVisible(false)
-    setTimeout(() => setLoading(false), 1000)
+    props.closeAfterSaveWareHouse()
   }
-
   //START: table handler
   const EditRow = data => {
     setEditDataDrawer(data)
@@ -195,7 +182,7 @@ function InventoryWarehouse(props) {
 
   const DeleteRow = data => {
     setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
+    props.deleteItemWareHouse({ id: data.id })
   }
   //END: table handler
 
@@ -209,10 +196,7 @@ function InventoryWarehouse(props) {
         handlerTextSearch={searchTextFinder}
         columns={wareHouseColumns}
       />
-      <LoadMoreButton
-        handlerButton={handlerMoreButton}
-        moreInfo={existMoreInfo}
-      />
+
       <InventoryDrawer
         warehouse={true}
         closable={onClose}
@@ -220,10 +204,9 @@ function InventoryWarehouse(props) {
         edit={editMode}
         editData={editDataDrawer}
         cancelButton={onClose}
-        saveButton={onSaveButton}
+        closeAfterSave={onCloseAfterSaveWarehouse}
       />
     </>
   )
 }
-
 export default withRouter(InventoryWarehouse)

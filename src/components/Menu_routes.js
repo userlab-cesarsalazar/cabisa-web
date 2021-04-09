@@ -21,8 +21,20 @@ import genericPage from '../pages/genericPage'
 
 import { report_sections } from './report_sections'
 
+//welcome
+import welcomePage from '../pages/welcomePage'
 const menu_routes = [
   {
+    id: 0,
+    name: 'Welcome',
+    key: 'welcome',
+    icon: 'users',
+    route: '/welcome',
+    profilePermissions: [5],
+    routeGroup: [/^(\/welcome)|(\/welcome\/)/i],
+  },
+  {
+    id: 2,
     name: 'Usuarios',
     key: 'users',
     icon: 'users',
@@ -33,6 +45,7 @@ const menu_routes = [
     ],
   },
   {
+    id: 7,
     name: 'Clientes',
     key: 'clients',
     icon: 'clients',
@@ -43,14 +56,7 @@ const menu_routes = [
     ],
   },
   {
-    name: 'Ventas',
-    key: 'sales',
-    icon: 'pos',
-    route: '/sales',
-    profilePermissions: [53],
-    routeGroup: [/^(\/sales)|(\/sales\/)|(\/serviceNoteView)/i],
-  },
-  {
+    id: 5,
     name: 'Inventario',
     key: 'inventory',
     icon: 'products',
@@ -61,6 +67,16 @@ const menu_routes = [
     ],
   },
   {
+    id: 6,
+    name: 'Ventas',
+    key: 'sales',
+    icon: 'pos',
+    route: '/sales',
+    profilePermissions: [53],
+    routeGroup: [/^(\/sales)|(\/sales\/)|(\/serviceNoteView)/i],
+  },
+  {
+    id: 4,
     name: 'Facturacion',
     key: 'billing',
     icon: 'inventory',
@@ -71,6 +87,7 @@ const menu_routes = [
     ],
   },
   {
+    id: 3,
     name: 'Reportes',
     key: 'reports',
     icon: 'cashRegister',
@@ -167,6 +184,10 @@ const menu_sub_routes = [
   {
     route: '/reportCostSellingEquipment',
     component: genericPage,
+  },
+  {
+    route: '/welcome',
+    component: welcomePage,
   },
 ]
 export { menu_routes, menu_sub_routes }

@@ -1470,3 +1470,17 @@ input:-webkit-autofill:focus {
 .ant-layout-content{
   overflow: auto !important;
 }
+
+
+.block-scroll{
+  margin-top: 15px;
+}
+
+.image-box-shadow{
+  -webkit-box-shadow: -5px 4px 20px -1px rgba(0,0,0,0.71);
+  box-shadow: -5px 4px 20px -1px rgba(0,0,0,0.71);
+}
+
+.cover-image{
+  object-fit: cover;
+}

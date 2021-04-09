@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import {
   Table,
   Col,
@@ -15,16 +15,12 @@ import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
-
-// Context
-import { Context, useStore } from '../../../../context'
+import { Cache } from 'aws-amplify'
+import { validatePermissions } from '../../../../utils/Utils'
 
 const { Search } = Input
 
 function SalesTable(props) {
-  const [state] = useContext(Context)
-  const { hasPermissions } = useStore(state)
-
   const getFilteredData = data => {
     props.handlerTextSearch(data)
   }
@@ -68,7 +64,10 @@ function SalesTable(props) {
               style={{ zIndex: 'auto' }}
               content={
                 <div>
-                  {hasPermissions([63]) && (
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    props.permissions
+                  ).permissionsSection[0].edit && (
                     <span
                       className={'user-options-items'}
                       onClick={() => handlerEditRow(data)}
@@ -76,13 +75,23 @@ function SalesTable(props) {
                       Ver Detalles
                     </span>
                   )}
-                  {hasPermissions([63]) && hasPermissions([64]) && (
-                    <Divider
-                      className={'divider-enterprise-margins'}
-                      type={'horizontal'}
-                    />
-                  )}
-                  {hasPermissions([64]) && (
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    props.permissions
+                  ).permissionsSection[0].edit &&
+                    validatePermissions(
+                      Cache.getItem('currentSession').userPermissions,
+                      props.permissions
+                    ).permissionsSection[0].delete && (
+                      <Divider
+                        className={'divider-enterprise-margins'}
+                        type={'horizontal'}
+                      />
+                    )}
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    props.permissions
+                  ).permissionsSection[0].delete && (
                     <Popconfirm
                       title='Estas seguro de borrar el elemento selccionado?'
                       onConfirm={() => handlerDeleteRow(data)}
@@ -96,14 +105,9 @@ function SalesTable(props) {
               }
               trigger='click'
             >
-              {(hasPermissions([63]) || hasPermissions([64])) && (
-                <Button
-                  shape={'circle'}
-                  className={'enterprise-settings-button'}
-                >
-                  <MoreOutlined />
-                </Button>
-              )}
+              <Button shape={'circle'} className={'enterprise-settings-button'}>
+                <MoreOutlined />
+              </Button>
             </Popover>
           }
         </span>
@@ -131,7 +135,18 @@ function SalesTable(props) {
           />
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} className='text-right'>
-          <Button className='title-cabisa new-button' onClick={props.newNote}>
+          <Button
+            className={
+              validatePermissions(
+                Cache.getItem('currentSession').userPermissions,
+                props.permissions
+              ).permissionsSection[0].create
+                ? 'title-cabisa new-button'
+                : 'hide-component title-cabisa new-button'
+            }
+            // className='title-cabisa new-button'
+            onClick={props.newNote}
+          >
             {props.buttonTitle}
           </Button>
         </Col>

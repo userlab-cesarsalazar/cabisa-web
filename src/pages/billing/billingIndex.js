@@ -74,7 +74,7 @@ function Billing(props) {
         titleButton={'Factura Nueva'}
         title={'Facturación'}
         showDrawer={newBill}
-        permissions={6}
+        permissions={4}
       />
       <BillingTable dataSource={dataDummy} showDetail={showDetail} />
       <LoadMoreButton

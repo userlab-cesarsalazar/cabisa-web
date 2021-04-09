@@ -10,7 +10,7 @@ function CabisaLayout(props) {
             </Layout>
             <Content>
                 <Footer className={'center-flex-div'} style={{background:"red"}}>
-                    Cabisa ©2021 - V {process.env.REACT_APP_VERSION}
+                    Cabisa ©2021 - V {process.env.REACT_APP_VERSION} (develop)
                 </Footer>
             </Content>
         </div>

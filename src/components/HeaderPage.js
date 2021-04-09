@@ -1,12 +1,11 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Button, Col, Row, Typography } from 'antd'
 // Context
-import { Context, useStore } from '../context'
+import { validatePermissions } from '../utils/Utils'
+import { Cache } from 'aws-amplify'
 const { Title } = Typography
 
 function HeaderPage(props) {
-  const [state] = useContext(Context)
-  const { hasPermissions } = useStore(state)
   const handlerShowDrawer = () => {
     props.showDrawer()
   }
@@ -29,17 +28,19 @@ function HeaderPage(props) {
           lg={{ span: 4, offset: 0 }}
           className='text-right'
         >
-          {hasPermissions([props.permissions]) && props.title && (
+          {props.titleButton && (
             <Button
-              className='title-cabisa new-button'
+              className={
+                validatePermissions(
+                  Cache.getItem('currentSession').userPermissions,
+                  props.permissions
+                ).permissionsSection[0].create
+                  ? 'title-cabisa new-button'
+                  : 'hide-component title-cabisa new-button'
+              }
               onClick={handlerShowDrawer}
             >
               {props.titleButton}
-            </Button>
-          )}
-          {props.bill && (
-            <Button className='title-cabisa new-button'>
-              Serie No. A-12312
             </Button>
           )}
         </Col>

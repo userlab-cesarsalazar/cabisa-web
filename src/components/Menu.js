@@ -13,6 +13,8 @@ import {
 } from '@ant-design/icons'
 import { Link, useHistory } from 'react-router-dom'
 import { menu_routes } from './Menu_routes'
+import { Cache } from 'aws-amplify'
+import { validatePermissions } from '../utils/Utils'
 const { SubMenu } = Menu
 
 function MenuView() {
@@ -25,6 +27,7 @@ function MenuView() {
       m =>
         menuRouterFunction(m.routeGroup, m.route) === history.location.pathname
     )
+
     if (actualPath.sub_menu) {
       actualPath.routeGroup.forEach(regexp => {
         if (regexp.test(history.location.pathname)) {
@@ -37,6 +40,7 @@ function MenuView() {
     } else {
       setKey(actualPath.key)
     }
+    console.log('actualPath', actualPath)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -131,6 +135,14 @@ function MenuView() {
           (option, i) =>
             option.sub_menu ? (
               <SubMenu
+                className={
+                  validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    option.id
+                  ).enableSection
+                    ? ''
+                    : 'hide-component'
+                }
                 key={option.key}
                 icon={returnIcon(option.icon)}
                 title={option.name}
@@ -153,6 +165,14 @@ function MenuView() {
               </SubMenu>
             ) : (
               <Menu.Item
+                className={
+                  validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    option.id
+                  ).enableSection
+                    ? ''
+                    : 'hide-component'
+                }
                 key={option.key}
                 icon={returnIcon()}
                 onClick={() => setKey(option.key)}

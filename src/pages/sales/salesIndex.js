@@ -5,7 +5,7 @@ import SalesTabIndex from './components/salesTabIndex'
 function Sales() {
   return (
     <>
-      <HeaderPage titleButton={''} title={'Ventas'} />
+      <HeaderPage title={'Ventas'} />
       <SalesTabIndex />
     </>
   )

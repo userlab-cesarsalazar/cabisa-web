@@ -1,63 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import InventoryTable from '../components/inventoryTable'
 import InventoryDrawer from '../components/inventoryDrawer'
-import LoadMoreButton from '../../../components/LoadMoreButton'
 import { withRouter } from 'react-router'
 import { Button, Divider, Popconfirm, Popover, Tag } from 'antd'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
+import { Cache } from 'aws-amplify'
+import { validatePermissions } from '../../../utils/Utils'
 
 function InventoryModule(props) {
   const [editMode, setEditMode] = useState(false)
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
-  const [existMoreInfo, setExistMoreInfo] = useState(false)
   const [loading, setLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
-
-  const dataDummy = {
-    data: {
-      current_page: 1,
-      data: [
-        {
-          id: 1,
-          code: '234-123',
-          serie: 'LKJ-1234-4545-VBNN',
-          description: 'ITEM DE PRUEBA',
-          price: '100',
-          engine: 'SRC-ASDFASD8234-23423',
-          type: 0,
-        },
-        {
-          id: 2,
-          code: '234-123',
-          serie: 'LKJ-1234-4545-VBNN',
-          description: 'ITEM DE PRUEBA',
-          price: '100',
-          engine: 'SRC-ASDFASD8234-23423',
-          type: 0,
-        },
-        {
-          id: 3,
-          code: '234-123',
-          serie: 'LKJ-1234-4545-VBNN',
-          description: 'ITEM DE PRUEBA',
-          price: '100',
-          engine: 'SRC-ASDFASD8234-23423',
-          type: 1,
-        },
-        {
-          id: 4,
-          code: '234-123',
-          serie: 'LKJ-1234-4545-VBNN',
-          description: 'ITEM DE PRUEBA',
-          price: '100',
-          engine: 'SRC-ASDFASD8234-23423',
-          type: 0,
-        },
-      ],
-    },
-  }
-
   const inventoryColumns = [
     {
       title: 'Codigo',
@@ -67,33 +22,33 @@ function InventoryModule(props) {
     },
     {
       title: '# Serie',
-      dataIndex: 'serie', // Field that is goint to be rendered
-      key: 'serie',
+      dataIndex: 'serial_number', // Field that is goint to be rendered
+      key: 'serial_number',
       render: text => <span>{text}</span>,
     },
     {
       title: '# Motor',
-      dataIndex: 'engine', // Field that is goint to be rendered
-      key: 'engine',
+      dataIndex: 'engine_number', // Field that is goint to be rendered
+      key: 'engine_number',
       render: text => <span>{text}</span>,
     },
     {
       title: 'Descripcion',
-      dataIndex: 'description', // Field that is goint to be rendered
-      key: 'description',
+      dataIndex: 'name', // Field that is goint to be rendered
+      key: 'name',
       render: text => <span>{text}</span>,
     },
     {
-      title: 'Categoria',
-      dataIndex: 'type', // Field that is goint to be rendered
-      key: 'type',
+      title: 'Servicio',
+      dataIndex: 'service_type_id', // Field that is goint to be rendered
+      key: 'service_type_id',
       render: text => (
         <span>
-          {text === 0 ? (
+          {text === 1 ? (
             <Tag color='#87d068'>Servicio</Tag>
-          ) : text === 1 ? (
-            <Tag color='#f50'>Equipo</Tag>
           ) : text === 2 ? (
+            <Tag color='#f50'>Equipo</Tag>
+          ) : text === 3 ? (
             <Tag color='#f50'>Repuesto</Tag>
           ) : (
             ''
@@ -103,9 +58,9 @@ function InventoryModule(props) {
     },
     {
       title: 'Costo',
-      dataIndex: 'price', // Field that is goint to be rendered
-      key: 'price',
-      render: text => <span>{text}</span>,
+      dataIndex: 'cost', // Field that is goint to be rendered
+      key: 'cost',
+      render: text => <span>{text.toFixed(2)}</span>,
     },
     {
       title: '',
@@ -119,25 +74,45 @@ function InventoryModule(props) {
               style={{ zIndex: 'auto' }}
               content={
                 <div>
-                  <span
-                    className={'user-options-items'}
-                    onClick={() => EditRow(data)}
-                  >
-                    Editar
-                  </span>
-                  <Divider
-                    className={'divider-enterprise-margins'}
-                    type={'horizontal'}
-                  />
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    5
+                  ).permissionsSection[0].edit && (
+                    <span
+                      className={'user-options-items'}
+                      onClick={() => EditRow(data)}
+                    >
+                      Editar
+                    </span>
+                  )}
 
-                  <Popconfirm
-                    title='Estas seguro de borrar el elemento selccionado?'
-                    onConfirm={() => DeleteRow(data)}
-                    okText='Si'
-                    cancelText='No'
-                  >
-                    <span className={'user-options-items'}>Eliminar</span>
-                  </Popconfirm>
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    5
+                  ).permissionsSection[0].edit &&
+                    validatePermissions(
+                      Cache.getItem('currentSession').userPermissions,
+                      5
+                    ).permissionsSection[0].delete && (
+                      <Divider
+                        className={'divider-enterprise-margins'}
+                        type={'horizontal'}
+                      />
+                    )}
+
+                  {validatePermissions(
+                    Cache.getItem('currentSession').userPermissions,
+                    5
+                  ).permissionsSection[0].delete && (
+                    <Popconfirm
+                      title='Estas seguro de borrar el elemento selccionado?'
+                      onConfirm={() => DeleteRow(data)}
+                      okText='Si'
+                      cancelText='No'
+                    >
+                      <span className={'user-options-items'}>Eliminar</span>
+                    </Popconfirm>
+                  )}
                 </div>
               }
               trigger='click'
@@ -152,36 +127,35 @@ function InventoryModule(props) {
     },
   ]
 
-  const showDrawer = () => {
-    props.history.push('/inventoryView')
-  }
-  const onClose = () => {
-    setIsVisible(false)
-  }
-
   useEffect(() => {
     setIsVisible(false)
     setLoading(false)
     loadData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [props.dataSource])
+
+  const showDrawer = () => {
+    props.history.push('/inventoryView')
+  }
+
+  const onClose = () => {
+    setIsVisible(false)
+  }
+
+  const onCloseAfterSave = () => {
+    setIsVisible(false)
+    props.closeAfterSave()
+  }
 
   const loadData = () => {
     setIsVisible(false)
     setLoading(true)
     setTimeout(() => setLoading(false), 500)
-    setTimeout(() => setDataSource(setClientData(dataDummy.data.data)), 500)
-  }
-
-  const handlerMoreButton = () => {
-    if (existMoreInfo) {
-      setLoading(true)
-    }
+    setTimeout(() => setDataSource(setClientData(props.dataSource)), 500)
   }
 
   const searchTextFinder = data => {
-    setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
+    props.searchModuleByTxt(data, 'Module')
   }
 
   const setClientData = data => {
@@ -193,6 +167,7 @@ function InventoryModule(props) {
     return _data
   }
 
+  //START: table handler
   const EditRow = data => {
     setEditDataDrawer(data)
     setIsVisible(true)
@@ -201,15 +176,9 @@ function InventoryModule(props) {
 
   const DeleteRow = data => {
     setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
+    props.deleteItemModule({ id: data.id })
   }
-
-  const onSaveButton = (method, data, dataId) => {
-    setExistMoreInfo(false)
-    setLoading(true)
-    setIsVisible(false)
-    setTimeout(() => setLoading(false), 1000)
-  }
+  //END: table handler
 
   return (
     <>
@@ -223,17 +192,15 @@ function InventoryModule(props) {
         handlerDeleteRow={DeleteRow}
         columns={inventoryColumns}
       />
-      <LoadMoreButton
-        handlerButton={handlerMoreButton}
-        moreInfo={existMoreInfo}
-      />
+
       <InventoryDrawer
+        warehouse={false}
         closable={onClose}
         visible={isVisible}
         edit={editMode}
         editData={editDataDrawer}
         cancelButton={onClose}
-        saveButton={onSaveButton}
+        closeAfterSave={onCloseAfterSave}
       />
     </>
   )

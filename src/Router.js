@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { withRouter } from 'react-router'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { Layout, Divider } from 'antd'
@@ -23,6 +23,11 @@ function Router(props) {
   const [loading] = useState(false)
   const [showResetPassword, setShowResetPassword] = useState(false)
 
+  useEffect(() => {
+    let userDataInfo = Cache.getItem('currentSession')
+    console.log(userDataInfo)
+  }, [])
+
   const onCollapse = () => {
     setCollapsed(!collapsed)
   }
@@ -32,7 +37,7 @@ function Router(props) {
     Auth.signOut()
       .then(() => {
         Cache.clear()
-        window.location.reload(false)
+        window.location.href = '/'
       })
       .catch(err => {
         console.log('error', err)
@@ -92,7 +97,7 @@ function Router(props) {
                 {menu_sub_routes.map((r, i) => (
                   <Route exact key={i} path={r.route} component={r.component} />
                 ))}
-                <Redirect to='/users' />
+                <Redirect to='/welcome' />
               </Switch>
             )}
           </div>

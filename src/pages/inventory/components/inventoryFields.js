@@ -18,23 +18,27 @@ function InventoryFields(props) {
   const [serie, setSerie] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
+  const [service, setService] = useState(null)
+  const [engineNumber, setEngineNumber] = useState('')
 
   useEffect(() => {
+    let serviceWarehouse = props.warehouse ? 3 : null
     setCode(props.edit ? props.editData.code : '')
-    setSerie(props.edit ? props.editData.serie : '')
-    setDescription(props.edit ? props.editData.description : '')
-    setPrice(props.edit ? props.editData.price : '')
-
+    setSerie(props.edit ? props.editData.serial_number : '')
+    setDescription(props.edit ? props.editData.name : '')
+    setPrice(props.edit ? props.editData.cost : '')
+    setService(props.edit ? props.editData.service_type_id : serviceWarehouse)
+    setEngineNumber(props.edit ? props.editData.engine_number : '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.visible])
 
   const saveData = () => {
     let validate = false
     if (
-      [code, serie, description, price].includes('') ||
-      [code, serie, description, price].includes(undefined)
+      [code, serie, description, price,service].includes('') ||
+      [code, serie, description, price,service].includes(undefined)
     ) {
-      message.warning('Todos los campos son obligatorios')
+      message.warning('Todos los campos son obligatorios.')
     } else {
       validate = true
     }
@@ -44,7 +48,11 @@ function InventoryFields(props) {
       serie,
       description,
       price,
+      service,
+      category: props.warehouse ? 2 : 1,
+      engine_number:engineNumber
     }
+
     if (validate)
       props.saveUserData(
         props.edit,
@@ -106,28 +114,45 @@ function InventoryFields(props) {
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Categoria</div>
             <Select
-              defaultValue={props.warehouse && 2}
+              defaultValue={props.warehouse && 3}
+              value={service}
               disabled={props.warehouse}
               className={'single-select'}
               placeholder={'Tipo de servicio'}
               size={'large'}
               style={{ width: '100%', height: '40px' }}
               getPopupContainer={trigger => trigger.parentNode}
+              onChange={value => setService(value)}
             >
-              <Option value={0}>
+              <Option value={1}>
                 <Tag color='#87d068'>Servicio</Tag>
               </Option>
-              <Option value={1}>
+              <Option value={2}>
                 <Tag color='#f50'>Equipo</Tag>
               </Option>
               {props.warehouse && (
-                <Option value={2}>
+                <Option value={3}>
                   <Tag color='#f50'>Repuesto</Tag>
                 </Option>
               )}
             </Select>
           </Col>
         </Row>
+        {!props.warehouse && (
+            <Row gutter={16} className={'section-space-field'}>
+              <Col xs={8} sm={8} md={8} lg={8}>
+                <div className={'title-space-field'}>Número de Motor</div>
+                <Input
+                    value={engineNumber}
+                    placeholder={'Número de Motor'}
+                    size={'large'}
+                    onChange={value => setEngineNumber(value.target.value)}
+                />
+              </Col>
+            </Row>
+        )}
+
+
         {/*End Fields section*/}
       </div>
       <FooterButtons
