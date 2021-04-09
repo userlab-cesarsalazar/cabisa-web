@@ -44,7 +44,9 @@ function Login() {
               return
             }
 
-            UserSrc.getUsersPermissions(user.attributes.email)
+            UserSrc.getUsersPermissions(
+              encodeURIComponent(user.attributes.email)
+            )
               .then(userData => {
                 let profileSettings = {
                   token: '',

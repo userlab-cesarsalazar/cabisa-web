@@ -30,12 +30,12 @@ function UserView(props) {
         .catch(err => {
           setLoading(false)
           console.log('ERROR ON CREATING USER', err)
-          message.warning('El usuario no se ha podido crear 1')
+          message.warning('El usuario no se ha podido crear')
         })
     } catch (err) {
       setLoading(false)
-      console.log(err)
-      message.warning('El usuario no se ha podido crear 2')
+      console.log('Error on SING UPr', err)
+      message.warning('El usuario no se ha podido crear')
     }
   }
 
@@ -54,6 +54,12 @@ function UserView(props) {
       return true
     } catch (error) {
       console.log('error signing up:', error)
+
+      if (error.code.indexOf('InvalidPasswordException') > -1) {
+        message.warning(
+          'La contraseña debe tener letras minusculas,mayusculas y un caracter especial.'
+        )
+      }
       return false
     }
   }

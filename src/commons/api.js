@@ -34,28 +34,28 @@ const makeRequestApi = async (url, method, data) =>
   })
 
 const makeRequestApiParams = async (url, method, data) =>
-    new Promise((resolve, reject) => {
-        Auth.currentSession()
-            .then(_ =>
-                axios({
-                    url: url,
-                    method: method,
-                    params: JSON.stringify(data),
-                })
-            )
-            .then(data => {
-                if (data.errors) reject(data.errors[0].message)
-                else resolve(data.data)
-            })
-            .catch(err => {
-                if (err.response && err.response.data)
-                    return reject(err.response.data.message)
+  new Promise((resolve, reject) => {
+    Auth.currentSession()
+      .then(_ =>
+        axios({
+          url: url,
+          method: method,
+          params: JSON.stringify(data),
+        })
+      )
+      .then(data => {
+        if (data.errors) reject(data.errors[0].message)
+        else resolve(data.data)
+      })
+      .catch(err => {
+        if (err.response && err.response.data)
+          return reject(err.response.data.message)
 
-                console.log('Unknown error', err)
+        console.log('Unknown error', err)
 
-                reject({ message: 'Unknown error' })
-            })
-    })
+        reject({ message: 'Unknown error' })
+      })
+  })
 
 const get = (url, data) => makeRequestApi(url, GET, data)
 const getParams = (url, data) => makeRequestApiParams(url, GET, data)
@@ -70,5 +70,5 @@ export default {
   post,
   put,
   remove,
-  getParams
+  getParams,
 }
