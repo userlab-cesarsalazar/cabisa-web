@@ -14,8 +14,12 @@ function UserView(props) {
   const saveData = async data => {
     setLoading(true)
     try {
-      //let user = `cabisa-user-${Date.now()}`
-      let awsUserCreate = true //await createUserCognito(user,data.password,data.email)
+      console.log(data)
+      let awsUserCreate = await createUserCognito(
+        data.fullName.replace(' ', ''),
+        data.password,
+        data.email
+      )
       if (!awsUserCreate) throw 'Error on aws cognito create user'
 
       UsersSrc.createUser(data)
@@ -26,21 +30,24 @@ function UserView(props) {
         .catch(err => {
           setLoading(false)
           console.log('ERROR ON CREATING USER', err)
-          message.warning('El usuario no se ha podido crear')
+          message.warning('El usuario no se ha podido crear 1')
         })
     } catch (err) {
       setLoading(false)
-      message.warning('El usuario no se ha podido crear')
+      console.log(err)
+      message.warning('El usuario no se ha podido crear 2')
     }
   }
 
   const createUserCognito = async (username, password, email) => {
+    console.log(username)
     try {
       const { user } = await Auth.signUp({
-        username,
-        password,
+        username: username,
+        password: password,
         attributes: {
-          email,
+          email: email,
+          name: username,
         },
       })
       console.log('Usuario creado en cognito', user)
@@ -53,11 +60,7 @@ function UserView(props) {
 
   return (
     <Spin spinning={loading}>
-      <HeaderPage
-        titleButton={'Nuevo usuario'}
-        title={'Crear Usuario'}
-        permissions={2}
-      />
+      <HeaderPage title={'Crear Usuario'} permissions={2} />
       <Card className={'card-border-radius margin-top-15'}>
         <UserFields
           saveUserData={saveData}

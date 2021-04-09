@@ -37,7 +37,7 @@ function Router(props) {
     Auth.signOut()
       .then(() => {
         Cache.clear()
-        window.location.reload(false)
+        window.location.href = '/'
       })
       .catch(err => {
         console.log('error', err)
@@ -97,7 +97,7 @@ function Router(props) {
                 {menu_sub_routes.map((r, i) => (
                   <Route exact key={i} path={r.route} component={r.component} />
                 ))}
-                <Redirect to='/users' />
+                <Redirect to='/welcome' />
               </Switch>
             )}
           </div>

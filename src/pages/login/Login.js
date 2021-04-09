@@ -1,5 +1,15 @@
 import React, { useState } from 'react'
-import { Modal, Form, Input, Button, Row, message, Col } from 'antd'
+import {
+  Modal,
+  Form,
+  Input,
+  Button,
+  Row,
+  message,
+  Col,
+  notification,
+  Spin,
+} from 'antd'
 import { Auth, Cache } from 'aws-amplify'
 import '../../amplify_config'
 import UserSrc from '../users/usersSrc'
@@ -10,6 +20,10 @@ function Login() {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [newPass, setNewPass] = useState('')
   const [confirmPass, setConfirmPass] = useState('')
+
+  const [confirmUsername, setConfirmUsername] = useState('')
+  const [codeConfirm, setCodeConfirm] = useState('')
+  const [isModalConfirmVisible, setIsModalConfirmVisible] = useState(false)
 
   const handleSubmit = async value => {
     try {
@@ -56,17 +70,23 @@ function Login() {
                 }
               })
               .catch(err => {
+                setLoading(false)
                 console.log('ERROR ON GET USER PERMISSIONS', err)
                 message.error('Error al obtener permisos del usuario')
               })
           })
           .catch(e => {
+            console.error('ERROR ON LOGIN', e)
+
             if (
               e.message.indexOf('UserMigration failed') > -1 ||
               e.message.indexOf('Incorrect') > -1
             ) {
               message.error('Usuario/Password incorrectos')
               setLoading(false)
+            } else if (e.message.indexOf('User is not confirmed.') > -1) {
+              setLoading(false)
+              openNotification()
             }
           })
       }
@@ -80,7 +100,7 @@ function Login() {
     errorInfo.errorFields.map(error => message.error(error.errors))
   }
 
-  const confirmUser = () => {
+  const completeNewPassword = () => {
     if (newPass === '') {
       return message.error('Debes ingresar tu Nueva contraseña')
     }
@@ -102,9 +122,55 @@ function Login() {
       })
   }
 
+  const confirmUser = async () => {
+    setLoading(true)
+    try {
+      if (confirmUsername === '' || codeConfirm === '') {
+        setLoading(false)
+        return message.error('Usuario y codigo son obligatorios')
+      }
+      await Auth.confirmSignUp(confirmUsername, codeConfirm)
+      setLoading(false)
+      message.success('Cuenta Confirmada!')
+      setIsModalConfirmVisible(false)
+    } catch (error) {
+      setLoading(false)
+      console.log('error confirming sign up', error)
+      message.warning(
+        'No se ha podido confirmar su cuenta, verifica el usuario o el codigo.'
+      )
+    }
+  }
+
   const cancelModal = () => {
     setLoading(false)
     setIsModalVisible(false)
+    setIsModalConfirmVisible(false)
+    setConfirmUsername('')
+    setCodeConfirm('')
+  }
+
+  const openNotification = () => {
+    const key = `open${Date.now()}`
+    const btn = (
+      <Button
+        type='primary'
+        size='small'
+        onClick={() => {
+          setIsModalConfirmVisible(true)
+          notification.close(key)
+        }}
+      >
+        Confirmar cuenta
+      </Button>
+    )
+    notification.open({
+      message: 'Confirmar cuenta',
+      description:
+        'Se ha enviado el codigo de confirmacion a tu correo electronico.',
+      btn,
+      key,
+    })
   }
 
   return (
@@ -195,7 +261,7 @@ function Login() {
       <Modal
         title='Ingresa tu nueva contraseña'
         visible={isModalVisible}
-        onOk={confirmUser}
+        onOk={completeNewPassword}
         onCancel={cancelModal}
       >
         <Row gutter={16} className={'section-space-field'}>
@@ -215,6 +281,32 @@ function Login() {
             />
           </Col>
         </Row>
+      </Modal>
+
+      <Modal
+        title='Confirma tu cuenta'
+        visible={isModalConfirmVisible}
+        onOk={confirmUser}
+        onCancel={cancelModal}
+      >
+        <Spin spinning={loading}>
+          <Row gutter={16} className={'section-space-field'}>
+            <Col xs={12} sm={12} md={12} lg={12}>
+              <Input
+                placeholder={'Ingrese usuario'}
+                value={confirmUsername}
+                onChange={value => setConfirmUsername(value.target.value)}
+              />
+            </Col>
+            <Col xs={12} sm={12} md={12} lg={12}>
+              <Input
+                placeholder={'Ingrese codigo'}
+                value={codeConfirm}
+                onChange={value => setCodeConfirm(value.target.value)}
+              />
+            </Col>
+          </Row>
+        </Spin>
       </Modal>
     </Row>
   )

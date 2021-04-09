@@ -7,24 +7,29 @@ import {
   Popover,
   message,
   Divider,
-  Typography, Tag,
+  Typography,
+  Tag,
 } from 'antd'
 
 import EyeTwoTone from '@ant-design/icons/lib/icons/EyeTwoTone'
 import EyeInvisibleOutlined from '@ant-design/icons/lib/icons/EyeInvisibleOutlined'
 import FooterButtons from '../../../components/FooterButtons'
 import { validateEmail } from '../../../utils/Utils'
-import { admin_permission, sells_permission, warehouse_permission, operator_permission} from '../../../commons/roles_permissions'
+import {
+  admin_permission,
+  sells_permission,
+  warehouse_permission,
+  operator_permission,
+} from '../../../commons/roles_permissions'
 
 const { Option } = Select
 const validateMessageFields = 'Por favor, verifique los campos obligatorios'
 
-
 const rolesData = [
-  { id: 1, name: 'Administrador',color:'#187fce' },
-  { id: 2, name: 'Vendedor',color:'#87d067' },
-  { id: 3, name: 'Bodega',color:'#f50' },
-  { id: 4, name: 'Operador' ,color:'#fec842' },
+  { id: 1, name: 'Administrador', color: '#187fce' },
+  { id: 2, name: 'Vendedor', color: '#87d067' },
+  { id: 3, name: 'Bodega', color: '#f50' },
+  { id: 4, name: 'Operador', color: '#fec842' },
 ]
 const { Title } = Typography
 
@@ -32,7 +37,6 @@ function UserFields(props) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [role, setRole] = useState(null)
-
 
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -61,7 +65,7 @@ function UserFields(props) {
     setRolesList(rolesData)
   }
 
-  const defineRoles = roleId =>{
+  const defineRoles = roleId => {
     switch (roleId) {
       case 1:
         return admin_permission
@@ -82,8 +86,7 @@ function UserFields(props) {
       return message.warning(validateMessageFields)
     } else if (password !== confirmPassword) {
       return message.warning('Contraseñas no coinciden')
-    }
-    else if (password.length < 8 ) {
+    } else if (password.length < 8) {
       return message.warning('La contraseña debe tener al menos 8 caracteres')
     }
 
@@ -94,28 +97,28 @@ function UserFields(props) {
 
     //create request
     let requestData
-    if (props.edit ) {
+    if (props.edit) {
       requestData = {
-        "id": props.data.id,
-        "fullName": name,
-        "is_active": 1,
-        "email": email,
-        "rolId": role,
-        "permissions": changedRole ? defineRoles(role) : props.data.permissions
+        id: props.data.id,
+        fullName: name,
+        is_active: 1,
+        email: email,
+        rolId: role,
+        permissions: changedRole ? defineRoles(role) : props.data.permissions,
       }
     } else {
       requestData = {
-        "fullName": name,
-        "password": confirmPassword,
-        "email": email,
-        "rolId": role,
-        "permissions": defineRoles(role),
+        fullName: name,
+        password: confirmPassword,
+        email: email,
+        rolId: role,
+        permissions: defineRoles(role),
       }
     }
     props.saveUserData(requestData)
   }
 
-  const changeRole = value =>{
+  const changeRole = value => {
     setRole(value)
     setChangedRole(true)
   }
@@ -159,22 +162,22 @@ function UserFields(props) {
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Rol del usuario*</div>
             <Select
-                disabled={loading}
-                loading={loading}
-                className={'single-select'}
-                placeholder={'Rol de usuario'}
-                size={'large'}
-                style={{ width: '100%' }}
-                value={role}
-                onChange={value => changeRole(value)}
-                getPopupContainer={trigger => trigger.parentNode}
+              disabled={loading}
+              loading={loading}
+              className={'single-select'}
+              placeholder={'Rol de usuario'}
+              size={'large'}
+              style={{ width: '100%' }}
+              value={role}
+              onChange={value => changeRole(value)}
+              getPopupContainer={trigger => trigger.parentNode}
             >
               {rolesList &&
-              rolesList.map(data => (
+                rolesList.map(data => (
                   <Option key={data.id} value={data.id}>
                     <Tag color={data.color}>{data.name}</Tag>
                   </Option>
-              ))}
+                ))}
             </Select>
           </Col>
         </Row>
@@ -192,28 +195,28 @@ function UserFields(props) {
             <div className={'title-space-field'}>Password*</div>
             <Popover content={contentPopHover} trigger='hover'>
               <Input.Password
-                  iconRender={visible =>
-                      visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-                  }
-                  type={'password'}
-                  placeholder={'Password'}
-                  size={'large'}
-                  value={password}
-                  onChange={value => setPassword(value.target.value)}
+                iconRender={visible =>
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+                type={'password'}
+                placeholder={'Password'}
+                size={'large'}
+                value={password}
+                onChange={value => setPassword(value.target.value)}
               />
             </Popover>
           </Col>
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Confirmar Password*</div>
             <Input.Password
-                iconRender={visible =>
-                    visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-                }
-                type={'password'}
-                placeholder={'Confirmar Password'}
-                size={'large'}
-                value={confirmPassword}
-                onChange={value => setConfirmPassword(value.target.value)}
+              iconRender={visible =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+              type={'password'}
+              placeholder={'Confirmar Password'}
+              size={'large'}
+              value={confirmPassword}
+              onChange={value => setConfirmPassword(value.target.value)}
             />
           </Col>
         </Row>

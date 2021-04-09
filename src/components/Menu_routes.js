@@ -21,7 +21,18 @@ import genericPage from '../pages/genericPage'
 
 import { report_sections } from './report_sections'
 
+//welcome
+import welcomePage from '../pages/welcomePage'
 const menu_routes = [
+  {
+    id: 0,
+    name: 'Welcome',
+    key: 'welcome',
+    icon: 'users',
+    route: '/welcome',
+    profilePermissions: [5],
+    routeGroup: [/^(\/welcome)|(\/welcome\/)/i],
+  },
   {
     id: 2,
     name: 'Usuarios',
@@ -173,6 +184,10 @@ const menu_sub_routes = [
   {
     route: '/reportCostSellingEquipment',
     component: genericPage,
+  },
+  {
+    route: '/welcome',
+    component: welcomePage,
   },
 ]
 export { menu_routes, menu_sub_routes }

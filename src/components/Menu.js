@@ -27,6 +27,7 @@ function MenuView() {
       m =>
         menuRouterFunction(m.routeGroup, m.route) === history.location.pathname
     )
+
     if (actualPath.sub_menu) {
       actualPath.routeGroup.forEach(regexp => {
         if (regexp.test(history.location.pathname)) {
@@ -39,6 +40,7 @@ function MenuView() {
     } else {
       setKey(actualPath.key)
     }
+    console.log('actualPath', actualPath)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
