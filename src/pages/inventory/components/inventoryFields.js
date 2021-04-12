@@ -35,8 +35,8 @@ function InventoryFields(props) {
   const saveData = () => {
     let validate = false
     if (
-      [code, serie, description, price,service].includes('') ||
-      [code, serie, description, price,service].includes(undefined)
+      [code, serie, description, price, service].includes('') ||
+      [code, serie, description, price, service].includes(undefined)
     ) {
       message.warning('Todos los campos son obligatorios.')
     } else {
@@ -50,7 +50,7 @@ function InventoryFields(props) {
       price,
       service,
       category: props.warehouse ? 2 : 1,
-      engine_number:engineNumber
+      engine_number: engineNumber,
     }
 
     if (validate)
@@ -139,19 +139,18 @@ function InventoryFields(props) {
           </Col>
         </Row>
         {!props.warehouse && (
-            <Row gutter={16} className={'section-space-field'}>
-              <Col xs={8} sm={8} md={8} lg={8}>
-                <div className={'title-space-field'}>Número de Motor</div>
-                <Input
-                    value={engineNumber}
-                    placeholder={'Número de Motor'}
-                    size={'large'}
-                    onChange={value => setEngineNumber(value.target.value)}
-                />
-              </Col>
-            </Row>
+          <Row gutter={16} className={'section-space-field'}>
+            <Col xs={8} sm={8} md={8} lg={8}>
+              <div className={'title-space-field'}>Número de Motor</div>
+              <Input
+                value={engineNumber}
+                placeholder={'Número de Motor'}
+                size={'large'}
+                onChange={value => setEngineNumber(value.target.value)}
+              />
+            </Col>
+          </Row>
         )}
-
 
         {/*End Fields section*/}
       </div>

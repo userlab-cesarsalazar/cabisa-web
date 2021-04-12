@@ -44,14 +44,16 @@ function Clients(props) {
 
   const searchTextFinder = data => {
     setLoading(true)
-    ClientsSrc.getClientsFilter(data).then(resp=>{
-      setDataSource(setClientData(resp.message))
-      setLoading(false)
-    }).catch(err => {
-      setLoading(false)
-      console.log(err)
-      message.error('No se pudo obtener la informacion.')
-    })
+    ClientsSrc.getClientsFilter(data)
+      .then(resp => {
+        setDataSource(setClientData(resp.message))
+        setLoading(false)
+      })
+      .catch(err => {
+        setLoading(false)
+        console.log(err)
+        message.error('No se pudo obtener la informacion.')
+      })
   }
 
   const setClientData = data => {
