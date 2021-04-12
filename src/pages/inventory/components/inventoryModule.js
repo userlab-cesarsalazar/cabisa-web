@@ -117,9 +117,21 @@ function InventoryModule(props) {
               }
               trigger='click'
             >
-              <Button shape={'circle'} className={'enterprise-settings-button'}>
-                <MoreOutlined />
-              </Button>
+              {validatePermissions(
+                Cache.getItem('currentSession').userPermissions,
+                5
+              ).permissionsSection[0].delete ||
+                (validatePermissions(
+                  Cache.getItem('currentSession').userPermissions,
+                  5
+                ).permissionsSection[0].edit && (
+                  <Button
+                    shape={'circle'}
+                    className={'enterprise-settings-button'}
+                  >
+                    <MoreOutlined />
+                  </Button>
+                ))}
             </Popover>
           }
         </span>

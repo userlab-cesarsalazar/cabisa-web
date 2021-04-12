@@ -4,9 +4,11 @@ import { Card, message, Spin } from 'antd'
 import UsersSrc from './usersSrc'
 import { Auth } from 'aws-amplify'
 import '../../amplify_config'
+import { catchingErrors } from '../../utils/Utils'
 // UI components
 import HeaderPage from '../../components/HeaderPage'
 import UserFields from './components/userFields'
+import UserSrc from './usersSrc'
 
 function UserView(props) {
   const [loading, setLoading] = useState(false)
@@ -14,33 +16,45 @@ function UserView(props) {
   const saveData = async data => {
     setLoading(true)
     try {
-      console.log(data)
-      let awsUserCreate = await createUserCognito(
-        data.fullName.replace(' ', ''),
-        data.password,
-        data.email
-      )
-      if (!awsUserCreate) throw 'Error on aws cognito create user'
+      //verify is user existe on BD
 
-      UsersSrc.createUser(data)
-        .then(_ => {
-          message.success('Usuario creado')
-          props.history.push('/users')
-        })
-        .catch(err => {
-          setLoading(false)
-          console.log('ERROR ON CREATING USER', err)
-          message.warning('El usuario no se ha podido crear')
-        })
+      let existsUser = await UserSrc.getUsersPermissions(
+        encodeURIComponent(data.email)
+      )
+
+      if (existsUser.message.length === 0) {
+        //Create user on cognito
+        let awsUserCreate = await createUserCognito(
+          data.fullName.replace(' ', ''),
+          data.password,
+          data.email
+        )
+        if (!awsUserCreate) return
+        //Create user on BD
+        UsersSrc.createUser(data)
+          .then(_ => {
+            message.success('Usuario creado')
+            props.history.push('/users')
+          })
+          .catch(err => {
+            setLoading(false)
+            console.log('ERROR ON CREATING USER BD', err)
+            message.error(catchingErrors(err))
+          })
+      } else {
+        setLoading(false)
+        message.warning(
+          catchingErrors('The provided email is already registered')
+        )
+      }
     } catch (err) {
       setLoading(false)
-      console.log('Error on SING UPr', err)
-      message.warning('El usuario no se ha podido crear')
+      console.log('Error on SING UP', err)
+      message.warning(catchingErrors(err.code))
     }
   }
 
   const createUserCognito = async (username, password, email) => {
-    console.log(username)
     try {
       const { user } = await Auth.signUp({
         username: username,
@@ -53,13 +67,9 @@ function UserView(props) {
       console.log('Usuario creado en cognito', user)
       return true
     } catch (error) {
+      setLoading(false)
       console.log('error signing up:', error)
-
-      if (error.code.indexOf('InvalidPasswordException') > -1) {
-        message.warning(
-          'La contraseña debe tener letras minusculas,mayusculas y un caracter especial.'
-        )
-      }
+      message.warning(catchingErrors(error.code))
       return false
     }
   }

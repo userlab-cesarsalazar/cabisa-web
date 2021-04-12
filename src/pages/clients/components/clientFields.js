@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import FooterButtons from '../../../components/FooterButtons'
-import {Col, Divider, Input, message, Row, Select, Tag, Typography} from 'antd'
+import {
+  Col,
+  Divider,
+  Input,
+  message,
+  Row,
+  Select,
+  Tag,
+  Typography,
+} from 'antd'
 import { validateEmail } from '../../../utils/Utils'
 const { Title } = Typography
 const { Option } = Select
@@ -68,19 +77,16 @@ function ClientFields(props) {
       nit.includes('+')
     ) {
       message.warning('El campo NIT solo acepta valores numéricos')
-    }
-    else if (!validateEmail(email)) {
+    } else if (!validateEmail(email)) {
       message.warning('Ingresa un email valido')
-    }
-    else if (
+    } else if (
       !Number(phone) ||
       phone.toString().includes('.') ||
       phone.toString().includes('-') ||
       phone.toString().includes('+')
     ) {
       message.warning('El campo Telefono solo acepta valores numéricos')
-    }
-    else {
+    } else {
       validate = true
     }
 
@@ -134,8 +140,12 @@ function ClientFields(props) {
               onChange={value => setClientTypeID(value)}
               getPopupContainer={trigger => trigger.parentNode}
             >
-              <Option value={'INDIVIDUAL'}><Tag color='geekblue'>Persona individual</Tag></Option>
-              <Option value={'COMPANY'}><Tag color='cyan'>Empresa</Tag></Option>
+              <Option value={'INDIVIDUAL'}>
+                <Tag color='geekblue'>Persona individual</Tag>
+              </Option>
+              <Option value={'COMPANY'}>
+                <Tag color='cyan'>Empresa</Tag>
+              </Option>
             </Select>
           </Col>
         </Row>

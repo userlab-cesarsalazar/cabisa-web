@@ -13,7 +13,6 @@ import {
 const { Title } = Typography
 
 function UserPermissions(props) {
-
   const [tableDataSource, setTableDataSource] = useState([])
   const [loading, setLoading] = useState(true)
   const columns2 = [
@@ -27,71 +26,69 @@ function UserPermissions(props) {
     {
       title: 'Ver',
       dataIndex: 'view',
-      key:'id',
+      key: 'id',
       render: (isChecked, record) => (
-          <Checkbox
-              tdCentered
-              checked={isChecked}
-              name='view'
-              onChange={e => {
-                handlePermissionsChange(e, record)
-              }}
-          />
+        <Checkbox
+          tdCentered
+          checked={isChecked}
+          name='view'
+          onChange={e => {
+            handlePermissionsChange(e, record)
+          }}
+        />
       ),
     },
     {
       title: 'Crear',
       dataIndex: 'create',
       render: (isChecked, record) => (
-          <Checkbox
-              tdCentered
-              checked={isChecked}
-              name='create'
-              onChange={e => {
-                handlePermissionsChange(e, record)
-              }}
-          />
+        <Checkbox
+          tdCentered
+          checked={isChecked}
+          name='create'
+          onChange={e => {
+            handlePermissionsChange(e, record)
+          }}
+        />
       ),
     },
     {
       title: 'Editar',
       dataIndex: 'edit',
       render: (isChecked, record) => (
-          <Checkbox
-              tdCentered
-              checked={isChecked}
-              name='edit'
-              onChange={e => {
-                handlePermissionsChange(e, record)
-              }}
-          />
+        <Checkbox
+          tdCentered
+          checked={isChecked}
+          name='edit'
+          onChange={e => {
+            handlePermissionsChange(e, record)
+          }}
+        />
       ),
     },
     {
       title: 'Eliminar',
       dataIndex: 'delete',
       render: (isChecked, record) => (
-          <Checkbox
-              tdCentered
-              checked={isChecked}
-              name='delete'
-              onChange={e => {
-                handlePermissionsChange(e, record)
-              }}
-          />
+        <Checkbox
+          tdCentered
+          checked={isChecked}
+          name='delete'
+          onChange={e => {
+            handlePermissionsChange(e, record)
+          }}
+        />
       ),
     },
   ]
 
-
   useEffect(() => {
-    if(props.visible){
+    if (props.visible) {
       setTableDataSource(props.permissionsData.permissions)
       setLoading(false)
     }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.visible])
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.visible])
 
   const onCancel = () => {
     props.closable()
@@ -100,12 +97,12 @@ function UserPermissions(props) {
   const savePermissions = () => {
     setLoading(false)
     let saveObj = {
-      "id": props.permissionsData.id,
-      "fullName": props.permissionsData.full_name,
-      "is_active": 1,
-      "email": props.permissionsData.email,
-      "rolId": props.permissionsData.rol_id,
-      "permissions": tableDataSource
+      id: props.permissionsData.id,
+      fullName: props.permissionsData.full_name,
+      is_active: 1,
+      email: props.permissionsData.email,
+      rolId: props.permissionsData.rol_id,
+      permissions: tableDataSource,
     }
 
     props.savePermissions(saveObj)

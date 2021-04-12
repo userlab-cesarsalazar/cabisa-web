@@ -40,7 +40,6 @@ function MenuView() {
     } else {
       setKey(actualPath.key)
     }
-    console.log('actualPath', actualPath)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

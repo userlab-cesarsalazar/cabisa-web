@@ -34,3 +34,17 @@ module.exports.validatePermissions = (dataPermissions, id) => {
   }
   return permissionsData
 }
+
+module.exports.catchingErrors = errorCode => {
+  switch (errorCode) {
+    case 'UsernameExistsException':
+      return 'El nombre de usuario ya existe.'
+      break
+    case 'InvalidPasswordException':
+      return 'La contraseña debe tener letras minusculas,mayusculas y un caracter especial.'
+    default:
+    case 'The provided email is already registered':
+      return 'El correo electrónico proporcionado ya está registrado.'
+      break
+  }
+}

@@ -186,7 +186,7 @@ function UserFields(props) {
             <div className={'title-space-field'}>Username*</div>
             <Input
               disabled
-              value={email}
+              value={name.replace(/\s+/g, '')}
               placeholder={'Username'}
               size={'large'}
             />
