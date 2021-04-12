@@ -22,10 +22,12 @@ function Router(props) {
   const [collapsed, setCollapsed] = useState(false)
   const [loading] = useState(false)
   const [showResetPassword, setShowResetPassword] = useState(false)
+  const [userDataInfo, setUserDataInfo] = useState(null)
 
   useEffect(() => {
     let userDataInfo = Cache.getItem('currentSession')
-    console.log(userDataInfo)
+    console.log('USER IN ROUTER', userDataInfo)
+    setUserDataInfo(userDataInfo)
   }, [])
 
   const onCollapse = () => {
@@ -75,7 +77,7 @@ function Router(props) {
             type={'horizontal'}
           />
           <Avatar
-            userName={'Luis de leon'}
+            userName={userDataInfo ? userDataInfo.userName : ''}
             collapsed={collapsed}
             OnClose={logout}
             OnResetPassword={() => {

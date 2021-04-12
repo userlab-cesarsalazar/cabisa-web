@@ -36,8 +36,6 @@ function Login() {
       } else {
         Auth.signIn(usernameE, passwordE)
           .then(user => {
-            console.log('signIn response', user)
-
             if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
               setCognitoUserInfo(user)
               setIsModalVisible(true)
@@ -52,6 +50,7 @@ function Login() {
                   token: '',
                   userName: '',
                   userPermissions: null,
+                  email: user.attributes.email,
                 }
 
                 profileSettings.userPermissions =
@@ -61,9 +60,7 @@ function Login() {
                 profileSettings.userName = user.attributes.name
 
                 if (profileSettings.userPermissions === null) {
-                  message.error(
-                    'El usuario no contiene permisos, consulte a su administrador'
-                  )
+                  message.error('Usuario/Password incorrectos')
                   setLoading(false)
                 } else {
                   Cache.setItem('currentSession', profileSettings)
@@ -74,7 +71,7 @@ function Login() {
               .catch(err => {
                 setLoading(false)
                 console.log('ERROR ON GET USER PERMISSIONS', err)
-                message.error('Error al obtener permisos del usuario')
+                message.error('Usuario/Password incorrectos')
               })
           })
           .catch(e => {
