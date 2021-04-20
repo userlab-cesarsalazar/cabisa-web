@@ -36,13 +36,19 @@ module.exports.validatePermissions = (dataPermissions, id) => {
 }
 
 module.exports.catchingErrors = errorCode => {
-  switch (errorCode) {
-    case 'UsernameExistsException':
+  switch (true) {
+    case errorCode.indexOf('UsernameExistsException') > -1:
       return 'El nombre de usuario ya existe.'
-    case 'InvalidPasswordException':
+    case errorCode.indexOf('InvalidPasswordException') > -1:
       return 'La contraseña debe tener letras minusculas,mayusculas y un caracter especial.'
-    case 'The provided email is already registered':
+    case errorCode.indexOf('The provided email is already registered') > -1:
       return 'El correo electrónico proporcionado ya está registrado.'
+    case errorCode.indexOf('User is disabled.') > -1:
+      return 'Usuario deshabilitado, contacta al administrador.'
+    case errorCode.indexOf('UserMigration failed') > -1:
+      return 'Usuario/Password incorrectos.'
+    case errorCode.indexOf('Incorrect') > -1:
+      return 'Usuario/Password incorrectos'
     default:
       return 'Error al procesar la información.'
   }

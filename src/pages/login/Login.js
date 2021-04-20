@@ -13,6 +13,7 @@ import {
 import { Auth, Cache } from 'aws-amplify'
 import '../../amplify_config'
 import UserSrc from '../users/usersSrc'
+import { catchingErrors } from '../../utils/Utils'
 
 function Login() {
   const [cognitoUserInfo, setCognitoUserInfo] = useState(null)
@@ -76,17 +77,8 @@ function Login() {
           })
           .catch(e => {
             console.error('ERROR ON LOGIN', e)
-
-            if (
-              e.message.indexOf('UserMigration failed') > -1 ||
-              e.message.indexOf('Incorrect') > -1
-            ) {
-              message.error('Usuario/Password incorrectos')
-              setLoading(false)
-            } else if (e.message.indexOf('User is not confirmed.') > -1) {
-              setLoading(false)
-              openNotification()
-            }
+            message.error(catchingErrors(e.message))
+            setLoading(false)
           })
       }
     } catch (err) {

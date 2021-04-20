@@ -25,7 +25,7 @@ function UserView(props) {
       if (existsUser.message.length === 0) {
         //Create user on cognito
         let awsUserCreate = await createUserCognito(
-          data.fullName.replace(' ', ''),
+          data.fullName.replace(/\s/g, ''),
           data.password,
           data.email
         )
@@ -56,6 +56,7 @@ function UserView(props) {
 
   const createUserCognito = async (username, password, email) => {
     try {
+      console.log('USERNAME', username)
       const { user } = await Auth.signUp({
         username: username,
         password: password,
