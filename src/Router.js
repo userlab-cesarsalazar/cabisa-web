@@ -18,7 +18,7 @@ import MenuFoldOutlined from '@ant-design/icons/lib/icons/MenuFoldOutlined'
 
 const { Content, Sider } = Layout
 
-function Router(props) {
+function Router() {
   const [collapsed, setCollapsed] = useState(false)
   const [loading] = useState(false)
   const [showResetPassword, setShowResetPassword] = useState(false)
