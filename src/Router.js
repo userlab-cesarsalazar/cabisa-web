@@ -26,7 +26,6 @@ function Router(props) {
 
   useEffect(() => {
     let userDataInfo = Cache.getItem('currentSession')
-    console.log('USER IN ROUTER', userDataInfo)
     setUserDataInfo(userDataInfo)
   }, [])
 
@@ -35,7 +34,6 @@ function Router(props) {
   }
 
   const logout = async () => {
-    console.log('logout')
     Auth.signOut()
       .then(() => {
         Cache.clear()
@@ -44,6 +42,18 @@ function Router(props) {
       .catch(err => {
         console.log('error', err)
       })
+  }
+
+  const validateUrlPermission = () => {
+    let permissions = Cache.getItem('currentSession').userPermissions.map(
+      dat => dat.id
+    )
+    permissions.push(0)
+    return menu_sub_routes
+      .filter(flt => permissions.includes(flt.id))
+      .map((r, i) => (
+        <Route exact key={i} path={r.route} component={r.component} />
+      ))
   }
 
   return (
@@ -96,9 +106,7 @@ function Router(props) {
               <UISpinner />
             ) : (
               <Switch>
-                {menu_sub_routes.map((r, i) => (
-                  <Route exact key={i} path={r.route} component={r.component} />
-                ))}
+                {validateUrlPermission()}
                 <Redirect to='/welcome' />
               </Switch>
             )}
