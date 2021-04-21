@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useState } from 'react'
 import {
   Table,
   Col,
@@ -15,14 +15,11 @@ import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
 import { Cache } from 'aws-amplify'
 import { validatePermissions } from '../../../utils/Utils'
-// Context
-import { Context, useStore } from '../../../context'
 
 const { Search } = Input
 
 function UserTable(props) {
-  const [state] = useContext(Context)
-  const { hasPermissions } = useStore(state)
+  const [popOverVisible, setPopOverVisible] = useState(false)
 
   const getFilteredData = data => {
     props.handlerTextSearch(data)
@@ -127,16 +124,10 @@ function UserTable(props) {
                   )}
                 </div>
               }
-              trigger='click'
             >
-              {(hasPermissions([7]) || hasPermissions([8])) && (
-                <Button
-                  shape={'circle'}
-                  className={'enterprise-settings-button'}
-                >
-                  <MoreOutlined />
-                </Button>
-              )}
+              <Button shape={'circle'} className={'enterprise-settings-button'}>
+                <MoreOutlined />
+              </Button>
             </Popover>
           }
         </span>

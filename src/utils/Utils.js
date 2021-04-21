@@ -49,6 +49,8 @@ module.exports.catchingErrors = errorCode => {
       return 'Usuario/Password incorrectos.'
     case errorCode.indexOf('Incorrect') > -1:
       return 'Usuario/Password incorrectos'
+    case errorCode.indexOf('User does not exist.') > -1:
+      return 'El usuario aun no esta confirmado.'
     default:
       return 'Error al procesar la información.'
   }

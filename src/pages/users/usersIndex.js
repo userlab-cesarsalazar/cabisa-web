@@ -7,7 +7,10 @@ import UserTable from '../users/components/userTable'
 import HeaderPage from '../../components/HeaderPage'
 import UserDrawer from './components/userDrawer'
 import UserPermissions from './components/userPermissions'
+import { catchingErrors } from '../../utils/Utils'
 import { withRouter } from 'react-router'
+import { stage } from '../../commons/credentials'
+const AWS = require('aws-sdk')
 
 function Users(props) {
   const [dataSource, setDataSource] = useState([])
@@ -43,7 +46,6 @@ function Users(props) {
     setVisible(true)
     setLoading(false)
     setEditDataDrawer(data)
-    console.log('edita data drawer', data)
   }
 
   const searchText = data => {
@@ -60,22 +62,42 @@ function Users(props) {
   }
 
   const onCancelButton = () => {
-    console.log('ocultando')
     setVisible(false)
   }
 
-  const DeleteRow = data => {
-    setLoading(true)
-    UsersSrc.deleteUser({ id: data.id })
-      .then(_ => {
-        message.success('Usuario eliminado')
-        loadUserData()
+  const DeleteRow = async data => {
+    try {
+      setLoading(true)
+
+      AWS.config.update({
+        accessKeyId: stage.awsAccessKeyId,
+        secretAccessKey: stage.awsSecretAccessKey,
+        region: stage.awsRegion,
       })
-      .catch(err => {
-        setLoading(false)
-        console.log('ERROR ON DELETE USER', err)
-        message.warning('No se ha podido borrar el usuario')
-      })
+      const cognito = new AWS.CognitoIdentityServiceProvider()
+
+      await cognito
+        .adminDeleteUser({
+          UserPoolId: stage.awsUserPoolId,
+          Username: data.email,
+        })
+        .promise()
+
+      UsersSrc.deleteUser({ id: data.id })
+        .then(_ => {
+          message.success('Usuario eliminado')
+          loadUserData()
+        })
+        .catch(err => {
+          setLoading(false)
+          console.log('ERROR ON DELETE USER:', err)
+          message.warning('No se ha podido borrar el usuario')
+        })
+    } catch (e) {
+      setLoading(false)
+      console.log('ERROR ON DELETE USER.', e.message)
+      message.error(catchingErrors(e.message))
+    }
   }
 
   const editPermissions = data => {
@@ -84,20 +106,44 @@ function Users(props) {
     setShowPermissions(true)
   }
 
-  const saveInformation = data => {
-    console.log('SAVE INFORMATION')
-    setVisible(false)
-    setShowPermissions(false)
-    console.log(data)
-    UsersSrc.updateUser(data)
-      .then(_ => {
-        message.success('Informacion actualizada')
-        loadUserData()
-      })
-      .catch(err => {
-        console.log('ERROR ON UPDATE PERMISSIONS', err)
-        message.warning('No se ha podido actualizar la informacion')
-      })
+  const saveInformation = async data => {
+    try {
+      setVisible(false)
+      setShowPermissions(false)
+      let _changePassword = data.password
+      delete data.password
+
+      if (_changePassword.replace(/\s/g, '').length > 0) {
+        AWS.config.update({
+          accessKeyId: stage.awsAccessKeyId,
+          secretAccessKey: stage.awsSecretAccessKey,
+          region: stage.awsRegion,
+        })
+        const cognito = new AWS.CognitoIdentityServiceProvider()
+
+        await cognito
+          .adminSetUserPassword({
+            Password: _changePassword,
+            UserPoolId: stage.awsUserPoolId,
+            Username: data.email,
+            Permanent: true,
+          })
+          .promise()
+      }
+
+      UsersSrc.updateUser(data)
+        .then(_ => {
+          message.success('Informacion actualizada')
+          loadUserData()
+        })
+        .catch(err => {
+          console.log('ERROR ON UPDATE PERMISSIONS', err)
+          message.warning('No se ha podido actualizar la informacion')
+        })
+    } catch (e) {
+      console.log('ERROR ON EDIT USER INFORMATION.', e)
+      message.error(catchingErrors(e.message))
+    }
   }
 
   return (

@@ -77,8 +77,12 @@ function Login() {
           })
           .catch(e => {
             console.error('ERROR ON LOGIN', e)
-            message.error(catchingErrors(e.message))
             setLoading(false)
+            if (e.message.indexOf('User is not confirmed.') > -1) {
+              openNotification()
+            } else {
+              message.error(catchingErrors(e.message))
+            }
           })
       }
     } catch (err) {
