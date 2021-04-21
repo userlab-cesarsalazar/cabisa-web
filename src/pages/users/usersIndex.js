@@ -9,8 +9,6 @@ import UserDrawer from './components/userDrawer'
 import UserPermissions from './components/userPermissions'
 import { catchingErrors } from '../../utils/Utils'
 import { withRouter } from 'react-router'
-import { stage } from '../../commons/credentials'
-const AWS = require('aws-sdk')
 
 function Users(props) {
   const [dataSource, setDataSource] = useState([])
