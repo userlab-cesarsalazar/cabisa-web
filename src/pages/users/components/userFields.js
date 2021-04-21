@@ -9,6 +9,7 @@ import {
   Divider,
   Typography,
   Tag,
+  Switch,
 } from 'antd'
 
 import EyeTwoTone from '@ant-design/icons/lib/icons/EyeTwoTone'
@@ -43,11 +44,13 @@ function UserFields(props) {
   const [rolesList, setRolesList] = useState([])
   const [loading, setLoading] = useState(true)
   const [changedRole, setChangedRole] = useState(false)
+  const [changePass, setChangePass] = useState(false)
 
   const loadUserInformation = () => {
     setName(props.edit ? props.data.full_name : '')
     setEmail(props.edit ? props.data.email : '')
     setRole(props.edit ? props.data.rol_id : null)
+    setChangePass(!props.edit)
     setPassword('')
     setConfirmPassword('')
   }
@@ -86,7 +89,7 @@ function UserFields(props) {
       return message.warning(validateMessageFields)
     } else if (password !== confirmPassword) {
       return message.warning('Contraseñas no coinciden')
-    } else if (password.length < 8) {
+    } else if (password.replace(/\s/g, '').length < 8 && changePass) {
       return message.warning('La contraseña debe tener al menos 8 caracteres')
     }
 
@@ -104,6 +107,7 @@ function UserFields(props) {
         is_active: 1,
         email: email,
         rolId: role,
+        password: confirmPassword,
         permissions: changedRole ? defineRoles(role) : props.data.permissions,
       }
     } else {
@@ -136,6 +140,9 @@ function UserFields(props) {
         {props.edit && (
           <>
             <Title> {props.edit ? 'Editar Usuario' : 'Nuevo Usuario'} </Title>
+            <span>Cambiar contraseña?</span>
+            <br />
+            <Switch checked={changePass} onChange={val => setChangePass(val)} />
             <Divider className={'divider-custom-margins-users'} />
           </>
         )}
@@ -143,6 +150,7 @@ function UserFields(props) {
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Nombre</div>
             <Input
+              disabled={props.edit}
               value={name}
               placeholder={'Nombre'}
               size={'large'}
@@ -152,6 +160,7 @@ function UserFields(props) {
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Email</div>
             <Input
+              disabled={props.edit}
               value={email}
               placeholder={'Email'}
               size={'large'}
@@ -195,6 +204,7 @@ function UserFields(props) {
             <div className={'title-space-field'}>Password*</div>
             <Popover content={contentPopHover} trigger='hover'>
               <Input.Password
+                disabled={!changePass}
                 iconRender={visible =>
                   visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
                 }
@@ -209,6 +219,7 @@ function UserFields(props) {
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Confirmar Password*</div>
             <Input.Password
+              disabled={!changePass}
               iconRender={visible =>
                 visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
               }

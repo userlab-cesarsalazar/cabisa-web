@@ -102,90 +102,112 @@ const menu_routes = [
 
 const menu_sub_routes = [
   {
+    id: 2,
     route: '/users',
     component: Users,
   },
   {
-    route: '/clients',
-    component: Clients,
-  },
-  {
+    id: 2,
     route: '/userView',
     component: UsersView,
   },
   {
+    id: 7,
+    route: '/clients',
+    component: Clients,
+  },
+  {
+    id: 7,
     route: '/clientView',
     component: ClientView,
   },
   {
+    id: 6,
     route: '/sales',
     component: Sales,
   },
   {
+    id: 6,
     route: '/serviceNoteView',
     component: ServiceNoteView,
   },
   {
+    id: 5,
     route: '/inventory',
     component: Inventory,
   },
   {
+    id: 5,
     route: '/inventoryView',
     component: InventoryView,
   },
   {
+    id: 5,
     route: '/inventoryView/warehouse',
     component: InventoryView,
   },
   {
+    id: 4,
     route: '/billing',
     component: Billing,
   },
   {
+    id: 4,
     route: '/billingView',
     component: BillingView,
   },
   {
+    id: 3,
     route: '/reportMachineHistory',
     component: ReportMachine,
   },
   {
+    id: 3,
     route: '/reportInventory',
     component: ReportInventory,
   },
   {
+    id: 3,
     route: '/reportAccountClient',
     component: ReportClient,
   },
   {
+    id: 3,
     route: '/reportAccountsReceivable',
     component: ReportAccountsReceivable,
   },
   {
+    id: 3,
     route: '/reportEquipmentService',
     component: genericPage,
   },
   {
+    id: 3,
     route: '/reportMonthlyBill',
     component: genericPage,
   },
   {
+    id: 3,
     route: '/reportShipping',
     component: genericPage,
   },
   {
+    id: 3,
     route: '/reportSales',
     component: genericPage,
   },
   {
+    id: 3,
     route: '/reportCommissions',
     component: genericPage,
   },
   {
+    id: 3,
     route: '/reportCostSellingEquipment',
     component: genericPage,
   },
   {
+    id: 0,
     route: '/welcome',
     component: welcomePage,
   },

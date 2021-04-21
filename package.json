@@ -1,6 +1,6 @@
 {
   "name": "cabisa",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.4.0",
@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^12.1.10",
     "antd": "^4.10.3",
     "aws-amplify": "^3.3.21",
+    "aws-sdk": "^2.889.0",
     "axios": "^0.18.0",
     "moment": "^2.29.1",
     "react": "^17.0.1",
