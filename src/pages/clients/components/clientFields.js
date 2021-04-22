@@ -25,7 +25,6 @@ function ClientFields(props) {
   const [business_man, setBusiness_man] = useState('')
 
   useEffect(() => {
-    console.log(props.editData)
     setName(props.edit ? props.editData.name : '')
     setClientTypeID(props.edit ? props.editData.client_type : null)
     setNit(props.edit ? props.editData.nit : '')
