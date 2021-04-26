@@ -149,7 +149,7 @@ function ClientTable(props) {
         <Col xs={18} sm={18} md={18} lg={18}>
           <Search
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Presiona enter para buscar'
+            placeholder='Busca por Nombre o Nit'
             className={'cabisa-table-search customSearch'}
             style={{ width: '70%', height: '40px' }}
             size={'large'}

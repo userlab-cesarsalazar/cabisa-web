@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Spin, Drawer, message } from 'antd'
 import ClientFields from './clientFields'
 import ClientsSrc from '../clientsSrc'
+import { catchingErrors } from '../../../utils/Utils'
 
 function ClientsDrawer(props) {
   const [loadingDrawer, setLoadingDrawer] = useState(false)
@@ -16,8 +17,9 @@ function ClientsDrawer(props) {
         props.saveButton()
       })
       .catch(err => {
+        setLoadingDrawer(false)
         console.log('ERROR ON UPDATE CLIENT', err)
-        message.warning('No se puedo actualizar la informacion.')
+        message.warning(catchingErrors(err))
       })
   }
 
