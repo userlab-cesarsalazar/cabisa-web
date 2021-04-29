@@ -16,7 +16,7 @@ import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
 import { Cache } from 'aws-amplify'
-import { validatePermissions } from '../../../../utils/Utils'
+import { permissionsButton, validatePermissions } from '../../../../utils/Utils'
 
 const { Search } = Input
 
@@ -105,9 +105,17 @@ function SalesTable(props) {
               }
               trigger='click'
             >
-              <Button shape={'circle'} className={'enterprise-settings-button'}>
-                <MoreOutlined />
-              </Button>
+              {permissionsButton(
+                props.permissions,
+                Cache.getItem('currentSession')
+              ) && (
+                <Button
+                  shape={'circle'}
+                  className={'enterprise-settings-button'}
+                >
+                  <MoreOutlined />
+                </Button>
+              )}
             </Popover>
           }
         </span>

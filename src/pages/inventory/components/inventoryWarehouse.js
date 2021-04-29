@@ -5,7 +5,7 @@ import { withRouter } from 'react-router'
 import { Button, Divider, Popconfirm, Popover, Tag } from 'antd'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
 import { Cache } from 'aws-amplify'
-import { validatePermissions } from '../../../utils/Utils'
+import { validatePermissions, permissionsButton } from '../../../utils/Utils'
 
 function InventoryWarehouse(props) {
   const [editMode, setEditMode] = useState(false)
@@ -112,18 +112,14 @@ function InventoryWarehouse(props) {
               }
               trigger='click'
             >
-              {/*{validatePermissions(*/}
-              {/*  Cache.getItem('currentSession').userPermissions,*/}
-              {/*  5*/}
-              {/*).permissionsSection[0].delete ||*/}
-              {/*  (validatePermissions(*/}
-              {/*    Cache.getItem('currentSession').userPermissions,*/}
-              {/*    5*/}
-              {/*  ).permissionsSection[0].edit && (*/}
-              <Button shape={'circle'} className={'enterprise-settings-button'}>
-                <MoreOutlined />
-              </Button>
-              {/*))}*/}
+              {permissionsButton(5, Cache.getItem('currentSession')) && (
+                <Button
+                  shape={'circle'}
+                  className={'enterprise-settings-button'}
+                >
+                  <MoreOutlined />
+                </Button>
+              )}
             </Popover>
           }
         </span>

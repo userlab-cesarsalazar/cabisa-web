@@ -57,3 +57,29 @@ module.exports.catchingErrors = errorCode => {
       return 'Error al procesar la información.'
   }
 }
+
+const validatePermissionsLocalPermissions = (dataPermissions, id) => {
+  let permissionsData = {}
+  let sectionEnable = [id].every(perm =>
+    dataPermissions.some(v => v.id === perm)
+  )
+  let dataSection = dataPermissions.filter(dataFilter => dataFilter.id === id)
+
+  if (sectionEnable) {
+    permissionsData.enableSection = dataSection[0].view
+    permissionsData.permissionsSection = dataSection
+  } else {
+    permissionsData.enableSection = sectionEnable
+    permissionsData.permissionsSection = dataSection
+  }
+  return permissionsData
+}
+
+module.exports.permissionsButton = (id, data) => {
+  return (
+    validatePermissionsLocalPermissions(data.userPermissions, id)
+      .permissionsSection[0].delete ||
+    validatePermissionsLocalPermissions(data.userPermissions, id)
+      .permissionsSection[0].edit
+  )
+}

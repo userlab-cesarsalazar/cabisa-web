@@ -16,7 +16,7 @@ import {
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
 import { Cache } from 'aws-amplify'
-import { validatePermissions } from '../../../utils/Utils'
+import { validatePermissions, permissionsButton } from '../../../utils/Utils'
 
 const { Search } = Input
 const { Option } = Select
@@ -135,9 +135,14 @@ function BillingTable(props) {
               }
               trigger='click'
             >
-              <Button shape={'circle'} className={'enterprise-settings-button'}>
-                <MoreOutlined />
-              </Button>
+              {permissionsButton(4, Cache.getItem('currentSession')) && (
+                <Button
+                  shape={'circle'}
+                  className={'enterprise-settings-button'}
+                >
+                  <MoreOutlined />
+                </Button>
+              )}
             </Popover>
           }
         </span>
