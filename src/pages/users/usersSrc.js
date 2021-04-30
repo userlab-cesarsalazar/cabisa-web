@@ -10,10 +10,12 @@ const createUser = _users => api.post(urlUser, _users)
 const updateUser = _users => api.put(urlUser, _users)
 const deleteUser = _users => api.remove(urlUser, _users)
 
-export default {
+const UsersSrc = {
   getUsers,
   createUser,
   updateUser,
   deleteUser,
   getUsersPermissions,
 }
+
+export default UsersSrc

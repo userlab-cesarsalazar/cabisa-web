@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   Table,
   Col,
@@ -19,8 +19,6 @@ import { permissionsButton, validatePermissions } from '../../../utils/Utils'
 const { Search } = Input
 
 function UserTable(props) {
-  const [popOverVisible, setPopOverVisible] = useState(false)
-
   const getFilteredData = data => {
     props.handlerTextSearch(data)
   }

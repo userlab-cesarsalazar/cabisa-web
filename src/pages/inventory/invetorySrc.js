@@ -9,10 +9,13 @@ const updateProduct = _products => api.put(urlUser, _products)
 const deleteProduct = _products => api.remove(urlUser, _products)
 const getProductsFilter = name =>
   api.getParams(name ? `${urlUser}?name=${name}` : urlUser)
-export default {
+
+const InvetorySrc = {
   getProducts,
   createProduct,
   updateProduct,
   deleteProduct,
   getProductsFilter,
 }
+
+export default InvetorySrc

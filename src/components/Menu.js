@@ -20,9 +20,9 @@ const { SubMenu } = Menu
 function MenuView() {
   const history = useHistory()
   const [key, setKey] = useState('')
-  let subMenuMatch
 
   useEffect(() => {
+    let subMenuMatch
     let actualPath = menu_routes.find(
       m =>
         menuRouterFunction(m.routeGroup, m.route) === history.location.pathname

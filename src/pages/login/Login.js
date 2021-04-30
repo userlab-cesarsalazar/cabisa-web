@@ -14,6 +14,7 @@ import { Auth, Cache } from 'aws-amplify'
 import '../../amplify_config'
 import UserSrc from '../users/usersSrc'
 import { catchingErrors } from '../../utils/Utils'
+const mssError = 'Debes ingresar usuario y contraseña'
 
 function Login() {
   const [cognitoUserInfo, setCognitoUserInfo] = useState(null)
@@ -33,7 +34,7 @@ function Login() {
       let passwordE = value.password
 
       if (!usernameE || !passwordE) {
-        throw 'Debes ingresar usuario y contraseña'
+        throw mssError
       } else {
         Auth.signIn(usernameE, passwordE)
           .then(user => {
