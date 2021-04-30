@@ -10,6 +10,7 @@ import {
   Tag,
   Typography,
 } from 'antd'
+import { Cache } from 'aws-amplify'
 const { Title } = Typography
 const { Option } = Select
 
@@ -20,6 +21,7 @@ function InventoryFields(props) {
   const [price, setPrice] = useState('')
   const [service, setService] = useState(null)
   const [engineNumber, setEngineNumber] = useState('')
+  const [specialPermission, setSpecialPermission] = useState(false)
 
   useEffect(() => {
     let serviceWarehouse = props.warehouse ? 3 : null
@@ -30,6 +32,8 @@ function InventoryFields(props) {
     setService(props.edit ? props.editData.service_type_id : serviceWarehouse)
     setEngineNumber(props.edit ? props.editData.engine_number : '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    setSpecialPermission(Cache.getItem('currentSession').rol_id !== 1)
   }, [props.visible])
 
   const saveData = () => {
@@ -104,6 +108,7 @@ function InventoryFields(props) {
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Costo</div>
             <Input
+              disabled={specialPermission}
               type={'number'}
               value={price}
               placeholder={'Costo'}

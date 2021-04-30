@@ -53,6 +53,7 @@ function Login() {
                   userName: '',
                   userPermissions: null,
                   email: user.attributes.email,
+                  rol_id: userData.message[0].rol_id,
                 }
 
                 profileSettings.userPermissions =
