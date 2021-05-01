@@ -31,9 +31,8 @@ function InventoryFields(props) {
     setPrice(props.edit ? props.editData.cost : '')
     setService(props.edit ? props.editData.service_type_id : serviceWarehouse)
     setEngineNumber(props.edit ? props.editData.engine_number : '')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-
     setSpecialPermission(Cache.getItem('currentSession').rol_id !== 1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.visible])
 
   const saveData = () => {
