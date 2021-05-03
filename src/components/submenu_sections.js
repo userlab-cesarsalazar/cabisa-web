@@ -1,4 +1,4 @@
-const report_sections = [
+const submenu_sections = [
   {
     name: 'Historial maquinas',
     key: 'reportMachineHistory',
@@ -101,4 +101,27 @@ const report_sections = [
   },
 ]
 
-export { report_sections }
+const submenu_sections_inventory = [
+  {
+    name: 'Servicios',
+    key: 'inventoryServices',
+    route: '/inventoryServices',
+    component: (
+      <>
+        <h1>Servicios</h1>
+      </>
+    ),
+  },
+  {
+    name: 'Productos',
+    key: 'inventoryProducts',
+    route: '/inventoryProducts',
+    component: (
+      <>
+        <h1>Productos</h1>
+      </>
+    ),
+  },
+]
+
+export { submenu_sections, submenu_sections_inventory }

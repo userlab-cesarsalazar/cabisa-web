@@ -36,13 +36,11 @@ function UserTable(props) {
       title: 'Nombre',
       dataIndex: 'full_name', // Field that is goint to be rendered
       key: 'full_name',
-      render: text => <span>{text}</span>,
     },
     {
       title: 'Email',
       dataIndex: 'email', // Field that is goint to be rendered
       key: 'email',
-      render: text => <span>{text}</span>,
     },
     {
       title: 'Rol',

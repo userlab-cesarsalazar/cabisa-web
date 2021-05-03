@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Drawer, message, Spin } from 'antd'
 import InventoryFields from './inventoryFields'
 import InventoryHistory from './invetoryHistory'
-import InventorySrc from '../invetorySrc'
+import InventorySrc from '../inventorySrc'
 
 function InventoryDrawer(props) {
   const [loadingDrawer, setLoadingDrawer] = useState(false)

@@ -299,7 +299,7 @@ body {
 
 /*VERTICAL MENU*/
 .ant-menu-submenu-placement-rightTop{
-  top:50px !important;
+  /*top:5px !important;*/
   padding-left: 5px;
   background: #f0f8ff00 !important;
 }

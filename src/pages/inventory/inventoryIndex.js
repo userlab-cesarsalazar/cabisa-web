@@ -3,7 +3,7 @@ import { message, Tabs } from 'antd'
 import InventoryModule from './components/inventoryModule'
 import InventoryWarehouse from './components/inventoryWarehouse'
 import HeaderPage from '../../components/HeaderPage'
-import InvetorySrc from './invetorySrc'
+import InventorySrc from './inventorySrc'
 
 const { TabPane } = Tabs
 
@@ -18,7 +18,7 @@ function Inventory() {
 
   const getProducts = () => {
     //GET ALL PRODUCTOS
-    InvetorySrc.getProducts()
+    InventorySrc.getProducts()
       .then(result => {
         setInventoryProducts(
           result.message.filter(data => data.category_id === 1)
@@ -35,7 +35,7 @@ function Inventory() {
 
   const searchByTxt = (name, type) => {
     //GET FILTER PRODUCTOS BY NAME
-    InvetorySrc.getProductsFilter(name)
+    InventorySrc.getProductsFilter(name)
       .then(result => {
         if (type === 'Module') {
           setInventoryProducts(
@@ -54,7 +54,7 @@ function Inventory() {
   }
 
   const deleteProduct = data => {
-    InvetorySrc.deleteProduct(data)
+    InventorySrc.deleteProduct(data)
       .then(_ => {
         message.success('Elemento eliminado')
         getProducts()

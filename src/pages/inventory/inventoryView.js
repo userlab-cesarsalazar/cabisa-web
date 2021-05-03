@@ -3,7 +3,7 @@ import HeaderPage from '../../components/HeaderPage'
 import { Card, message, Spin } from 'antd'
 import InventoryFields from './components/inventoryFields'
 import InventoryHistory from './components/invetoryHistory'
-import InventorySrc from './invetorySrc'
+import InventorySrc from './inventorySrc'
 
 function InventoryView(props) {
   const [viewLoading, setViewLoading] = useState(false)
