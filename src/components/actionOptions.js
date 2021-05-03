@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Divider, Popconfirm } from 'antd'
+import { Button, Divider, Popconfirm, Tooltip } from 'antd'
 import { permissionsButton, validatePermissions } from '../utils/Utils'
 import { Cache } from 'aws-amplify'
 import {
@@ -33,10 +33,12 @@ function ActionOptions(props) {
               Cache.getItem('currentSession').userPermissions,
               props.permissionId
             ).permissionsSection[0].edit && (
-              <Button
-                icon={<ApartmentOutlined />}
-                onClick={() => handlerEditPermissions(props.data)}
-              />
+              <Tooltip title='Editar permisos' color={'blue'}>
+                <Button
+                  icon={<ApartmentOutlined />}
+                  onClick={() => handlerEditPermissions(props.data)}
+                />
+              </Tooltip>
             )}
 
           {props.editPermissions &&
@@ -49,10 +51,12 @@ function ActionOptions(props) {
             Cache.getItem('currentSession').userPermissions,
             props.permissionId
           ).permissionsSection[0].edit && (
-            <Button
-              icon={<FileSearchOutlined />}
-              onClick={() => handlerEditRow(props.data)}
-            />
+            <Tooltip title='Editar'>
+              <Button
+                icon={<FileSearchOutlined />}
+                onClick={() => handlerEditRow(props.data)}
+              />
+            </Tooltip>
           )}
           {validatePermissions(
             Cache.getItem('currentSession').userPermissions,
@@ -66,14 +70,16 @@ function ActionOptions(props) {
             Cache.getItem('currentSession').userPermissions,
             props.permissionId
           ).permissionsSection[0].delete && (
-            <Popconfirm
-              title='Estas seguro de borrar el elemento selccionado?'
-              onConfirm={() => handlerDeleteRow(props.data)}
-              okText='Si'
-              cancelText='No'
-            >
-              <Button danger icon={<DeleteOutlined />} />
-            </Popconfirm>
+            <Tooltip title='Eliminar' color={'red'}>
+              <Popconfirm
+                title='Estas seguro de borrar el elemento selccionado?'
+                onConfirm={() => handlerDeleteRow(props.data)}
+                okText='Si'
+                cancelText='No'
+              >
+                <Button danger icon={<DeleteOutlined />} />
+              </Popconfirm>
+            </Tooltip>
           )}
         </div>
       )}
