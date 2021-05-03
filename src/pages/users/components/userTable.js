@@ -15,6 +15,7 @@ import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
 import { Cache } from 'aws-amplify'
 import { permissionsButton, validatePermissions } from '../../../utils/Utils'
+import ActionOptions from '../../../components/actionOptions'
 
 const { Search } = Input
 
@@ -29,6 +30,10 @@ function UserTable(props) {
 
   const handlerDeleteRow = row => {
     props.handlerDeleteRow(row)
+  }
+
+  const handlerEditPermissions = row => {
+    props.handlerEditPermissions(row)
   }
 
   const columns = [
@@ -67,71 +72,14 @@ function UserTable(props) {
       dataIndex: '_id', // Field that is goint to be rendered
       key: '_id',
       render: (row, data) => (
-        <span>
-          {
-            <Popover
-              placement='left'
-              content={
-                <div>
-                  {validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    2
-                  ).permissionsSection[0].edit && (
-                    <>
-                      <span
-                        className={'user-options-items'}
-                        onClick={() => handlerEditRow(data)}
-                      >
-                        Editar
-                      </span>
-                      <Divider
-                        className={'divider-enterprise-margins'}
-                        type={'horizontal'}
-                      />
-                      <span
-                        className={'user-options-items'}
-                        onClick={() => props.handlerEditPermissions(data)}
-                      >
-                        Editar permisos
-                      </span>{' '}
-                    </>
-                  )}
-                  {validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    2
-                  ).permissionsSection[0].edit && (
-                    <Divider
-                      className={'divider-enterprise-margins'}
-                      type={'horizontal'}
-                    />
-                  )}
-                  {validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    2
-                  ).permissionsSection[0].delete && (
-                    <Popconfirm
-                      title='Estas seguro de borrar el elemento selccionado?'
-                      onConfirm={() => handlerDeleteRow(data)}
-                      okText='Si'
-                      cancelText='No'
-                    >
-                      <span className={'user-options-items'}>Eliminar</span>
-                    </Popconfirm>
-                  )}
-                </div>
-              }
-            >
-              {permissionsButton(2, Cache.getItem('currentSession')) && (
-                <Button
-                  shape={'circle'}
-                  className={'enterprise-settings-button'}
-                >
-                  <MoreOutlined />
-                </Button>
-              )}
-            </Popover>
-          }
-        </span>
+        <ActionOptions
+          editPermissions={true}
+          data={data}
+          permissionId={2}
+          handlerDeleteRow={handlerDeleteRow}
+          handlerEditRow={handlerEditRow}
+          handlerEditPermissions={handlerEditPermissions}
+        />
       ),
     },
   ]

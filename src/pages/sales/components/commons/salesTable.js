@@ -59,6 +59,7 @@ function SalesTable(props) {
       key: 'id',
       render: (row, data) => (
         <ActionOptions
+          editPermissions={false}
           data={data}
           permissionId={props.permissions}
           handlerDeleteRow={handlerDeleteRow}

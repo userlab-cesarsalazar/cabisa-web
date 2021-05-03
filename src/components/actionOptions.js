@@ -2,7 +2,11 @@ import React from 'react'
 import { Button, Divider, Popconfirm } from 'antd'
 import { permissionsButton, validatePermissions } from '../utils/Utils'
 import { Cache } from 'aws-amplify'
-import { DeleteOutlined, FileSearchOutlined } from '@ant-design/icons'
+import {
+  DeleteOutlined,
+  FileSearchOutlined,
+  ApartmentOutlined,
+} from '@ant-design/icons'
 
 function ActionOptions(props) {
   const handlerEditRow = data => {
@@ -13,6 +17,10 @@ function ActionOptions(props) {
     props.handlerDeleteRow(data)
   }
 
+  const handlerEditPermissions = data => {
+    props.handlerEditPermissions(data)
+  }
+
   return (
     <div>
       {permissionsButton(
@@ -20,6 +28,23 @@ function ActionOptions(props) {
         Cache.getItem('currentSession')
       ) && (
         <div>
+          {props.editPermissions &&
+            validatePermissions(
+              Cache.getItem('currentSession').userPermissions,
+              props.permissionId
+            ).permissionsSection[0].edit && (
+              <Button
+                icon={<ApartmentOutlined />}
+                onClick={() => handlerEditPermissions(props.data)}
+              />
+            )}
+
+          {props.editPermissions &&
+            validatePermissions(
+              Cache.getItem('currentSession').userPermissions,
+              props.permissionId
+            ).permissionsSection[0].edit && <Divider type={'vertical'} />}
+
           {validatePermissions(
             Cache.getItem('currentSession').userPermissions,
             props.permissionId

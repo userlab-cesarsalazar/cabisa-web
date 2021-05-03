@@ -75,6 +75,7 @@ function ClientTable(props) {
       key: 'id',
       render: (row, data) => (
         <ActionOptions
+          editPermissions={false}
           data={data}
           permissionId={7}
           handlerDeleteRow={handlerDeleteRow}

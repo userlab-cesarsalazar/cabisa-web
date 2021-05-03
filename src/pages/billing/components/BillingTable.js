@@ -90,6 +90,7 @@ function BillingTable(props) {
       key: 'id',
       render: (row, data) => (
         <ActionOptions
+          editPermissions={false}
           data={data}
           permissionId={4}
           handlerDeleteRow={handlerDeleteRow}
