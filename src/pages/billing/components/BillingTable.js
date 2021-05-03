@@ -17,6 +17,7 @@ import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
 import { Cache } from 'aws-amplify'
 import { validatePermissions, permissionsButton } from '../../../utils/Utils'
+import ActionOptions from '../../../components/actionOptions'
 
 const { Search } = Input
 const { Option } = Select
@@ -24,6 +25,9 @@ const { Option } = Select
 function BillingTable(props) {
   const handlerEditRow = data => {
     props.showDetail(data)
+  }
+  const handlerDeleteRow = data => {
+    console.log(data)
   }
 
   const columns = [
@@ -85,67 +89,12 @@ function BillingTable(props) {
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
       render: (row, data) => (
-        <span>
-          {
-            <Popover
-              placement='left'
-              style={{ zIndex: 'auto' }}
-              content={
-                <div>
-                  {validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    4
-                  ).permissionsSection[0].edit && (
-                    <span
-                      className={'user-options-items'}
-                      onClick={() => handlerEditRow(data)}
-                    >
-                      Ver Detalle
-                    </span>
-                  )}
-
-                  {validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    4
-                  ).permissionsSection[0].edit &&
-                    validatePermissions(
-                      Cache.getItem('currentSession').userPermissions,
-                      4
-                    ).permissionsSection[0].delete && (
-                      <Divider
-                        className={'divider-enterprise-margins'}
-                        type={'horizontal'}
-                      />
-                    )}
-                  {validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    4
-                  ).permissionsSection[0].delete && (
-                    <Popconfirm
-                      title='Estas seguro de anular el elemento selccionado?'
-                      okText='Si'
-                      cancelText='No'
-                    >
-                      <span className={'user-options-items'}>
-                        Anular factura
-                      </span>
-                    </Popconfirm>
-                  )}
-                </div>
-              }
-              trigger='click'
-            >
-              {permissionsButton(4, Cache.getItem('currentSession')) && (
-                <Button
-                  shape={'circle'}
-                  className={'enterprise-settings-button'}
-                >
-                  <MoreOutlined />
-                </Button>
-              )}
-            </Popover>
-          }
-        </span>
+        <ActionOptions
+          data={data}
+          permissionId={4}
+          handlerDeleteRow={handlerDeleteRow}
+          handlerEditRow={handlerEditRow}
+        />
       ),
     },
   ]
