@@ -83,3 +83,9 @@ module.exports.permissionsButton = (id, data) => {
       .permissionsSection[0].edit
   )
 }
+
+module.exports.getBase64 = (img, callback) => {
+  const reader = new FileReader()
+  reader.addEventListener('load', () => callback(reader.result))
+  reader.readAsDataURL(img)
+}

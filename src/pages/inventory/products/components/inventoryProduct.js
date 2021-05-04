@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import InventoryTable from '../components/inventoryTable'
-import InventoryDrawer from '../components/inventoryDrawer'
-import { withRouter } from 'react-router'
-import { Button, Divider, Popconfirm, Popover, Tag } from 'antd'
-import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
-import { Cache } from 'aws-amplify'
-import { validatePermissions, permissionsButton } from '../../../utils/Utils'
+import InventoryTable from '../../components/inventoryTable'
 
-function InventoryWarehouse(props) {
+import ProductDrawer from './productDrawer'
+
+import { withRouter } from 'react-router'
+import { Tag } from 'antd'
+import ActionOptions from '../../../../components/actionOptions'
+
+function InventoryProduct(props) {
   const [editMode, setEditMode] = useState(false)
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
@@ -34,17 +34,17 @@ function InventoryWarehouse(props) {
       render: text => <span>{text}</span>,
     },
     {
-      title: 'Servicio',
+      title: 'Categoria',
       dataIndex: 'service_type_id', // Field that is goint to be rendered
       key: 'service_type_id',
       render: text => (
         <span>
           {text === 1 ? (
-            <Tag color='#87d068'>Servicio</Tag>
+            <Tag color='red'>Servicio</Tag>
           ) : text === 2 ? (
-            <Tag color='#f50'>Equipo</Tag>
+            <Tag color='blue'>Equipo</Tag>
           ) : text === 3 ? (
-            <Tag color='#f50'>Repuesto</Tag>
+            <Tag color='orange'>Repuesto</Tag>
           ) : (
             ''
           )}
@@ -52,77 +52,41 @@ function InventoryWarehouse(props) {
       ),
     },
     {
-      title: 'Costo',
+      title: 'Precio de venta',
       dataIndex: 'cost', // Field that is goint to be rendered
       key: 'cost',
       render: text => <span>{text.toFixed(2)}</span>,
+    },
+    {
+      title: 'Estado',
+      dataIndex: 'is_active', // Field that is goint to be rendered
+      key: 'is_active',
+      render: text => (
+        <span>
+          {text === 0 ? (
+            <Tag color='#f50'>Inactivo</Tag>
+          ) : text === 1 ? (
+            <Tag color='#87d068'>Activo</Tag>
+          ) : text === 2 ? (
+            <Tag color='grey'>Bloqueado</Tag>
+          ) : (
+            ''
+          )}
+        </span>
+      ),
     },
     {
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
       render: (row, data) => (
-        <span>
-          {
-            <Popover
-              placement='left'
-              style={{ zIndex: 'auto' }}
-              content={
-                <div>
-                  {validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    5
-                  ).permissionsSection[0].edit && (
-                    <span
-                      className={'user-options-items'}
-                      onClick={() => EditRow(data)}
-                    >
-                      Editar
-                    </span>
-                  )}
-
-                  {validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    5
-                  ).permissionsSection[0].edit &&
-                    validatePermissions(
-                      Cache.getItem('currentSession').userPermissions,
-                      5
-                    ).permissionsSection[0].delete && (
-                      <Divider
-                        className={'divider-enterprise-margins'}
-                        type={'horizontal'}
-                      />
-                    )}
-
-                  {validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    5
-                  ).permissionsSection[0].delete && (
-                    <Popconfirm
-                      title='Estas seguro de borrar el elemento selccionado?'
-                      onConfirm={() => DeleteRow(data)}
-                      okText='Si'
-                      cancelText='No'
-                    >
-                      <span className={'user-options-items'}>Eliminar</span>
-                    </Popconfirm>
-                  )}
-                </div>
-              }
-              trigger='click'
-            >
-              {permissionsButton(5, Cache.getItem('currentSession')) && (
-                <Button
-                  shape={'circle'}
-                  className={'enterprise-settings-button'}
-                >
-                  <MoreOutlined />
-                </Button>
-              )}
-            </Popover>
-          }
-        </span>
+        <ActionOptions
+          editPermissions={false}
+          data={data}
+          permissionId={5}
+          handlerDeleteRow={DeleteRow}
+          handlerEditRow={EditRow}
+        />
       ),
     },
   ]
@@ -135,7 +99,7 @@ function InventoryWarehouse(props) {
   }, [props.dataSource])
 
   const showDrawer = () => {
-    props.history.push('/inventoryView/warehouse')
+    props.history.push('/inventoryProductsView')
   }
 
   const onClose = () => {
@@ -145,12 +109,16 @@ function InventoryWarehouse(props) {
   const loadData = () => {
     setIsVisible(false)
     setLoading(true)
-    setTimeout(() => setLoading(false), 500)
+    setTimeout(() => setLoading(false), 1000)
     setTimeout(() => setDataSource(setClientData(props.dataSource)), 500)
   }
 
   const searchTextFinder = data => {
     props.searchWarehouseByTxt(data, 'Warehouse')
+  }
+
+  const searchByServiceCategory = data => {
+    props.searchByServiceCategory(data)
   }
 
   const setClientData = data => {
@@ -182,15 +150,16 @@ function InventoryWarehouse(props) {
   return (
     <>
       <InventoryTable
-        warehouse={true}
+        warehouse={false}
         showDraweTbl={showDrawer}
         dataSource={dataSource}
         loading={loading}
         handlerTextSearch={searchTextFinder}
+        handlerCategoryService={searchByServiceCategory}
         columns={wareHouseColumns}
       />
 
-      <InventoryDrawer
+      <ProductDrawer
         warehouse={true}
         closable={onClose}
         visible={isVisible}
@@ -202,4 +171,4 @@ function InventoryWarehouse(props) {
     </>
   )
 }
-export default withRouter(InventoryWarehouse)
+export default withRouter(InventoryProduct)

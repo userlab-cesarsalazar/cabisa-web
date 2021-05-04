@@ -1,22 +1,10 @@
 import React from 'react'
-import {
-  Table,
-  Col,
-  Input,
-  Button,
-  Row,
-  Card,
-  Popover,
-  Divider,
-  Popconfirm,
-  DatePicker,
-} from 'antd'
+import { Table, Col, Input, Button, Row, Card, DatePicker } from 'antd'
 import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
 import { Cache } from 'aws-amplify'
-import { permissionsButton, validatePermissions } from '../../../../utils/Utils'
+import { validatePermissions } from '../../../../utils/Utils'
 import ActionOptions from '../../../../components/actionOptions'
 
 const { Search } = Input

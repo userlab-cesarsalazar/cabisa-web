@@ -48,7 +48,15 @@ function Users(props) {
 
   const searchText = data => {
     setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
+    UsersSrc.getUsersByName(data)
+      .then(data => {
+        setLoading(false)
+        setDataSource(data.message)
+      })
+      .catch(err => {
+        console.log('ERROR GET USERS', err)
+        message.error('No se pudo obtener la informacion.')
+      })
   }
 
   const showDrawer = () => {

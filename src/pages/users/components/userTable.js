@@ -1,20 +1,6 @@
 import React from 'react'
-import {
-  Table,
-  Col,
-  Input,
-  Button,
-  Row,
-  Card,
-  Popover,
-  Divider,
-  Popconfirm,
-  Tag,
-} from 'antd'
+import { Table, Col, Input, Row, Card, Tag } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
-import { Cache } from 'aws-amplify'
-import { permissionsButton, validatePermissions } from '../../../utils/Utils'
 import ActionOptions from '../../../components/actionOptions'
 
 const { Search } = Input

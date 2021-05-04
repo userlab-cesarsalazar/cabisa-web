@@ -1,120 +1,94 @@
 import React from 'react'
-import {
-  Button,
-  Card,
-  Col,
-  DatePicker,
-  Divider,
-  Popconfirm,
-  Popover,
-  Row,
-  Select,
-  Table,
-  Tag,
-} from 'antd'
-
-import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
+import { Card, Col, DatePicker, Row, Select, Table, Tag } from 'antd'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
+import ActionOptions from '../../../../components/actionOptions'
 const { Option } = Select
-const columns = [
-  {
-    title: 'Codigo cliente',
-    dataIndex: 'code', // Field that is goint to be rendered
-    key: 'code',
-    render: text => <span>{text}</span>,
-  },
-  {
-    title: 'Nombre o Razón social',
-    dataIndex: 'name', // Field that is goint to be rendered
-    key: 'name',
-    render: text => <span>{text}</span>,
-  },
-  {
-    title: 'Tipo',
-    dataIndex: 'Type', // Field that is goint to be rendered
-    key: 'Type',
-    render: text => <span>{text}</span>,
-  },
-  {
-    title: 'Referencia',
-    dataIndex: 'reference', // Field that is goint to be rendered
-    key: 'reference',
-    render: text => <span>{text}</span>,
-  },
-  {
-    title: 'Cargos',
-    dataIndex: 'charges', // Field that is goint to be rendered
-    key: 'charges',
-    render: text => <span>{text}</span>,
-  },
-  {
-    title: 'Pagos',
-    dataIndex: 'payments', // Field that is goint to be rendered
-    key: 'payments',
-    render: text => <span>{text}</span>,
-  },
-  {
-    title: 'Balance',
-    dataIndex: 'balance', // Field that is goint to be rendered
-    key: 'balance',
-    render: text => <span>{text}</span>,
-  },
-  {
-    title: 'Estado',
-    dataIndex: 'status', // Field that is goint to be rendered
-    key: 'status',
-    render: text => (
-      <span>
-        {text === 'Activo' ? (
-          <Tag color='#87d068'>ACTIVO</Tag>
-        ) : text === 'InActivo' ? (
-          <Tag color='#f50'>INACTIVO</Tag>
-        ) : (
-          ''
-        )}
-      </span>
-    ),
-  },
-  {
-    title: '',
-    dataIndex: 'id', // Field that is goint to be rendered
-    key: 'id',
-    render: (row, data) => (
-      <span>
-        {
-          <Popover
-            placement='left'
-            style={{ zIndex: 'auto' }}
-            content={
-              <div>
-                <span className={'user-options-items'}>Editar</span>
-                <Divider
-                  className={'divider-enterprise-margins'}
-                  type={'horizontal'}
-                />
-                <Popconfirm
-                  title='Estas seguro de borrar el elemento selccionado?'
-                  okText='Si'
-                  cancelText='No'
-                >
-                  <span className={'user-options-items'}>Eliminar</span>
-                </Popconfirm>
-              </div>
-            }
-            trigger='click'
-          >
-            <Button shape={'circle'} className={'enterprise-settings-button'}>
-              <MoreOutlined />
-            </Button>
-          </Popover>
-        }
-      </span>
-    ),
-  },
-]
 
 function ReportClientTable(props) {
+  const handlerDeleteRow = data => {
+    console.log(data)
+  }
+
+  const handlerEditRow = data => {
+    console.log(data)
+  }
+
+  const columns = [
+    {
+      title: 'Codigo cliente',
+      dataIndex: 'code', // Field that is goint to be rendered
+      key: 'code',
+      render: text => <span>{text}</span>,
+    },
+    {
+      title: 'Nombre o Razón social',
+      dataIndex: 'name', // Field that is goint to be rendered
+      key: 'name',
+      render: text => <span>{text}</span>,
+    },
+    {
+      title: 'Tipo',
+      dataIndex: 'Type', // Field that is goint to be rendered
+      key: 'Type',
+      render: text => <span>{text}</span>,
+    },
+    {
+      title: 'Referencia',
+      dataIndex: 'reference', // Field that is goint to be rendered
+      key: 'reference',
+      render: text => <span>{text}</span>,
+    },
+    {
+      title: 'Cargos',
+      dataIndex: 'charges', // Field that is goint to be rendered
+      key: 'charges',
+      render: text => <span>{text}</span>,
+    },
+    {
+      title: 'Pagos',
+      dataIndex: 'payments', // Field that is goint to be rendered
+      key: 'payments',
+      render: text => <span>{text}</span>,
+    },
+    {
+      title: 'Balance',
+      dataIndex: 'balance', // Field that is goint to be rendered
+      key: 'balance',
+      render: text => <span>{text}</span>,
+    },
+    {
+      title: 'Estado',
+      dataIndex: 'status', // Field that is goint to be rendered
+      key: 'status',
+      render: text => (
+        <span>
+          {text === 'Activo' ? (
+            <Tag color='#87d068'>ACTIVO</Tag>
+          ) : text === 'InActivo' ? (
+            <Tag color='#f50'>INACTIVO</Tag>
+          ) : (
+            ''
+          )}
+        </span>
+      ),
+    },
+    {
+      title: '',
+      dataIndex: 'id', // Field that is goint to be rendered
+      key: 'id',
+      render: (row, data) => (
+        <ActionOptions
+          editPermissions={false}
+          data={data}
+          permissionId={3}
+          handlerDeleteRow={handlerDeleteRow}
+          handlerEditRow={handlerEditRow}
+        />
+      ),
+    },
+  ]
+
   return (
     <>
       {/*FIELDS*/}

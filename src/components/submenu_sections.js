@@ -122,6 +122,16 @@ const submenu_sections_inventory = [
       </>
     ),
   },
+  {
+    name: 'Movimientos de inventario',
+    key: 'inventoryMovements',
+    route: '/inventoryMovements',
+    component: (
+      <>
+        <h1>Productos</h1>
+      </>
+    ),
+  },
 ]
 
 export { submenu_sections, submenu_sections_inventory }

@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
-import HeaderPage from '../../components/HeaderPage'
+import HeaderPage from '../../../components/HeaderPage'
 import { Card, message, Spin } from 'antd'
-import InventoryFields from './components/inventoryFields'
-import InventoryHistory from './components/invetoryHistory'
-import InventorySrc from './inventorySrc'
+import InventorySrc from '../inventorySrc'
+import ServiceFields from './components/serviceFields'
 
-function InventoryView(props) {
+function ServiceView(props) {
   const [viewLoading, setViewLoading] = useState(false)
 
   const saveData = (method, data, user_id) => {
@@ -14,15 +13,15 @@ function InventoryView(props) {
       category_id: data.category,
       service_type_id: data.service,
       code: data.code,
-      serial_number: data.serie,
       cost: data.price,
-      engine_number: data.engine_number,
+      engine_number: null,
+      is_active: data.is_active,
     }
     setViewLoading(true)
     InventorySrc.createProduct(newDataObj)
       .then(_ => {
         message.success('Elemento creado.')
-        props.history.push('/inventory')
+        props.history.push('/inventoryServices')
       })
       .catch(err => {
         setViewLoading(false)
@@ -33,19 +32,17 @@ function InventoryView(props) {
 
   return (
     <Spin spinning={viewLoading}>
-      <HeaderPage title={'Crear Item'} permissions={5} />
+      <HeaderPage title={'Crear Nuevo Servicio'} permissions={5} />
       <Card className={'card-border-radius margin-top-15'}>
-        <InventoryFields
-          warehouse={props.location.pathname.includes('warehouse')}
+        <ServiceFields
           saveUserData={saveData}
           visible={true}
           edit={false}
           data={props.editData}
           cancelButton={props.cancelButton}
         />
-        <InventoryHistory dataDetail={[]} />
       </Card>
     </Spin>
   )
 }
-export default InventoryView
+export default ServiceView

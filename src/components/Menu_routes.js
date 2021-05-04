@@ -11,10 +11,15 @@ import Clients from '../pages/clients/clientsIndex'
 import ClientView from '../pages/clients/clientView'
 
 //Inventory
-import Inventory from '../pages/inventory/inventoryIndex'
-import InventoryView from '../pages/inventory/inventoryView'
+
 import Products from '../pages/inventory/products/productIndex'
+import ProductView from '../pages/inventory/products/components/productView'
+
 import Services from '../pages/inventory/services/serviceIndex'
+import ServiceView from '../pages/inventory/services/serviceVIew'
+
+import InventoryMovement from '../pages/inventory/inventoryMovement/inventoryMovementIndex'
+import InventoryMovementView from '../pages/inventory/inventoryMovement/components/inventoryMovementView'
 
 //Reports
 import ReportMachine from '../pages/reports/reportMachine/reportMachineIndex'
@@ -76,7 +81,7 @@ const menu_routes = [
     route: '/inventory',
     profilePermissions: [25],
     routeGroup: [
-      /^(\/inventoryProducts)|(\/inventoryServices)|(\/inventoryProductsView)|(\/inventoryServicesView\/)/i,
+      /^(\/inventoryMovements)|(\/InventoryMovementsView)|(\/inventoryProducts)|(\/inventoryServices)|(\/inventoryProductsView)|(\/inventoryServicesView)/i,
     ],
     sub_menu: submenu_sections_inventory,
   },
@@ -152,8 +157,28 @@ const menu_sub_routes = [
   },
   {
     id: 5,
+    route: '/inventoryProductsView',
+    component: ProductView,
+  },
+  {
+    id: 5,
     route: '/inventoryServices',
     component: Services,
+  },
+  {
+    id: 5,
+    route: '/inventoryServicesView',
+    component: ServiceView,
+  },
+  {
+    id: 5,
+    route: '/inventoryMovements',
+    component: InventoryMovement,
+  },
+  {
+    id: 5,
+    route: '/InventoryMovementsView',
+    component: InventoryMovementView,
   },
   // {
   //   id: 5,

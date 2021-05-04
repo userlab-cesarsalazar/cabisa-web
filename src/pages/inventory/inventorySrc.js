@@ -10,12 +10,16 @@ const deleteProduct = _products => api.remove(urlUser, _products)
 const getProductsFilter = name =>
   api.getParams(name ? `${urlUser}?name=${name}` : urlUser)
 
+const getProductsFilterByCategory = service =>
+  api.getParams(service ? `${urlUser}?service_type_id=${service}` : urlUser)
+
 const InventorySrc = {
   getProducts,
   createProduct,
   updateProduct,
   deleteProduct,
   getProductsFilter,
+  getProductsFilterByCategory,
 }
 
 export default InventorySrc

@@ -22,7 +22,7 @@ function MenuView() {
   const [key, setKey] = useState('')
 
   useEffect(() => {
-    let subMenuMatch
+    let subMenuMatch = null
     let actualPath = menu_routes.find(
       m =>
         menuRouterFunction(m.routeGroup, m.route) === history.location.pathname
@@ -36,7 +36,11 @@ function MenuView() {
           )
         }
       })
-      setKey(subMenuMatch.key)
+      if (subMenuMatch) {
+        setKey(subMenuMatch.key)
+      } else {
+        setKey(history.location.pathname.split('View')[0].replace('/', ''))
+      }
     } else {
       setKey(actualPath.key)
     }

@@ -9,8 +9,11 @@ const getUsersPermissions = email =>
 const createUser = _users => api.post(urlUser, _users)
 const updateUser = _users => api.put(urlUser, _users)
 const deleteUser = _users => api.remove(urlUser, _users)
+const getUsersByName = name =>
+  api.getParams(name ? `${urlUser}?full_name=${name}` : urlUser)
 
 const UsersSrc = {
+  getUsersByName,
   getUsers,
   createUser,
   updateUser,

@@ -1,13 +1,15 @@
 import React from 'react'
 import { Table, Col, Input, Button, Row, Card, Tag, Select } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import { validatePermissions } from '../../../utils/Utils'
+import { validatePermissions } from '../../../../utils/Utils'
 import { Cache } from 'aws-amplify'
+import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
+import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 
 const { Search } = Input
 const { Option } = Select
 
-function InventoryTable(props) {
+function InventoryMovementTable(props) {
   const getFilteredData = data => {
     props.handlerTextSearch(data)
   }
@@ -29,13 +31,7 @@ function InventoryTable(props) {
             onSearch={e => getFilteredData(e)}
           />
         </Col>
-        <Col
-          xs={8}
-          sm={8}
-          md={8}
-          lg={8}
-          className={props.warehouse ? 'stash-component' : ''}
-        >
+        <Col xs={8} sm={8} md={8} lg={8}>
           <Select
             defaultValue={99}
             className={'single-select'}
@@ -46,14 +42,16 @@ function InventoryTable(props) {
             onChange={value => filterCategory(value)}
           >
             <Option value={99}>
-              <Tag color='cyan'>Todo</Tag>
+              <Tag color='grey'>Todo</Tag>
             </Option>
-
+            <Option value={1}>
+              <Tag color='blue'>Compra</Tag>
+            </Option>
             <Option value={2}>
-              <Tag color='blue'>Equipo</Tag>
+              <Tag color='green'>Ingreso</Tag>
             </Option>
             <Option value={3}>
-              <Tag color='orange'>Repuesto</Tag>
+              <Tag color='red'>Egreso</Tag>
             </Option>
           </Select>
         </Col>
@@ -84,6 +82,30 @@ function InventoryTable(props) {
                   pagination={{ pageSize: 5 }}
                   loading={props.loading}
                   rowKey='id'
+                  expandable={{
+                    expandedRowRender: record => (
+                      <div className={'text-left'}>
+                        <p>
+                          <b>Cantidad: </b>{' '}
+                          {record.quantity !== null ? record.quantity : ''}{' '}
+                        </p>
+                        <p>
+                          <b>Nro. Documento: </b>{' '}
+                          {record.billNumber !== null ? record.billNumber : ''}{' '}
+                        </p>
+                        <p>
+                          <b>Ingresado por: </b>{' '}
+                          {record.createdBy !== null ? record.createdBy : ''}{' '}
+                        </p>
+                      </div>
+                    ),
+                    expandIcon: ({ expanded, onExpand, record }) =>
+                      expanded ? (
+                        <DownOutlined onClick={e => onExpand(record, e)} />
+                      ) : (
+                        <RightOutlined onClick={e => onExpand(record, e)} />
+                      ),
+                  }}
                 />
               </Col>
             </Row>
@@ -94,4 +116,4 @@ function InventoryTable(props) {
   )
 }
 
-export default InventoryTable
+export default InventoryMovementTable

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import HeaderPage from '../../../components/HeaderPage'
-import InventoryModule from '../components/inventoryModule'
+import InventoryModule from './components/inventoryService'
 import InventorySrc from '../inventorySrc'
 import { message } from 'antd'
 

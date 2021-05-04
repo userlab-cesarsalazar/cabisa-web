@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import GenericTable from '../../../components/genericTable'
-import { Button, Divider, Popconfirm, Popover, Tag } from 'antd'
-import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
+import { Tag } from 'antd'
 import ReportAccountsReceivableFilters from './components/reportAccountsReceivableFilters'
 import HeaderPage from '../../../components/HeaderPage'
+import ActionOptions from '../../../components/actionOptions'
 
 function ReportAccountsReceivable() {
   const [loading, setLoading] = useState(true)
   const [dataSource, setDataSource] = useState([])
+
+  const handlerDeleteRow = data => {
+    console.log(data)
+  }
+
+  const handlerEditRow = data => {
+    console.log(data)
+  }
 
   const data = [
     {
@@ -106,35 +114,13 @@ function ReportAccountsReceivable() {
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
       render: (row, data) => (
-        <span>
-          {
-            <Popover
-              placement='left'
-              style={{ zIndex: 'auto' }}
-              content={
-                <div>
-                  <span className={'user-options-items'}>Editar</span>
-                  <Divider
-                    className={'divider-enterprise-margins'}
-                    type={'horizontal'}
-                  />
-                  <Popconfirm
-                    title='Estas seguro de borrar el elemento selccionado?'
-                    okText='Si'
-                    cancelText='No'
-                  >
-                    <span className={'user-options-items'}>Eliminar</span>
-                  </Popconfirm>
-                </div>
-              }
-              trigger='click'
-            >
-              <Button shape={'circle'} className={'enterprise-settings-button'}>
-                <MoreOutlined />
-              </Button>
-            </Popover>
-          }
-        </span>
+        <ActionOptions
+          editPermissions={false}
+          data={data}
+          permissionId={3}
+          handlerDeleteRow={handlerDeleteRow}
+          handlerEditRow={handlerEditRow}
+        />
       ),
     },
   ]

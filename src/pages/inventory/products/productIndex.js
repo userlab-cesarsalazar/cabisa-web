@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import HeaderPage from '../../../components/HeaderPage'
-import InventoryWarehouse from '../components/inventoryWarehouse'
+import InventoryProduct from './components/inventoryProduct'
 import InventorySrc from '../inventorySrc'
 import { message } from 'antd'
 
@@ -30,11 +30,23 @@ function ProductIndex() {
     //GET FILTER PRODUCTOS BY NAME
     InventorySrc.getProductsFilter(name)
       .then(result => {
-        if (type === 'Module') {
-          setInventoryProducts(
-            result.message.filter(data => data.category_id === 2)
-          )
-        }
+        setInventoryProducts(
+          result.message.filter(data => data.category_id === 2)
+        )
+      })
+      .catch(err => {
+        console.log('ERROR ON GET INVENTORY PRODUCTS', err)
+        message.warning('No se ha podido obtener informacion del inventario.')
+      })
+  }
+
+  const searchByCategoryService = data => {
+    let categoryServiceId = data === 99 ? false : data
+    InventorySrc.getProductsFilterByCategory(categoryServiceId)
+      .then(result => {
+        setInventoryProducts(
+          result.message.filter(data => data.category_id === 2)
+        )
       })
       .catch(err => {
         console.log('ERROR ON GET INVENTORY PRODUCTS', err)
@@ -56,12 +68,13 @@ function ProductIndex() {
   return (
     <>
       <HeaderPage titleButton={''} title={'Productos'} permissions={5} />
-      <InventoryWarehouse
+      <InventoryProduct
         title={'Productos'}
-        searchModuleByTxt={searchByTxt}
+        searchByServiceCategory={searchByCategoryService}
+        searchWarehouseByTxt={searchByTxt}
         dataSource={inventoryProducts}
-        closeAfterSave={getProducts}
-        deleteItemModule={deleteProduct}
+        closeAfterSaveWareHouse={getProducts}
+        deleteItemWareHouse={deleteProduct}
       />
     </>
   )
