@@ -8,7 +8,6 @@ import { catchingErrors } from '../../utils/Utils'
 // UI components
 import HeaderPage from '../../components/HeaderPage'
 import UserFields from './components/userFields'
-import UserSrc from './usersSrc'
 
 function UserView(props) {
   const [loading, setLoading] = useState(false)
@@ -18,7 +17,7 @@ function UserView(props) {
     try {
       //verify is user existe on BD
 
-      let existsUser = await UserSrc.getUsersPermissions(
+      let existsUser = await UsersSrc.getUsersPermissions(
         encodeURIComponent(data.email)
       )
 

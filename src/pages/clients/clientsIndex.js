@@ -72,6 +72,7 @@ function Clients(props) {
   }
 
   const DeleteRow = data => {
+    setLoading(true)
     ClientsSrc.deleteClient({ id: data.id })
       .then(_ => {
         message.success('Elemento eliminado.')

@@ -108,7 +108,7 @@ function InventoryHistory(props) {
     <>
       <Row gutter={16} className={'section-space-field'}>
         <Col xs={24} sm={24} md={24} lg={24}>
-          <Title level={3}>Historial</Title>
+          <Title level={3}>Bitacora</Title>
           <Divider className={'divider-custom-margins-users'} />
           <DynamicTable columns={columnsHistory} data={dataSource} />
         </Col>

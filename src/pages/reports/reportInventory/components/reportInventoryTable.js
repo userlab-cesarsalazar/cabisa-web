@@ -1,97 +1,72 @@
 import React from 'react'
-import {
-  Button,
-  Card,
-  Col,
-  DatePicker,
-  Divider,
-  Input,
-  Popconfirm,
-  Popover,
-  Row,
-  Select,
-  Table,
-  Tag,
-} from 'antd'
+import { Card, Col, DatePicker, Input, Row, Select, Table, Tag } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
+import ActionOptions from '../../../../components/actionOptions'
+
 const { Search } = Input
 const { Option } = Select
-const columns = [
-  {
-    title: 'Codigo',
-    dataIndex: 'code', // Field that is goint to be rendered
-    key: 'code',
-    render: text => <span>{text}</span>,
-  },
-  {
-    title: 'Serie',
-    dataIndex: 'serie', // Field that is goint to be rendered
-    key: 'serie',
-    render: text => <span>{text}</span>,
-  },
-  {
-    title: 'Costos',
-    dataIndex: 'price', // Field that is goint to be rendered
-    key: 'price',
-    render: text => <span>{text}</span>,
-  },
-
-  {
-    title: 'Estado',
-    dataIndex: 'status', // Field that is goint to be rendered
-    key: 'status',
-    render: text => (
-      <span>
-        {text === 'Activo' ? (
-          <Tag color='#87d068'>ACTIVO</Tag>
-        ) : text === 'InActivo' ? (
-          <Tag color='#f50'>INACTIVO</Tag>
-        ) : (
-          ''
-        )}
-      </span>
-    ),
-  },
-  {
-    title: '',
-    dataIndex: 'id', // Field that is goint to be rendered
-    key: 'id',
-    render: (row, data) => (
-      <span>
-        {
-          <Popover
-            placement='left'
-            style={{ zIndex: 'auto' }}
-            content={
-              <div>
-                <span className={'user-options-items'}>Editar</span>
-                <Divider
-                  className={'divider-enterprise-margins'}
-                  type={'horizontal'}
-                />
-                <Popconfirm
-                  title='Estas seguro de borrar el elemento selccionado?'
-                  okText='Si'
-                  cancelText='No'
-                >
-                  <span className={'user-options-items'}>Eliminar</span>
-                </Popconfirm>
-              </div>
-            }
-            trigger='click'
-          >
-            <Button shape={'circle'} className={'enterprise-settings-button'}>
-              <MoreOutlined />
-            </Button>
-          </Popover>
-        }
-      </span>
-    ),
-  },
-]
 
 function ReportInventoryTable(props) {
+  const handlerDeleteRow = data => {
+    console.log(data)
+  }
+
+  const handlerEditRow = data => {
+    console.log(data)
+  }
+
+  const columns = [
+    {
+      title: 'Codigo',
+      dataIndex: 'code', // Field that is goint to be rendered
+      key: 'code',
+      render: text => <span>{text}</span>,
+    },
+    {
+      title: 'Serie',
+      dataIndex: 'serie', // Field that is goint to be rendered
+      key: 'serie',
+      render: text => <span>{text}</span>,
+    },
+    {
+      title: 'Costos',
+      dataIndex: 'price', // Field that is goint to be rendered
+      key: 'price',
+      render: text => <span>{text}</span>,
+    },
+
+    {
+      title: 'Estado',
+      dataIndex: 'status', // Field that is goint to be rendered
+      key: 'status',
+      render: text => (
+        <span>
+          {text === 'Activo' ? (
+            <Tag color='#87d068'>ACTIVO</Tag>
+          ) : text === 'InActivo' ? (
+            <Tag color='#f50'>INACTIVO</Tag>
+          ) : (
+            ''
+          )}
+        </span>
+      ),
+    },
+    {
+      title: '',
+      dataIndex: 'id', // Field that is goint to be rendered
+      key: 'id',
+      render: (row, data) => (
+        <ActionOptions
+          editPermissions={false}
+          data={data}
+          permissionId={3}
+          handlerDeleteRow={handlerDeleteRow}
+          handlerEditRow={handlerEditRow}
+        />
+      ),
+    },
+  ]
+
   return (
     <>
       {/*FIELDS*/}

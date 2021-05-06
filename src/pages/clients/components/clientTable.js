@@ -1,22 +1,9 @@
 import React from 'react'
-import {
-  Table,
-  Col,
-  Input,
-  Button,
-  Row,
-  Card,
-  Popover,
-  Divider,
-  Popconfirm,
-  Tag,
-} from 'antd'
+import { Table, Col, Input, Row, Card, Tag } from 'antd'
 import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import MoreOutlined from '@ant-design/icons/lib/icons/MoreOutlined'
-import { Cache } from 'aws-amplify'
-import { validatePermissions } from '../../../utils/Utils'
+import ActionOptions from '../../../components/actionOptions'
 
 const { Search } = Input
 
@@ -73,60 +60,13 @@ function ClientTable(props) {
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
       render: (row, data) => (
-        <span>
-          {
-            <Popover
-              placement='left'
-              style={{ zIndex: 'auto' }}
-              content={
-                <div>
-                  {validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    7
-                  ).permissionsSection[0].edit && (
-                    <span
-                      className={'user-options-items'}
-                      onClick={() => handlerEditRow(data)}
-                    >
-                      Editar
-                    </span>
-                  )}
-                  {validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    7
-                  ).permissionsSection[0].delete &&
-                    validatePermissions(
-                      Cache.getItem('currentSession').userPermissions,
-                      7
-                    ).permissionsSection[0].edit && (
-                      <Divider
-                        className={'divider-enterprise-margins'}
-                        type={'horizontal'}
-                      />
-                    )}
-                  {validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    7
-                  ).permissionsSection[0].delete && (
-                    <Popconfirm
-                      title='Estas seguro de borrar el elemento selccionado?'
-                      onConfirm={() => handlerDeleteRow(data)}
-                      okText='Si'
-                      cancelText='No'
-                    >
-                      <span className={'user-options-items'}>Eliminar</span>
-                    </Popconfirm>
-                  )}
-                </div>
-              }
-              trigger='click'
-            >
-              <Button shape={'circle'} className={'enterprise-settings-button'}>
-                <MoreOutlined />
-              </Button>
-            </Popover>
-          }
-        </span>
+        <ActionOptions
+          editPermissions={false}
+          data={data}
+          permissionId={7}
+          handlerDeleteRow={handlerDeleteRow}
+          handlerEditRow={handlerEditRow}
+        />
       ),
     },
   ]

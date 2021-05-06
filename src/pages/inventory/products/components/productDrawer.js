@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { Drawer, message, Spin } from 'antd'
-import InventoryFields from './inventoryFields'
-import InventoryHistory from './invetoryHistory'
-import InventorySrc from '../invetorySrc'
+import ProductFields from './productFields'
+import InventoryHistory from '../../components/invetoryHistory'
+import InventorySrc from '../../inventorySrc'
 
-function InventoryDrawer(props) {
+function ProductDrawer(props) {
   const [loadingDrawer, setLoadingDrawer] = useState(false)
 
   const onSaveBtn = (method, data, id) => {
@@ -19,7 +19,8 @@ function InventoryDrawer(props) {
       code: data.code,
       serial_number: data.serie,
       cost: data.price,
-      engine_number: data.engine_number,
+      engine_number: null,
+      is_active: data.is_active,
     }
     setLoadingDrawer(true)
     InventorySrc.updateProduct(editDataObj)
@@ -57,8 +58,7 @@ function InventoryDrawer(props) {
       width={800}
     >
       <Spin spinning={loadingDrawer}>
-        <InventoryFields
-          warehouse={props.warehouse}
+        <ProductFields
           saveUserData={onSaveBtn}
           visible={props.visible}
           edit={props.edit}
@@ -71,4 +71,4 @@ function InventoryDrawer(props) {
   )
 }
 
-export default InventoryDrawer
+export default ProductDrawer

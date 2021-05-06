@@ -12,10 +12,12 @@ const createClient = _users => api.post(url, _users)
 const updateClient = _users => api.put(url, _users)
 const deleteClient = _users => api.remove(url, _users)
 
-export default {
+const ClientsSrc = {
   getClients,
   createClient,
   updateClient,
   deleteClient,
   getClientsFilter,
 }
+
+export default ClientsSrc

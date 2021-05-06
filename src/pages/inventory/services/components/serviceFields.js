@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import FooterButtons from '../../../components/FooterButtons'
+import FooterButtons from '../../../../components/FooterButtons'
 import {
   Col,
   Divider,
@@ -10,33 +10,32 @@ import {
   Tag,
   Typography,
 } from 'antd'
+import { Cache } from 'aws-amplify'
 const { Title } = Typography
 const { Option } = Select
 
-function InventoryFields(props) {
+function ServiceFields(props) {
   const [code, setCode] = useState('')
-  const [serie, setSerie] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
-  const [service, setService] = useState(null)
-  const [engineNumber, setEngineNumber] = useState('')
+  const [status, setStatus] = useState(1)
+
+  const [specialPermission, setSpecialPermission] = useState(false)
 
   useEffect(() => {
-    let serviceWarehouse = props.warehouse ? 3 : null
     setCode(props.edit ? props.editData.code : '')
-    setSerie(props.edit ? props.editData.serial_number : '')
     setDescription(props.edit ? props.editData.name : '')
     setPrice(props.edit ? props.editData.cost : '')
-    setService(props.edit ? props.editData.service_type_id : serviceWarehouse)
-    setEngineNumber(props.edit ? props.editData.engine_number : '')
+    setStatus(props.edit ? props.editData.is_active : 1)
+    setSpecialPermission(Cache.getItem('currentSession').rol_id !== 1)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.visible])
 
   const saveData = () => {
     let validate = false
     if (
-      [code, serie, description, price, service].includes('') ||
-      [code, serie, description, price, service].includes(undefined)
+      [code, description, price, status].includes('') ||
+      [code, description, price, status].includes(undefined)
     ) {
       message.warning('Todos los campos son obligatorios.')
     } else {
@@ -45,12 +44,11 @@ function InventoryFields(props) {
 
     const data = {
       code,
-      serie,
       description,
       price,
-      service,
-      category: props.warehouse ? 2 : 1,
-      engine_number: engineNumber,
+      service: 1,
+      category: 1,
+      is_active: status,
     }
 
     if (validate)
@@ -66,13 +64,13 @@ function InventoryFields(props) {
       <div>
         {props.edit && (
           <>
-            <Title>{props.edit ? 'Editar Item' : 'Nuevo Item'}</Title>
+            <Title>{props.edit ? 'Editar Servicio' : 'Nuevo Servicio'}</Title>
             <Divider className={'divider-custom-margins-users'} />
           </>
         )}
         {/*Fields section*/}
         <Row gutter={16} className={'section-space-field'}>
-          <Col xs={12} sm={12} md={12} lg={12}>
+          <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Codigo</div>
             <Input
               value={code}
@@ -81,18 +79,7 @@ function InventoryFields(props) {
               onChange={value => setCode(value.target.value)}
             />
           </Col>
-          <Col xs={12} sm={12} md={12} lg={12}>
-            <div className={'title-space-field'}>No. Serie</div>
-            <Input
-              value={serie}
-              placeholder={'No. Serie'}
-              size={'large'}
-              onChange={value => setSerie(value.target.value)}
-            />
-          </Col>
-        </Row>
-        <Row gutter={16} className={'section-space-field'}>
-          <Col xs={8} sm={8} md={8} lg={8}>
+          <Col xs={16} sm={16} md={16} lg={16}>
             <div className={'title-space-field'}>Descripcion</div>
             <Input
               value={description}
@@ -101,9 +88,12 @@ function InventoryFields(props) {
               onChange={value => setDescription(value.target.value)}
             />
           </Col>
+        </Row>
+        <Row gutter={16} className={'section-space-field'}>
           <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Costo</div>
+            <div className={'title-space-field'}>Precio de venta</div>
             <Input
+              disabled={specialPermission}
               type={'number'}
               value={price}
               placeholder={'Costo'}
@@ -112,55 +102,38 @@ function InventoryFields(props) {
             />
           </Col>
           <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Categoria</div>
+            <div className={'title-space-field'}>Estado</div>
             <Select
-              defaultValue={props.warehouse && 3}
-              value={service}
-              disabled={props.warehouse}
+              defaultValue={1}
+              value={status}
               className={'single-select'}
-              placeholder={'Tipo de servicio'}
+              placeholder={'Estado'}
               size={'large'}
               style={{ width: '100%', height: '40px' }}
               getPopupContainer={trigger => trigger.parentNode}
-              onChange={value => setService(value)}
+              onChange={value => setStatus(value)}
             >
+              <Option value={0}>
+                <Tag color='#f50'>Inactivo</Tag>
+              </Option>
               <Option value={1}>
-                <Tag color='#87d068'>Servicio</Tag>
+                <Tag color='#87d068'>Activo</Tag>
               </Option>
               <Option value={2}>
-                <Tag color='#f50'>Equipo</Tag>
+                <Tag color='grey'>Bloqueado</Tag>
               </Option>
-              {props.warehouse && (
-                <Option value={3}>
-                  <Tag color='#f50'>Repuesto</Tag>
-                </Option>
-              )}
             </Select>
           </Col>
         </Row>
-        {!props.warehouse && (
-          <Row gutter={16} className={'section-space-field'}>
-            <Col xs={8} sm={8} md={8} lg={8}>
-              <div className={'title-space-field'}>Número de Motor</div>
-              <Input
-                value={engineNumber}
-                placeholder={'Número de Motor'}
-                size={'large'}
-                onChange={value => setEngineNumber(value.target.value)}
-              />
-            </Col>
-          </Row>
-        )}
-
         {/*End Fields section*/}
       </div>
       <FooterButtons
         saveData={saveData}
         cancelButton={props.cancelButton}
         edit={props.edit}
-        cancelLink='/inventory'
+        cancelLink='/inventoryServices'
       />
     </>
   )
 }
-export default InventoryFields
+export default ServiceFields

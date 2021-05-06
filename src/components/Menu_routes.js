@@ -1,11 +1,25 @@
+//users
 import Users from '../pages/users/usersIndex'
-import Clients from '../pages/clients/clientsIndex'
-import Sales from '../pages/sales/salesIndex'
 import UsersView from '../pages/users/userView'
-import ClientView from '../pages/clients/clientView'
+
+// Sales
+import Sales from '../pages/sales/salesIndex'
 import ServiceNoteView from '../pages/sales/components/serviceNote/serviceNoteView'
-import Inventory from '../pages/inventory/inventoryIndex'
-import InventoryView from '../pages/inventory/inventoryView'
+
+//Clients
+import Clients from '../pages/clients/clientsIndex'
+import ClientView from '../pages/clients/clientView'
+
+//Inventory
+
+import Products from '../pages/inventory/products/productIndex'
+import ProductView from '../pages/inventory/products/components/productView'
+
+import Services from '../pages/inventory/services/serviceIndex'
+import ServiceView from '../pages/inventory/services/serviceVIew'
+
+import InventoryMovement from '../pages/inventory/inventoryMovement/inventoryMovementIndex'
+import InventoryMovementView from '../pages/inventory/inventoryMovement/components/inventoryMovementView'
 
 //Reports
 import ReportMachine from '../pages/reports/reportMachine/reportMachineIndex'
@@ -19,10 +33,14 @@ import BillingView from '../pages/billing/billingView'
 
 import genericPage from '../pages/genericPage'
 
-import { report_sections } from './report_sections'
+import {
+  submenu_sections,
+  submenu_sections_inventory,
+} from './submenu_sections'
 
 //welcome
 import welcomePage from '../pages/welcomePage'
+
 const menu_routes = [
   {
     id: 0,
@@ -63,8 +81,9 @@ const menu_routes = [
     route: '/inventory',
     profilePermissions: [25],
     routeGroup: [
-      /^(\/inventory)|(\/inventory\/)|(\/inventoryView)|(\/inventoryView\/)|(\/inventoryView\/[a-zA-z0-9]*)/i,
+      /^(\/inventoryMovements)|(\/InventoryMovementsView)|(\/inventoryProducts)|(\/inventoryServices)|(\/inventoryProductsView)|(\/inventoryServicesView)/i,
     ],
+    sub_menu: submenu_sections_inventory,
   },
   {
     id: 6,
@@ -96,7 +115,7 @@ const menu_routes = [
     routeGroup: [
       /^(\/reportInventory)|(\/reportAccountsReceivable)|(\/reportAccountClient)|(\/reportEquipmentService)|(\/reportMachineHistory)|(\/reportMonthlyBill)|(\/reportShipping)|(\/reportSales)|(\/reportCommissions)|(\/reportCostSellingEquipment)/i,
     ],
-    sub_menu: report_sections,
+    sub_menu: submenu_sections,
   },
 ]
 
@@ -133,19 +152,49 @@ const menu_sub_routes = [
   },
   {
     id: 5,
-    route: '/inventory',
-    component: Inventory,
+    route: '/inventoryProducts',
+    component: Products,
   },
   {
     id: 5,
-    route: '/inventoryView',
-    component: InventoryView,
+    route: '/inventoryProductsView',
+    component: ProductView,
   },
   {
     id: 5,
-    route: '/inventoryView/warehouse',
-    component: InventoryView,
+    route: '/inventoryServices',
+    component: Services,
   },
+  {
+    id: 5,
+    route: '/inventoryServicesView',
+    component: ServiceView,
+  },
+  {
+    id: 5,
+    route: '/inventoryMovements',
+    component: InventoryMovement,
+  },
+  {
+    id: 5,
+    route: '/InventoryMovementsView',
+    component: InventoryMovementView,
+  },
+  // {
+  //   id: 5,
+  //   route: '/inventory',
+  //   component: Inventory,
+  // },
+  // {
+  //   id: 5,
+  //   route: '/inventoryView',
+  //   component: InventoryView,
+  // },
+  // {
+  //   id: 5,
+  //   route: '/inventoryView/warehouse',
+  //   component: InventoryView,
+  // },
   {
     id: 4,
     route: '/billing',

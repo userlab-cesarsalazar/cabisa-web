@@ -251,11 +251,12 @@ body {
 .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
   background-color: var(--cabisa-light-blue) !important;
   border-radius: 10px;
-  margin: auto !important;
+  /*margin: auto !important;*/
   color: white;
 }
 
-.ant-menu:not(.ant-menu-horizontal) .ant-menu-item {
+
+.ant-menu:not(.ant-menu-inline) .ant-menu-item {
   border-radius: 10px;
   font-weight: 500;
   font-size: 14px;
@@ -281,7 +282,7 @@ body {
 }
 
 .ant-menu-inline .ant-menu-item {
-  width: calc(90% + 1px) !important;
+  width: calc(98% + 1px) !important;
 }
 
 .ant-menu-inline-collapsed .ant-menu-item {
@@ -299,7 +300,7 @@ body {
 
 /*VERTICAL MENU*/
 .ant-menu-submenu-placement-rightTop{
-  top:50px !important;
+  /*top:5px !important;*/
   padding-left: 5px;
   background: #f0f8ff00 !important;
 }
