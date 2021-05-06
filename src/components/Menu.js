@@ -67,63 +67,59 @@ function MenuView() {
       case 'enterprises':
         return (
           <HomeOutlined
-            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
+            className={'ant-icon-menu-cabisa'}
           />
         )
       case 'users':
         return (
           <UsergroupAddOutlined
-            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
+            className={'ant-icon-menu-cabisa'}
           />
         )
       case 'shops':
         return (
           <ShopOutlined
-            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
+            className={'ant-icon-menu-cabisa'}
           />
         )
       case 'products':
         return (
           <ShoppingOutlined
-            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
+            className={'ant-icon-menu-cabisa'}
           />
         )
       case 'clients':
         return (
           <IdcardOutlined
-            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
+            className={'ant-icon-menu-cabisa'}
           />
         )
       case 'configurations':
         return (
           <SettingOutlined
-            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
+            className={'ant-icon-menu-cabisa'}
           />
         )
       case 'inventory':
         return (
           <ProjectOutlined
-            style={{
-              color: 'var(--cabisa-yellow)',
-              fontSize: '18px',
-              transform: 'rotate(-90deg)',
-            }}
+            className={'ant-icon-menu-cabisa'}
           />
         )
       case 'pos':
         return (
           <CreditCardOutlined
-            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
+            className={'ant-icon-menu-cabisa'}
           />
         )
       case 'cashRegister':
         return (
           <WalletOutlined
-            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
+            className={'ant-icon-menu-cabisa'}
           />
         )
       default:
-        return <React.Fragment></React.Fragment>
+        return <></>
     }
   }
   
@@ -131,7 +127,7 @@ function MenuView() {
     <Menu
       mode='inline'
       selectedKeys={[key]}
-      style={{height: '100%', paddingTop: '5px', border: 'none', overflowY: 'auto', paddingBottom: '75px' }}
+      className={'ant-menu-custom'}
     >
       {menu_routes &&
       menu_routes.length > 0 &&
@@ -187,17 +183,6 @@ function MenuView() {
               </Link>
             </Menu.Item>
           )
-        
-        // <Menu.Item
-        //   key={option.key}
-        //   icon={returnIcon()}
-        //   onClick={() => setKey(option.key)}
-        // >
-        //   <Link to={option.route}>
-        //     {returnIcon(option.icon)}
-        //     <span style={{ paddingLeft: '13px' }}>{option.name}</span>
-        //   </Link>
-        // </Menu.Item>
       )}
     </Menu>
   )
