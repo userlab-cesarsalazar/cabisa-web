@@ -251,11 +251,12 @@ body {
 .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
   background-color: var(--cabisa-light-blue) !important;
   border-radius: 10px;
-  margin: auto !important;
+  /*margin: auto !important;*/
   color: white;
 }
 
-.ant-menu:not(.ant-menu-horizontal) .ant-menu-item {
+
+.ant-menu:not(.ant-menu-inline) .ant-menu-item {
   border-radius: 10px;
   font-weight: 500;
   font-size: 14px;
@@ -281,7 +282,7 @@ body {
 }
 
 .ant-menu-inline .ant-menu-item {
-  width: calc(90% + 1px) !important;
+  width: calc(98% + 1px) !important;
 }
 
 .ant-menu-inline-collapsed .ant-menu-item {

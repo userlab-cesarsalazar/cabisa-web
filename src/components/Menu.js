@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Menu } from 'antd'
+import React, {useEffect, useState} from 'react'
+import {Menu} from 'antd'
 import {
   HomeOutlined,
   UsergroupAddOutlined,
@@ -11,23 +11,24 @@ import {
   CreditCardOutlined,
   WalletOutlined,
 } from '@ant-design/icons'
-import { Link, useHistory } from 'react-router-dom'
-import { menu_routes } from './Menu_routes'
-import { Cache } from 'aws-amplify'
-import { validatePermissions } from '../utils/Utils'
-const { SubMenu } = Menu
+import {Link, useHistory} from 'react-router-dom'
+import {menu_routes} from './Menu_routes'
+import {Cache} from 'aws-amplify'
+import {validatePermissions} from '../utils/Utils'
+
+const {SubMenu} = Menu
 
 function MenuView() {
   const history = useHistory()
   const [key, setKey] = useState('')
-
+  
   useEffect(() => {
     let subMenuMatch = null
     let actualPath = menu_routes.find(
       m =>
         menuRouterFunction(m.routeGroup, m.route) === history.location.pathname
     )
-
+    
     if (actualPath.sub_menu) {
       actualPath.routeGroup.forEach(regexp => {
         if (regexp.test(history.location.pathname)) {
@@ -46,7 +47,7 @@ function MenuView() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
+  
   const setKeyValue = key => {
     setKey(key)
   }
@@ -57,46 +58,46 @@ function MenuView() {
         someOneMatch = true
       }
     })
-
+    
     return someOneMatch ? history.location.pathname : defaultRoute
   }
-
+  
   let returnIcon = iconName => {
     switch (iconName) {
       case 'enterprises':
         return (
           <HomeOutlined
-            style={{ color: 'var(--cabisa-yellow)', fontSize: '18px' }}
+            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
           />
         )
       case 'users':
         return (
           <UsergroupAddOutlined
-            style={{ color: 'var(--cabisa-yellow)', fontSize: '18px' }}
+            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
           />
         )
       case 'shops':
         return (
           <ShopOutlined
-            style={{ color: 'var(--cabisa-yellow)', fontSize: '18px' }}
+            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
           />
         )
       case 'products':
         return (
           <ShoppingOutlined
-            style={{ color: 'var(--cabisa-yellow)', fontSize: '18px' }}
+            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
           />
         )
       case 'clients':
         return (
           <IdcardOutlined
-            style={{ color: 'var(--cabisa-yellow)', fontSize: '18px' }}
+            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
           />
         )
       case 'configurations':
         return (
           <SettingOutlined
-            style={{ color: 'var(--cabisa-yellow)', fontSize: '18px' }}
+            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
           />
         )
       case 'inventory':
@@ -112,93 +113,94 @@ function MenuView() {
       case 'pos':
         return (
           <CreditCardOutlined
-            style={{ color: 'var(--cabisa-yellow)', fontSize: '18px' }}
+            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
           />
         )
       case 'cashRegister':
         return (
           <WalletOutlined
-            style={{ color: 'var(--cabisa-yellow)', fontSize: '18px' }}
+            style={{color: 'var(--cabisa-yellow)', fontSize: '18px'}}
           />
         )
       default:
         return <React.Fragment></React.Fragment>
     }
   }
-
+  
   return (
     <Menu
-      mode='vertical'
+      mode='inline'
       selectedKeys={[key]}
-      style={{ height: '100%', paddingTop: '20px', border: 'none' }}
+      style={{height: '100%', paddingTop: '5px', border: 'none', overflowY: 'auto', paddingBottom: '75px' }}
     >
       {menu_routes &&
-        menu_routes.length > 0 &&
-        menu_routes.map(
-          (option, i) =>
-            option.sub_menu ? (
-              <SubMenu
-                className={
-                  validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    option.id
-                  ).enableSection
-                    ? ''
-                    : 'hide-component'
-                }
-                key={option.key}
-                icon={returnIcon(option.icon)}
-                title={option.name}
-              >
-                {option.sub_menu.map((subMenuOption, index) => {
-                  return (
-                    <Menu.Item
-                      key={subMenuOption.key}
-                      onClick={() => setKeyValue(subMenuOption.key)}
-                    >
-                      <Link to={subMenuOption.route}>
-                        {returnIcon(option.icon)}
-                        <span style={{ paddingLeft: '13px' }}>
+      menu_routes.length > 0 &&
+      menu_routes.map(
+        (option, i) =>
+          option.sub_menu ? (
+            <SubMenu
+              className={
+                validatePermissions(
+                  Cache.getItem('currentSession').userPermissions,
+                  option.id
+                ).enableSection
+                  ? ''
+                  : 'hide-component'
+              }
+              key={option.key}
+              icon={returnIcon(option.icon)}
+              title={option.name}
+            >
+              {option.sub_menu.map((subMenuOption, index) => {
+                return (
+                  <Menu.Item
+                    key={subMenuOption.key}
+                    onClick={() => setKeyValue(subMenuOption.key)}
+                  >
+                    <Link to={subMenuOption.route}>
+                      {returnIcon(option.icon)}
+                      <span style={{paddingLeft: '0px'}}>
                           {subMenuOption.name}
                         </span>
-                      </Link>
-                    </Menu.Item>
-                  )
-                })}
-              </SubMenu>
-            ) : (
-              <Menu.Item
-                className={
-                  validatePermissions(
-                    Cache.getItem('currentSession').userPermissions,
-                    option.id
-                  ).enableSection
-                    ? ''
-                    : 'hide-component'
-                }
-                key={option.key}
-                icon={returnIcon()}
-                onClick={() => setKey(option.key)}
-              >
-                <Link to={option.route}>
-                  {returnIcon(option.icon)}
-                  <span style={{ paddingLeft: '13px' }}>{option.name}</span>
-                </Link>
-              </Menu.Item>
-            )
-
-          // <Menu.Item
-          //   key={option.key}
-          //   icon={returnIcon()}
-          //   onClick={() => setKey(option.key)}
-          // >
-          //   <Link to={option.route}>
-          //     {returnIcon(option.icon)}
-          //     <span style={{ paddingLeft: '13px' }}>{option.name}</span>
-          //   </Link>
-          // </Menu.Item>
-        )}
+                    </Link>
+                  </Menu.Item>
+                )
+              })}
+            </SubMenu>
+          ) : (
+            <Menu.Item
+              className={
+                validatePermissions(
+                  Cache.getItem('currentSession').userPermissions,
+                  option.id
+                ).enableSection
+                  ? ''
+                  : 'hide-component'
+              }
+              key={option.key}
+              icon={returnIcon()}
+              onClick={() => setKey(option.key)}
+            >
+              <Link to={option.route}>
+                {returnIcon(option.icon)}
+                <span>{option.name}</span>
+              </Link>
+            </Menu.Item>
+          )
+        
+        // <Menu.Item
+        //   key={option.key}
+        //   icon={returnIcon()}
+        //   onClick={() => setKey(option.key)}
+        // >
+        //   <Link to={option.route}>
+        //     {returnIcon(option.icon)}
+        //     <span style={{ paddingLeft: '13px' }}>{option.name}</span>
+        //   </Link>
+        // </Menu.Item>
+      )}
     </Menu>
   )
 }
+
 export default MenuView

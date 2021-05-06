@@ -123,12 +123,12 @@ const submenu_sections_inventory = [
     ),
   },
   {
-    name: 'Movimientos de inventario',
+    name: 'Movimientos',
     key: 'inventoryMovements',
     route: '/inventoryMovements',
     component: (
       <>
-        <h1>Productos</h1>
+        <h1>Movimientos</h1>
       </>
     ),
   },
