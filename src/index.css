@@ -248,6 +248,14 @@ body {
   background: var(--cabisa-green-light) !important;
 }
 
+.ant-menu-custom {
+  height: 100% !important;
+  padding-top: 5px !important;;
+  border: none !important;;
+  overflow-y: auto !important;;
+  padding-bottom: 75px !important;;
+}
+
 .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
   background-color: var(--cabisa-light-blue) !important;
   border-radius: 10px;
@@ -361,12 +369,15 @@ body {
 .ant-menu-submenu-arrow {
   color: white !important;
 }
-
-
 /*END VERTICAL MENU*/
 
 
-  /*END CUSTOM MENU ITEMS*/
+.ant-icon-menu-cabisa{
+  color: var(--cabisa-yellow) !important;
+  font-size: 18px;
+}
+
+/*END CUSTOM MENU ITEMS*/
 
 .title-cabisa.new-button {
   background-color: var(--cabisa-light-blue);
@@ -1485,3 +1496,4 @@ input:-webkit-autofill:focus {
 .cover-image{
   object-fit: cover;
 }
+

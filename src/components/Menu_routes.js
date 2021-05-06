@@ -180,21 +180,6 @@ const menu_sub_routes = [
     route: '/InventoryMovementsView',
     component: InventoryMovementView,
   },
-  // {
-  //   id: 5,
-  //   route: '/inventory',
-  //   component: Inventory,
-  // },
-  // {
-  //   id: 5,
-  //   route: '/inventoryView',
-  //   component: InventoryView,
-  // },
-  // {
-  //   id: 5,
-  //   route: '/inventoryView/warehouse',
-  //   component: InventoryView,
-  // },
   {
     id: 4,
     route: '/billing',
@@ -261,4 +246,4 @@ const menu_sub_routes = [
     component: welcomePage,
   },
 ]
-export { menu_routes, menu_sub_routes }
+export {menu_routes, menu_sub_routes}
