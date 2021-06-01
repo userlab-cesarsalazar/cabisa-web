@@ -1,258 +1,489 @@
 import React, { useEffect, useState } from 'react'
-import FooterButtons from '../../../../components/FooterButtons'
+import { useHistory } from 'react-router-dom'
+import debounce from 'lodash/debounce'
+import moment from 'moment'
 import {
   Col,
-  DatePicker,
   Divider,
   Input,
-  message,
   Row,
+  DatePicker,
+  Button,
   Select,
-  Tag,
+  Popconfirm,
+  message,
   Typography,
+  Spin,
 } from 'antd'
-import moment from 'moment'
-import InventorySrc from '../../inventorySrc'
-import { Cache } from 'aws-amplify'
+import FooterButtons from '../../../../components/FooterButtons'
+import DynamicTable from '../../../../components/DynamicTable'
+import { showErrors } from '../../../../utils'
+import { productsStatus, stakeholdersStatus } from '../../../../commons/types'
+import { useEditableList } from '../../../../hooks'
+import inventorySrc from '../../inventorySrc'
+
 const { Title } = Typography
+const { TextArea } = Input
 const { Option } = Select
 
-function InventoryMovementFields(props) {
-  const [dateCreated, setDateCreated] = useState(null)
-  const [description, setDescription] = useState(null)
-  const [productCode, setProductCode] = useState('')
-  const [provider, setProvider] = useState('')
-  const [quantity, setQuantity] = useState(null)
-  const [billNumber, setBillNumber] = useState('')
-  const [purchaseCost, setPurchaseCost] = useState(null)
-  const [createdBy, setCreatedBy] = useState('')
-  const [type, setType] = useState(null)
-  const [searchProducts, setSearchProducts] = useState([])
+const getColumnsDynamicTable = ({
+  handleChangeDetail,
+  handleRemoveDetail,
+  handleSearchProduct,
+  productsOptionsList,
+  loading,
+  forbidEdition,
+}) => [
+  {
+    width: '25%',
+    title: 'Codigo',
+    dataIndex: 'code', // Field that is goint to be rendered
+    key: 'code',
+    render: (_, record) => (
+      <Input
+        value={record.code}
+        size={'large'}
+        placeholder={'Codigo'}
+        disabled
+      />
+    ),
+  },
+  {
+    width: '40%',
+    title: 'Descripcion',
+    dataIndex: 'id', // Field that is goint to be rendered
+    key: 'id',
+    render: (_, record, rowIndex) => (
+      <Select
+        className={'single-select'}
+        placeholder={'Descripcion'}
+        size={'large'}
+        style={{ width: '100%', height: '40px', maxWidth: '300px' }}
+        getPopupContainer={trigger => trigger.parentNode}
+        showSearch
+        onSearch={debounce(handleSearchProduct, 400)}
+        value={record.id}
+        onChange={value => handleChangeDetail('id', value, rowIndex)}
+        loading={loading === 'productsOptionsList'}
+        optionFilterProp='children'
+        disabled={forbidEdition}
+      >
+        {productsOptionsList.length > 0 ? (
+          productsOptionsList?.map(value => (
+            <Option key={value.id} value={value.id}>
+              {value.description}
+            </Option>
+          ))
+        ) : (
+          <Option value={record.id}>{record.description}</Option>
+        )}
+      </Select>
+    ),
+  },
+  {
+    width: '15%',
+    title: 'Cantidad',
+    dataIndex: 'product_quantity', // Field that is goint to be rendered
+    key: 'product_quantity',
+    render: (_, record, rowIndex) => (
+      <Input
+        placeholder={'Cantidad'}
+        size={'large'}
+        value={record.quantity}
+        onChange={e => handleChangeDetail('quantity', e.target.value, rowIndex)}
+        min={0}
+        type='number'
+        disabled={forbidEdition}
+      />
+    ),
+  },
+  {
+    width: '20%',
+    title: 'Precio',
+    dataIndex: 'unit_price', // Field that is goint to be rendered
+    key: 'unit_price',
+    render: (_, record, rowIndex) => (
+      <Input
+        placeholder={'Precio'}
+        size={'large'}
+        value={record.unit_price}
+        onChange={e =>
+          handleChangeDetail('unit_price', e.target.value, rowIndex)
+        }
+        min={0}
+        type='number'
+        disabled={forbidEdition}
+      />
+    ),
+  },
+  {
+    title: '',
+    render: (_, __, rowIndex) =>
+      !forbidEdition && (
+        <Popconfirm
+          title={'¿Seguro de eliminar?'}
+          onConfirm={() => handleRemoveDetail(rowIndex)}
+        >
+          <span style={{ color: 'red' }}>Eliminar</span>
+        </Popconfirm>
+      ),
+  },
+]
 
-  const [loadingSelect, setLoadingSelect] = useState(false)
+function InventoryMovementFields({ forbidEdition, editData }) {
+  const history = useHistory()
+  const [loading, setLoading] = useState([])
+  const [data, setData] = useState([])
+  const [productsData, setProductsData] = useState([])
+  const [productsOptionsList, setProductsOptionsList] = useState([])
+  const [stakeholdersOptionsList, setStakeholdersOptionsList] = useState([])
 
-  useEffect(() => {
-    let userDataInfo = Cache.getItem('currentSession')
-    setDateCreated(props.edit ? props.editData.dateCreated : '')
-    setDescription(props.edit ? props.editData.description : undefined)
-    setProductCode(props.edit ? props.editData.productCode : '')
-    setProvider(props.edit ? props.editData.provider : '')
-    setQuantity(props.edit ? props.editData.quantity : null)
-    setBillNumber(props.edit ? props.editData.billNumber : '')
-    setPurchaseCost(props.edit ? props.editData.purchaseCost : null)
-    setCreatedBy(props.edit ? props.editData.createdBy : userDataInfo.userName)
-    setType(props.edit ? props.editData.type : null)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.visible])
-
-  const saveData = () => {
-    let validate = false
-    if (
-      [
-        dateCreated,
-        description,
-        productCode,
-        provider,
-        quantity,
-        billNumber,
-        purchaseCost,
-        createdBy,
-        type,
-      ].includes('') ||
-      [
-        dateCreated,
-        description,
-        productCode,
-        provider,
-        quantity,
-        billNumber,
-        purchaseCost,
-        createdBy,
-        type,
-      ].includes(null)
-    ) {
-      message.warning('Todos los campos son obligatorios.')
-    } else {
-      validate = true
-    }
-
+  const getDataFromEditData = editData => {
     const data = {
-      dateCreated,
-      description,
-      productCode,
-      provider,
-      quantity,
-      billNumber,
-      purchaseCost,
-      createdBy,
-      type,
+      comments: editData.comments,
+      stakeholder_id: editData.stakeholder_id,
+      stakeholder_name: editData.stakeholder_name,
+      stakeholder_business_man: editData.stakeholder_business_man,
+      stakeholder_address: editData.stakeholder_address,
+      stakeholder_phone: editData.stakeholder_phone,
+      related_external_document_id: editData.related_external_document_id,
+      start_date: editData.start_date,
     }
 
-    if (validate)
-      props.saveUserData(
-        props.edit,
-        data,
-        props.edit ? props.editData.id : null
-      )
+    const productsData = editData.products?.map(p => ({
+      code: p.code,
+      description: p.description,
+      id: p.id,
+      quantity: p.product_quantity,
+      unit_price: p.product_price,
+    }))
+
+    return { data, productsData }
   }
 
-  const searchProductByName = data => {
-    setLoadingSelect(true)
-    setDescription(data)
-    InventorySrc.getProductsFilter(data).then(result => {
-      setLoadingSelect(false)
-      setSearchProducts(result.message)
+  useEffect(() => {
+    if (!editData) return
+
+    const { data, productsData } = getDataFromEditData(editData)
+    setData(data)
+    setProductsData(productsData)
+  }, [editData])
+
+  const setProductData = (field, value, rowIndex) => {
+    if (field !== 'id') return
+
+    const product = productsOptionsList.find(option => option.id === value)
+
+    setProductsData(prevState => {
+      const newRow = {
+        ...prevState[rowIndex],
+        id: product.id,
+        code: product.code,
+        unit_price: product.unit_price,
+      }
+
+      return prevState.map((row, index) => (index === rowIndex ? newRow : row))
     })
   }
 
-  const onchangeProductName = val => {
-    setProductCode(val ? val.value : '')
-    setDescription(val ? val.children : undefined)
+  const {
+    handleAdd: handleAddDetail,
+    handleRemove: handleRemoveDetail,
+    handleChange: handleChangeDetail,
+  } = useEditableList({
+    state: productsData,
+    setState: setProductsData,
+    initRow: {
+      code: '',
+      description: '',
+      quantity: 0,
+      unit_price: 0,
+    },
+    onChange: setProductData,
+  })
+
+  const handleSearchProduct = product_description => {
+    if (product_description === '') return
+
+    const params = {
+      status: productsStatus.ACTIVE,
+      description: { $like: `${product_description}%` },
+    }
+
+    setLoading('productsOptionsList')
+
+    inventorySrc
+      .getProductsOptions(params)
+      .then(products => setProductsOptionsList(products))
+      .catch(error => showErrors(error))
+      .finally(setLoading(null))
   }
 
+  const columnsDynamicTable = getColumnsDynamicTable({
+    handleChangeDetail,
+    handleRemoveDetail,
+    handleSearchProduct,
+    productsOptionsList,
+    loading,
+    forbidEdition,
+  })
+
+  const getSaveData = () => ({
+    stakeholder_id: data.stakeholder_id,
+    start_date: data.start_date,
+    comments: data.comments,
+    related_external_document_id: data.related_external_document_id,
+    products: productsData.map(p => ({
+      product_id: p.id,
+      product_quantity: p.quantity,
+      product_price: p.unit_price,
+    })),
+  })
+
+  const validateSaveData = data => {
+    const errors = []
+    const requiredFields = [
+      { key: 'stakeholder_id', value: 'Empresa' },
+      { key: 'start_date', value: 'Fecha Inicio' },
+      { key: 'related_external_document_id', value: 'Nro de Documento' },
+    ]
+    const requiredErrors = requiredFields.flatMap(field =>
+      !data[field.key] ? field.value : []
+    )
+
+    if (requiredErrors.length > 0) {
+      requiredErrors.forEach(k => {
+        errors.push(`El campo ${k} es obligatorio`)
+      })
+    }
+
+    const productsRequiredFields = [
+      'product_id',
+      'product_quantity',
+      'product_price',
+    ]
+    const productRequiredPositions = data.products.flatMap((p, i) =>
+      productsRequiredFields.some(k => !p[k]) ? i + 1 : []
+    )
+
+    if (productRequiredPositions.length > 0) {
+      productRequiredPositions.forEach(p => {
+        errors.push(`Todos los campos del producto ${p} son obligatorios`)
+      })
+    }
+
+    return {
+      isInvalid: errors.length > 0,
+      error: {
+        message: errors,
+      },
+    }
+  }
+  const saveData = () => {
+    try {
+      const saveData = getSaveData()
+
+      const { isInvalid, error } = validateSaveData(saveData)
+
+      if (isInvalid) return showErrors(error)
+
+      setLoading('createPurchase')
+
+      inventorySrc
+        .createPurchase(saveData)
+        .then(_ => {
+          message.success('Venta creada exitosamente')
+          backToInventoryMovements()
+        })
+        .catch(error => showErrors(error))
+        .finally(setLoading(null))
+    } catch (error) {
+      showErrors(error)
+    }
+  }
+
+  const getHandleChangeValue = (field, e) => {
+    if (field === 'start_date' && e) return moment(e).format()
+
+    return e?.target?.value === undefined ? e : e.target.value
+  }
+
+  const handleChange = field => e => {
+    const value = getHandleChangeValue(field, e)
+
+    if (field === 'stakeholder_id') {
+      const stakeholder = stakeholdersOptionsList.find(
+        option => option.id === value
+      )
+
+      return setData(prevState => ({
+        ...prevState,
+        stakeholder_id: stakeholder.id,
+        stakeholder_address: stakeholder.address,
+        stakeholder_phone: stakeholder.phone,
+        stakeholder_business_man: stakeholder.business_man,
+      }))
+    }
+
+    setData(prevState => ({
+      ...prevState,
+      [field]: value,
+    }))
+  }
+
+  const handleSearchStakeholder = stakeholder_name => {
+    if (stakeholder_name === '') return
+
+    const params = {
+      status: stakeholdersStatus.ACTIVE,
+      name: { $like: `${stakeholder_name}%` },
+    }
+
+    setLoading('stakeholdersOptionsList')
+
+    inventorySrc
+      .getStakeholdersOptions(params)
+      .then(stakeholders => setStakeholdersOptionsList(stakeholders))
+      .catch(error => showErrors(error))
+      .finally(setLoading(null))
+  }
+
+  const backToInventoryMovements = () => history.push('/inventoryMovements')
+
   return (
-    <>
+    <Spin spinning={loading === 'createPurchase'}>
       <div>
-        {props.edit && (
+        {forbidEdition && (
           <>
-            <Title>
-              {props.edit
-                ? 'Editar Movimiento de inventario'
-                : 'Nuevo Movimiento de inventario'}
-            </Title>
+            <Title>{'Detalle de movimiento'}</Title>
             <Divider className={'divider-custom-margins-users'} />
           </>
         )}
-        {/*Fields section*/}
-        <Row gutter={16} className={'section-space-field'}>
+        <Row gutter={16}>
           <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Fecha de ingreso</div>
-            <DatePicker
-              value={dateCreated ? moment(dateCreated, 'DD/MM/YYYY') : moment()}
-              format={'DD/MM/YYYY'}
-              placeholder={'Fecha de ingreso'}
-              style={{ width: '100%', height: '40px', borderRadius: '8px' }}
-              onChange={(val, stringVal) => setDateCreated(stringVal)}
-            />
-          </Col>
-          <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Descripcion</div>
-
+            <div className={'title-space-field'}>Empresa</div>
             <Select
-              showSearch
-              placeholder={'Buscar producto'}
-              allowClear
-              optionFilterProp='children'
               className={'single-select'}
-              size={'large'}
-              style={{ width: '100%', height: '40px' }}
-              value={description}
-              onChange={(val, val2) => onchangeProductName(val2)}
-              onSearch={searchProductByName}
-              loading={loadingSelect}
-            >
-              {searchProducts.length > 0 &&
-                searchProducts.map(m => (
-                  <Select.Option key={m.id} value={m.code}>
-                    {m.description}
-                  </Select.Option>
-                ))}
-            </Select>
-          </Col>
-          <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Codigo de producto</div>
-            <Input
-              disabled
-              value={productCode}
-              placeholder={'No. Serie'}
-              size={'large'}
-              onChange={value => setProductCode(value.target.value)}
-            />
-          </Col>
-        </Row>
-        <Row gutter={16} className={'section-space-field'}>
-          <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Proveedor</div>
-            <Input
-              value={provider}
-              placeholder={'Descripcion'}
-              size={'large'}
-              onChange={value => setProvider(value.target.value)}
-            />
-          </Col>
-          <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Cantidad</div>
-            <Input
-              type={'number'}
-              value={quantity}
-              placeholder={'Costo'}
-              size={'large'}
-              onChange={value => setQuantity(value.target.value)}
-            />
-          </Col>
-          <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Nro. de documento</div>
-            <Input
-              value={billNumber}
-              placeholder={'Costo'}
-              size={'large'}
-              onChange={value => setBillNumber(value.target.value)}
-            />
-          </Col>
-        </Row>
-        <Row gutter={16} className={'section-space-field'}>
-          <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Costo de compra</div>
-            <Input
-              type={'number'}
-              value={purchaseCost}
-              placeholder={'Costo'}
-              size={'large'}
-              onChange={value => setPurchaseCost(value.target.value)}
-            />
-          </Col>
-          <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Ingresado por</div>
-            <Input
-              disabled
-              value={createdBy}
-              placeholder={'Ingresado por'}
-              size={'large'}
-              onChange={value => setCreatedBy(value.target.value)}
-            />
-          </Col>
-          <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Tipo de movimiento</div>
-            <Select
-              value={type}
-              className={'single-select'}
-              placeholder={'Tipo de servicio'}
+              placeholder={'Empresa'}
               size={'large'}
               style={{ width: '100%', height: '40px' }}
               getPopupContainer={trigger => trigger.parentNode}
-              onChange={value => setType(value)}
+              showSearch
+              onSearch={debounce(handleSearchStakeholder, 400)}
+              value={data.stakeholder_id}
+              onChange={handleChange('stakeholder_id')}
+              loading={loading === 'stakeholdersOptionsList'}
+              optionFilterProp='children'
+              disabled={forbidEdition}
             >
-              <Option value={1}>
-                <Tag color='blue'>Compra</Tag>
-              </Option>
-              <Option value={2}>
-                <Tag color='green'>Ingreso</Tag>
-              </Option>
-              <Option value={3}>
-                <Tag color='red'>Egreso</Tag>
-              </Option>
+              {stakeholdersOptionsList.length > 0 ? (
+                stakeholdersOptionsList.map(value => (
+                  <Option key={value.id} value={value.id}>
+                    {value.name}
+                  </Option>
+                ))
+              ) : (
+                <Option value={data.stakeholder_id}>
+                  {data.stakeholder_name}
+                </Option>
+              )}
             </Select>
           </Col>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <div className={'title-space-field'}>Fecha</div>
+            <DatePicker
+              style={{ width: '100%', height: '37px', borderRadius: '8px' }}
+              value={data.start_date ? moment(data.start_date) : ''}
+              onChange={handleChange('start_date')}
+              format='DD-MM-YYYY'
+              disabled={forbidEdition}
+            />
+          </Col>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <div className={'title-space-field'}>Nro de Documento</div>
+            <Input
+              placeholder={'Documento'}
+              size={'large'}
+              value={data.related_external_document_id}
+              onChange={handleChange('related_external_document_id')}
+              disabled={forbidEdition}
+            />
+          </Col>
         </Row>
-        {/*End Fields section*/}
+        <Row gutter={16} className={'section-space-field'}>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <div className={'title-space-field'}>Encargado</div>
+            <Input
+              placeholder={'Encargado'}
+              size={'large'}
+              value={data.stakeholder_business_man}
+              onChange={handleChange('stakeholder_business_man')}
+              disabled
+            />
+          </Col>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <div className={'title-space-field'}>Direccion</div>
+            <Input
+              placeholder={'Direccion'}
+              size={'large'}
+              value={data.stakeholder_address}
+              onChange={handleChange('stakeholder_address')}
+              disabled
+            />
+          </Col>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <div className={'title-space-field'}>Telefono</div>
+            <Input
+              placeholder={'Telefono'}
+              size={'large'}
+              value={data.stakeholder_phone}
+              onChange={handleChange('stakeholder_phone')}
+              disabled
+            />
+          </Col>
+        </Row>
+        <Divider className={'divider-custom-margins-users'} />
+        <Row gutter={16} className={'section-space-field'}>
+          <Col xs={24} sm={24} md={24} lg={24}>
+            <DynamicTable columns={columnsDynamicTable} data={productsData} />
+          </Col>
+          {!forbidEdition && (
+            <>
+              <Col xs={24} sm={24} md={24} lg={24}>
+                <Button
+                  type='dashed'
+                  className={'shop-add-turn'}
+                  onClick={handleAddDetail}
+                >
+                  Agregar Detalle
+                </Button>
+              </Col>
+              <Divider className={'divider-custom-margins-users'} />
+            </>
+          )}
+        </Row>
+        <Row gutter={16} className={'section-space-field'}>
+          <Col xs={24} sm={24} md={24} lg={24}>
+            <div className={'title-space-field'}>Observaciones</div>
+            <TextArea
+              rows={4}
+              value={data.comments}
+              onChange={handleChange('comments')}
+              disabled={forbidEdition}
+            />
+          </Col>
+        </Row>
       </div>
-      <FooterButtons
-        saveData={saveData}
-        cancelButton={props.cancelButton}
-        edit={props.edit}
-        cancelLink='/inventoryMovements'
-      />
-    </>
+      {!forbidEdition && (
+        <FooterButtons
+          saveData={saveData}
+          cancelButton={backToInventoryMovements}
+          edit={true}
+          cancelLink=''
+        />
+      )}
+    </Spin>
   )
 }
+
 export default InventoryMovementFields

@@ -1,10 +1,19 @@
 import React from 'react'
-import { Table, Col, Input, Button, Row, Card, Tag, Select } from 'antd'
+import {
+  Table,
+  Col,
+  Input,
+  Button,
+  Row,
+  Card,
+  Tag as AntTag,
+  Select,
+} from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import { validatePermissions } from '../../../../utils/Utils'
 import { Cache } from 'aws-amplify'
-import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
-import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
+import { documentsStatus } from '../../../../commons/types'
+import Tag from '../../../../components/Tag'
 
 const { Search } = Input
 const { Option } = Select
@@ -17,6 +26,10 @@ function InventoryMovementTable(props) {
   const filterCategory = data => {
     props.handlerCategoryService(data)
   }
+
+  const can = action =>
+    validatePermissions(Cache.getItem('currentSession').userPermissions, 5)
+      .permissionsSection[0][action]
 
   return (
     <>
@@ -33,7 +46,7 @@ function InventoryMovementTable(props) {
         </Col>
         <Col xs={8} sm={8} md={8} lg={8}>
           <Select
-            defaultValue={99}
+            defaultValue={''}
             className={'single-select'}
             placeholder={'Categoria'}
             size={'large'}
@@ -41,28 +54,22 @@ function InventoryMovementTable(props) {
             getPopupContainer={trigger => trigger.parentNode}
             onChange={value => filterCategory(value)}
           >
-            <Option value={99}>
-              <Tag color='grey'>Todo</Tag>
+            <Option value={''}>
+              <AntTag color='grey'>Todo</AntTag>
             </Option>
-            <Option value={1}>
-              <Tag color='blue'>Compra</Tag>
+            <Option value={documentsStatus.APPROVED}>
+              <Tag type='documentStatus' value={documentsStatus.APPROVED} />
             </Option>
-            <Option value={2}>
-              <Tag color='green'>Ingreso</Tag>
-            </Option>
-            <Option value={3}>
-              <Tag color='red'>Egreso</Tag>
+            <Option value={documentsStatus.CANCELLED}>
+              <Tag type='documentStatus' value={documentsStatus.CANCELLED} />
             </Option>
           </Select>
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} style={{ textAlign: 'right' }}>
-          {validatePermissions(
-            Cache.getItem('currentSession').userPermissions,
-            5
-          ).permissionsSection[0].create && (
+          {can('create') && (
             <Button
               className='title-cabisa new-button'
-              onClick={props.showDraweTbl}
+              onClick={props.goCreateNewItem}
             >
               Nuevo Item
             </Button>
@@ -82,30 +89,6 @@ function InventoryMovementTable(props) {
                   pagination={{ pageSize: 5 }}
                   loading={props.loading}
                   rowKey='id'
-                  expandable={{
-                    expandedRowRender: record => (
-                      <div className={'text-left'}>
-                        <p>
-                          <b>Cantidad: </b>{' '}
-                          {record.quantity !== null ? record.quantity : ''}{' '}
-                        </p>
-                        <p>
-                          <b>Nro. Documento: </b>{' '}
-                          {record.billNumber !== null ? record.billNumber : ''}{' '}
-                        </p>
-                        <p>
-                          <b>Ingresado por: </b>{' '}
-                          {record.createdBy !== null ? record.createdBy : ''}{' '}
-                        </p>
-                      </div>
-                    ),
-                    expandIcon: ({ expanded, onExpand, record }) =>
-                      expanded ? (
-                        <DownOutlined onClick={e => onExpand(record, e)} />
-                      ) : (
-                        <RightOutlined onClick={e => onExpand(record, e)} />
-                      ),
-                  }}
                 />
               </Col>
             </Row>

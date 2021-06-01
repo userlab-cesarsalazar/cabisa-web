@@ -1,25 +1,39 @@
 import api from '../../commons/api'
 import { stage } from '../../commons/credentials'
 
-const urlUser = stage.inventoryUrl
+const urlProduct = stage.productUrl
+const urlPurchase = stage.purchaseUrl
+const urlStakeholder = stage.stakeholderUrl
 
-const getProducts = () => api.get(urlUser)
-const createProduct = _products => api.post(urlUser, _products)
-const updateProduct = _products => api.put(urlUser, _products)
-const deleteProduct = _products => api.remove(urlUser, _products)
-const getProductsFilter = name =>
-  api.getParams(name ? `${urlUser}?name=${name}` : urlUser)
+const getPurchases = params => api.get(urlPurchase, { ...params })
+const createPurchase = data => api.post(urlPurchase, data)
+const cancelPurchase = data => api.put(`${urlPurchase}/cancel`, data)
 
-const getProductsFilterByCategory = service =>
-  api.getParams(service ? `${urlUser}?service_type_id=${service}` : urlUser)
+const getProducts = params => api.get(urlProduct, { ...params })
+const getProductsStatus = () => api.get(`${urlProduct}-status`)
+const getProductsCategories = () => api.get(`${urlProduct}-categories`)
+const getProductsTaxes = () => api.get(`${urlProduct}-taxes`)
+const getProductsOptions = params =>
+  api.get(`${urlProduct}-options`, { ...params })
+const getStakeholdersOptions = params =>
+  api.get(`${urlStakeholder}-options`, { ...params })
+const createProduct = _products => api.post(urlProduct, _products)
+const updateProduct = _products => api.put(urlProduct, _products)
+const deleteProduct = _products => api.remove(urlProduct, _products)
 
 const InventorySrc = {
+  getPurchases,
+  createPurchase,
+  cancelPurchase,
   getProducts,
+  getProductsCategories,
+  getProductsStatus,
+  getProductsTaxes,
+  getProductsOptions,
+  getStakeholdersOptions,
   createProduct,
   updateProduct,
   deleteProduct,
-  getProductsFilter,
-  getProductsFilterByCategory,
 }
 
 export default InventorySrc

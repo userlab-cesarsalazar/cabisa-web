@@ -1,148 +1,135 @@
-import React, { useEffect, useState } from 'react'
-import { Tag } from 'antd'
+import React, { useEffect, useCallback, useState } from 'react'
+import moment from 'moment'
+import { useHistory } from 'react-router'
 import ActionOptions from '../../../../components/actionOptions'
 import InventoryMovementTable from './inventoryMovementTable'
 import InventoryMovementDrawer from './inventoryMovementDrawer'
-import { withRouter } from 'react-router'
+import inventorySrc from '../../inventorySrc'
+import { showErrors } from '../../../../utils'
+import Tag from '../../../../components/Tag'
+import { message } from 'antd'
 
-function InventoryMovementComponent(props) {
-  const [editMode, setEditMode] = useState(false)
-  const [editDataDrawer, setEditDataDrawer] = useState(null)
-  const [dataSource, setDataSource] = useState([])
+const getColumns = ({ DeleteRow, EditRow }) => [
+  {
+    title: 'Fecha',
+    dataIndex: 'start_date', // Field that is goint to be rendered
+    key: 'start_date',
+    render: text =>
+      text ? <span>{moment(text).format('DD-MM-YYYY')}</span> : '',
+  },
+  {
+    title: 'Nro Documento',
+    dataIndex: 'related_external_document_id',
+    key: 'related_external_document_id',
+  },
+  {
+    title: 'Proveedor',
+    dataIndex: 'stakeholder_name',
+    key: 'stakeholder_name',
+  },
+  {
+    title: 'Status',
+    dataIndex: 'status', // Field that is goint to be rendered
+    key: 'status',
+    render: text => <Tag type='documentStatus' value={text} />,
+  },
+  {
+    title: '',
+    dataIndex: 'id', // Field that is goint to be rendered
+    key: 'id',
+    render: (_, data) => (
+      <ActionOptions
+        editPermissions={false}
+        data={data}
+        permissionId={5}
+        handlerDeleteRow={DeleteRow}
+        handlerEditRow={EditRow}
+        editAction='show'
+        deleteAction='cancel'
+      />
+    ),
+  },
+]
+
+function InventoryMovementComponent() {
+  const history = useHistory()
   const [loading, setLoading] = useState(false)
+  const [dataSource, setDataSource] = useState([])
   const [isVisible, setIsVisible] = useState(false)
+  const [searchText, setSearchText] = useState('')
+  const [statusFilter, setStatusFilter] = useState('')
+  const [editDataDrawer, setEditDataDrawer] = useState(null)
 
-  const columns = [
-    {
-      title: 'Fecha de ingreso',
-      dataIndex: 'dateCreated', // Field that is goint to be rendered
-      key: 'dateCreated',
-    },
-    {
-      title: 'Descripcion',
-      dataIndex: 'description',
-      key: 'description',
-    },
-    {
-      title: 'Codigo de producto',
-      dataIndex: 'productCode',
-      key: 'productCode',
-    },
-    {
-      title: 'Proveedor',
-      dataIndex: 'provider',
-      key: 'provider',
-    },
-    {
-      title: 'Costo de compra',
-      dataIndex: 'purchaseCost',
-      key: 'purchaseCost',
-    },
-    {
-      title: 'Tipo de movimiento',
-      dataIndex: 'type', // Field that is goint to be rendered
-      key: 'type',
-      render: text => (
-        <span>
-          {text === 1 ? (
-            <Tag color='blue'>Compra</Tag>
-          ) : text === 2 ? (
-            <Tag color='green'>Ingreso</Tag>
-          ) : text === 3 ? (
-            <Tag color='red'>Egreso</Tag>
-          ) : (
-            ''
-          )}
-        </span>
-      ),
-    },
-    {
-      title: '',
-      dataIndex: 'id', // Field that is goint to be rendered
-      key: 'id',
-      render: (row, data) => (
-        <ActionOptions
-          editPermissions={false}
-          data={data}
-          permissionId={5}
-          handlerDeleteRow={DeleteRow}
-          handlerEditRow={EditRow}
-        />
-      ),
-    },
-  ]
+  const getPurchases = useCallback(() => {
+    setLoading(true)
+
+    inventorySrc
+      .getPurchases({
+        related_external_document_id: { $like: `${searchText}%` },
+        status: statusFilter,
+      })
+      .then(data => setDataSource(data))
+      .catch(error => showErrors(error))
+      .finally(setLoading(false))
+  }, [searchText, statusFilter])
 
   useEffect(() => {
-    setIsVisible(false)
-    setLoading(false)
-    loadData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.dataSource])
+    getPurchases()
+  }, [getPurchases])
 
-  const showEdit = () => {
-    props.history.push('/inventoryMovementsView')
+  const searchByTxt = data => setSearchText(data)
+
+  const searchByStatus = data => setStatusFilter(data)
+
+  const goCreateNewItem = () => history.push('/inventoryMovementsView')
+
+  const onClose = () => setIsVisible(false)
+
+  const clearSearch = () => {
+    if (searchText === '' && statusFilter === '') getPurchases()
+    else {
+      setSearchText('')
+      setStatusFilter('')
+    }
   }
 
-  const onClose = () => {
-    setIsVisible(false)
-  }
-
-  const loadData = () => {
-    setIsVisible(false)
-    setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
-    setTimeout(() => setDataSource(props.dataSource), 500)
-  }
-
-  const searchTextFinder = data => {
-    props.searchByTxt(data)
-  }
-
-  const searchByCategory = data => {
-    props.searchByCategoryMovement(data)
-  }
-
-  const onCloseAfterSave = () => {
-    setIsVisible(false)
-    props.closeAfterSaveInventoryMovement()
-  }
-
-  //START: table handler
   const EditRow = data => {
     setEditDataDrawer(data)
     setIsVisible(true)
-    setEditMode(true)
   }
 
   const DeleteRow = data => {
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 1000)
-    props.deleteMovement({ id: data.id })
+
+    inventorySrc
+      .cancelPurchase({ document_id: data.id })
+      .then(_ => {
+        clearSearch()
+        message.success('Compra anulada exitosamente')
+      })
+      .catch(error => showErrors(error))
+      .finally(setLoading(false))
   }
-  //END: table handler
+
+  const columns = getColumns({ DeleteRow, EditRow })
 
   return (
     <>
       <InventoryMovementTable
-        showDraweTbl={showEdit}
-        dataSource={dataSource}
-        loading={loading}
-        handlerTextSearch={searchTextFinder}
-        handlerCategoryService={searchByCategory}
         columns={columns}
+        loading={loading}
+        dataSource={dataSource}
+        goCreateNewItem={goCreateNewItem}
+        handlerTextSearch={searchByTxt}
+        handlerCategoryService={searchByStatus}
       />
       <InventoryMovementDrawer
         closable={onClose}
         visible={isVisible}
-        edit={editMode}
         editData={editDataDrawer}
-        cancelButton={onClose}
-        closeAfterSave={onCloseAfterSave}
       />
     </>
   )
 }
 
-export default withRouter(InventoryMovementComponent)
+export default InventoryMovementComponent
