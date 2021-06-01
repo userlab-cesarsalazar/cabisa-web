@@ -39,7 +39,10 @@ function SalesTable(props) {
   useEffect(() => {
     if (props.isDrawerVisible) return
 
-    if (status === 'ERROR') showErrors(error)
+    if (status === 'ERROR') {
+      showErrors(error)
+      setSaleState(saleDispatch, { loading: null, error: null, status: 'IDLE' })
+    }
 
     if (status === 'SUCCESS' && loading === 'cancelSale') {
       message.success('Venta cancelada exitosamente')

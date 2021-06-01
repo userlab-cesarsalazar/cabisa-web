@@ -30,6 +30,7 @@ const {
   fetchStakeholdersOptions,
   createSale,
   fetchSales,
+  setSaleState,
 } = saleActions
 
 const { TextArea } = Input
@@ -145,7 +146,10 @@ function NewNoteView() {
   const [{ error, loading, status, ...saleState }, saleDispatch] = useSale()
 
   useEffect(() => {
-    if (status === 'ERROR') showErrors(error)
+    if (status === 'ERROR') {
+      showErrors(error)
+      setSaleState(saleDispatch, { loading: null, error: null, status: 'IDLE' })
+    }
 
     if (status === 'SUCCESS' && loading === 'createSale') {
       fetchSales(saleDispatch)

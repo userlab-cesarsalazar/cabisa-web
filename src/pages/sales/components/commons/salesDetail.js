@@ -24,6 +24,7 @@ import {
 import { useSale, saleActions } from '../../context'
 import { useEditableList } from '../../../../hooks'
 import { showErrors } from '../../../../utils'
+import { documentsStatus } from '../../../../commons/types'
 
 const { Title } = Typography
 const { TextArea } = Input
@@ -44,6 +45,7 @@ const getColumnsDynamicTable = ({
   productsOptionsList,
   status,
   loading,
+  forbidEdition,
 }) => [
   {
     width: '25%',
@@ -77,6 +79,7 @@ const getColumnsDynamicTable = ({
         onChange={value => handleChangeDetail('id', value, rowIndex)}
         loading={status === 'LOADING' && loading === 'fetchProductsOptions'}
         optionFilterProp='children'
+        disabled={forbidEdition}
       >
         {productsOptionsList.length > 0 ? (
           productsOptionsList?.map(value => (
@@ -103,6 +106,7 @@ const getColumnsDynamicTable = ({
         onChange={e => handleChangeDetail('quantity', e.target.value, rowIndex)}
         min={0}
         type='number'
+        disabled={forbidEdition}
       />
     ),
   },
@@ -121,25 +125,26 @@ const getColumnsDynamicTable = ({
         }
         min={0}
         type='number'
+        disabled={forbidEdition}
       />
     ),
   },
   {
     title: '',
-    render: (_, __, rowIndex) => (
-      <>
+    render: (_, __, rowIndex) =>
+      !forbidEdition && (
         <Popconfirm
           title={'¿Seguro de eliminar?'}
           onConfirm={() => handleRemoveDetail(rowIndex)}
         >
           <span style={{ color: 'red' }}>Eliminar</span>
         </Popconfirm>
-      </>
-    ),
+      ),
   },
 ]
 
 function SalesDetail({ setExistMoreInfo, closable, visible }) {
+  const [forbidEdition, setForbidEdition] = useState(false)
   const [sale, setSale] = useState([])
   const [dataSourceTable, setDataSourceTable] = useState([])
 
@@ -151,7 +156,10 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
   useEffect(() => {
     if (!visible) return
 
-    if (status === 'ERROR') showErrors(error)
+    if (status === 'ERROR') {
+      showErrors(error)
+      setSaleState(saleDispatch, { loading: null, error: null, status: 'IDLE' })
+    }
 
     if (status === 'SUCCESS' && loading === 'updateSale') {
       fetchSales(saleDispatch)
@@ -170,6 +178,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
   ])
 
   useEffect(() => {
+    setForbidEdition(currentSale.status !== documentsStatus.PENDING)
     setSale(currentSale)
     setDataSourceTable(currentSale.products)
   }, [currentSale, saleDispatch])
@@ -227,6 +236,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
     productsOptionsList: saleState.productsOptionsList,
     status,
     loading,
+    forbidEdition,
   })
 
   const getSaveData = () => ({
@@ -473,6 +483,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
                 value={sale.end_date ? moment(sale.end_date) : ''}
                 onChange={handleChange('end_date')}
                 format='DD-MM-YYYY'
+                disabled={forbidEdition}
               />
             </Col>
           </Row>
@@ -485,15 +496,17 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
                 data={dataSourceTable}
               />
             </Col>
-            <Col xs={24} sm={24} md={24} lg={24}>
-              <Button
-                type='dashed'
-                className={'shop-add-turn'}
-                onClick={handleAddDetail}
-              >
-                Agregar Detalle
-              </Button>
-            </Col>
+            {!forbidEdition && (
+              <Col xs={24} sm={24} md={24} lg={24}>
+                <Button
+                  type='dashed'
+                  className={'shop-add-turn'}
+                  onClick={handleAddDetail}
+                >
+                  Agregar Detalle
+                </Button>
+              </Col>
+            )}
             <Divider className={'divider-custom-margins-users'} />
           </Row>
           <Row gutter={16} className={'section-space-field'}>
@@ -503,6 +516,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
                 rows={4}
                 value={sale.comments}
                 onChange={handleChange('comments')}
+                disabled={forbidEdition}
               />
             </Col>
           </Row>
@@ -524,16 +538,19 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
                 size={'large'}
                 value={sale.received_by}
                 onChange={handleChange('received_by')}
+                disabled={forbidEdition}
               />
             </Col>
           </Row>
         </div>
-        <FooterButtons
-          saveData={saveData}
-          cancelButton={handleCancelButton}
-          edit={true}
-          cancelLink=''
-        />
+        {!forbidEdition && (
+          <FooterButtons
+            saveData={saveData}
+            cancelButton={handleCancelButton}
+            edit={true}
+            cancelLink=''
+          />
+        )}
       </Drawer>
     </>
   )
