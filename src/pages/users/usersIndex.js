@@ -7,7 +7,7 @@ import UserTable from '../users/components/userTable'
 import HeaderPage from '../../components/HeaderPage'
 import UserDrawer from './components/userDrawer'
 import UserPermissions from './components/userPermissions'
-import { catchingErrors } from '../../utils/Utils'
+import { catchingErrors } from '../../utils'
 import { withRouter } from 'react-router'
 
 function Users(props) {

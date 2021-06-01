@@ -10,7 +10,7 @@ import {
   Tag,
   Typography,
 } from 'antd'
-import { validateEmail } from '../../../utils/Utils'
+import { validateEmail } from '../../../utils'
 const { Title } = Typography
 const { Option } = Select
 

@@ -4,7 +4,7 @@ import { Card, message, Spin } from 'antd'
 import UsersSrc from './usersSrc'
 import { Auth } from 'aws-amplify'
 import '../../amplify_config'
-import { catchingErrors } from '../../utils/Utils'
+import { catchingErrors } from '../../utils'
 // UI components
 import HeaderPage from '../../components/HeaderPage'
 import UserFields from './components/userFields'

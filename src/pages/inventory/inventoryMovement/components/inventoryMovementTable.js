@@ -1,7 +1,7 @@
 import React from 'react'
 import { Table, Col, Input, Button, Row, Card, Tag, Select } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import { validatePermissions } from '../../../../utils/Utils'
+import { validatePermissions } from '../../../../utils'
 import { Cache } from 'aws-amplify'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'

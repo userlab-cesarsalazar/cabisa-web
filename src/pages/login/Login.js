@@ -13,7 +13,7 @@ import {
 import { Auth, Cache } from 'aws-amplify'
 import '../../amplify_config'
 import UserSrc from '../users/usersSrc'
-import { catchingErrors } from '../../utils/Utils'
+import { catchingErrors } from '../../utils'
 const mssError = 'Debes ingresar usuario y contraseña'
 
 function Login() {

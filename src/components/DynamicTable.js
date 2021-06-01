@@ -7,7 +7,7 @@ function DynamicTable(props) {
       className={'CustomTableClass'}
       pagination={false}
       columns={props.columns}
-      dataSource={props.data.map((x, index) => ({ ...x, index }))}
+      dataSource={props.data?.map((x, index) => ({ ...x, index }))}
       rowKey={'index'}
     />
   )

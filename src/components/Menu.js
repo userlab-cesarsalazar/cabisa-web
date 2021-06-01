@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {Menu} from 'antd'
+import React, { useEffect, useState } from 'react'
+import { Menu } from 'antd'
 import {
   HomeOutlined,
   UsergroupAddOutlined,
@@ -11,24 +11,24 @@ import {
   CreditCardOutlined,
   WalletOutlined,
 } from '@ant-design/icons'
-import {Link, useHistory} from 'react-router-dom'
-import {menu_routes} from './Menu_routes'
-import {Cache} from 'aws-amplify'
-import {validatePermissions} from '../utils/Utils'
+import { Link, useHistory } from 'react-router-dom'
+import { menu_routes } from './Menu_routes'
+import { Cache } from 'aws-amplify'
+import { validatePermissions } from '../utils'
 
-const {SubMenu} = Menu
+const { SubMenu } = Menu
 
 function MenuView() {
   const history = useHistory()
   const [key, setKey] = useState('')
-  
+
   useEffect(() => {
     let subMenuMatch = null
     let actualPath = menu_routes.find(
       m =>
         menuRouterFunction(m.routeGroup, m.route) === history.location.pathname
     )
-    
+
     if (actualPath.sub_menu) {
       actualPath.routeGroup.forEach(regexp => {
         if (regexp.test(history.location.pathname)) {
@@ -47,7 +47,7 @@ function MenuView() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  
+
   const setKeyValue = key => {
     setKey(key)
   }
@@ -58,81 +58,40 @@ function MenuView() {
         someOneMatch = true
       }
     })
-    
+
     return someOneMatch ? history.location.pathname : defaultRoute
   }
-  
+
   let returnIcon = iconName => {
     switch (iconName) {
       case 'enterprises':
-        return (
-          <HomeOutlined
-            className={'ant-icon-menu-cabisa'}
-          />
-        )
+        return <HomeOutlined className={'ant-icon-menu-cabisa'} />
       case 'users':
-        return (
-          <UsergroupAddOutlined
-            className={'ant-icon-menu-cabisa'}
-          />
-        )
+        return <UsergroupAddOutlined className={'ant-icon-menu-cabisa'} />
       case 'shops':
-        return (
-          <ShopOutlined
-            className={'ant-icon-menu-cabisa'}
-          />
-        )
+        return <ShopOutlined className={'ant-icon-menu-cabisa'} />
       case 'products':
-        return (
-          <ShoppingOutlined
-            className={'ant-icon-menu-cabisa'}
-          />
-        )
+        return <ShoppingOutlined className={'ant-icon-menu-cabisa'} />
       case 'clients':
-        return (
-          <IdcardOutlined
-            className={'ant-icon-menu-cabisa'}
-          />
-        )
+        return <IdcardOutlined className={'ant-icon-menu-cabisa'} />
       case 'configurations':
-        return (
-          <SettingOutlined
-            className={'ant-icon-menu-cabisa'}
-          />
-        )
+        return <SettingOutlined className={'ant-icon-menu-cabisa'} />
       case 'inventory':
-        return (
-          <ProjectOutlined
-            className={'ant-icon-menu-cabisa'}
-          />
-        )
+        return <ProjectOutlined className={'ant-icon-menu-cabisa'} />
       case 'pos':
-        return (
-          <CreditCardOutlined
-            className={'ant-icon-menu-cabisa'}
-          />
-        )
+        return <CreditCardOutlined className={'ant-icon-menu-cabisa'} />
       case 'cashRegister':
-        return (
-          <WalletOutlined
-            className={'ant-icon-menu-cabisa'}
-          />
-        )
+        return <WalletOutlined className={'ant-icon-menu-cabisa'} />
       default:
         return <></>
     }
   }
-  
+
   return (
-    <Menu
-      mode='inline'
-      selectedKeys={[key]}
-      className={'ant-menu-custom'}
-    >
+    <Menu mode='inline' selectedKeys={[key]} className={'ant-menu-custom'}>
       {menu_routes &&
-      menu_routes.length > 0 &&
-      menu_routes.map(
-        (option, i) =>
+        menu_routes.length > 0 &&
+        menu_routes.map((option, i) =>
           option.sub_menu ? (
             <SubMenu
               className={
@@ -155,9 +114,9 @@ function MenuView() {
                   >
                     <Link to={subMenuOption.route}>
                       {returnIcon(option.icon)}
-                      <span style={{paddingLeft: '0px'}}>
-                          {subMenuOption.name}
-                        </span>
+                      <span style={{ paddingLeft: '0px' }}>
+                        {subMenuOption.name}
+                      </span>
                     </Link>
                   </Menu.Item>
                 )
@@ -183,7 +142,7 @@ function MenuView() {
               </Link>
             </Menu.Item>
           )
-      )}
+        )}
     </Menu>
   )
 }
