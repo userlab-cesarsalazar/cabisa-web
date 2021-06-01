@@ -6,9 +6,14 @@ import {
   DeleteOutlined,
   FileSearchOutlined,
   ApartmentOutlined,
+  CheckSquareOutlined,
 } from '@ant-design/icons'
 
-function ActionOptions({ deleteAction = 'delete', ...props }) {
+function ActionOptions({
+  deleteAction = 'delete',
+  editAction = 'edit',
+  ...props
+}) {
   const handlerEditRow = data => props.handlerEditRow(data)
 
   const handlerApproveRow = data => props.handlerApproveRow(data)
@@ -44,7 +49,7 @@ function ActionOptions({ deleteAction = 'delete', ...props }) {
           )}
 
           {can('edit') && (
-            <Tooltip title='Editar'>
+            <Tooltip title={editAction === 'edit' ? 'Editar' : 'Ver Detalle'}>
               <Button
                 icon={<FileSearchOutlined />}
                 onClick={() => handlerEditRow(props.data)}
@@ -72,11 +77,11 @@ function ActionOptions({ deleteAction = 'delete', ...props }) {
             </Tooltip>
           )}
 
-          {can('edit') && can('delete') && !props.hasRelatedInvoice && (
+          {can('edit') && can('delete') && props.showApproveBtn && (
             <Divider type={'vertical'} />
           )}
 
-          {can('edit') && !props.hasRelatedInvoice && (
+          {can('edit') && props.showApproveBtn && (
             <Tooltip title='Facturar'>
               <Popconfirm
                 title={`¿Estas seguro de facturar el elemento seleccionado?`}
@@ -84,7 +89,7 @@ function ActionOptions({ deleteAction = 'delete', ...props }) {
                 okText='Si'
                 cancelText='No'
               >
-                <Button icon={<FileSearchOutlined />} />
+                <Button icon={<CheckSquareOutlined />} />
               </Popconfirm>
             </Tooltip>
           )}
