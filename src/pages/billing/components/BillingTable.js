@@ -1,25 +1,32 @@
 import React from 'react'
-import { Card, Col, DatePicker, Input, Row, Select, Table, Tag } from 'antd'
+import {
+  Card,
+  Col,
+  DatePicker,
+  Input,
+  Row,
+  Select,
+  Table,
+  Tag as AntTag,
+} from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../components/actionOptions'
+import Tag from '../../../components/Tag'
+import moment from 'moment'
 
 const { Search } = Input
 const { Option } = Select
 
 function BillingTable(props) {
-  const handlerEditRow = data => {
-    props.showDetail(data)
-  }
-  const handlerDeleteRow = data => {
-    console.log(data)
-  }
+  const handlerEditRow = data => props.showDetail(data)
+
+  const handlerDeleteRow = data => props.handlerDeleteRow(data)
 
   const columns = [
     {
       title: 'Serie',
-
-      dataIndex: 'serie', // Field that is goint to be rendered
-      key: 'serie',
+      dataIndex: 'id', // Field that is goint to be rendered
+      key: 'id',
       render: text => <span>{text}</span>,
     },
     {
@@ -32,53 +39,47 @@ function BillingTable(props) {
       title: 'Cliente',
       dataIndex: 'client', // Field that is goint to be rendered
       key: 'client ',
-      render: text => (
+      render: (_, record) => (
         <>
-          <span>{text.name}</span>
+          <span>{record.stakeholder_name}</span>
           <br />
-          <span>Nit: {text.nit}</span>
+          <span>Nit: {record.stakeholder_nit}</span>
         </>
       ),
     },
     {
       title: 'Fecha de facturacion',
-      dataIndex: 'date_created', // Field that is goint to be rendered
-      key: 'date_created ',
-      render: text => <span>{text}</span>,
+      dataIndex: 'created_at', // Field that is goint to be rendered
+      key: 'created_at ',
+      render: text => (
+        <span>{text ? moment(text).format('DD-MM-YYYY') : ''}</span>
+      ),
     },
     {
       title: 'Total',
-      dataIndex: 'total_bill', // Field that is goint to be rendered
-      key: 'total_bill ',
-      render: text => <span>{text}</span>,
+      dataIndex: 'total', // Field that is goint to be rendered
+      key: 'total ',
+      render: text => <span>{text.toFixed(2)}</span>,
     },
     {
       title: 'Metodo de pago',
       dataIndex: 'payment_method', // Field that is goint to be rendered
       key: 'payment_method',
-      render: text => (
-        <span>
-          {text === 'Transferencia' ? (
-            <Tag color='cyan'>{text}</Tag>
-          ) : text === 'Efectivo' ? (
-            <Tag color='green'>{text}</Tag>
-          ) : (
-            <Tag color='geekblue'>{text}</Tag>
-          )}
-        </span>
-      ),
+      render: text => <Tag type='documentsPaymentMethods' value={text} />,
     },
     {
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
-      render: (row, data) => (
+      render: (_, data) => (
         <ActionOptions
           editPermissions={false}
           data={data}
           permissionId={4}
           handlerDeleteRow={handlerDeleteRow}
           handlerEditRow={handlerEditRow}
+          deleteAction='cancel'
+          editAction='show'
         />
       ),
     },
@@ -94,21 +95,23 @@ function BillingTable(props) {
             placeholder='No. serie'
             className={'cabisa-table-search customSearch'}
             size={'large'}
+            onSearch={props.handleFiltersChange('id')}
           />
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
-          <Select
-            showSearch
-            className={'single-select'}
-            placeholder={'Nombre o Nit'}
+          <Search
+            type={'number'}
+            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
+            placeholder='Nit'
+            className={'cabisa-table-search customSearch'}
             size={'large'}
-            style={{ width: '100%', height: '40px' }}
-            getPopupContainer={trigger => trigger.parentNode}
+            // onSearch={props.handleFiltersChange('nit')}
           />
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
           <DatePicker
             style={{ width: '100%', height: '40px', borderRadius: '8px' }}
+            onChange={props.handleFiltersChange('created_at')}
           />
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
@@ -131,23 +134,24 @@ function BillingTable(props) {
             size={'large'}
             style={{ width: '100%', height: '40px' }}
             getPopupContainer={trigger => trigger.parentNode}
+            onChange={props.handleFiltersChange('paymentMethods')}
+            defaultValue=''
           >
-            <Option value={0}>
-              <Tag color='geekblue'>Tarjeta debito/credito</Tag>
+            <Option value={''}>
+              <AntTag color='gray'>Todo</AntTag>
             </Option>
-            <Option value={1}>
-              <Tag color='cyan'>Transferencia</Tag>
-            </Option>
-            <Option value={2}>
-              <Tag color='green'>Efectivo</Tag>
-            </Option>
+            {props.paymentMethodsOptionsList?.map(value => (
+              <Option key={value} value={value}>
+                <Tag type='documentsPaymentMethods' value={value} />
+              </Option>
+            ))}
           </Select>
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
           <Search
             type={'number'}
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Monto'
+            placeholder='Total'
             className={'cabisa-table-search customSearch'}
             size={'large'}
           />
