@@ -1,5 +1,13 @@
 import { message } from 'antd'
 
+export const roundNumber = (input, decimals = 2) => {
+  const number = Number(input)
+
+  if (!input || isNaN(number)) return input
+
+  return Number(number.toFixed(decimals))
+}
+
 export const formatNumber = number => {
   if (number === 0) return number
   let num1 = number?.split('.')[0]

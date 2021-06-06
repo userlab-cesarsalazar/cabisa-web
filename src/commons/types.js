@@ -12,6 +12,12 @@ export const documentsStatus = {
   APPROVED: 'APPROVED',
 }
 
+export const documentsPaymentMethods = {
+  CARD: 'CARD',
+  CASH: 'CASH',
+  TRANSFER: 'TRANSFER',
+}
+
 export const inventoryMovementsStatus = {
   PENDING: 'PENDING',
   PARTIAL: 'PARTIAL',

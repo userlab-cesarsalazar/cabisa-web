@@ -17,6 +17,16 @@ const config = {
     CANCELLED: { color: '#f50', text: 'Anulado' },
     PENDING: { color: 'grey', text: 'Pendiente' },
   },
+  documentsPaymentMethods: {
+    CARD: { color: 'geekblue', text: 'Tarjeta debito/credito' },
+    CASH: { color: 'green', text: 'Efectivo' },
+    TRANSFER: { color: 'cyan', text: 'Transferencia' },
+  },
+  stakeholderTypes: {
+    CLIENT_INDIVIDUAL: { color: 'geekblue', text: 'Cliente individual' },
+    CLIENT_COMPANY: { color: 'green', text: 'Cliente empresa' },
+    PROVIDER: { color: 'cyan', text: 'Proveedor' },
+  },
 }
 const Tag = ({ type, value }) => {
   const tag = config[type][value]
