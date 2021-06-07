@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, useRef } from 'react'
 import moment from 'moment'
 import HeaderPage from '../../components/HeaderPage'
 import BillingTable from './components/BillingTable'
@@ -10,11 +10,22 @@ import { showErrors, roundNumber } from '../../utils'
 import { stakeholdersTypes } from '../../commons/types'
 
 function Billing(props) {
+  const initFilters = useRef()
+
+  if (!initFilters.current) {
+    initFilters.current = {
+      payment_method: '',
+      nit: '',
+      id: '',
+      created_at: '',
+    }
+  }
+
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
   const [dataSource, setDataSource] = useState(false)
   const [showInvoiceData, setShowInvoiceData] = useState(false)
-  const [filters, setFilters] = useState(false)
+  const [filters, setFilters] = useState(initFilters.current)
   const [paymentMethodsOptionsList, setPaymentMethodsOptionsList] = useState([])
   const [
     stakeholderTypesOptionsList,
@@ -66,7 +77,12 @@ function Billing(props) {
 
     billingSrc
       .cancelInvoice({ document_id: row.id })
-      .then(_ => message.success('Factura anulada exitosamente'))
+      .then(_ => {
+        if (JSON.stringify(filters) === JSON.stringify(initFilters)) loadData()
+        else setFilters(initFilters)
+
+        message.success('Factura anulada exitosamente')
+      })
       .catch(error => showErrors(error))
       .finally(setLoading(false))
   }

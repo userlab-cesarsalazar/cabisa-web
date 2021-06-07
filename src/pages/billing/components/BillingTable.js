@@ -111,6 +111,8 @@ function BillingTable(props) {
         <Col xs={4} sm={4} md={4} lg={4}>
           <DatePicker
             style={{ width: '100%', height: '40px', borderRadius: '8px' }}
+            placeholder='Fecha de facturacion'
+            format='DD-MM-YYYY'
             onChange={props.handleFiltersChange('created_at')}
           />
         </Col>
