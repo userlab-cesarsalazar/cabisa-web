@@ -125,7 +125,7 @@ const getColumnsDynamicTable = ({
         }
         min={0}
         type='number'
-        disabled={forbidEdition}
+        disabled
       />
     ),
   },

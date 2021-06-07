@@ -107,6 +107,14 @@ function SalesTable(props) {
       render: text => <span>{text}</span>,
     },
     {
+      title: 'Fecha',
+      dataIndex: 'start_date', // Field that is goint to be rendered
+      key: 'start_date',
+      render: text => (
+        <span>{text ? moment(text).format('DD-MM-YYYY') : null}</span>
+      ),
+    },
+    {
       title: 'Empresa',
       dataIndex: 'stakeholder_name', // Field that is goint to be rendered
       key: 'stakeholder_name',
@@ -150,7 +158,7 @@ function SalesTable(props) {
           <Search
             className={'customSearch'}
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Presiona enter para buscar'
+            placeholder='Buscar por No. de boleta'
             style={{ height: '40px' }}
             size={'large'}
             onSearch={e => getFilteredData('text', e)}
@@ -158,7 +166,7 @@ function SalesTable(props) {
         </Col>
         <Col xs={5} sm={5} md={5} lg={5}>
           <DatePicker
-            placeholder={'Fecha'}
+            placeholder={'Buscar desde esta fecha'}
             style={{ width: '100%', height: '40px', borderRadius: '8px' }}
             format='DD-MM-YYYY'
             onChange={e => getFilteredData('date', e)}

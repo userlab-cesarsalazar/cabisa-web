@@ -29,7 +29,6 @@ const {
   fetchProjectsOptions,
   fetchStakeholdersOptions,
   createSale,
-  fetchSales,
   setSaleState,
 } = saleActions
 
@@ -120,6 +119,7 @@ const getColumnsDynamicTable = ({
         }
         min={0}
         type='number'
+        disabled
       />
     ),
   },
@@ -152,7 +152,6 @@ function NewNoteView() {
     }
 
     if (status === 'SUCCESS' && loading === 'createSale') {
-      fetchSales(saleDispatch)
       message.success('Nota de Servicio creada exitosamente')
       history.push('/sales')
     }
