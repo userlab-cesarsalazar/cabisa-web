@@ -78,8 +78,11 @@ function Billing(props) {
     billingSrc
       .cancelInvoice({ document_id: row.id })
       .then(_ => {
-        if (JSON.stringify(filters) === JSON.stringify(initFilters)) loadData()
-        else setFilters(initFilters)
+        if (JSON.stringify(filters) === JSON.stringify(initFilters.current)) {
+          loadData()
+        } else {
+          setFilters(initFilters.current)
+        }
 
         message.success('Factura anulada exitosamente')
       })

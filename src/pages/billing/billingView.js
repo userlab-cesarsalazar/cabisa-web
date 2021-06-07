@@ -25,6 +25,25 @@ function BillingView(props) {
   const [discountInputValue, setDiscountInputValue] = useState(0)
 
   useEffect(() => {
+    setLoading(true)
+
+    Promise.all([
+      billingSrc.getPaymentMethods(),
+      billingSrc.getStakeholderTypes(),
+    ])
+      .then(data => {
+        const stakeholdersTypesList = data[1].filter(
+          s => s !== stakeholdersTypes.PROVIDER
+        )
+
+        setPaymentMethodsOptionsList(data[0])
+        setStakeholderTypesOptionsList(stakeholdersTypesList)
+      })
+      .catch(_ => message.error('Error al cargar listados'))
+      .finally(setLoading(false))
+  }, [])
+
+  useEffect(() => {
     setData(prevState => {
       const totals = productsData.reduce((r, p) => {
         const discount = (r.discount || 0) + p.unit_discount * p.quantity
@@ -149,25 +168,6 @@ function BillingView(props) {
       [field]: value,
     }))
   }
-
-  useEffect(() => {
-    setLoading(true)
-
-    Promise.all([
-      billingSrc.getPaymentMethods(),
-      billingSrc.getStakeholderTypes(),
-    ])
-      .then(data => {
-        const stakeholdersTypesList = data[1].filter(
-          s => s !== stakeholdersTypes.PROVIDER
-        )
-
-        setPaymentMethodsOptionsList(data[0])
-        setStakeholderTypesOptionsList(stakeholdersTypesList)
-      })
-      .catch(_ => message.error('Error al cargar listados'))
-      .finally(setLoading(false))
-  }, [])
 
   const getSaveData = () => ({
     stakeholder_id: data.stakeholder_id,
