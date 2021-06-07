@@ -28,7 +28,7 @@ function InventoryTable(props) {
         <Col xs={10} sm={10} md={10} lg={10}>
           <Search
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Presiona enter para buscar'
+            placeholder='Busca por descripcion'
             className={'cabisa-table-search customSearch'}
             style={{ width: '100%', height: '40px' }}
             size={'large'}
