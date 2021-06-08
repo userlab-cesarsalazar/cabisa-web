@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import HeaderPage from '../../../../components/HeaderPage'
 import { Card, message, Spin } from 'antd'
 import ProductFields from './productFields'
-import InventoryHistory from '../../components/invetoryHistory'
 import InventorySrc from '../../inventorySrc'
 import { showErrors } from '../../../../utils'
 
@@ -59,7 +58,6 @@ function ProductView(props) {
           productCategoriesList={productCategoriesList}
           productsTaxesList={productsTaxesList}
         />
-        <InventoryHistory dataDetail={[]} />
       </Card>
     </Spin>
   )
