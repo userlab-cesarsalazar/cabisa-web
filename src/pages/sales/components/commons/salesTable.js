@@ -65,7 +65,7 @@ function SalesTable(props) {
 
     if (key === 'date') {
       const start_date = value
-        ? { $gte: moment(value).format('YYYY-MM-DD') }
+        ? { $like: `${moment(value).format('YYYY-MM-DD')}%` }
         : ''
       return { start_date }
     }
