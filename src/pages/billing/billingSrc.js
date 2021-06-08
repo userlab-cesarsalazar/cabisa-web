@@ -10,6 +10,7 @@ const getInvoices = params => api.get(urlInvoice, { ...params })
 const getPaymentMethods = () => api.get(`${urlInvoice}/payment-methods`)
 const createInvoice = data => api.post(urlInvoice, data)
 const cancelInvoice = data => api.put(`${urlInvoice}/cancel`, data)
+const getInvoiceStatus = () => api.get(`${urlInvoice}-status`)
 
 const getProductsOptions = params =>
   api.get(`${urlProduct}-options`, { ...params })
@@ -24,6 +25,7 @@ const InventorySrc = {
   getPaymentMethods,
   createInvoice,
   cancelInvoice,
+  getInvoiceStatus,
   getProductsOptions,
   getProjectsOptions,
   getStakeholdersOptions,

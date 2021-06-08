@@ -14,10 +14,11 @@ function Billing(props) {
 
   if (!initFilters.current) {
     initFilters.current = {
-      payment_method: '',
-      nit: '',
-      id: '',
       created_at: '',
+      id: '',
+      nit: '',
+      payment_method: '',
+      status: '',
     }
   }
 
@@ -31,6 +32,7 @@ function Billing(props) {
     stakeholderTypesOptionsList,
     setStakeholderTypesOptionsList,
   ] = useState([])
+  const [documentStatusOptionsList, setDocumentStatusOptionsList] = useState([])
 
   useEffect(() => {
     setLoading(true)
@@ -38,6 +40,7 @@ function Billing(props) {
     Promise.all([
       billingSrc.getPaymentMethods(),
       billingSrc.getStakeholderTypes(),
+      billingSrc.getInvoiceStatus(),
     ])
       .then(data => {
         const stakeholdersTypesList = data[1].filter(
@@ -46,6 +49,7 @@ function Billing(props) {
 
         setPaymentMethodsOptionsList(data[0])
         setStakeholderTypesOptionsList(stakeholdersTypesList)
+        setDocumentStatusOptionsList(data[2])
       })
       .catch(_ => message.error('Error al cargar listados'))
       .finally(setLoading(false))
@@ -56,12 +60,13 @@ function Billing(props) {
 
     billingSrc
       .getInvoices({
-        payment_method: filters.paymentMethods,
-        // nit: filters.nit ? `${filters.nit}%` : '',
-        id: filters.id ? `${filters.id}%` : '',
         created_at: filters.created_at
           ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%` }
           : '',
+        id: filters.id ? `${filters.id}%` : '',
+        // nit: filters.nit ? `${filters.nit}%` : '',
+        payment_method: filters.paymentMethods,
+        status: filters.status,
       })
       .then(data => setDataSource(data))
       .catch(_ => message.error('Error al cargar facturas'))
@@ -127,6 +132,7 @@ function Billing(props) {
         showDetail={showDetail}
         handleFiltersChange={setSearchFilters}
         paymentMethodsOptionsList={paymentMethodsOptionsList}
+        documentStatusOptionsList={documentStatusOptionsList}
         handlerDeleteRow={handlerDeleteRow}
         loading={loading}
       />

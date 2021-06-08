@@ -68,6 +68,12 @@ function BillingTable(props) {
       render: text => <Tag type='documentsPaymentMethods' value={text} />,
     },
     {
+      title: 'Status',
+      dataIndex: 'status', // Field that is goint to be rendered
+      key: 'status',
+      render: text => <Tag type='documentStatus' value={text} />,
+    },
+    {
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
@@ -150,16 +156,27 @@ function BillingTable(props) {
           </Select>
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
-          <Search
-            type={'number'}
-            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Total'
-            className={'cabisa-table-search customSearch'}
+          <Select
+            className={'single-select'}
+            placeholder={'Status'}
             size={'large'}
-          />
+            style={{ width: '100%', height: '40px' }}
+            getPopupContainer={trigger => trigger.parentNode}
+            onChange={props.handleFiltersChange('status')}
+            defaultValue=''
+          >
+            <Option value={''}>
+              <AntTag color='gray'>Todo</AntTag>
+            </Option>
+            {props.documentStatusOptionsList?.map(value => (
+              <Option key={value} value={value}>
+                <Tag type='documentStatus' value={value} />
+              </Option>
+            ))}
+          </Select>
         </Col>
       </Row>
-      {/*TABLE*/}
+
       <Row>
         <Col xs={24} sm={24} md={24} lg={24}>
           <Card className={'card-border-radius margin-top-15'}>
