@@ -83,6 +83,8 @@ export const catchingErrors = errorCode => {
       return 'El usuario aun no esta confirmado.'
     case errorCode.indexOf('is not registered') > -1:
       return 'El Cliente no esta registrado'
+    case errorCode.indexOf('Attempt limit exceeded') > -1:
+      return 'Se ha excedido el numero de intentos, espera un momento y vuelve a intentarlo.'
     default:
       return 'Error al procesar la información.'
   }
