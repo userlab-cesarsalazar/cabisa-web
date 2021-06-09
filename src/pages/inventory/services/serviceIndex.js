@@ -1,67 +1,74 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import HeaderPage from '../../../components/HeaderPage'
-import InventoryModule from './components/inventoryService'
+import InventoryService from './components/inventoryService'
 import InventorySrc from '../inventorySrc'
 import { message } from 'antd'
+import { showErrors } from '../../../utils'
 
 function ServiceIndex() {
   const [inventoryServices, setInventoryServices] = useState([])
+  const [serviceStatusList, setServiceStatusList] = useState([])
+  const [searchText, setSearchText] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const getServices = useCallback(() => {
+    setLoading(true)
+
+    InventorySrc.getServices({ description: { $like: `${searchText}%` } })
+      .then(result => setInventoryServices(result))
+      .catch(err => {
+        console.log('ERROR ON GET INVENTORY SERVICES', err)
+        message.warning('No se ha podido obtener informacion del inventario.')
+      })
+      .finally(setLoading(false))
+  }, [searchText])
 
   useEffect(() => {
     getServices()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getServices])
+
+  useEffect(() => {
+    setLoading(true)
+
+    InventorySrc.getServicesStatus()
+      .then(result => setServiceStatusList(result))
+      .catch(err => {
+        console.log('ERROR ON GET INVENTORY SERVICES', err)
+        message.warning('No se ha podido obtener informacion del inventario.')
+      })
+      .finally(setLoading(false))
   }, [])
 
-  const getServices = () => {
-    //GET ALL PRODUCTOS
-    InventorySrc.getProducts()
-      .then(result => {
-        setInventoryServices(
-          result.message.filter(data => data.category_id === 1)
-        )
-      })
-      .catch(err => {
-        console.log('ERROR ON GET INVENTORY PRODUCTS', err)
-        message.warning('No se ha podido obtener informacion del inventario.')
-      })
-  }
+  const searchByTxt = description => setSearchText(description)
 
-  const searchByText = (name, type) => {
-    //GET FILTER PRODUCTOS BY NAME
-    InventorySrc.getProductsFilter(name)
-      .then(result => {
-        if (type === 'Module') {
-          setInventoryServices(
-            result.message.filter(data => data.category_id === 1)
-          )
-        }
-      })
-      .catch(err => {
-        console.log('ERROR ON GET INVENTORY PRODUCTS', err)
-        message.warning('No se ha podido obtener informacion del inventario.')
-      })
+  const clearSearch = () => {
+    if (searchText === '') getServices()
+    else setSearchText('')
   }
 
   const deleteService = data => {
-    InventorySrc.deleteProduct(data)
+    setLoading(true)
+
+    InventorySrc.deleteService(data)
       .then(_ => {
         message.success('Elemento eliminado')
-        getServices()
+        clearSearch()
       })
-      .catch(err => {
-        console.log('ERROR ON DELETE ELEMENT', err)
-      })
+      .catch(err => showErrors(err))
+      .finally(setLoading(false))
   }
 
   return (
     <>
       <HeaderPage titleButton={''} title={'Servicios'} permissions={5} />
-      <InventoryModule
+      <InventoryService
         title={'Servicios'}
-        searchModuleByTxt={searchByText}
+        searchByTxt={searchByTxt}
+        clearSearch={clearSearch}
         dataSource={inventoryServices}
-        closeAfterSave={getServices}
         deleteItemModule={deleteService}
+        serviceStatusList={serviceStatusList}
+        loading={loading}
       />
     </>
   )

@@ -15,7 +15,7 @@ import {
 import EyeTwoTone from '@ant-design/icons/lib/icons/EyeTwoTone'
 import EyeInvisibleOutlined from '@ant-design/icons/lib/icons/EyeInvisibleOutlined'
 import FooterButtons from '../../../components/FooterButtons'
-import { validateEmail } from '../../../utils/Utils'
+import { validateEmail } from '../../../utils'
 import {
   admin_permission,
   sells_permission,

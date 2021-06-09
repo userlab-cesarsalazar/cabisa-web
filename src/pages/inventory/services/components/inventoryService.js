@@ -1,50 +1,38 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import InventoryTable from '../../components/inventoryTable'
 import ServiceDrawer from './serviceDrawer'
 
 import ActionOptions from '../../../../components/actionOptions'
 import { withRouter } from 'react-router'
-import { Tag } from 'antd'
+import Tag from '../../../../components/Tag'
 
 function InventoryService(props) {
   const [editMode, setEditMode] = useState(false)
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
-  const [loading, setLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+
   const inventoryColumns = [
     { title: 'Codigo', dataIndex: 'code', key: 'code' },
-    { title: 'Descripcion', dataIndex: 'name', key: 'name' },
+    { title: 'Descripcion', dataIndex: 'description', key: 'description' },
     {
       title: 'Precio de venta',
-      dataIndex: 'cost',
-      key: 'cost',
+      dataIndex: 'unit_price',
+      key: 'unit_price',
       render: text => <span>{text.toFixed(2)}</span>,
     },
     {
       title: 'Estado',
-      dataIndex: 'is_active', // Field that is goint to be rendered
-      key: 'is_active',
-      render: text => (
-        <span>
-          {text === 0 ? (
-            <Tag color='#f50'>Inactivo</Tag>
-          ) : text === 1 ? (
-            <Tag color='#87d068'>Activo</Tag>
-          ) : text === 2 ? (
-            <Tag color='grey'>Bloqueado</Tag>
-          ) : (
-            ''
-          )}
-        </span>
-      ),
+      dataIndex: 'status', // Field that is goint to be rendered
+      key: 'status',
+      render: text => <Tag type='productStatus' value={text} />,
     },
 
     {
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
-      render: (row, data) => (
+      render: (_, data) => (
         <ActionOptions
           editPermissions={false}
           data={data}
@@ -56,38 +44,16 @@ function InventoryService(props) {
     },
   ]
 
-  useEffect(() => {
-    setIsVisible(false)
-    setLoading(false)
-    loadData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadData = useCallback(() => {
+    setDataSource(getClientData(props.dataSource))
   }, [props.dataSource])
 
-  const showDrawer = () => {
-    props.history.push('/inventoryServicesView')
-  }
+  useEffect(() => {
+    loadData()
+    return () => setIsVisible(false)
+  }, [loadData])
 
-  const onClose = () => {
-    setIsVisible(false)
-  }
-
-  const onCloseAfterSave = () => {
-    setIsVisible(false)
-    props.closeAfterSave()
-  }
-
-  const loadData = () => {
-    setIsVisible(false)
-    setLoading(true)
-    setTimeout(() => setLoading(false), 500)
-    setTimeout(() => setDataSource(setClientData(props.dataSource)), 500)
-  }
-
-  const searchTextFinder = data => {
-    props.searchModuleByTxt(data, 'Module')
-  }
-
-  const setClientData = data => {
+  const getClientData = data => {
     const _data = []
     for (let k in data) {
       const d = data[k]
@@ -96,18 +62,25 @@ function InventoryService(props) {
     return _data
   }
 
+  const showDrawer = () => props.history.push('/inventoryServicesView')
+
+  const onClose = () => setIsVisible(false)
+
+  const searchTextFinder = data => props.searchByTxt(data)
+
+  const onCloseAfterSave = () => {
+    setIsVisible(false)
+    props.clearSearch()
+  }
+
   //START: table handler
   const EditRow = data => {
-    console.log('DATA EDIT >> ', data)
     setEditDataDrawer(data)
     setIsVisible(true)
     setEditMode(true)
   }
 
-  const DeleteRow = data => {
-    setLoading(true)
-    props.deleteItemModule({ id: data.id })
-  }
+  const DeleteRow = data => props.deleteItemModule({ id: data.id })
   //END: table handler
 
   return (
@@ -116,7 +89,7 @@ function InventoryService(props) {
         warehouse={true}
         showDraweTbl={showDrawer}
         dataSource={dataSource}
-        loading={loading}
+        loading={props.loading}
         handlerTextSearch={searchTextFinder}
         handlerEditRow={EditRow}
         handlerDeleteRow={DeleteRow}
@@ -131,6 +104,7 @@ function InventoryService(props) {
         editData={editDataDrawer}
         cancelButton={onClose}
         closeAfterSave={onCloseAfterSave}
+        serviceStatusList={props.serviceStatusList}
       />
     </>
   )

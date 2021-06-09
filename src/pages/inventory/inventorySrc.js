@@ -3,6 +3,7 @@ import { stage } from '../../commons/credentials'
 
 const urlProduct = stage.productUrl
 const urlPurchase = stage.purchaseUrl
+const urlService = stage.serviceUrl
 const urlStakeholder = stage.stakeholderUrl
 
 const getPurchases = params => api.get(urlPurchase, { ...params })
@@ -21,19 +22,30 @@ const createProduct = _products => api.post(urlProduct, _products)
 const updateProduct = _products => api.put(urlProduct, _products)
 const deleteProduct = _products => api.remove(urlProduct, _products)
 
+const getServices = params => api.get(urlService, { ...params })
+const getServicesStatus = () => api.get(`${urlService}-status`)
+const createService = _services => api.post(urlService, _services)
+const updateService = _services => api.put(urlService, _services)
+const deleteService = _services => api.remove(urlService, _services)
+
 const InventorySrc = {
   getPurchases,
   createPurchase,
   cancelPurchase,
   getProducts,
   getProductsCategories,
+  getProductsOptions,
   getProductsStatus,
   getProductsTaxes,
-  getProductsOptions,
   getStakeholdersOptions,
   createProduct,
   updateProduct,
   deleteProduct,
+  getServices,
+  getServicesStatus,
+  createService,
+  updateService,
+  deleteService,
 }
 
 export default InventorySrc

@@ -10,7 +10,7 @@ import {
   Select,
 } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import { validatePermissions } from '../../../../utils/Utils'
+import { validatePermissions } from '../../../../utils'
 import { Cache } from 'aws-amplify'
 import { documentsStatus } from '../../../../commons/types'
 import Tag from '../../../../components/Tag'
@@ -37,7 +37,7 @@ function InventoryMovementTable(props) {
         <Col xs={10} sm={10} md={10} lg={10}>
           <Search
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Presiona enter para buscar'
+            placeholder='Buscar por Nro de Documento'
             className={'cabisa-table-search customSearch'}
             style={{ width: '100%', height: '40px' }}
             size={'large'}

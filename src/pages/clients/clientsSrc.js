@@ -5,9 +5,10 @@ const url = stage.clientsUrl
 
 const getClients = () => api.get(url)
 const getClientsFilter = name =>
-  api.getParams(
-    name ? `${url}?name=$like:%25${name}%25&nit=$or$like:%25${name}%25` : url
-  )
+  api.get(url, {
+    name: { $like: `${name}%` },
+    nit: { $or: true, $like: `${name}%` },
+  })
 const createClient = _users => api.post(url, _users)
 const updateClient = _users => api.put(url, _users)
 const deleteClient = _users => api.remove(url, _users)

@@ -1,37 +1,40 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 
 import LoadMoreButton from '../../../../components/LoadMoreButton'
 import SalesTable from '../commons/salesTable'
 import SalesDetail from '../commons/salesDetail'
 
-const dataDetailDummy = [
-  { id: 0, quantity: 10, service: 2, detail: 'detalle test' },
-]
+function ServiceView() {
+  const [existMoreInfo, setExistMoreInfo] = useState(false)
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false)
+  const history = useHistory()
 
-function ServiceView(props) {
+  const handlerMoreButton = () => console.log('moreInfo')
+
+  const showDrawer = () => setIsDrawerVisible(true)
+
+  const hideDrawer = () => setIsDrawerVisible(false)
+
+  const NewNoteShipping = () => history.push('/serviceNoteView')
+
   return (
     <>
       <SalesTable
-        dataSource={props.dataSource}
-        handlerTextSearch={props.searchText}
-        loading={props.loading}
-        handlerEditRow={props.editRow}
-        handlerDeleteRow={props.deleteRow}
-        buttonTitle={props.buttonTitle}
-        permissions={props.permissions}
-        newNote={props.newNote}
+        buttonTitle={'Nueva nota de servicio'}
+        permissions={6}
+        newNote={NewNoteShipping}
+        isDrawerVisible={isDrawerVisible}
+        showDrawer={showDrawer}
       />
       <LoadMoreButton
-        handlerButton={props.handlerMoreButton}
-        moreInfo={props.existsMoreInfo}
+        handlerButton={handlerMoreButton}
+        moreInfo={existMoreInfo}
       />
       <SalesDetail
-        closable={props.onCancelButton}
-        visible={props.visible}
-        editData={props.detailData}
-        cancelButton={props.onCancelButton}
-        saveButtonEdit={props.saveButtonEdit}
-        dataSource={dataDetailDummy}
+        closable={hideDrawer}
+        visible={isDrawerVisible}
+        setExistMoreInfo={setExistMoreInfo}
       />
     </>
   )

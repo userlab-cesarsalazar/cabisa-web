@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Spin, Drawer, message } from 'antd'
 import ClientFields from './clientFields'
 import ClientsSrc from '../clientsSrc'
-import { catchingErrors } from '../../../utils/Utils'
+import { catchingErrors } from '../../../utils'
 
 function ClientsDrawer(props) {
   const [loadingDrawer, setLoadingDrawer] = useState(false)

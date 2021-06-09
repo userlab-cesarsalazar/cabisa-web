@@ -1,57 +1,151 @@
-import React from 'react'
-import { Table, Col, Input, Button, Row, Card, DatePicker } from 'antd'
+import React, { useState, useEffect } from 'react'
+import moment from 'moment'
+import {
+  Table,
+  Col,
+  Input,
+  Button,
+  Row,
+  Card,
+  DatePicker,
+  Select,
+  Tag as AntTag,
+  message,
+} from 'antd'
 import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import { Cache } from 'aws-amplify'
-import { validatePermissions } from '../../../../utils/Utils'
+import { validatePermissions } from '../../../../utils'
 import ActionOptions from '../../../../components/actionOptions'
+import Tag from '../../../../components/Tag'
+import { useSale, saleActions } from '../../context'
+import { showErrors } from '../../../../utils'
 
 const { Search } = Input
+const { Option } = Select
+const {
+  setSaleState,
+  fetchSales,
+  fetchSalesStatus,
+  approveSale,
+  cancelSale,
+} = saleActions
 
 function SalesTable(props) {
-  const getFilteredData = data => {
-    props.handlerTextSearch(data)
+  const [searchParams, setSearchParams] = useState({})
+  const [{ error, status, loading, ...saleState }, saleDispatch] = useSale()
+
+  useEffect(() => {
+    if (props.isDrawerVisible) return
+
+    if (status === 'ERROR') {
+      showErrors(error)
+      setSaleState(saleDispatch, { loading: null, error: null, status: 'IDLE' })
+    }
+
+    if (status === 'SUCCESS' && loading === 'cancelSale') {
+      message.success('Venta cancelada exitosamente')
+      fetchSales(saleDispatch)
+    }
+
+    if (status === 'SUCCESS' && loading === 'approveSale') {
+      message.success('Factura generada exitosamente')
+      fetchSales(saleDispatch)
+    }
+  }, [error, status, loading, saleState, saleDispatch, props.isDrawerVisible])
+
+  useEffect(() => {
+    fetchSales(saleDispatch)
+    fetchSalesStatus(saleDispatch)
+  }, [saleDispatch])
+
+  const getSearchParams = (key, value) => {
+    if (key === 'text') return { id: { $like: `${value}%` } }
+
+    if (key === 'date') {
+      const start_date = value
+        ? { $like: `${moment(value).format('YYYY-MM-DD')}%` }
+        : ''
+      return { start_date }
+    }
+
+    if (key === 'status') return { status: value }
   }
 
-  const handlerEditRow = row => {
-    props.handlerEditRow(row)
+  const getFilteredData = (key, value) => {
+    const newSearchParams = { ...searchParams, ...getSearchParams(key, value) }
+    setSearchParams(newSearchParams)
+
+    fetchSales(saleDispatch, newSearchParams)
+  }
+
+  const handlerEditRow = async currentSale => {
+    await setSaleState(saleDispatch, { currentSale })
+    props.showDrawer(true)
+  }
+
+  const handlerApproveRow = row => {
+    approveSale(saleDispatch, { document_id: row.id })
   }
 
   const handlerDeleteRow = row => {
-    props.handlerDeleteRow(row)
+    cancelSale(saleDispatch, { document_id: row.id })
   }
+
+  const can = action =>
+    validatePermissions(
+      Cache.getItem('currentSession').userPermissions,
+      props.permissions
+    ).permissionsSection[0][action]
 
   const columns = [
     {
       title: 'No. de boleta',
-      dataIndex: '_ticketId', // Field that is goint to be rendered
-      key: '_ticketId',
+      dataIndex: 'id', // Field that is goint to be rendered
+      key: 'id',
       render: text => <span>{text}</span>,
     },
     {
+      title: 'Fecha',
+      dataIndex: 'start_date', // Field that is goint to be rendered
+      key: 'start_date',
+      render: text => (
+        <span>{text ? moment(text).format('DD-MM-YYYY') : null}</span>
+      ),
+    },
+    {
       title: 'Empresa',
-      dataIndex: '_enterprise', // Field that is goint to be rendered
-      key: '_enterprise',
+      dataIndex: 'stakeholder_name', // Field that is goint to be rendered
+      key: 'stakeholder_name',
       render: text => <span>{text}</span>,
     },
     {
       title: 'Proyecto',
-      dataIndex: '_project', // Field that is goint to be rendered
-      key: '_project',
+      dataIndex: 'project_name', // Field that is goint to be rendered
+      key: 'project_name',
       render: text => <span>{text}</span>,
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status', // Field that is goint to be rendered
+      key: 'status',
+      render: text => <Tag type='documentStatus' value={text} />,
     },
     {
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
-      render: (row, data) => (
+      render: (_, data) => (
         <ActionOptions
           editPermissions={false}
           data={data}
           permissionId={props.permissions}
           handlerDeleteRow={handlerDeleteRow}
           handlerEditRow={handlerEditRow}
+          handlerApproveRow={handlerApproveRow}
+          deleteAction='cancel'
+          hasRelatedInvoice={data.has_related_invoice}
         />
       ),
     },
@@ -60,33 +154,57 @@ function SalesTable(props) {
   return (
     <>
       <Row gutter={16}>
-        <Col xs={10} sm={10} md={10} lg={10}>
+        <Col xs={8} sm={8} md={8} lg={8}>
           <Search
             className={'customSearch'}
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Presiona enter para buscar'
+            placeholder='Buscar por No. de boleta'
             style={{ height: '40px' }}
             size={'large'}
-            onSearch={e => getFilteredData(e)}
+            onSearch={e => getFilteredData('text', e)}
           />
         </Col>
-        <Col xs={8} sm={8} md={8} lg={8}>
+        <Col xs={5} sm={5} md={5} lg={5}>
           <DatePicker
-            placeholder={'Fecha'}
+            placeholder={'Buscar desde esta fecha'}
             style={{ width: '100%', height: '40px', borderRadius: '8px' }}
+            format='DD-MM-YYYY'
+            onChange={e => getFilteredData('date', e)}
           />
+        </Col>
+        <Col
+          xs={5}
+          sm={5}
+          md={5}
+          lg={5}
+          className={props.warehouse ? 'stash-component' : ''}
+        >
+          <Select
+            defaultValue={''}
+            className={'single-select'}
+            placeholder={'Status'}
+            size={'large'}
+            style={{ width: '100%', height: '40px' }}
+            getPopupContainer={trigger => trigger.parentNode}
+            onChange={value => getFilteredData('status', value)}
+          >
+            <Option value={''}>
+              <AntTag color='cyan'>Todo</AntTag>
+            </Option>
+            {saleState.salesStatusList?.map(value => (
+              <Option key={value} value={value}>
+                <Tag type='documentStatus' value={value} />
+              </Option>
+            ))}
+          </Select>
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} className='text-right'>
           <Button
             className={
-              validatePermissions(
-                Cache.getItem('currentSession').userPermissions,
-                props.permissions
-              ).permissionsSection[0].create
+              can('create')
                 ? 'title-cabisa new-button'
                 : 'hide-component title-cabisa new-button'
             }
-            // className='title-cabisa new-button'
             onClick={props.newNote}
           >
             {props.buttonTitle}
@@ -100,9 +218,9 @@ function SalesTable(props) {
               <Col xs={24} sm={24} md={24} lg={24}>
                 <Table
                   scroll={{ y: 250 }}
-                  loading={props.loading}
+                  loading={status === 'LOADING'}
                   className={'CustomTableClass'}
-                  dataSource={props.dataSource}
+                  dataSource={saleState?.sales}
                   columns={columns}
                   pagination={false}
                   rowKey='id'
@@ -111,15 +229,21 @@ function SalesTable(props) {
                       <div className={'text-left'}>
                         <p>
                           <b>Encargado </b>{' '}
-                          {record._manager !== null ? record._manager : ''}{' '}
+                          {record.project_business_man !== null
+                            ? record.project_business_man
+                            : ''}{' '}
                         </p>
                         <p>
                           <b>Direccion: </b>{' '}
-                          {record._address !== null ? record._address : ''}{' '}
+                          {record.stakeholder_address !== null
+                            ? record.stakeholder_address
+                            : ''}{' '}
                         </p>
                         <p>
                           <b>Telefono: </b>{' '}
-                          {record._phone !== null ? record._phone : ''}{' '}
+                          {record.stakeholder_phone !== null
+                            ? record.stakeholder_phone
+                            : ''}{' '}
                         </p>
                       </div>
                     ),

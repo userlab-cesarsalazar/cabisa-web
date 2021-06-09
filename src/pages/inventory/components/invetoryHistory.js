@@ -1,108 +1,68 @@
-import React, { useState } from 'react'
-import DynamicTable from '../../../components/DynamicTable'
-import {
-  Row,
-  Col,
-  DatePicker,
-  Divider,
-  Input,
-  Popconfirm,
-  Typography,
-  Button,
-} from 'antd'
+import React from 'react'
 import moment from 'moment'
+import { Row, Col, Divider, Typography } from 'antd'
+import DynamicTable from '../../../components/DynamicTable'
+import Tag from '../../../components/Tag'
+
 const { Title } = Typography
 
 function InventoryHistory(props) {
-  //states
-  const [dataSource, setDataSource] = useState([...props.dataDetail])
-
   const columnsHistory = [
     {
       width: 180,
       title: 'Fecha',
-      dataIndex: 'date', // Field that is goint to be rendered
-      key: 'date',
-      render: (text, record, indexRow) => (
-        <DatePicker
-          value={moment(record.date)}
-          placeholder={'Ingresa fecha'}
-          style={{ width: '100%', height: '40px', borderRadius: '8px' }}
-          onChange={(data, StringDate) =>
-            handleChangeItemValues(StringDate, indexRow, record._id, 'date')
-          }
-        />
+      dataIndex: 'created_at', // Field that is goint to be rendered
+      key: 'created_at',
+      render: text => (
+        <div>{text ? moment(text).format('DD-MM-YYYY') : null}</div>
       ),
     },
     {
-      title: 'Descripcion',
-      dataIndex: 'description', // Field that is goint to be rendered
-      key: 'quantity',
-      render: (text, record, indexRow) => (
-        <Input
-          value={record.description}
+      title: 'Tipo de Operacion',
+      dataIndex: 'operation_type', // Field that is goint to be rendered
+      key: 'operation_type',
+      render: text => (
+        <Tag
+          type='operationsTypes'
+          value={text}
           size={'large'}
-          placeholder={'Descripcion'}
-          onChange={event =>
-            handleChangeItemValues(
-              event.target.value,
-              indexRow,
-              record._id,
-              'description'
-            )
-          }
+          placeholder={'Tipo de Operacion'}
         />
       ),
     },
     {
-      title: '',
-      dataIndex: 'id',
-      render: (text, record, index) => (
-        <>
-          <Popconfirm
-            disabled={props.edit}
-            title={'Seguro de eliminar?'}
-            onConfirm={() => removeItem(index)}
-          >
-            <span style={{ color: 'red' }}>Eliminar</span>
-          </Popconfirm>
-        </>
+      title: 'Cantidad',
+      dataIndex: 'quantity', // Field that is goint to be rendered
+      key: 'quantity',
+      render: text => <div>{text}</div>,
+    },
+    {
+      title: 'Tipo de Movimiento',
+      dataIndex: 'movement_type', // Field that is goint to be rendered
+      key: 'movement_type',
+      render: text => (
+        <Tag
+          type='inventoryMovementsTypes'
+          value={text}
+          size={'large'}
+          placeholder={'Tipo de Movimiento'}
+        />
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status', // Field that is goint to be rendered
+      key: 'status',
+      render: text => (
+        <Tag
+          type='inventoryMovementsStatus'
+          value={text}
+          size={'large'}
+          placeholder={'Status'}
+        />
       ),
     },
   ]
-
-  // START: DINAMIC TABLE HANDLERS
-  const handlerAddItem = () => {
-    setDataSource(
-      dataSource.concat([
-        {
-          date: moment(),
-          description: '',
-        },
-      ])
-    )
-  }
-
-  const removeItem = index => {
-    let tmpDatasource = dataSource.filter((item, ind) => ind !== index)
-    setDataSource(tmpDatasource)
-  }
-
-  const handleChangeItemValues = (value, indexRow, key, type) => {
-    let tmpState = [...dataSource]
-    switch (type) {
-      case 'date':
-        tmpState[indexRow].date = value.length === 0 ? moment() : moment(value)
-        break
-      case 'description':
-        tmpState[indexRow].description = value
-        break
-      default:
-        break
-    }
-    setDataSource(tmpState)
-  }
-  // END: DINAMIC TABLE HANDLERS
 
   return (
     <>
@@ -110,18 +70,7 @@ function InventoryHistory(props) {
         <Col xs={24} sm={24} md={24} lg={24}>
           <Title level={3}>Bitacora</Title>
           <Divider className={'divider-custom-margins-users'} />
-          <DynamicTable columns={columnsHistory} data={dataSource} />
-        </Col>
-      </Row>
-      <Row gutter={16} className={'section-space-list'}>
-        <Col xs={24} sm={24} md={24} lg={24}>
-          <Button
-            type='dashed'
-            className={'shop-add-turn'}
-            onClick={handlerAddItem}
-          >
-            Agregar Detalle
-          </Button>
+          <DynamicTable columns={columnsHistory} data={props.dataDetail} />
         </Col>
       </Row>
     </>

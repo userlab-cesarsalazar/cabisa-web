@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import InventoryTable from '../../components/inventoryTable'
 
 import ProductDrawer from './productDrawer'
 
 import { withRouter } from 'react-router'
-import { Tag } from 'antd'
+import Tag from '../../../../components/Tag'
 import ActionOptions from '../../../../components/actionOptions'
 
 function InventoryProduct(props) {
   const [editMode, setEditMode] = useState(false)
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
-  const [loading, setLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
 
   const wareHouseColumns = [
@@ -29,57 +28,33 @@ function InventoryProduct(props) {
     },
     {
       title: 'Descripcion',
-      dataIndex: 'name', // Field that is goint to be rendered
-      key: 'name',
+      dataIndex: 'description', // Field that is goint to be rendered
+      key: 'description',
       render: text => <span>{text}</span>,
     },
     {
       title: 'Categoria',
-      dataIndex: 'service_type_id', // Field that is goint to be rendered
-      key: 'service_type_id',
-      render: text => (
-        <span>
-          {text === 1 ? (
-            <Tag color='red'>Servicio</Tag>
-          ) : text === 2 ? (
-            <Tag color='blue'>Equipo</Tag>
-          ) : text === 3 ? (
-            <Tag color='orange'>Repuesto</Tag>
-          ) : (
-            ''
-          )}
-        </span>
-      ),
+      dataIndex: 'product_category', // Field that is goint to be rendered
+      key: 'product_category',
+      render: text => <Tag type='productCategories' value={text} />,
     },
     {
       title: 'Precio de venta',
-      dataIndex: 'cost', // Field that is goint to be rendered
-      key: 'cost',
-      render: text => <span>{text.toFixed(2)}</span>,
+      dataIndex: 'unit_price', // Field that is goint to be rendered
+      key: 'unit_price',
+      render: text => <span>{text?.toFixed(2)}</span>,
     },
     {
       title: 'Estado',
-      dataIndex: 'is_active', // Field that is goint to be rendered
-      key: 'is_active',
-      render: text => (
-        <span>
-          {text === 0 ? (
-            <Tag color='#f50'>Inactivo</Tag>
-          ) : text === 1 ? (
-            <Tag color='#87d068'>Activo</Tag>
-          ) : text === 2 ? (
-            <Tag color='grey'>Bloqueado</Tag>
-          ) : (
-            ''
-          )}
-        </span>
-      ),
+      dataIndex: 'status', // Field that is goint to be rendered
+      key: 'status',
+      render: text => <Tag type='productStatus' value={text} />,
     },
     {
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
-      render: (row, data) => (
+      render: (_, data) => (
         <ActionOptions
           editPermissions={false}
           data={data}
@@ -91,37 +66,17 @@ function InventoryProduct(props) {
     },
   ]
 
-  useEffect(() => {
-    setIsVisible(false)
-    setLoading(false)
-    loadData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadData = useCallback(() => {
+    setDataSource(getClientData(props.dataSource))
   }, [props.dataSource])
 
-  const showDrawer = () => {
-    props.history.push('/inventoryProductsView')
-  }
+  useEffect(() => {
+    loadData()
 
-  const onClose = () => {
-    setIsVisible(false)
-  }
+    return () => setIsVisible(false)
+  }, [loadData])
 
-  const loadData = () => {
-    setIsVisible(false)
-    setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
-    setTimeout(() => setDataSource(setClientData(props.dataSource)), 500)
-  }
-
-  const searchTextFinder = data => {
-    props.searchWarehouseByTxt(data, 'Warehouse')
-  }
-
-  const searchByServiceCategory = data => {
-    props.searchByServiceCategory(data)
-  }
-
-  const setClientData = data => {
+  const getClientData = data => {
     const _data = []
     for (let k in data) {
       const d = data[k]
@@ -129,6 +84,14 @@ function InventoryProduct(props) {
     }
     return _data
   }
+
+  const showDrawer = () => props.history.push('/inventoryProductsView')
+
+  const onClose = () => setIsVisible(false)
+
+  const searchTextFinder = data => props.searchByTxt(data)
+
+  const searchByCategory = data => props.searchByCategory(data)
 
   const onCloseAfterSaveWarehouse = () => {
     setIsVisible(false)
@@ -141,10 +104,7 @@ function InventoryProduct(props) {
     setEditMode(true)
   }
 
-  const DeleteRow = data => {
-    setLoading(true)
-    props.deleteItemWareHouse({ id: data.id })
-  }
+  const DeleteRow = data => props.deleteItemWareHouse({ id: data.id })
   //END: table handler
 
   return (
@@ -153,10 +113,11 @@ function InventoryProduct(props) {
         warehouse={false}
         showDraweTbl={showDrawer}
         dataSource={dataSource}
-        loading={loading}
+        loading={props.loading}
         handlerTextSearch={searchTextFinder}
-        handlerCategoryService={searchByServiceCategory}
+        handlerCategorySearch={searchByCategory}
         columns={wareHouseColumns}
+        productCategoriesList={props.productCategoriesList}
       />
 
       <ProductDrawer
@@ -167,6 +128,9 @@ function InventoryProduct(props) {
         editData={editDataDrawer}
         cancelButton={onClose}
         closeAfterSave={onCloseAfterSaveWarehouse}
+        productStatusList={props.productStatusList}
+        productCategoriesList={props.productCategoriesList}
+        productsTaxesList={props.productsTaxesList}
       />
     </>
   )
