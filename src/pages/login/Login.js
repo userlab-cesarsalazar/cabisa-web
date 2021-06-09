@@ -369,12 +369,13 @@ function Login() {
         visible={isModalResetVisible}
         onOk={forgotPasswordSubmit}
         onCancel={cancelModal}
+        width={575}
       >
         <Spin spinning={loading}>
-        <Row gutter={16} className={'section-space-field'}>
-          <p>Se ha enviado a tu correo electronico un codigo de verificacion,</p>
-          <p>ingresalo en la casilla correspondiente</p>
-        </Row>
+        {/*<Row gutter={16} className={'section-space-field'}>*/}
+        {/*  <p>Se ha enviado a tu correo electronico un codigo de verificacion,</p>*/}
+        {/*  <p>ingresalo en la casilla correspondiente</p>*/}
+        {/*</Row>*/}
         <Row gutter={16} className={'section-space-field'}>
           
             <Col xs={8} sm={8} md={8} lg={8}>
@@ -393,7 +394,7 @@ function Login() {
           </Col>
           <Col xs={8} sm={8} md={8} lg={8}>
             <Input.Password
-              placeholder={'Ingrese nueva contraseña'}
+              placeholder={'Nueva contraseña'}
               value={newPass}
               onChange={value => setNewPass(value.target.value)}
             />
