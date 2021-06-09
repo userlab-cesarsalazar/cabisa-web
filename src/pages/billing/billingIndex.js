@@ -1,72 +1,118 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState, useRef } from 'react'
+import moment from 'moment'
 import HeaderPage from '../../components/HeaderPage'
 import BillingTable from './components/BillingTable'
 import LoadMoreButton from '../../components/LoadMoreButton'
 import DetailBilling from './components/detailBilling'
-
-const dataDummy = [
-  {
-    id: 1,
-    serie: 'A-12312',
-    service_type: 'Maquinaria',
-    client: { name: 'Luis de Leon', nit: '234234-9' },
-    date_created: '8/02/2021 15:35',
-    total_bill: '5000.00',
-    payment_method: 'Tarjeta debito/credito',
-  },
-  {
-    id: 2,
-    serie: 'A-12312',
-    service_type: 'Maquinaria',
-    client: { name: 'Otto rocket', nit: '1231-0' },
-    date_created: '8/02/2021 15:35',
-    total_bill: '45000.00',
-    payment_method: 'Transferencia',
-  },
-  {
-    id: 3,
-    serie: 'A-12312',
-    service_type: 'Servicio',
-    client: { name: 'Userlab S.A.', nit: '1231-0' },
-    date_created: '8/02/2021 15:35',
-    total_bill: '13000.00',
-    payment_method: 'Efectivo',
-  },
-  {
-    id: 4,
-    serie: 'A-12312',
-    service_type: 'Equipo',
-    client: { name: 'Userlab S.A.', nit: '1231-0' },
-    date_created: '8/02/2021 15:35',
-    total_bill: '13000.00',
-    payment_method: 'Efectivo',
-  },
-  {
-    id: 5,
-    serie: 'A-12312',
-    service_type: 'Equipo',
-    client: { name: 'Userlab2 S.A.', nit: '1231-0' },
-    date_created: '01/02/2021 15:35',
-    total_bill: '3000.00',
-    payment_method: 'Transferencia',
-  },
-]
+import billingSrc from './billingSrc'
+import { message } from 'antd'
+import { showErrors, roundNumber } from '../../utils'
+import { stakeholdersTypes } from '../../commons/types'
 
 function Billing(props) {
-  const [visible, setVisible] = useState(false)
+  const initFilters = useRef()
 
-  const newBill = () => {
-    props.history.push('/billingView')
+  if (!initFilters.current) {
+    initFilters.current = {
+      payment_method: '',
+      nit: '',
+      id: '',
+      created_at: '',
+    }
   }
 
+  const [loading, setLoading] = useState(false)
+  const [visible, setVisible] = useState(false)
+  const [dataSource, setDataSource] = useState(false)
+  const [showInvoiceData, setShowInvoiceData] = useState(false)
+  const [filters, setFilters] = useState(initFilters.current)
+  const [paymentMethodsOptionsList, setPaymentMethodsOptionsList] = useState([])
+  const [
+    stakeholderTypesOptionsList,
+    setStakeholderTypesOptionsList,
+  ] = useState([])
+
+  useEffect(() => {
+    setLoading(true)
+
+    Promise.all([
+      billingSrc.getPaymentMethods(),
+      billingSrc.getStakeholderTypes(),
+    ])
+      .then(data => {
+        const stakeholdersTypesList = data[1].filter(
+          s => s !== stakeholdersTypes.PROVIDER
+        )
+
+        setPaymentMethodsOptionsList(data[0])
+        setStakeholderTypesOptionsList(stakeholdersTypesList)
+      })
+      .catch(_ => message.error('Error al cargar listados'))
+      .finally(setLoading(false))
+  }, [])
+
+  const loadData = useCallback(() => {
+    setLoading(true)
+
+    billingSrc
+      .getInvoices({
+        payment_method: filters.paymentMethods,
+        // nit: filters.nit ? `${filters.nit}%` : '',
+        id: filters.id ? `${filters.id}%` : '',
+        created_at: filters.created_at
+          ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%` }
+          : '',
+      })
+      .then(data => setDataSource(data))
+      .catch(_ => message.error('Error al cargar facturas'))
+      .finally(setLoading(false))
+  }, [filters])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  const handlerDeleteRow = row => {
+    setLoading(true)
+
+    billingSrc
+      .cancelInvoice({ document_id: row.id })
+      .then(_ => {
+        if (JSON.stringify(filters) === JSON.stringify(initFilters.current)) {
+          loadData()
+        } else {
+          setFilters(initFilters.current)
+        }
+
+        message.success('Factura anulada exitosamente')
+      })
+      .catch(error => showErrors(error))
+      .finally(setLoading(false))
+  }
+
+  const setSearchFilters = field => value =>
+    setFilters(prevState => ({ ...prevState, [field]: value }))
+
+  const newBill = () => props.history.push('/billingView')
+
   const showDetail = data => {
-    console.log(data)
+    setShowInvoiceData({
+      ...data,
+      discount_percentage: roundNumber(data.discount_percentage),
+      discount: roundNumber(data.discount),
+      subtotal: roundNumber(data.subtotal),
+      total_tax: roundNumber(data.total_tax),
+      total: roundNumber(data.total),
+      products: data.products.map(p => ({
+        ...p,
+        product_price: roundNumber(p.product_price),
+        subtotal: roundNumber(p.subtotal),
+      })),
+    })
     setVisible(true)
   }
 
-  const closeDetail = () => {
-    setVisible(false)
-  }
+  const closeDetail = () => setVisible(false)
 
   return (
     <>
@@ -76,17 +122,29 @@ function Billing(props) {
         showDrawer={newBill}
         permissions={4}
       />
-      <BillingTable dataSource={dataDummy} showDetail={showDetail} />
+      <BillingTable
+        dataSource={dataSource}
+        showDetail={showDetail}
+        handleFiltersChange={setSearchFilters}
+        paymentMethodsOptionsList={paymentMethodsOptionsList}
+        handlerDeleteRow={handlerDeleteRow}
+        loading={loading}
+      />
       <LoadMoreButton
         handlerButton={() => console.log('more Button')}
         moreInfo={false}
       />
       <DetailBilling
         closable={closeDetail}
-        visible={visible}
-        edit={true}
-        editData={[]}
         cancelButton={closeDetail}
+        visible={visible}
+        loading={loading}
+        setLoading={setLoading}
+        data={showInvoiceData}
+        productsData={showInvoiceData?.products}
+        paymentMethodsOptionsList={paymentMethodsOptionsList}
+        stakeholderTypesOptionsList={stakeholderTypesOptionsList}
+        discountInputValue={showInvoiceData.discount_percentage}
       />
     </>
   )
