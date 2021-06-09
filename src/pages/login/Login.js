@@ -363,7 +363,6 @@ function Login() {
           </Row>
         </Spin>
       </Modal>
-  
       <Modal
         title='Resetear contraseña'
         visible={isModalResetVisible}
@@ -372,12 +371,7 @@ function Login() {
         width={575}
       >
         <Spin spinning={loading}>
-        {/*<Row gutter={16} className={'section-space-field'}>*/}
-        {/*  <p>Se ha enviado a tu correo electronico un codigo de verificacion,</p>*/}
-        {/*  <p>ingresalo en la casilla correspondiente</p>*/}
-        {/*</Row>*/}
         <Row gutter={16} className={'section-space-field'}>
-          
             <Col xs={8} sm={8} md={8} lg={8}>
               <Input
                 placeholder={'Ingrese codigo'}
