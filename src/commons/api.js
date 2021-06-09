@@ -6,8 +6,7 @@ const POST = 'POST'
 const PUT = 'PUT'
 const DELETE = 'DELETE'
 
-const get = (url, data) => makeRequestApi(url, GET, data)
-const getParams = (url, data) => makeRequestApiParams(url, GET, data)
+const get = (url, params) => makeRequestApi(url, GET, params)
 const post = (url, data) => makeRequestApi(url, POST, data)
 const put = (url, data) => makeRequestApi(url, PUT, data)
 const remove = (url, data) => makeRequestApi(url, DELETE, data)
@@ -15,60 +14,50 @@ const remove = (url, data) => makeRequestApi(url, DELETE, data)
 const makeRequestApi = async (url, method, data) =>
   new Promise((resolve, reject) => {
     Auth.currentSession()
-      .then(_ =>
-        axios({
-          url: url,
-          method: method,
+      .then(_ => {
+        const params = method === GET ? getQueryParams(data) : ''
+
+        return axios({
+          url: url + params,
+          method,
           headers: {
             'Content-Type': 'application/json',
           },
-          data: JSON.stringify(data),
+          data: method !== GET && JSON.stringify(data),
         })
-      )
-      .then(data => {
-        if (data.errors) reject(data.errors[0].message)
-        else resolve(data.data)
       })
-      .catch(err => {
-        if (err.response && err.response.data)
-          return reject(err.response.data.message)
-
-        console.log('Unknown error', err)
-
-        reject({ message: 'Unknown error' })
-      })
+      .then(data => (data.errors ? reject(data) : resolve(data.data)))
+      .catch(err => reject(err))
   })
 
-const makeRequestApiParams = async (url, method, data) =>
-  new Promise((resolve, reject) => {
-    Auth.currentSession()
-      .then(_ =>
-        axios({
-          url: url,
-          method: method,
-          params: JSON.stringify(data),
-        })
-      )
-      .then(data => {
-        if (data.errors) reject(data.errors[0].message)
-        else resolve(data.data)
-      })
-      .catch(err => {
-        if (err.response && err.response.data)
-          return reject(err.response.data.message)
+const getQueryParams = (params, defaultParams = {}) => {
+  const queryParams = { ...defaultParams, ...params }
 
-        console.log('Unknown error', err)
+  const result = Object.keys(queryParams).flatMap(k => {
+    if (!queryParams[k]) return []
 
-        reject({ message: 'Unknown error' })
+    let paramValue = queryParams[k]
+
+    if (typeof queryParams[k] === 'object') {
+      const paramOperators = Object.keys(queryParams[k]).map(operator => {
+        if (operator !== '$or') paramValue = queryParams[k][operator]
+        return operator
       })
+
+      paramValue = `${paramOperators.join('')}:${paramValue}`
+    }
+
+    return `${k}=${paramValue}`
   })
+
+  return `${result.length > 0 ? '?' : ''}${result.join('&')}`
+}
 
 const api = {
   get,
   post,
   put,
   remove,
-  getParams,
 }
 
 export default api

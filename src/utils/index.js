@@ -1,4 +1,14 @@
-module.exports.formatNumber = number => {
+import { message } from 'antd'
+
+export const roundNumber = (input, decimals = 2) => {
+  const number = Number(input)
+
+  if (!input || isNaN(number)) return input
+
+  return Number(number.toFixed(decimals))
+}
+
+export const formatNumber = number => {
   if (number === 0) return number
   let num1 = number?.split('.')[0]
   let num2 = number?.split('.')[1]?.slice(0, 2) || '00'
@@ -13,12 +23,12 @@ module.exports.formatNumber = number => {
   return num
 }
 
-module.exports.validateEmail = email => {
+export const validateEmail = email => {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(String(email).toLowerCase())
 }
 
-module.exports.validatePermissions = (dataPermissions, id) => {
+export const validatePermissions = (dataPermissions, id) => {
   let permissionsData = {}
   let sectionEnable = [id].every(perm =>
     dataPermissions.some(v => v.id === perm)
@@ -35,7 +45,27 @@ module.exports.validatePermissions = (dataPermissions, id) => {
   return permissionsData
 }
 
-module.exports.catchingErrors = errorCode => {
+const getErrorData = error => {
+  if (error?.response?.data?.error?.errors)
+    return error.response.data.error.errors
+
+  if (error?.response?.data?.error) return error.response.data.error
+
+  if (error.message) return error.message
+
+  if (error && !error.response) return 'Network Error'
+
+  return 'Unknown Error'
+}
+
+export const showErrors = error => {
+  const data = getErrorData(error)
+  const messages = typeof data === 'string' ? [data] : data
+
+  messages.forEach(msg => message.error(msg))
+}
+
+export const catchingErrors = errorCode => {
   switch (true) {
     case errorCode.indexOf('UsernameExistsException') > -1:
       return 'El nombre de usuario ya existe.'
@@ -75,7 +105,7 @@ const validatePermissionsLocalPermissions = (dataPermissions, id) => {
   return permissionsData
 }
 
-module.exports.permissionsButton = (id, data) => {
+export const permissionsButton = (id, data) => {
   return (
     validatePermissionsLocalPermissions(data.userPermissions, id)
       .permissionsSection[0].delete ||
@@ -84,7 +114,7 @@ module.exports.permissionsButton = (id, data) => {
   )
 }
 
-module.exports.getBase64 = (img, callback) => {
+export const getBase64 = (img, callback) => {
   const reader = new FileReader()
   reader.addEventListener('load', () => callback(reader.result))
   reader.readAsDataURL(img)

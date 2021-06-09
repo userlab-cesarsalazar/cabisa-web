@@ -1,15 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import FooterButtons from '../../../../components/FooterButtons'
-import {
-  Col,
-  Divider,
-  Input,
-  message,
-  Row,
-  Select,
-  Tag,
-  Typography,
-} from 'antd'
+import { Col, Divider, Input, message, Row, Select, Typography } from 'antd'
+import Tag from '../../../../components/Tag'
+import { productsStatus } from '../../../../commons/types'
 import { Cache } from 'aws-amplify'
 const { Title } = Typography
 const { Option } = Select
@@ -24,39 +17,28 @@ function ServiceFields(props) {
 
   useEffect(() => {
     setCode(props.edit ? props.editData.code : '')
-    setDescription(props.edit ? props.editData.name : '')
-    setPrice(props.edit ? props.editData.cost : '')
-    setStatus(props.edit ? props.editData.is_active : 1)
+    setDescription(props.edit ? props.editData.description : '')
+    setPrice(props.edit ? props.editData.unit_price : '')
+    setStatus(props.edit ? props.editData.status : productsStatus.ACTIVE)
     setSpecialPermission(Cache.getItem('currentSession').rol_id !== 1)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.visible])
 
   const saveData = () => {
-    let validate = false
-    if (
-      [code, description, price, status].includes('') ||
-      [code, description, price, status].includes(undefined)
-    ) {
-      message.warning('Todos los campos son obligatorios.')
-    } else {
-      validate = true
-    }
+    const requiredValues = [code, description, price, status]
+
+    if (requiredValues.some(v => !v))
+      return message.warning('Todos los campos son obligatorios.')
 
     const data = {
+      id: props?.editData?.id,
       code,
       description,
-      price,
-      service: 1,
-      category: 1,
-      is_active: status,
+      unit_price: price,
+      status,
     }
 
-    if (validate)
-      props.saveUserData(
-        props.edit,
-        data,
-        props.edit ? props.editData.id : null
-      )
+    props.saveUserData(data)
   }
 
   return (
@@ -104,7 +86,7 @@ function ServiceFields(props) {
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Estado</div>
             <Select
-              defaultValue={1}
+              defaultValue={productsStatus.ACTIVE}
               value={status}
               className={'single-select'}
               placeholder={'Estado'}
@@ -113,15 +95,11 @@ function ServiceFields(props) {
               getPopupContainer={trigger => trigger.parentNode}
               onChange={value => setStatus(value)}
             >
-              <Option value={0}>
-                <Tag color='#f50'>Inactivo</Tag>
-              </Option>
-              <Option value={1}>
-                <Tag color='#87d068'>Activo</Tag>
-              </Option>
-              <Option value={2}>
-                <Tag color='grey'>Bloqueado</Tag>
-              </Option>
+              {props.serviceStatusList?.map(value => (
+                <Option key={value} value={value}>
+                  <Tag type='productStatus' value={value} />
+                </Option>
+              ))}
             </Select>
           </Col>
         </Row>

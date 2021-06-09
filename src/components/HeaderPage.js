@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, Col, Row, Typography } from 'antd'
 // Context
-import { validatePermissions } from '../utils/Utils'
+import { validatePermissions } from '../utils'
 import { Cache } from 'aws-amplify'
 const { Title } = Typography
 

@@ -1,25 +1,32 @@
 import React from 'react'
 import { Button, Divider, Popconfirm, Tooltip } from 'antd'
-import { permissionsButton, validatePermissions } from '../utils/Utils'
+import { permissionsButton, validatePermissions } from '../utils'
 import { Cache } from 'aws-amplify'
 import {
   DeleteOutlined,
   FileSearchOutlined,
   ApartmentOutlined,
+  CheckSquareOutlined,
 } from '@ant-design/icons'
 
-function ActionOptions(props) {
-  const handlerEditRow = data => {
-    props.handlerEditRow(data)
-  }
+function ActionOptions({
+  deleteAction = 'delete',
+  editAction = 'edit',
+  ...props
+}) {
+  const handlerEditRow = data => props.handlerEditRow(data)
 
-  const handlerDeleteRow = data => {
-    props.handlerDeleteRow(data)
-  }
+  const handlerApproveRow = data => props.handlerApproveRow(data)
 
-  const handlerEditPermissions = data => {
-    props.handlerEditPermissions(data)
-  }
+  const handlerDeleteRow = data => props.handlerDeleteRow(data)
+
+  const handlerEditPermissions = data => props.handlerEditPermissions(data)
+
+  const can = action =>
+    validatePermissions(
+      Cache.getItem('currentSession').userPermissions,
+      props.permissionId
+    ).permissionsSection[0][action]
 
   return (
     <div>
@@ -28,56 +35,61 @@ function ActionOptions(props) {
         Cache.getItem('currentSession')
       ) && (
         <div>
-          {props.editPermissions &&
-            validatePermissions(
-              Cache.getItem('currentSession').userPermissions,
-              props.permissionId
-            ).permissionsSection[0].edit && (
-              <Tooltip title='Editar permisos' color={'blue'}>
-                <Button
-                  icon={<ApartmentOutlined />}
-                  onClick={() => handlerEditPermissions(props.data)}
-                />
-              </Tooltip>
-            )}
+          {props.editPermissions && can('edit') && (
+            <Tooltip title='Editar permisos' color={'blue'}>
+              <Button
+                icon={<ApartmentOutlined />}
+                onClick={() => handlerEditPermissions(props.data)}
+              />
+            </Tooltip>
+          )}
 
-          {props.editPermissions &&
-            validatePermissions(
-              Cache.getItem('currentSession').userPermissions,
-              props.permissionId
-            ).permissionsSection[0].edit && <Divider type={'vertical'} />}
+          {props.editPermissions && can('edit') && (
+            <Divider type={'vertical'} />
+          )}
 
-          {validatePermissions(
-            Cache.getItem('currentSession').userPermissions,
-            props.permissionId
-          ).permissionsSection[0].edit && (
-            <Tooltip title='Editar'>
+          {can('edit') && (
+            <Tooltip title={editAction === 'edit' ? 'Editar' : 'Ver Detalle'}>
               <Button
                 icon={<FileSearchOutlined />}
                 onClick={() => handlerEditRow(props.data)}
               />
             </Tooltip>
           )}
-          {validatePermissions(
-            Cache.getItem('currentSession').userPermissions,
-            props.permissionId
-          ).permissionsSection[0].delete &&
-            validatePermissions(
-              Cache.getItem('currentSession').userPermissions,
-              props.permissionId
-            ).permissionsSection[0].edit && <Divider type={'vertical'} />}
-          {validatePermissions(
-            Cache.getItem('currentSession').userPermissions,
-            props.permissionId
-          ).permissionsSection[0].delete && (
-            <Tooltip title='Eliminar' color={'red'}>
+
+          {can('edit') && can('delete') && <Divider type={'vertical'} />}
+
+          {can('delete') && (
+            <Tooltip
+              title={deleteAction === 'delete' ? 'Eliminar' : 'Cancelar'}
+              color={'red'}
+            >
               <Popconfirm
-                title='Estas seguro de borrar el elemento selccionado?'
+                title={`¿Estas seguro de ${
+                  deleteAction === 'delete' ? 'borrar' : 'anular'
+                } el elemento seleccionado?`}
                 onConfirm={() => handlerDeleteRow(props.data)}
                 okText='Si'
                 cancelText='No'
               >
                 <Button danger icon={<DeleteOutlined />} />
+              </Popconfirm>
+            </Tooltip>
+          )}
+
+          {can('edit') && can('delete') && props.showApproveBtn && (
+            <Divider type={'vertical'} />
+          )}
+
+          {can('edit') && props.showApproveBtn && (
+            <Tooltip title='Facturar'>
+              <Popconfirm
+                title={`¿Estas seguro de facturar el elemento seleccionado?`}
+                onConfirm={() => handlerApproveRow(props.data)}
+                okText='Si'
+                cancelText='No'
+              >
+                <Button icon={<CheckSquareOutlined />} />
               </Popconfirm>
             </Tooltip>
           )}
