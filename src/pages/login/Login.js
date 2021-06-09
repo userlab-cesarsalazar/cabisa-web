@@ -26,16 +26,18 @@ function Login() {
   const [confirmUsername, setConfirmUsername] = useState('')
   const [codeConfirm, setCodeConfirm] = useState('')
   const [isModalConfirmVisible, setIsModalConfirmVisible] = useState(false)
-
+  const [isModalResetVisible, setIsModalResetVisible] = useState(false)
+  const [userName,setUserName] = useState('')
+  
   const handleSubmit = async value => {
+    let usernameE = value.username
+    let passwordE = value.password
     try {
       setLoading(true)
-      let usernameE = value.username
-      let passwordE = value.password
-
       if (!usernameE || !passwordE) {
         throw mssError
       } else {
+        setUserName(value.username)
         Auth.signIn(usernameE, passwordE)
           .then(user => {
             if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
@@ -82,7 +84,9 @@ function Login() {
             setLoading(false)
             if (e.message.indexOf('User is not confirmed.') > -1) {
               openNotification()
-            } else {
+            } else if(e.message.indexOf('Password reset required for the user') > -1){
+              openNotificationResetPassword(usernameE)
+            }else {
               message.error(catchingErrors(e.message))
             }
           })
@@ -118,7 +122,37 @@ function Login() {
         message.error('Ha ocurrido un error vuelve a intentarlo')
       })
   }
-
+  
+  const forgotPassword = userName => {
+    Auth.forgotPassword(userName).then(result=>{
+      console.log(result)
+      setIsModalResetVisible(true)
+    }).catch(err => {
+      console.log(err)
+      message.error('Ha ocurrido un al enviar el codigo de seguridad a tu correo electronico, contacta al administrador.')
+    })
+  }
+  
+  const forgotPasswordSubmit = _ =>{
+    if (newPass === '' || userName === '' || codeConfirm === '') {
+      return message.error('Todos los campos son obligatorios.')
+    }
+    setLoading(true)
+    Auth.forgotPasswordSubmit(userName,codeConfirm,newPass).then(result=>{
+      console.log("forgotPasswordSubmit",result)
+      setIsModalResetVisible(false)
+      setLoading(false)
+      message.success("Tu contraseña se ha reiniciado.")
+    }).catch(err=>{
+      setLoading(false)
+      console.log(err)
+      message.warning('Verifica que todos los datos proporcionados sean correctos.')
+      if (err.message.indexOf('Attempt limit exceeded') > -1) {
+        message.error('Se ha excedido el numero de intentos, espera un momento y vuelve a intentarlo.')
+      }
+    })
+  }
+  
   const confirmUser = async () => {
     setLoading(true)
     try {
@@ -145,6 +179,7 @@ function Login() {
     setIsModalConfirmVisible(false)
     setConfirmUsername('')
     setCodeConfirm('')
+    setIsModalResetVisible(false)
   }
 
   const openNotification = () => {
@@ -169,7 +204,30 @@ function Login() {
       key,
     })
   }
-
+  
+  const openNotificationResetPassword = username => {
+    const key = `open${Date.now()}`
+    const btn = (
+      <Button
+        type='primary'
+        size='small'
+        onClick={() => {
+          forgotPassword(username)
+          notification.close(key)
+        }}
+      >
+        Aceptar
+      </Button>
+    )
+    notification.open({
+      message: 'Resetear contraseña',
+      description:
+        'Se enviara un codigo de seguridad a tu correo electronico para resetear tu contraseña.',
+      btn,
+      key,
+    })
+  }
+  
   return (
     <Row
       type='flex'
@@ -303,6 +361,39 @@ function Login() {
               />
             </Col>
           </Row>
+        </Spin>
+      </Modal>
+      <Modal
+        title='Resetear contraseña'
+        visible={isModalResetVisible}
+        onOk={forgotPasswordSubmit}
+        onCancel={cancelModal}
+        width={575}
+      >
+        <Spin spinning={loading}>
+        <Row gutter={16} className={'section-space-field'}>
+            <Col xs={8} sm={8} md={8} lg={8}>
+              <Input
+                placeholder={'Ingrese codigo'}
+                value={codeConfirm}
+                onChange={value => setCodeConfirm(value.target.value)}
+              />
+            </Col>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <Input
+              placeholder={'Ingrese usuario'}
+              value={confirmUsername}
+              onChange={value => setConfirmUsername(value.target.value)}
+            />
+          </Col>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <Input.Password
+              placeholder={'Nueva contraseña'}
+              value={newPass}
+              onChange={value => setNewPass(value.target.value)}
+            />
+          </Col>
+        </Row>
         </Spin>
       </Modal>
     </Row>
