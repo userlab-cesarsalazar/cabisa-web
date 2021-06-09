@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react'
+import {
+  productsStatus,
+  productsCategories,
+  productsTaxes,
+} from '../../../../commons/types'
 import FooterButtons from '../../../../components/FooterButtons'
+import Tag from '../../../../components/Tag'
 import {
   Col,
   Divider,
@@ -7,14 +13,12 @@ import {
   message,
   Row,
   Select,
-  Tag,
   Typography,
   Upload,
 } from 'antd'
-
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import { Cache } from 'aws-amplify'
-import { getBase64 } from '../../../../utils/Utils'
+import { getBase64 } from '../../../../utils'
 const { Title } = Typography
 const { Option } = Select
 
@@ -24,52 +28,59 @@ function ProductFields(props) {
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
   const [serviceCategory, setServiceCategory] = useState(null)
-  const [engineNumber, setEngineNumber] = useState('')
   const [specialPermission, setSpecialPermission] = useState(false)
   const [loading, setLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState(null)
   const [status, setStatus] = useState(null)
+  const [taxId, setTaxId] = useState(null)
 
   useEffect(() => {
+    setLoading(props.loading)
+  }, [props.loading])
+
+  useEffect(() => {
+    setImageUrl(props.edit ? props.editData.image_url : '')
     setCode(props.edit ? props.editData.code : '')
     setSerie(props.edit ? props.editData.serial_number : '')
-    setDescription(props.edit ? props.editData.name : '')
-    setPrice(props.edit ? props.editData.cost : '')
-    setServiceCategory(props.edit ? props.editData.service_type_id : null)
-    setEngineNumber(props.edit ? props.editData.engine_number : '')
+    setDescription(props.edit ? props.editData.description : '')
+    setPrice(props.edit ? props.editData.unit_price : '')
+    setServiceCategory(
+      props.edit
+        ? props.editData.product_category
+        : productsCategories.EQUIPMENT
+    )
     setSpecialPermission(Cache.getItem('currentSession').rol_id !== 1)
-    setStatus(props.edit ? props.editData.is_active : 1)
+    setStatus(props.edit ? props.editData.status : productsStatus.ACTIVE)
+    setTaxId(props.edit ? props.editData.tax_id : productsTaxes.IVA)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.visible])
 
   const saveData = () => {
-    let validate = false
-    if (
-      [code, serie, description, price, serviceCategory].includes('') ||
-      [code, serie, description, price, serviceCategory].includes(undefined)
-    ) {
-      message.warning('Todos los campos son obligatorios.')
-    } else {
-      validate = true
-    }
-
-    const data = {
+    const requiredValues = [
       code,
       serie,
       description,
       price,
-      service: serviceCategory,
-      category: 2,
-      engine_number: engineNumber,
-      is_active: status,
+      serviceCategory,
+      taxId,
+    ]
+
+    if (requiredValues.some(v => !v))
+      return message.warning('Todos los campos son obligatorios.')
+
+    const data = {
+      id: props?.editData?.id,
+      code,
+      serial_number: serie,
+      description,
+      unit_price: price,
+      product_category: serviceCategory,
+      status,
+      tax_id: taxId,
+      image_url: imageUrl,
     }
 
-    if (validate)
-      props.saveUserData(
-        props.edit,
-        data,
-        props.edit ? props.editData.id : null
-      )
+    props.saveUserData(data)
   }
 
   const beforeUpload = file => {
@@ -85,10 +96,6 @@ function ProductFields(props) {
   }
 
   const handleChange = info => {
-    // if (info.file.status === 'uploading') {
-    //   setLoading(true)
-    //   return
-    // }
     if (info.file.status === 'uploading') {
       getBase64(info.file.originFileObj, imageUrl => {
         setImageUrl(imageUrl)
@@ -179,6 +186,26 @@ function ProductFields(props) {
             />
           </Col>
           <Col xs={8} sm={8} md={8} lg={8}>
+            <div className={'title-space-field'}>Impuesto</div>
+            <Select
+              value={taxId}
+              className={'single-select'}
+              placeholder={'Tipo de impuesto'}
+              size={'large'}
+              style={{ width: '100%', height: '40px' }}
+              getPopupContainer={trigger => trigger.parentNode}
+              onChange={value => setTaxId(value)}
+            >
+              {props.productsTaxesList?.map(t => (
+                <Option key={t.id} value={t.id}>
+                  {`${t.name} - (${t.fee}%)`}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+        </Row>
+        <Row gutter={16} className={'section-space-field'}>
+          <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Categoria</div>
             <Select
               value={serviceCategory}
@@ -189,20 +216,17 @@ function ProductFields(props) {
               getPopupContainer={trigger => trigger.parentNode}
               onChange={value => setServiceCategory(value)}
             >
-              <Option value={2}>
-                <Tag color='blue'>Equipo</Tag>
-              </Option>
-              <Option value={3}>
-                <Tag color='orange'>Repuesto</Tag>
-              </Option>
+              {props.productCategoriesList?.map(value => (
+                <Option key={value} value={value}>
+                  <Tag type='productCategories' value={value} />
+                </Option>
+              ))}
             </Select>
           </Col>
-        </Row>
-        <Row gutter={16} className={'section-space-field'}>
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Estado</div>
             <Select
-              defaultValue={1}
+              defaultValue={productsStatus.ACTIVE}
               value={status}
               className={'single-select'}
               placeholder={'Estado'}
@@ -211,15 +235,11 @@ function ProductFields(props) {
               getPopupContainer={trigger => trigger.parentNode}
               onChange={value => setStatus(value)}
             >
-              <Option value={0}>
-                <Tag color='#f50'>Inactivo</Tag>
-              </Option>
-              <Option value={1}>
-                <Tag color='#87d068'>Activo</Tag>
-              </Option>
-              <Option value={2}>
-                <Tag color='grey'>Bloqueado</Tag>
-              </Option>
+              {props.productStatusList?.map(value => (
+                <Option key={value} value={value}>
+                  <Tag type='productStatus' value={value} />
+                </Option>
+              ))}
             </Select>
           </Col>
         </Row>

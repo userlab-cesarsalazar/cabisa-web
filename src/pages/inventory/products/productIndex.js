@@ -1,68 +1,80 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import HeaderPage from '../../../components/HeaderPage'
 import InventoryProduct from './components/inventoryProduct'
 import InventorySrc from '../inventorySrc'
 import { message } from 'antd'
+import { showErrors } from '../../../utils'
 
 function ProductIndex() {
   const [inventoryProducts, setInventoryProducts] = useState([])
+  const [productCategoriesList, setProductCategoriesList] = useState([])
+  const [productStatusList, setProductStatusList] = useState([])
+  const [productsTaxesList, setProductsTaxesList] = useState([])
+  const [searchText, setSearchText] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const getProducts = useCallback(() => {
+    setLoading(true)
+
+    InventorySrc.getProducts({
+      description: { $like: `${searchText}%` },
+      product_category: categoryFilter,
+    })
+      .then(result => setInventoryProducts(result))
+      .catch(err => {
+        console.log('ERROR ON GET INVENTORY PRODUCTS', err)
+        message.warning('No se ha podido obtener informacion del inventario.')
+      })
+      .finally(setLoading(false))
+  }, [searchText, categoryFilter])
 
   useEffect(() => {
     getProducts()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getProducts])
+
+  useEffect(() => {
+    setLoading(true)
+
+    Promise.all([
+      InventorySrc.getProductsStatus(),
+      InventorySrc.getProductsCategories(),
+      InventorySrc.getProductsTaxes(),
+    ])
+      .then(result => {
+        setProductStatusList(result[0])
+        setProductCategoriesList(result[1])
+        setProductsTaxesList(result[2])
+      })
+      .catch(err => {
+        console.log('ERROR ON GET INVENTORY PRODUCTS', err)
+        message.warning('No se ha podido obtener informacion del inventario.')
+      })
+      .finally(setLoading(false))
   }, [])
 
-  const getProducts = () => {
-    //GET ALL PRODUCTOS
-    InventorySrc.getProducts()
-      .then(result => {
-        setInventoryProducts(
-          result.message.filter(data => data.category_id === 2)
-        )
-      })
-      .catch(err => {
-        console.log('ERROR ON GET INVENTORY PRODUCTS', err)
-        message.warning('No se ha podido obtener informacion del inventario.')
-      })
-  }
+  const searchByTxt = description => setSearchText(description)
 
-  const searchByTxt = (name, type) => {
-    //GET FILTER PRODUCTOS BY NAME
-    InventorySrc.getProductsFilter(name)
-      .then(result => {
-        setInventoryProducts(
-          result.message.filter(data => data.category_id === 2)
-        )
-      })
-      .catch(err => {
-        console.log('ERROR ON GET INVENTORY PRODUCTS', err)
-        message.warning('No se ha podido obtener informacion del inventario.')
-      })
-  }
+  const searchByCategory = data => setCategoryFilter(data)
 
-  const searchByCategoryService = data => {
-    let categoryServiceId = data === 99 ? false : data
-    InventorySrc.getProductsFilterByCategory(categoryServiceId)
-      .then(result => {
-        setInventoryProducts(
-          result.message.filter(data => data.category_id === 2)
-        )
-      })
-      .catch(err => {
-        console.log('ERROR ON GET INVENTORY PRODUCTS', err)
-        message.warning('No se ha podido obtener informacion del inventario.')
-      })
+  const clearSearch = () => {
+    if (searchText === '' && categoryFilter === '') getProducts()
+    else {
+      setSearchText('')
+      setCategoryFilter('')
+    }
   }
 
   const deleteProduct = data => {
+    setLoading(true)
+
     InventorySrc.deleteProduct(data)
       .then(_ => {
         message.success('Elemento eliminado')
-        getProducts()
+        clearSearch()
       })
-      .catch(err => {
-        console.log('ERROR ON DELETE ELEMENT', err)
-      })
+      .catch(err => showErrors(err))
+      .finally(setLoading(false))
   }
 
   return (
@@ -70,11 +82,15 @@ function ProductIndex() {
       <HeaderPage titleButton={''} title={'Productos'} permissions={5} />
       <InventoryProduct
         title={'Productos'}
-        searchByServiceCategory={searchByCategoryService}
-        searchWarehouseByTxt={searchByTxt}
+        searchByCategory={searchByCategory}
+        searchByTxt={searchByTxt}
         dataSource={inventoryProducts}
-        closeAfterSaveWareHouse={getProducts}
+        closeAfterSaveWareHouse={clearSearch}
         deleteItemWareHouse={deleteProduct}
+        loading={loading}
+        productStatusList={productStatusList}
+        productCategoriesList={productCategoriesList}
+        productsTaxesList={productsTaxesList}
       />
     </>
   )

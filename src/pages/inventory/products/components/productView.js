@@ -1,34 +1,46 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import HeaderPage from '../../../../components/HeaderPage'
 import { Card, message, Spin } from 'antd'
 import ProductFields from './productFields'
-import InventoryHistory from '../../components/invetoryHistory'
 import InventorySrc from '../../inventorySrc'
+import { showErrors } from '../../../../utils'
 
 function ProductView(props) {
   const [viewLoading, setViewLoading] = useState(false)
+  const [productStatusList, setProductStatusList] = useState([])
+  const [productCategoriesList, setProductCategoriesList] = useState([])
+  const [productsTaxesList, setProductsTaxesList] = useState([])
 
-  const saveData = (method, data, user_id) => {
-    let newDataObj = {
-      name: data.description,
-      category_id: data.category,
-      service_type_id: data.service,
-      code: data.code,
-      serial_number: data.serie,
-      cost: data.price,
-      engine_number: data.engine_number,
-    }
+  useEffect(() => {
     setViewLoading(true)
-    InventorySrc.createProduct(newDataObj)
+
+    Promise.all([
+      InventorySrc.getProductsStatus(),
+      InventorySrc.getProductsCategories(),
+      InventorySrc.getProductsTaxes(),
+    ])
+      .then(result => {
+        setProductStatusList(result[0])
+        setProductCategoriesList(result[1])
+        setProductsTaxesList(result[2])
+      })
+      .catch(err => {
+        console.log('ERROR ON GET INVENTORY PRODUCTS', err)
+        message.warning('No se ha podido obtener informacion del inventario.')
+      })
+      .finally(setViewLoading(false))
+  }, [])
+
+  const saveData = data => {
+    setViewLoading(true)
+
+    InventorySrc.createProduct(data)
       .then(_ => {
         message.success('Elemento creado.')
         props.history.push('/inventoryProducts')
       })
-      .catch(err => {
-        setViewLoading(false)
-        console.log('err', err)
-        message.warning('No se ha podido guardar la informacion.')
-      })
+      .catch(err => showErrors(err))
+      .finally(setViewLoading(false))
   }
 
   return (
@@ -42,8 +54,10 @@ function ProductView(props) {
           edit={false}
           data={props.editData}
           cancelButton={props.cancelButton}
+          productStatusList={productStatusList}
+          productCategoriesList={productCategoriesList}
+          productsTaxesList={productsTaxesList}
         />
-        <InventoryHistory dataDetail={[]} />
       </Card>
     </Spin>
   )
