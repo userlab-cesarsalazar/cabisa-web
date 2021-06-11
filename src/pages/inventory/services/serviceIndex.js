@@ -14,7 +14,7 @@ function ServiceIndex() {
   const getServices = useCallback(() => {
     setLoading(true)
 
-    InventorySrc.getServices({ description: { $like: `${searchText}%25` } })
+    InventorySrc.getServices({ description: { $like: `%25${searchText}%25` } })
       .then(result => setInventoryServices(result))
       .catch(err => {
         console.log('ERROR ON GET INVENTORY SERVICES', err)

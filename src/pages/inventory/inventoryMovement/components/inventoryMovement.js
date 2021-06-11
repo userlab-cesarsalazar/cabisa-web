@@ -65,7 +65,7 @@ function InventoryMovementComponent() {
 
     inventorySrc
       .getPurchases({
-        related_external_document_id: { $like: `${searchText}%25` },
+        related_external_document_id: { $like: `%25${searchText}%25` },
         status: statusFilter,
       })
       .then(data => setDataSource(data))

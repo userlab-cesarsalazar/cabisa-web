@@ -346,7 +346,7 @@ body {
 
 .ant-menu-submenu span:nth-child(2) {
   color: white !important;
-  padding-left: 10px;
+  padding-left: 0px;
 }
 
 .ant-menu-submenu-selected span:nth-child(2) {
