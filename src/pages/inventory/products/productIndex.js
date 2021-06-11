@@ -26,7 +26,7 @@ function ProductIndex() {
         console.log('ERROR ON GET INVENTORY PRODUCTS', err)
         message.warning('No se ha podido obtener informacion del inventario.')
       })
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }, [searchText, categoryFilter])
 
   useEffect(() => {
@@ -50,7 +50,7 @@ function ProductIndex() {
         console.log('ERROR ON GET INVENTORY PRODUCTS', err)
         message.warning('No se ha podido obtener informacion del inventario.')
       })
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }, [])
 
   const searchByTxt = description => setSearchText(description)
@@ -74,7 +74,7 @@ function ProductIndex() {
         clearSearch()
       })
       .catch(err => showErrors(err))
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }
 
   return (

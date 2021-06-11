@@ -21,7 +21,7 @@ function ServiceView(props) {
         console.log('ERROR ON GET INVENTORY SERVICES', err)
         message.warning('No se ha podido obtener informacion del inventario.')
       })
-      .finally(setViewLoading(false))
+      .finally(() => setViewLoading(false))
   }, [])
 
   const saveData = data => {
@@ -33,7 +33,7 @@ function ServiceView(props) {
         props.history.push('/inventoryServices')
       })
       .catch(err => showErrors(err))
-      .finally(setViewLoading(false))
+      .finally(() => setViewLoading(false))
   }
 
   return (

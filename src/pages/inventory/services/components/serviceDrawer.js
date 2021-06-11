@@ -16,7 +16,7 @@ function ServiceDrawer(props) {
         props.closeAfterSave()
       })
       .catch(err => showErrors(err))
-      .finally(setLoadingDrawer(false))
+      .finally(() => setLoadingDrawer(false))
   }
 
   return (

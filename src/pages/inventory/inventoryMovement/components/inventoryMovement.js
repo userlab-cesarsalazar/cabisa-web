@@ -70,7 +70,7 @@ function InventoryMovementComponent() {
       })
       .then(data => setDataSource(data))
       .catch(error => showErrors(error))
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }, [searchText, statusFilter])
 
   useEffect(() => {
@@ -108,7 +108,7 @@ function InventoryMovementComponent() {
         message.success('Compra anulada exitosamente')
       })
       .catch(error => showErrors(error))
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }
 
   const columns = getColumns({ DeleteRow, EditRow })

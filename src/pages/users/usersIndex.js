@@ -35,6 +35,7 @@ function Users(props) {
       .catch(err => {
         console.log('ERROR GET USERS', err)
         message.error('No se pudo obtener la informacion.')
+        setLoading(false)
       })
   }
 
@@ -46,9 +47,10 @@ function Users(props) {
     setEditDataDrawer(data)
   }
 
-  const searchText = data => {
+  const searchText = name => {
     setLoading(true)
-    UsersSrc.getUsersByName(data)
+
+    UsersSrc.getUsersByName({ name: { $like: `${name}%25` } })
       .then(data => {
         setLoading(false)
         setDataSource(data)
@@ -56,6 +58,7 @@ function Users(props) {
       .catch(err => {
         console.log('ERROR GET USERS', err)
         message.error('No se pudo obtener la informacion.')
+        setLoading(false)
       })
   }
 
@@ -100,21 +103,24 @@ function Users(props) {
 
   const saveInformation = async data => {
     try {
-      setVisible(false)
-      setShowPermissions(false)
+      setLoading(true)
       delete data.password
       UsersSrc.updateUser(data)
         .then(_ => {
           message.success('Informacion actualizada')
           loadUserData()
+          setVisible(false)
+          setShowPermissions(false)
         })
         .catch(err => {
           console.log('ERROR ON UPDATE PERMISSIONS', err)
           message.warning('No se ha podido actualizar la informacion')
+          setLoading(false)
         })
     } catch (e) {
       console.log('ERROR ON EDIT USER INFORMATION.', e)
       showErrors(e)
+      setLoading(false)
     }
   }
 

@@ -26,7 +26,7 @@ function ClientFields(props) {
 
   useEffect(() => {
     setName(props.edit ? props.editData.name : '')
-    setClientTypeID(props.edit ? props.editData.client_type : null)
+    setClientTypeID(props.edit ? props.editData.stakeholder_type : null)
     setNit(props.edit ? props.editData.nit : '')
     setEmail(props.edit ? props.editData.email : '')
     setPhone(props.edit ? props.editData.phone : '')

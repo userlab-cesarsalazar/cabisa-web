@@ -1,5 +1,6 @@
 import api from '../../commons/api'
 import { stage } from '../../commons/credentials'
+import { productsTypes } from '../../commons/types'
 
 const urlProduct = stage.productUrl
 const urlPurchase = stage.purchaseUrl
@@ -10,7 +11,8 @@ const getPurchases = params => api.get(urlPurchase, { ...params })
 const createPurchase = data => api.post(urlPurchase, data)
 const cancelPurchase = data => api.put(`${urlPurchase}/cancel`, data)
 
-const getProducts = params => api.get(urlProduct, { ...params })
+const getProducts = params =>
+  api.get(urlProduct, { ...params, product_type: productsTypes.PRODUCT })
 const getProductsStatus = () => api.get(`${urlProduct}-status`)
 const getProductsCategories = () => api.get(`${urlProduct}-categories`)
 const getProductsTaxes = () => api.get(`${urlProduct}-taxes`)
@@ -22,7 +24,8 @@ const createProduct = _products => api.post(urlProduct, _products)
 const updateProduct = _products => api.put(urlProduct, _products)
 const deleteProduct = _products => api.remove(urlProduct, _products)
 
-const getServices = params => api.get(urlService, { ...params })
+const getServices = params =>
+  api.get(urlService, { ...params, product_type: productsTypes.SERVICE })
 const getServicesStatus = () => api.get(`${urlService}-status`)
 const createService = _services => api.post(urlService, _services)
 const updateService = _services => api.put(urlService, _services)

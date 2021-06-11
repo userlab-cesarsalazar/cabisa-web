@@ -48,7 +48,7 @@ function Billing(props) {
         setStakeholderTypesOptionsList(stakeholdersTypesList)
       })
       .catch(_ => message.error('Error al cargar listados'))
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }, [])
 
   const loadData = useCallback(() => {
@@ -65,7 +65,7 @@ function Billing(props) {
       })
       .then(data => setDataSource(data))
       .catch(_ => message.error('Error al cargar facturas'))
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }, [filters])
 
   useEffect(() => {
@@ -87,7 +87,7 @@ function Billing(props) {
         message.success('Factura anulada exitosamente')
       })
       .catch(error => showErrors(error))
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }
 
   const setSearchFilters = field => value =>

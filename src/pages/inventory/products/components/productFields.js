@@ -56,6 +56,7 @@ function ProductFields(props) {
   }, [props.visible])
 
   const saveData = () => {
+    console.log(code, serie, description, price, serviceCategory, taxId)
     const requiredValues = [
       code,
       serie,
@@ -238,7 +239,7 @@ function ProductFields(props) {
                 disabled={specialPermission}
                 type={'number'}
                 value={price}
-                placeholder={'Costo'}
+                placeholder={'Precio'}
                 size={'large'}
                 onChange={value => setPrice(value.target.value)}
               />
