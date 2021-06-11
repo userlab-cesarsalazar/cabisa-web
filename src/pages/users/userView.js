@@ -4,7 +4,7 @@ import { Card, message, Spin } from 'antd'
 import UsersSrc from './usersSrc'
 import { Auth } from 'aws-amplify'
 import '../../amplify_config'
-import { catchingErrors } from '../../utils'
+import { showErrors } from '../../utils'
 // UI components
 import HeaderPage from '../../components/HeaderPage'
 import UserFields from './components/userFields'
@@ -21,7 +21,7 @@ function UserView(props) {
         encodeURIComponent(data.email)
       )
 
-      if (existsUser.message.length === 0) {
+      if (existsUser.length === 0) {
         //Create user on cognito
         let awsUserCreate = await createUserCognito(
           data.fullName.replace(/\s/g, ''),
@@ -38,18 +38,16 @@ function UserView(props) {
           .catch(err => {
             setLoading(false)
             console.log('ERROR ON CREATING USER BD', err)
-            message.error(catchingErrors(err))
+            showErrors(err)
           })
       } else {
         setLoading(false)
-        message.warning(
-          catchingErrors('The provided email is already registered')
-        )
+        message.warning('The provided email is already registered')
       }
     } catch (err) {
       setLoading(false)
       console.log('Error on SING UP', err)
-      message.warning(catchingErrors(err.code))
+      showErrors(err)
     }
   }
 
@@ -69,7 +67,7 @@ function UserView(props) {
     } catch (error) {
       setLoading(false)
       console.log('error signing up:', error)
-      message.warning(catchingErrors(error.code))
+      showErrors(error)
       return false
     }
   }

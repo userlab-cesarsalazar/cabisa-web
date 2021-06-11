@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react'
+import { Cache } from 'aws-amplify'
 import InventoryTable from '../../components/inventoryTable'
-
 import ProductDrawer from './productDrawer'
-
 import { withRouter } from 'react-router'
 import Tag from '../../../../components/Tag'
 import ActionOptions from '../../../../components/actionOptions'
+import { validateRole } from '../../../../utils'
 
 function InventoryProduct(props) {
   const [editMode, setEditMode] = useState(false)
@@ -13,7 +13,7 @@ function InventoryProduct(props) {
   const [dataSource, setDataSource] = useState([])
   const [isVisible, setIsVisible] = useState(false)
 
-  const wareHouseColumns = [
+  const columns = [
     {
       title: 'Codigo',
       dataIndex: 'code', // Field that is goint to be rendered
@@ -39,32 +39,40 @@ function InventoryProduct(props) {
       render: text => <Tag type='productCategories' value={text} />,
     },
     {
-      title: 'Precio de venta',
-      dataIndex: 'unit_price', // Field that is goint to be rendered
-      key: 'unit_price',
-      render: text => <span>{text?.toFixed(2)}</span>,
-    },
-    {
       title: 'Estado',
       dataIndex: 'status', // Field that is goint to be rendered
       key: 'status',
       render: text => <Tag type='productStatus' value={text} />,
     },
-    {
-      title: '',
-      dataIndex: 'id', // Field that is goint to be rendered
-      key: 'id',
-      render: (_, data) => (
-        <ActionOptions
-          editPermissions={false}
-          data={data}
-          permissionId={5}
-          handlerDeleteRow={DeleteRow}
-          handlerEditRow={EditRow}
-        />
-      ),
-    },
   ]
+
+  const priceColumn = {
+    title: 'Precio de venta',
+    dataIndex: 'unit_price', // Field that is goint to be rendered
+    key: 'unit_price',
+    render: text => <span>{text?.toFixed(2)}</span>,
+  }
+
+  const actionsColumn = {
+    title: '',
+    dataIndex: 'id', // Field that is goint to be rendered
+    key: 'id',
+    render: (_, data) => (
+      <ActionOptions
+        editPermissions={false}
+        data={data}
+        permissionId={5}
+        handlerDeleteRow={DeleteRow}
+        handlerEditRow={EditRow}
+      />
+    ),
+  }
+
+  const canViewPrice = validateRole(Cache.getItem('currentSession').rol_id, 1)
+
+  const columnsWithPrice = canViewPrice ? [...columns, priceColumn] : columns
+
+  const wareHouseColumns = [...columnsWithPrice, actionsColumn]
 
   const loadData = useCallback(() => {
     setDataSource(getClientData(props.dataSource))
@@ -118,6 +126,7 @@ function InventoryProduct(props) {
         handlerCategorySearch={searchByCategory}
         columns={wareHouseColumns}
         productCategoriesList={props.productCategoriesList}
+        canViewPrice={canViewPrice}
       />
 
       <ProductDrawer
@@ -131,6 +140,7 @@ function InventoryProduct(props) {
         productStatusList={props.productStatusList}
         productCategoriesList={props.productCategoriesList}
         productsTaxesList={props.productsTaxesList}
+        canViewPrice={canViewPrice}
       />
     </>
   )

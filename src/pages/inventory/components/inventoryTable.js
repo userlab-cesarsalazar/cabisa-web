@@ -1,4 +1,5 @@
 import React from 'react'
+import { Cache } from 'aws-amplify'
 import {
   Table,
   Col,
@@ -11,7 +12,6 @@ import {
 } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import { validatePermissions } from '../../../utils'
-import { Cache } from 'aws-amplify'
 import Tag from '../../../components/Tag'
 
 const { Search } = Input
@@ -65,14 +65,15 @@ function InventoryTable(props) {
           {validatePermissions(
             Cache.getItem('currentSession').userPermissions,
             5
-          ).permissionsSection[0].create && (
-            <Button
-              className='title-cabisa new-button'
-              onClick={props.showDraweTbl}
-            >
-              Nuevo Item
-            </Button>
-          )}
+          ).permissionsSection[0].create &&
+            props.canViewPrice && (
+              <Button
+                className='title-cabisa new-button'
+                onClick={props.showDraweTbl}
+              >
+                Nuevo Item
+              </Button>
+            )}
         </Col>
       </Row>
       <Row>

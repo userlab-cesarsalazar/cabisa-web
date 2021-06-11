@@ -7,7 +7,7 @@ import UserTable from '../users/components/userTable'
 import HeaderPage from '../../components/HeaderPage'
 import UserDrawer from './components/userDrawer'
 import UserPermissions from './components/userPermissions'
-import { catchingErrors } from '../../utils'
+import { showErrors } from '../../utils'
 import { withRouter } from 'react-router'
 
 function Users(props) {
@@ -30,11 +30,12 @@ function Users(props) {
     UsersSrc.getUsers()
       .then(data => {
         setLoading(false)
-        setDataSource(data.message)
+        setDataSource(data)
       })
       .catch(err => {
         console.log('ERROR GET USERS', err)
         message.error('No se pudo obtener la informacion.')
+        setLoading(false)
       })
   }
 
@@ -46,16 +47,18 @@ function Users(props) {
     setEditDataDrawer(data)
   }
 
-  const searchText = data => {
+  const searchText = name => {
     setLoading(true)
-    UsersSrc.getUsersByName(data)
+
+    UsersSrc.getUsersByName({ name: { $like: `${name}%25` } })
       .then(data => {
         setLoading(false)
-        setDataSource(data.message)
+        setDataSource(data)
       })
       .catch(err => {
         console.log('ERROR GET USERS', err)
         message.error('No se pudo obtener la informacion.')
+        setLoading(false)
       })
   }
 
@@ -88,7 +91,7 @@ function Users(props) {
     } catch (e) {
       setLoading(false)
       console.log('ERROR ON DELETE USER.', e.message)
-      message.error(catchingErrors(e.message))
+      showErrors(e)
     }
   }
 
@@ -100,21 +103,24 @@ function Users(props) {
 
   const saveInformation = async data => {
     try {
-      setVisible(false)
-      setShowPermissions(false)
+      setLoading(true)
       delete data.password
       UsersSrc.updateUser(data)
         .then(_ => {
           message.success('Informacion actualizada')
           loadUserData()
+          setVisible(false)
+          setShowPermissions(false)
         })
         .catch(err => {
           console.log('ERROR ON UPDATE PERMISSIONS', err)
           message.warning('No se ha podido actualizar la informacion')
+          setLoading(false)
         })
     } catch (e) {
       console.log('ERROR ON EDIT USER INFORMATION.', e)
-      message.error(catchingErrors(e.message))
+      showErrors(e)
+      setLoading(false)
     }
   }
 

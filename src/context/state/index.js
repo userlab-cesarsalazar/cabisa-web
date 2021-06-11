@@ -9,10 +9,9 @@
   |
 */
 
-import userStore from './userStore'
-import authStore from "./authStore";
+import authStore from './authStore'
 
-const stores = [userStore,authStore]
+const stores = [authStore]
 
 const initialState = stores.reduce((r, v) => Object.assign(r, v))
 

@@ -17,7 +17,7 @@ function ProductDrawer(props) {
         props.closeAfterSave()
       })
       .catch(err => showErrors(err))
-      .finally(setLoadingDrawer(false))
+      .finally(() => setLoadingDrawer(false))
   }
 
   return (
@@ -30,6 +30,7 @@ function ProductDrawer(props) {
     >
       <Spin spinning={loadingDrawer}>
         <ProductFields
+          canViewPrice={props.canViewPrice}
           saveUserData={onSaveBtn}
           visible={props.visible}
           edit={props.edit}

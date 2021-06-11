@@ -16,7 +16,7 @@ function ServiceDrawer(props) {
         props.closeAfterSave()
       })
       .catch(err => showErrors(err))
-      .finally(setLoadingDrawer(false))
+      .finally(() => setLoadingDrawer(false))
   }
 
   return (
@@ -35,6 +35,7 @@ function ServiceDrawer(props) {
           editData={props.editData}
           cancelButton={props.cancelButton}
           serviceStatusList={props.serviceStatusList}
+          canViewPrice={props.canViewPrice}
         />
       </Spin>
     </Drawer>

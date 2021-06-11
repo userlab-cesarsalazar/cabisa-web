@@ -1,14 +1,18 @@
 import React, { useState } from 'react'
+import { Cache } from 'aws-amplify'
 import { useHistory } from 'react-router-dom'
 
 import LoadMoreButton from '../../../../components/LoadMoreButton'
 import SalesTable from '../commons/salesTable'
 import SalesDetail from '../commons/salesDetail'
+import { validateRole } from '../../../../utils'
 
 function ServiceView() {
   const [existMoreInfo, setExistMoreInfo] = useState(false)
   const [isDrawerVisible, setIsDrawerVisible] = useState(false)
   const history = useHistory()
+
+  const canViewPrice = validateRole(Cache.getItem('currentSession').rol_id, 1)
 
   const handlerMoreButton = () => console.log('moreInfo')
 
@@ -26,6 +30,7 @@ function ServiceView() {
         newNote={NewNoteShipping}
         isDrawerVisible={isDrawerVisible}
         showDrawer={showDrawer}
+        canViewPrice={canViewPrice}
       />
       <LoadMoreButton
         handlerButton={handlerMoreButton}
@@ -35,6 +40,7 @@ function ServiceView() {
         closable={hideDrawer}
         visible={isDrawerVisible}
         setExistMoreInfo={setExistMoreInfo}
+        canViewPrice={canViewPrice}
       />
     </>
   )

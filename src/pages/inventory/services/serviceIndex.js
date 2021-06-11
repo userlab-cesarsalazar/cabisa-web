@@ -14,13 +14,13 @@ function ServiceIndex() {
   const getServices = useCallback(() => {
     setLoading(true)
 
-    InventorySrc.getServices({ description: { $like: `${searchText}%` } })
+    InventorySrc.getServices({ description: { $like: `${searchText}%25` } })
       .then(result => setInventoryServices(result))
       .catch(err => {
         console.log('ERROR ON GET INVENTORY SERVICES', err)
         message.warning('No se ha podido obtener informacion del inventario.')
       })
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }, [searchText])
 
   useEffect(() => {
@@ -36,7 +36,7 @@ function ServiceIndex() {
         console.log('ERROR ON GET INVENTORY SERVICES', err)
         message.warning('No se ha podido obtener informacion del inventario.')
       })
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }, [])
 
   const searchByTxt = description => setSearchText(description)
@@ -55,7 +55,7 @@ function ServiceIndex() {
         clearSearch()
       })
       .catch(err => showErrors(err))
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }
 
   return (

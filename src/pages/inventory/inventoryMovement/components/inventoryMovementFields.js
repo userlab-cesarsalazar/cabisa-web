@@ -207,7 +207,7 @@ function InventoryMovementFields({ forbidEdition, editData }) {
 
     const params = {
       status: productsStatus.ACTIVE,
-      description: { $like: `${product_description}%` },
+      description: { $like: `${product_description}%25` },
     }
 
     setLoading('productsOptionsList')
@@ -216,7 +216,7 @@ function InventoryMovementFields({ forbidEdition, editData }) {
       .getProductsOptions(params)
       .then(products => setProductsOptionsList(products))
       .catch(error => showErrors(error))
-      .finally(setLoading(null))
+      .finally(() => setLoading(null))
   }
 
   const columnsDynamicTable = getColumnsDynamicTable({
@@ -296,7 +296,7 @@ function InventoryMovementFields({ forbidEdition, editData }) {
           backToInventoryMovements()
         })
         .catch(error => showErrors(error))
-        .finally(setLoading(null))
+        .finally(() => setLoading(null))
     } catch (error) {
       showErrors(error)
     }
@@ -336,7 +336,7 @@ function InventoryMovementFields({ forbidEdition, editData }) {
 
     const params = {
       status: stakeholdersStatus.ACTIVE,
-      name: { $like: `${stakeholder_name}%` },
+      name: { $like: `${stakeholder_name}%25` },
     }
 
     setLoading('stakeholdersOptionsList')
@@ -345,7 +345,7 @@ function InventoryMovementFields({ forbidEdition, editData }) {
       .getStakeholdersOptions(params)
       .then(stakeholders => setStakeholdersOptionsList(stakeholders))
       .catch(error => showErrors(error))
-      .finally(setLoading(null))
+      .finally(() => setLoading(null))
   }
 
   const backToInventoryMovements = () => history.push('/inventoryMovements')

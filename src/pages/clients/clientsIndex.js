@@ -29,16 +29,18 @@ function Clients(props) {
   }, [])
 
   const loadData = () => {
-    setVisible(false)
     setLoading(true)
+    setVisible(false)
+
     ClientsSrc.getClients()
       .then(data => {
-        setDataSource(setClientData(data.message))
+        setDataSource(setClientData(data))
         setLoading(false)
       })
       .catch(err => {
         console.log(err)
         message.error('No se pudo obtener la informacion.')
+        setLoading(false)
       })
   }
 
@@ -46,7 +48,7 @@ function Clients(props) {
     setLoading(true)
     ClientsSrc.getClientsFilter(data)
       .then(resp => {
-        setDataSource(setClientData(resp.message))
+        setDataSource(setClientData(resp))
         setLoading(false)
       })
       .catch(err => {
@@ -73,7 +75,8 @@ function Clients(props) {
 
   const DeleteRow = data => {
     setLoading(true)
-    ClientsSrc.deleteClient({ id: data.id })
+
+    ClientsSrc.deleteClient(data.id)
       .then(_ => {
         message.success('Elemento eliminado.')
         loadData()
@@ -81,6 +84,7 @@ function Clients(props) {
       .catch(err => {
         console.log('DELETE CLIENTE ERROR', err)
         message.warning('No se pudo eliminar el elemento seleccionado.')
+        setLoading(false)
       })
   }
 

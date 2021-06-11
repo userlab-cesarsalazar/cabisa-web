@@ -3,6 +3,7 @@ import HeaderPage from '../../components/HeaderPage'
 import { Card, message, Spin } from 'antd'
 import ClientFields from './components/clientFields'
 import ClientsSrc from './clientsSrc'
+import { showErrors } from '../../utils'
 
 function ClientView(props) {
   const [viewLoading, setViewLoading] = useState(false)
@@ -18,7 +19,7 @@ function ClientView(props) {
         .catch(error => {
           setViewLoading(false)
           console.log('CREATE CLIENT ERROR ', error)
-          return message.warning('No se ha podido guardar la informacion.')
+          showErrors(error)
         })
     }
   }

@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react'
+import { Cache } from 'aws-amplify'
 import HeaderPage from '../../../../components/HeaderPage'
 import { Card, message, Spin } from 'antd'
 import ProductFields from './productFields'
 import InventorySrc from '../../inventorySrc'
-import { showErrors } from '../../../../utils'
+import { showErrors, validateRole } from '../../../../utils'
 
 function ProductView(props) {
   const [viewLoading, setViewLoading] = useState(false)
   const [productStatusList, setProductStatusList] = useState([])
   const [productCategoriesList, setProductCategoriesList] = useState([])
   const [productsTaxesList, setProductsTaxesList] = useState([])
+
+  const canViewPrice = validateRole(Cache.getItem('currentSession').rol_id, 1)
 
   useEffect(() => {
     setViewLoading(true)
@@ -28,7 +31,7 @@ function ProductView(props) {
         console.log('ERROR ON GET INVENTORY PRODUCTS', err)
         message.warning('No se ha podido obtener informacion del inventario.')
       })
-      .finally(setViewLoading(false))
+      .finally(() => setViewLoading(false))
   }, [])
 
   const saveData = data => {
@@ -40,7 +43,7 @@ function ProductView(props) {
         props.history.push('/inventoryProducts')
       })
       .catch(err => showErrors(err))
-      .finally(setViewLoading(false))
+      .finally(() => setViewLoading(false))
   }
 
   return (
@@ -57,6 +60,7 @@ function ProductView(props) {
           productStatusList={productStatusList}
           productCategoriesList={productCategoriesList}
           productsTaxesList={productsTaxesList}
+          canViewPrice={canViewPrice}
         />
       </Card>
     </Spin>

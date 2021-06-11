@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
+import { Cache } from 'aws-amplify'
 import HeaderPage from '../../../components/HeaderPage'
 import { Card, message, Spin } from 'antd'
 import InventorySrc from '../inventorySrc'
 import ServiceFields from './components/serviceFields'
-import { showErrors } from '../../../utils'
+import { showErrors, validateRole } from '../../../utils'
 
 function ServiceView(props) {
   const [viewLoading, setViewLoading] = useState(false)
   const [serviceStatusList, setServiceStatusList] = useState([])
+
+  const canViewPrice = validateRole(Cache.getItem('currentSession').rol_id, 1)
 
   useEffect(() => {
     setViewLoading(true)
@@ -18,7 +21,7 @@ function ServiceView(props) {
         console.log('ERROR ON GET INVENTORY SERVICES', err)
         message.warning('No se ha podido obtener informacion del inventario.')
       })
-      .finally(setViewLoading(false))
+      .finally(() => setViewLoading(false))
   }, [])
 
   const saveData = data => {
@@ -30,7 +33,7 @@ function ServiceView(props) {
         props.history.push('/inventoryServices')
       })
       .catch(err => showErrors(err))
-      .finally(setViewLoading(false))
+      .finally(() => setViewLoading(false))
   }
 
   return (
@@ -44,6 +47,7 @@ function ServiceView(props) {
           data={props.editData}
           cancelButton={props.cancelButton}
           serviceStatusList={serviceStatusList}
+          canViewPrice={canViewPrice}
         />
       </Card>
     </Spin>

@@ -13,7 +13,7 @@ import {
 import { Auth, Cache } from 'aws-amplify'
 import '../../amplify_config'
 import UserSrc from '../users/usersSrc'
-import { catchingErrors } from '../../utils'
+import { showErrors } from '../../utils'
 const mssError = 'Debes ingresar usuario y contraseña'
 
 function Login() {
@@ -27,8 +27,8 @@ function Login() {
   const [codeConfirm, setCodeConfirm] = useState('')
   const [isModalConfirmVisible, setIsModalConfirmVisible] = useState(false)
   const [isModalResetVisible, setIsModalResetVisible] = useState(false)
-  const [userName,setUserName] = useState('')
-  
+  const [userName, setUserName] = useState('')
+
   const handleSubmit = async value => {
     let usernameE = value.username
     let passwordE = value.password
@@ -49,22 +49,17 @@ function Login() {
             UserSrc.getUsersPermissions(
               encodeURIComponent(user.attributes.email)
             )
-              .then(userData => {
-                let profileSettings = {
-                  token: '',
-                  userName: '',
-                  userPermissions: null,
+              .then(([userData]) => {
+                const profileSettings = {
+                  token: user.signInUserSession.accessToken.jwtToken,
+                  userName: user.attributes.name,
+                  userPermissions: userData?.permissions || [],
                   email: user.attributes.email,
-                  rol_id: userData.message[0].rol_id,
+                  rol_id: userData?.rol_id,
+                  rol_name: userData?.rol_name,
                 }
 
-                profileSettings.userPermissions =
-                  userData.message[0].permissions
-                profileSettings.token =
-                  user.signInUserSession.accessToken.jwtToken
-                profileSettings.userName = user.attributes.name
-
-                if (profileSettings.userPermissions === null) {
+                if (profileSettings.userPermissions.length === 0) {
                   message.error('Usuario/Password incorrectos')
                   setLoading(false)
                 } else {
@@ -84,10 +79,12 @@ function Login() {
             setLoading(false)
             if (e.message.indexOf('User is not confirmed.') > -1) {
               openNotification()
-            } else if(e.message.indexOf('Password reset required for the user') > -1){
+            } else if (
+              e.message.indexOf('Password reset required for the user') > -1
+            ) {
               openNotificationResetPassword(usernameE)
-            }else {
-              message.error(catchingErrors(e.message))
+            } else {
+              showErrors(e)
             }
           })
       }
@@ -122,37 +119,47 @@ function Login() {
         message.error('Ha ocurrido un error vuelve a intentarlo')
       })
   }
-  
+
   const forgotPassword = userName => {
-    Auth.forgotPassword(userName).then(result=>{
-      console.log(result)
-      setIsModalResetVisible(true)
-    }).catch(err => {
-      console.log(err)
-      message.error('Ha ocurrido un al enviar el codigo de seguridad a tu correo electronico, contacta al administrador.')
-    })
+    Auth.forgotPassword(userName)
+      .then(result => {
+        console.log(result)
+        setIsModalResetVisible(true)
+      })
+      .catch(err => {
+        console.log(err)
+        message.error(
+          'Ha ocurrido un al enviar el codigo de seguridad a tu correo electronico, contacta al administrador.'
+        )
+      })
   }
-  
-  const forgotPasswordSubmit = _ =>{
+
+  const forgotPasswordSubmit = _ => {
     if (newPass === '' || userName === '' || codeConfirm === '') {
       return message.error('Todos los campos son obligatorios.')
     }
     setLoading(true)
-    Auth.forgotPasswordSubmit(userName,codeConfirm,newPass).then(result=>{
-      console.log("forgotPasswordSubmit",result)
-      setIsModalResetVisible(false)
-      setLoading(false)
-      message.success("Tu contraseña se ha reiniciado.")
-    }).catch(err=>{
-      setLoading(false)
-      console.log(err)
-      message.warning('Verifica que todos los datos proporcionados sean correctos.')
-      if (err.message.indexOf('Attempt limit exceeded') > -1) {
-        message.error('Se ha excedido el numero de intentos, espera un momento y vuelve a intentarlo.')
-      }
-    })
+    Auth.forgotPasswordSubmit(userName, codeConfirm, newPass)
+      .then(result => {
+        console.log('forgotPasswordSubmit', result)
+        setIsModalResetVisible(false)
+        setLoading(false)
+        message.success('Tu contraseña se ha reiniciado.')
+      })
+      .catch(err => {
+        setLoading(false)
+        console.log(err)
+        message.warning(
+          'Verifica que todos los datos proporcionados sean correctos.'
+        )
+        if (err.message.indexOf('Attempt limit exceeded') > -1) {
+          message.error(
+            'Se ha excedido el numero de intentos, espera un momento y vuelve a intentarlo.'
+          )
+        }
+      })
   }
-  
+
   const confirmUser = async () => {
     setLoading(true)
     try {
@@ -204,7 +211,7 @@ function Login() {
       key,
     })
   }
-  
+
   const openNotificationResetPassword = username => {
     const key = `open${Date.now()}`
     const btn = (
@@ -227,7 +234,7 @@ function Login() {
       key,
     })
   }
-  
+
   return (
     <Row
       type='flex'
@@ -371,7 +378,7 @@ function Login() {
         width={575}
       >
         <Spin spinning={loading}>
-        <Row gutter={16} className={'section-space-field'}>
+          <Row gutter={16} className={'section-space-field'}>
             <Col xs={8} sm={8} md={8} lg={8}>
               <Input
                 placeholder={'Ingrese codigo'}
@@ -379,21 +386,21 @@ function Login() {
                 onChange={value => setCodeConfirm(value.target.value)}
               />
             </Col>
-          <Col xs={8} sm={8} md={8} lg={8}>
-            <Input
-              placeholder={'Ingrese usuario'}
-              value={confirmUsername}
-              onChange={value => setConfirmUsername(value.target.value)}
-            />
-          </Col>
-          <Col xs={8} sm={8} md={8} lg={8}>
-            <Input.Password
-              placeholder={'Nueva contraseña'}
-              value={newPass}
-              onChange={value => setNewPass(value.target.value)}
-            />
-          </Col>
-        </Row>
+            <Col xs={8} sm={8} md={8} lg={8}>
+              <Input
+                placeholder={'Ingrese usuario'}
+                value={confirmUsername}
+                onChange={value => setConfirmUsername(value.target.value)}
+              />
+            </Col>
+            <Col xs={8} sm={8} md={8} lg={8}>
+              <Input.Password
+                placeholder={'Nueva contraseña'}
+                value={newPass}
+                onChange={value => setNewPass(value.target.value)}
+              />
+            </Col>
+          </Row>
         </Spin>
       </Modal>
     </Row>

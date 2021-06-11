@@ -40,7 +40,7 @@ function BillingView(props) {
         setStakeholderTypesOptionsList(stakeholdersTypesList)
       })
       .catch(_ => message.error('Error al cargar listados'))
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }, [])
 
   useEffect(() => {
@@ -235,15 +235,14 @@ function BillingView(props) {
         history.push('/billing')
       })
       .catch(error => showErrors(error))
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }
 
   const handleSearchStakeholder = stakeholder_name => {
     if (stakeholder_name === '') return
 
     const params = {
-      stakeholder_type: { $ne: stakeholdersTypes.PROVIDER },
-      name: { $like: `${stakeholder_name}%` },
+      name: { $like: `${stakeholder_name}%25` },
     }
 
     setLoading(true)
@@ -252,13 +251,13 @@ function BillingView(props) {
       .getStakeholdersOptions(params)
       .then(stakeholders => setStakeholdersOptionsList(stakeholders))
       .catch(error => showErrors(error))
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }
 
   const handleSearchProduct = description => {
     if (description === '') return
 
-    const params = { description: { $like: `${description}%` } }
+    const params = { description: { $like: `${description}%25` } }
 
     setLoading(true)
 
@@ -266,13 +265,13 @@ function BillingView(props) {
       .getProductsOptions(params)
       .then(data => setProductsOptionsList(data))
       .catch(error => showErrors(error))
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }
 
   const handleSearchProject = name => {
     if (name === '') return
 
-    const params = { name: { $like: `${name}%` } }
+    const params = { name: { $like: `${name}%25` } }
 
     setLoading(true)
 
@@ -280,7 +279,7 @@ function BillingView(props) {
       .getProjectsOptions(params)
       .then(data => setProjectsOptionsList(data))
       .catch(error => showErrors(error))
-      .finally(setLoading(false))
+      .finally(() => setLoading(false))
   }
 
   return (
