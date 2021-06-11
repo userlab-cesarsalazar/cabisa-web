@@ -199,16 +199,18 @@ function SalesTable(props) {
           </Select>
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} className='text-right'>
-          <Button
-            className={
-              can('create')
-                ? 'title-cabisa new-button'
-                : 'hide-component title-cabisa new-button'
-            }
-            onClick={props.newNote}
-          >
-            {props.buttonTitle}
-          </Button>
+          {props.canViewPrice && (
+            <Button
+              className={
+                can('create')
+                  ? 'title-cabisa new-button'
+                  : 'hide-component title-cabisa new-button'
+              }
+              onClick={props.newNote}
+            >
+              {props.buttonTitle}
+            </Button>
+          )}
         </Col>
       </Row>
       <Row>

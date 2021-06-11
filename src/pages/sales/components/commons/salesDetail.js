@@ -46,71 +46,77 @@ const getColumnsDynamicTable = ({
   status,
   loading,
   forbidEdition,
-}) => [
-  {
-    width: '25%',
-    title: 'Codigo',
-    dataIndex: 'code', // Field that is goint to be rendered
-    key: 'code',
-    render: (_, record) => (
-      <Input
-        value={record.code}
-        size={'large'}
-        placeholder={'Codigo'}
-        disabled
-      />
-    ),
-  },
-  {
-    width: '40%',
-    title: 'Descripcion',
-    dataIndex: 'id', // Field that is goint to be rendered
-    key: 'id',
-    render: (_, record, rowIndex) => (
-      <Select
-        className={'single-select'}
-        placeholder={'Descripcion'}
-        size={'large'}
-        style={{ width: '100%', height: '40px', maxWidth: '300px' }}
-        getPopupContainer={trigger => trigger.parentNode}
-        showSearch
-        onSearch={debounce(handleSearchProduct, 400)}
-        value={record.id}
-        onChange={value => handleChangeDetail('id', value, rowIndex)}
-        loading={status === 'LOADING' && loading === 'fetchProductsOptions'}
-        optionFilterProp='children'
-        disabled={forbidEdition}
-      >
-        {productsOptionsList.length > 0 ? (
-          productsOptionsList?.map(value => (
-            <Option key={value.id} value={value.id}>
-              {value.description}
-            </Option>
-          ))
-        ) : (
-          <Option value={record.id}>{record.description}</Option>
-        )}
-      </Select>
-    ),
-  },
-  {
-    width: '15%',
-    title: 'Cantidad',
-    dataIndex: 'product_quantity', // Field that is goint to be rendered
-    key: 'product_quantity',
-    render: (_, record, rowIndex) => (
-      <Input
-        placeholder={'Cantidad'}
-        size={'large'}
-        value={record.quantity}
-        onChange={e => handleChangeDetail('quantity', e.target.value, rowIndex)}
-        min={0}
-        type='number'
-        disabled={forbidEdition}
-      />
-    ),
-  },
-  {
+  canViewPrice,
+}) => {
+  const columns = [
+    {
+      width: '25%',
+      title: 'Codigo',
+      dataIndex: 'code', // Field that is goint to be rendered
+      key: 'code',
+      render: (_, record) => (
+        <Input
+          value={record.code}
+          size={'large'}
+          placeholder={'Codigo'}
+          disabled
+        />
+      ),
+    },
+    {
+      width: '40%',
+      title: 'Descripcion',
+      dataIndex: 'id', // Field that is goint to be rendered
+      key: 'id',
+      render: (_, record, rowIndex) => (
+        <Select
+          className={'single-select'}
+          placeholder={'Descripcion'}
+          size={'large'}
+          style={{ width: '100%', height: '40px', maxWidth: '300px' }}
+          getPopupContainer={trigger => trigger.parentNode}
+          showSearch
+          onSearch={debounce(handleSearchProduct, 400)}
+          value={record.id}
+          onChange={value => handleChangeDetail('id', value, rowIndex)}
+          loading={status === 'LOADING' && loading === 'fetchProductsOptions'}
+          optionFilterProp='children'
+          disabled={forbidEdition || !canViewPrice}
+        >
+          {productsOptionsList.length > 0 ? (
+            productsOptionsList?.map(value => (
+              <Option key={value.id} value={value.id}>
+                {value.description}
+              </Option>
+            ))
+          ) : (
+            <Option value={record.id}>{record.description}</Option>
+          )}
+        </Select>
+      ),
+    },
+    {
+      width: '15%',
+      title: 'Cantidad',
+      dataIndex: 'product_quantity', // Field that is goint to be rendered
+      key: 'product_quantity',
+      render: (_, record, rowIndex) => (
+        <Input
+          placeholder={'Cantidad'}
+          size={'large'}
+          value={record.quantity}
+          onChange={e =>
+            handleChangeDetail('quantity', e.target.value, rowIndex)
+          }
+          min={0}
+          type='number'
+          disabled={forbidEdition || !canViewPrice}
+        />
+      ),
+    },
+  ]
+
+  const priceColumn = {
     width: '20%',
     title: 'Precio',
     dataIndex: 'unit_price', // Field that is goint to be rendered
@@ -128,8 +134,9 @@ const getColumnsDynamicTable = ({
         disabled
       />
     ),
-  },
-  {
+  }
+
+  const deleteButtonColumn = {
     title: '',
     render: (_, __, rowIndex) =>
       !forbidEdition && (
@@ -140,13 +147,16 @@ const getColumnsDynamicTable = ({
           <span style={{ color: 'red' }}>Eliminar</span>
         </Popconfirm>
       ),
-  },
-]
+  }
 
-function SalesDetail({ setExistMoreInfo, closable, visible }) {
+  return canViewPrice ? [...columns, priceColumn, deleteButtonColumn] : columns
+}
+
+function SalesDetail({ setExistMoreInfo, closable, visible, canViewPrice }) {
   const [forbidEdition, setForbidEdition] = useState(false)
   const [sale, setSale] = useState([])
   const [dataSourceTable, setDataSourceTable] = useState([])
+  const [serviceDaysLength, setServiceDaysLength] = useState(null)
 
   const [
     { error, loading, status, currentSale, ...saleState },
@@ -177,10 +187,19 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
     visible,
   ])
 
+  const getServiceDaysLength = (startDate, endDate) => {
+    if (!startDate || !endDate) return null
+    else return moment(endDate).diff(moment(startDate), 'days')
+  }
+
   useEffect(() => {
     setForbidEdition(currentSale.status !== documentsStatus.PENDING)
     setSale(currentSale)
     setDataSourceTable(currentSale.products)
+
+    setServiceDaysLength(
+      getServiceDaysLength(currentSale.start_date, currentSale.end_date)
+    )
   }, [currentSale, saleDispatch])
 
   const setProductData = (field, value, rowIndex) => {
@@ -237,6 +256,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
     status,
     loading,
     forbidEdition,
+    canViewPrice,
   })
 
   const getSaveData = () => ({
@@ -312,6 +332,16 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
 
   const handleChange = field => e => {
     const value = getHandleChangeValue(field, e)
+
+    if (field === 'start_date') {
+      const serviceDaysLength = getServiceDaysLength(value, sale.end_date)
+      setServiceDaysLength(serviceDaysLength)
+    }
+
+    if (field === 'end_date') {
+      const serviceDaysLength = getServiceDaysLength(sale.start_date, value)
+      setServiceDaysLength(serviceDaysLength)
+    }
 
     if (field === 'stakeholder_id') {
       const stakeholder = saleState.stakeholdersOptionsList.find(
@@ -427,7 +457,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
             </Col>
           </Row>
           <Row gutter={16} className={'section-space-field'}>
-            <Col xs={7} sm={7} md={7} lg={7}>
+            <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Proyecto</div>
               <Select
                 className={'single-select'}
@@ -456,7 +486,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
                 )}
               </Select>
             </Col>
-            <Col xs={7} sm={7} md={7} lg={7}>
+            <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Encargado</div>
               <Input
                 placeholder={'Encargado'}
@@ -466,7 +496,9 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
                 disabled
               />
             </Col>
-            <Col xs={5} sm={5} md={5} lg={5}>
+          </Row>
+          <Row gutter={16} className={'section-space-field'}>
+            <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Fecha Inicio</div>
               <DatePicker
                 style={{ width: '100%', height: '37px', borderRadius: '8px' }}
@@ -476,14 +508,25 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
                 disabled
               />
             </Col>
-            <Col xs={5} sm={5} md={5} lg={5}>
+            <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Fecha Final</div>
               <DatePicker
                 style={{ width: '100%', height: '37px', borderRadius: '8px' }}
                 value={sale.end_date ? moment(sale.end_date) : ''}
                 onChange={handleChange('end_date')}
                 format='DD-MM-YYYY'
-                disabled={forbidEdition}
+                disabled={forbidEdition || !canViewPrice}
+              />
+            </Col>
+            <Col xs={8} sm={8} md={8} lg={8}>
+              <div className={'title-space-field'}>
+                Duracion del servicio (dias)
+              </div>
+              <Input
+                placeholder={'Duracion del servicio'}
+                size={'large'}
+                value={serviceDaysLength}
+                disabled
               />
             </Col>
           </Row>
@@ -496,7 +539,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
                 data={dataSourceTable}
               />
             </Col>
-            {!forbidEdition && (
+            {!forbidEdition && canViewPrice && (
               <Col xs={24} sm={24} md={24} lg={24}>
                 <Button
                   type='dashed'
@@ -516,7 +559,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
                 rows={4}
                 value={sale.comments}
                 onChange={handleChange('comments')}
-                disabled={forbidEdition}
+                disabled={forbidEdition || !canViewPrice}
               />
             </Col>
           </Row>
@@ -538,12 +581,12 @@ function SalesDetail({ setExistMoreInfo, closable, visible }) {
                 size={'large'}
                 value={sale.received_by}
                 onChange={handleChange('received_by')}
-                disabled={forbidEdition}
+                disabled={forbidEdition || !canViewPrice}
               />
             </Col>
           </Row>
         </div>
-        {!forbidEdition && (
+        {!forbidEdition && canViewPrice && (
           <FooterButtons
             saveData={saveData}
             cancelButton={handleCancelButton}

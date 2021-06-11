@@ -1,9 +1,14 @@
 import api from '../../commons/api'
 import { stage } from '../../commons/credentials'
+import { stakeholdersTypes } from '../../commons/types'
 
-const url = stage.clientsUrl
+const url = stage.stakeholderUrl
 
-const getClients = () => api.get(url)
+const getClients = params =>
+  api.get(url, {
+    ...params,
+    stakeholder_type: { $ne: stakeholdersTypes.PROVIDER },
+  })
 const getClientsFilter = name =>
   api.get(url, {
     name: { $like: `${name}%` },

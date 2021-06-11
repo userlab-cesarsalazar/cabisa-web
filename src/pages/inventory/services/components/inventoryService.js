@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react'
+import { Cache } from 'aws-amplify'
 import InventoryTable from '../../components/inventoryTable'
 import ServiceDrawer from './serviceDrawer'
 
 import ActionOptions from '../../../../components/actionOptions'
 import { withRouter } from 'react-router'
 import Tag from '../../../../components/Tag'
+import { validateRole } from '../../../../utils'
 
 function InventoryService(props) {
   const [editMode, setEditMode] = useState(false)
@@ -12,37 +14,44 @@ function InventoryService(props) {
   const [dataSource, setDataSource] = useState([])
   const [isVisible, setIsVisible] = useState(false)
 
-  const inventoryColumns = [
+  const columns = [
     { title: 'Codigo', dataIndex: 'code', key: 'code' },
     { title: 'Descripcion', dataIndex: 'description', key: 'description' },
-    {
-      title: 'Precio de venta',
-      dataIndex: 'unit_price',
-      key: 'unit_price',
-      render: text => <span>{text.toFixed(2)}</span>,
-    },
     {
       title: 'Estado',
       dataIndex: 'status', // Field that is goint to be rendered
       key: 'status',
       render: text => <Tag type='productStatus' value={text} />,
     },
-
-    {
-      title: '',
-      dataIndex: 'id', // Field that is goint to be rendered
-      key: 'id',
-      render: (_, data) => (
-        <ActionOptions
-          editPermissions={false}
-          data={data}
-          permissionId={5}
-          handlerDeleteRow={DeleteRow}
-          handlerEditRow={EditRow}
-        />
-      ),
-    },
   ]
+
+  const priceColumn = {
+    title: 'Precio de venta',
+    dataIndex: 'unit_price',
+    key: 'unit_price',
+    render: text => <span>{text.toFixed(2)}</span>,
+  }
+
+  const actionsColumn = {
+    title: '',
+    dataIndex: 'id', // Field that is goint to be rendered
+    key: 'id',
+    render: (_, data) => (
+      <ActionOptions
+        editPermissions={false}
+        data={data}
+        permissionId={5}
+        handlerDeleteRow={DeleteRow}
+        handlerEditRow={EditRow}
+      />
+    ),
+  }
+
+  const canViewPrice = validateRole(Cache.getItem('currentSession').rol_id, 1)
+
+  const columnsWithPrice = canViewPrice ? [...columns, priceColumn] : columns
+
+  const inventoryColumns = [...columnsWithPrice, actionsColumn]
 
   const loadData = useCallback(() => {
     setDataSource(getClientData(props.dataSource))
@@ -94,6 +103,7 @@ function InventoryService(props) {
         handlerEditRow={EditRow}
         handlerDeleteRow={DeleteRow}
         columns={inventoryColumns}
+        canViewPrice={canViewPrice}
       />
 
       <ServiceDrawer
@@ -105,6 +115,7 @@ function InventoryService(props) {
         cancelButton={onClose}
         closeAfterSave={onCloseAfterSave}
         serviceStatusList={props.serviceStatusList}
+        canViewPrice={canViewPrice}
       />
     </>
   )

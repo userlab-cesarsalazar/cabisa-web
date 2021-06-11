@@ -1,7 +1,7 @@
 import React, { useReducer, useMemo } from 'react'
 import reducer from './reducer'
 import initialState from './state'
-import { useStore } from './getters/useStore'
+import { useGetters } from './getters/useGetters'
 
 const Context = React.createContext(initialState)
 
@@ -12,4 +12,4 @@ const ContextProvider = ({ children }) => {
   return <Context.Provider value={store}>{children}</Context.Provider>
 }
 
-export { Context, ContextProvider, useStore }
+export { Context, ContextProvider, useGetters }

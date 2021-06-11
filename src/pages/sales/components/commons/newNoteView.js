@@ -42,69 +42,75 @@ const getColumnsDynamicTable = ({
   productsOptionsList,
   status,
   loading,
-}) => [
-  {
-    width: '25%',
-    title: 'Codigo',
-    dataIndex: 'code', // Field that is goint to be rendered
-    key: 'code',
-    render: (_, record) => (
-      <Input
-        value={record.code}
-        size={'large'}
-        placeholder={'Codigo'}
-        disabled
-      />
-    ),
-  },
-  {
-    width: '40%',
-    title: 'Descripcion',
-    dataIndex: 'id', // Field that is goint to be rendered
-    key: 'id',
-    render: (_, record, rowIndex) => (
-      <Select
-        className={'single-select'}
-        placeholder={'Descripcion'}
-        size={'large'}
-        style={{ width: '100%', height: '40px', maxWidth: '300px' }}
-        getPopupContainer={trigger => trigger.parentNode}
-        showSearch
-        onSearch={debounce(handleSearchProduct, 400)}
-        value={record.id}
-        onChange={value => handleChangeDetail('id', value, rowIndex)}
-        loading={status === 'LOADING' && loading === 'fetchProductsOptions'}
-        optionFilterProp='children'
-      >
-        {productsOptionsList.length > 0 ? (
-          productsOptionsList?.map(value => (
-            <Option key={value.id} value={value.id}>
-              {value.description}
-            </Option>
-          ))
-        ) : (
-          <Option value={record.id}>{record.description}</Option>
-        )}
-      </Select>
-    ),
-  },
-  {
-    width: '15%',
-    title: 'Cantidad',
-    dataIndex: 'product_quantity', // Field that is goint to be rendered
-    key: 'product_quantity',
-    render: (_, record, rowIndex) => (
-      <Input
-        placeholder={'Cantidad'}
-        size={'large'}
-        value={record.quantity}
-        onChange={e => handleChangeDetail('quantity', e.target.value, rowIndex)}
-        min={0}
-        type='number'
-      />
-    ),
-  },
-  {
+  canViewPrice,
+}) => {
+  const columns = [
+    {
+      width: '25%',
+      title: 'Codigo',
+      dataIndex: 'code', // Field that is goint to be rendered
+      key: 'code',
+      render: (_, record) => (
+        <Input
+          value={record.code}
+          size={'large'}
+          placeholder={'Codigo'}
+          disabled
+        />
+      ),
+    },
+    {
+      width: '40%',
+      title: 'Descripcion',
+      dataIndex: 'id', // Field that is goint to be rendered
+      key: 'id',
+      render: (_, record, rowIndex) => (
+        <Select
+          className={'single-select'}
+          placeholder={'Descripcion'}
+          size={'large'}
+          style={{ width: '100%', height: '40px', maxWidth: '300px' }}
+          getPopupContainer={trigger => trigger.parentNode}
+          showSearch
+          onSearch={debounce(handleSearchProduct, 400)}
+          value={record.id}
+          onChange={value => handleChangeDetail('id', value, rowIndex)}
+          loading={status === 'LOADING' && loading === 'fetchProductsOptions'}
+          optionFilterProp='children'
+        >
+          {productsOptionsList.length > 0 ? (
+            productsOptionsList?.map(value => (
+              <Option key={value.id} value={value.id}>
+                {value.description}
+              </Option>
+            ))
+          ) : (
+            <Option value={record.id}>{record.description}</Option>
+          )}
+        </Select>
+      ),
+    },
+    {
+      width: '15%',
+      title: 'Cantidad',
+      dataIndex: 'product_quantity', // Field that is goint to be rendered
+      key: 'product_quantity',
+      render: (_, record, rowIndex) => (
+        <Input
+          placeholder={'Cantidad'}
+          size={'large'}
+          value={record.quantity}
+          onChange={e =>
+            handleChangeDetail('quantity', e.target.value, rowIndex)
+          }
+          min={0}
+          type='number'
+        />
+      ),
+    },
+  ]
+
+  const priceColumn = {
     width: '20%',
     title: 'Precio',
     dataIndex: 'unit_price', // Field that is goint to be rendered
@@ -122,8 +128,9 @@ const getColumnsDynamicTable = ({
         disabled
       />
     ),
-  },
-  {
+  }
+
+  const deleteButtonColumn = {
     title: '',
     render: (_, __, rowIndex) => (
       <>
@@ -135,13 +142,18 @@ const getColumnsDynamicTable = ({
         </Popconfirm>
       </>
     ),
-  },
-]
+  }
 
-function NewNoteView() {
+  const columnsWithPrice = canViewPrice ? [...columns, priceColumn] : columns
+
+  return [...columnsWithPrice, deleteButtonColumn]
+}
+
+function NewNoteView({ canViewPrice }) {
   const history = useHistory()
   const [sale, setSale] = useState([])
   const [dataSourceTable, setDataSourceTable] = useState([])
+  const [serviceDaysLength, setServiceDaysLength] = useState(null)
 
   const [{ error, loading, status, ...saleState }, saleDispatch] = useSale()
 
@@ -192,6 +204,11 @@ function NewNoteView() {
     onChange: setProductData,
   })
 
+  const getServiceDaysLength = (startDate, endDate) => {
+    if (!startDate || !endDate) return null
+    else return moment(endDate).diff(moment(startDate), 'days')
+  }
+
   const handleSearchProduct = product_description => {
     if (product_description === '') return
 
@@ -210,6 +227,7 @@ function NewNoteView() {
     productsOptionsList: saleState.productsOptionsList,
     status,
     loading,
+    canViewPrice,
   })
 
   const getSaveData = () => ({
@@ -287,6 +305,16 @@ function NewNoteView() {
 
   const handleChange = field => e => {
     const value = getHandleChangeValue(field, e)
+
+    if (field === 'start_date') {
+      const serviceDaysLength = getServiceDaysLength(value, sale.end_date)
+      setServiceDaysLength(serviceDaysLength)
+    }
+
+    if (field === 'end_date') {
+      const serviceDaysLength = getServiceDaysLength(sale.start_date, value)
+      setServiceDaysLength(serviceDaysLength)
+    }
 
     if (field === 'stakeholder_id') {
       const stakeholder = saleState.stakeholdersOptionsList.find(
@@ -390,7 +418,7 @@ function NewNoteView() {
           </Col>
         </Row>
         <Row gutter={16} className={'section-space-field'}>
-          <Col xs={7} sm={7} md={7} lg={7}>
+          <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Proyecto</div>
             <Select
               className={'single-select'}
@@ -418,7 +446,7 @@ function NewNoteView() {
               )}
             </Select>
           </Col>
-          <Col xs={7} sm={7} md={7} lg={7}>
+          <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Encargado</div>
             <Input
               placeholder={'Encargado'}
@@ -428,7 +456,20 @@ function NewNoteView() {
               disabled
             />
           </Col>
-          <Col xs={5} sm={5} md={5} lg={5}>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <div className={'title-space-field'}>
+              Duracion del servicio (dias)
+            </div>
+            <Input
+              placeholder={'Duracion del servicio'}
+              size={'large'}
+              value={serviceDaysLength}
+              disabled
+            />
+          </Col>
+        </Row>
+        <Row gutter={16} className={'section-space-field'}>
+          <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Fecha Inicio</div>
             <DatePicker
               style={{ width: '100%', height: '37px', borderRadius: '8px' }}
@@ -437,7 +478,7 @@ function NewNoteView() {
               format='DD-MM-YYYY'
             />
           </Col>
-          <Col xs={5} sm={5} md={5} lg={5}>
+          <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Fecha Final</div>
             <DatePicker
               style={{ width: '100%', height: '37px', borderRadius: '8px' }}

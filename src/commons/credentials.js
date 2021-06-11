@@ -1,7 +1,8 @@
 const develop = {
-  clientsUrl:
-    'https://z8whyqlcgl.execute-api.us-east-1.amazonaws.com/dev/clients',
-  usersUrl: 'https://oj41d9rbdi.execute-api.us-east-1.amazonaws.com/dev/users',
+  inventoryMovementUrl:
+    'https://4gm7sd0soe.execute-api.us-east-1.amazonaws.com/dev/inventory-movements',
+  invoiceUrl:
+    'https://auf9sd3ft5.execute-api.us-east-1.amazonaws.com/dev/invoices',
   productUrl:
     'https://pgs3yitu93.execute-api.us-east-1.amazonaws.com/dev/products',
   projectUrl:
@@ -13,10 +14,7 @@ const develop = {
     'https://ac5n79hsk1.execute-api.us-east-1.amazonaws.com/dev/services',
   stakeholderUrl:
     'https://v5xx70s4r6.execute-api.us-east-1.amazonaws.com/dev/stakeholders',
-  invoiceUrl:
-    'https://auf9sd3ft5.execute-api.us-east-1.amazonaws.com/dev/invoices',
-  inventoryMovementUrl:
-    'https://bjj4etorc5.execute-api.us-east-1.amazonaws.com/dev/inventory-movements',
+  usersUrl: 'https://oj41d9rbdi.execute-api.us-east-1.amazonaws.com/dev/users',
 }
 
 const enviroment = env => {

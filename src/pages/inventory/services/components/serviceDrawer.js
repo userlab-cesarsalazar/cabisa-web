@@ -35,6 +35,7 @@ function ServiceDrawer(props) {
           editData={props.editData}
           cancelButton={props.cancelButton}
           serviceStatusList={props.serviceStatusList}
+          canViewPrice={props.canViewPrice}
         />
       </Spin>
     </Drawer>

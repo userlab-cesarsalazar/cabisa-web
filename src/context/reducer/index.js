@@ -14,13 +14,9 @@
   |
 */
 import authReducer from './authReducer'
-import usersReducer from './usersReducer'
-import turnReducer from './turnReducer'
 
 const slices = {
   authReducer,
-  usersReducer,
-  turnReducer,
 }
 
 const resolveReducers = slices => (state, action) => {

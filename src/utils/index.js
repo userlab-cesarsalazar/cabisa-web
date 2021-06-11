@@ -28,6 +28,8 @@ export const validateEmail = email => {
   return re.test(String(email).toLowerCase())
 }
 
+export const validateRole = (roleId, inputRole) => roleId <= inputRole
+
 export const validatePermissions = (dataPermissions, id) => {
   let permissionsData = {}
   let sectionEnable = [id].every(perm =>

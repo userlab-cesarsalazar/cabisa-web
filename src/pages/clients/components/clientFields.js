@@ -91,7 +91,7 @@ function ClientFields(props) {
 
     const data = {
       name: name,
-      client_type: clientTypeID,
+      stakeholder_type: clientTypeID,
       nit,
       address: address,
       phone,
@@ -139,10 +139,10 @@ function ClientFields(props) {
               onChange={value => setClientTypeID(value)}
               getPopupContainer={trigger => trigger.parentNode}
             >
-              <Option value={'INDIVIDUAL'}>
+              <Option value={'CLIENT_INDIVIDUAL'}>
                 <Tag color='geekblue'>Persona individual</Tag>
               </Option>
-              <Option value={'COMPANY'}>
+              <Option value={'CLIENT_COMPANY'}>
                 <Tag color='cyan'>Empresa</Tag>
               </Option>
             </Select>

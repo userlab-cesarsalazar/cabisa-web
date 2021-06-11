@@ -33,7 +33,7 @@ function Clients(props) {
     setLoading(true)
     ClientsSrc.getClients()
       .then(data => {
-        setDataSource(setClientData(data.message))
+        setDataSource(setClientData(data))
         setLoading(false)
       })
       .catch(err => {
@@ -46,7 +46,7 @@ function Clients(props) {
     setLoading(true)
     ClientsSrc.getClientsFilter(data)
       .then(resp => {
-        setDataSource(setClientData(resp.message))
+        setDataSource(setClientData(resp))
         setLoading(false)
       })
       .catch(err => {

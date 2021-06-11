@@ -175,37 +175,6 @@ function ProductFields(props) {
             />
           </Col>
           <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Precio de venta</div>
-            <Input
-              disabled={specialPermission}
-              type={'number'}
-              value={price}
-              placeholder={'Costo'}
-              size={'large'}
-              onChange={value => setPrice(value.target.value)}
-            />
-          </Col>
-          <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Impuesto</div>
-            <Select
-              value={taxId}
-              className={'single-select'}
-              placeholder={'Tipo de impuesto'}
-              size={'large'}
-              style={{ width: '100%', height: '40px' }}
-              getPopupContainer={trigger => trigger.parentNode}
-              onChange={value => setTaxId(value)}
-            >
-              {props.productsTaxesList?.map(t => (
-                <Option key={t.id} value={t.id}>
-                  {`${t.name} - (${t.fee}%)`}
-                </Option>
-              ))}
-            </Select>
-          </Col>
-        </Row>
-        <Row gutter={16} className={'section-space-field'}>
-          <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Categoria</div>
             <Select
               value={serviceCategory}
@@ -242,6 +211,39 @@ function ProductFields(props) {
               ))}
             </Select>
           </Col>
+        </Row>
+        <Row gutter={16} className={'section-space-field'}>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <div className={'title-space-field'}>Impuesto</div>
+            <Select
+              value={taxId}
+              className={'single-select'}
+              placeholder={'Tipo de impuesto'}
+              size={'large'}
+              style={{ width: '100%', height: '40px' }}
+              getPopupContainer={trigger => trigger.parentNode}
+              onChange={value => setTaxId(value)}
+            >
+              {props.productsTaxesList?.map(t => (
+                <Option key={t.id} value={t.id}>
+                  {`${t.name} - (${t.fee}%)`}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+          {props.canViewPrice && (
+            <Col xs={8} sm={8} md={8} lg={8}>
+              <div className={'title-space-field'}>Precio de venta</div>
+              <Input
+                disabled={specialPermission}
+                type={'number'}
+                value={price}
+                placeholder={'Costo'}
+                size={'large'}
+                onChange={value => setPrice(value.target.value)}
+              />
+            </Col>
+          )}
         </Row>
         {/*End Fields section*/}
       </div>

@@ -72,17 +72,19 @@ function ServiceFields(props) {
           </Col>
         </Row>
         <Row gutter={16} className={'section-space-field'}>
-          <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Precio de venta</div>
-            <Input
-              disabled={specialPermission}
-              type={'number'}
-              value={price}
-              placeholder={'Costo'}
-              size={'large'}
-              onChange={value => setPrice(value.target.value)}
-            />
-          </Col>
+          {props.canViewPrice && (
+            <Col xs={8} sm={8} md={8} lg={8}>
+              <div className={'title-space-field'}>Precio de venta</div>
+              <Input
+                disabled={specialPermission}
+                type={'number'}
+                value={price}
+                placeholder={'Costo'}
+                size={'large'}
+                onChange={value => setPrice(value.target.value)}
+              />
+            </Col>
+          )}
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Estado</div>
             <Select

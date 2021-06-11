@@ -7,7 +7,7 @@ import UserTable from '../users/components/userTable'
 import HeaderPage from '../../components/HeaderPage'
 import UserDrawer from './components/userDrawer'
 import UserPermissions from './components/userPermissions'
-import { catchingErrors } from '../../utils'
+import { showErrors } from '../../utils'
 import { withRouter } from 'react-router'
 
 function Users(props) {
@@ -30,7 +30,7 @@ function Users(props) {
     UsersSrc.getUsers()
       .then(data => {
         setLoading(false)
-        setDataSource(data.message)
+        setDataSource(data)
       })
       .catch(err => {
         console.log('ERROR GET USERS', err)
@@ -51,7 +51,7 @@ function Users(props) {
     UsersSrc.getUsersByName(data)
       .then(data => {
         setLoading(false)
-        setDataSource(data.message)
+        setDataSource(data)
       })
       .catch(err => {
         console.log('ERROR GET USERS', err)
@@ -88,7 +88,7 @@ function Users(props) {
     } catch (e) {
       setLoading(false)
       console.log('ERROR ON DELETE USER.', e.message)
-      message.error(catchingErrors(e.message))
+      showErrors(e)
     }
   }
 
@@ -114,7 +114,7 @@ function Users(props) {
         })
     } catch (e) {
       console.log('ERROR ON EDIT USER INFORMATION.', e)
-      message.error(catchingErrors(e.message))
+      showErrors(e)
     }
   }
 
