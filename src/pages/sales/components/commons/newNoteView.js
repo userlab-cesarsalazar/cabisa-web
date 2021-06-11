@@ -214,6 +214,7 @@ function NewNoteView({ canViewPrice }) {
 
     const params = {
       status: productsStatus.ACTIVE,
+      stock: { $gt: 0 },
       description: { $like: `%25${product_description}%25` },
     }
 

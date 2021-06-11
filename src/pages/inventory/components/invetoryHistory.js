@@ -1,10 +1,8 @@
 import React from 'react'
 import moment from 'moment'
-import { Row, Col, Divider, Typography } from 'antd'
+import { Row, Col, Divider, Input } from 'antd'
 import DynamicTable from '../../../components/DynamicTable'
 import Tag from '../../../components/Tag'
-
-const { Title } = Typography
 
 function InventoryHistory(props) {
   const columnsHistory = [
@@ -66,11 +64,52 @@ function InventoryHistory(props) {
 
   return (
     <>
+      <Divider className={'divider-custom-margins-users'} />
+      <Row
+        gutter={16}
+        className={'section-space-list'}
+        justify='space-between'
+        align='middle'
+      >
+        <Col xs={12} sm={12} md={12} lg={18}>
+          <h1>Bitacora</h1>
+        </Col>
+        <Col
+          xs={12}
+          sm={12}
+          md={12}
+          lg={6}
+          style={{ display: 'flex', justifyContent: 'flex-end' }}
+        >
+          <div
+            style={{
+              marginRight: '15px',
+              marginTop: '10px',
+              minWidth: '120px',
+            }}
+            className={'title-space-field'}
+          >
+            <b>Existencia:</b>
+          </div>
+          <Input
+            type={'number'}
+            placeholder={'Existencia'}
+            size={'large'}
+            style={{ height: '40px', width: '75%', minWidth: '100px' }}
+            value={props.dataDetail?.stock || 0}
+            disabled
+          />
+        </Col>
+      </Row>
+
+      <Divider className={'divider-custom-margins-users'} />
+
       <Row gutter={16} className={'section-space-field'}>
         <Col xs={24} sm={24} md={24} lg={24}>
-          <Title level={3}>Bitacora</Title>
-          <Divider className={'divider-custom-margins-users'} />
-          <DynamicTable columns={columnsHistory} data={props.dataDetail} />
+          <DynamicTable
+            columns={columnsHistory}
+            data={props.dataDetail?.product_history}
+          />
         </Col>
       </Row>
     </>

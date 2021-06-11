@@ -257,7 +257,10 @@ function BillingView(props) {
   const handleSearchProduct = description => {
     if (description === '') return
 
-    const params = { description: { $like: `%25${description}%25` } }
+    const params = {
+      stock: { $gt: 0 },
+      description: { $like: `%25${description}%25` },
+    }
 
     setLoading(true)
 
