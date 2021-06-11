@@ -243,7 +243,7 @@ function BillingView(props) {
 
     const params = {
       stakeholder_type: { $ne: stakeholdersTypes.PROVIDER },
-      name: { $like: `${stakeholder_name}%` },
+      name: { $like: `${stakeholder_name}%25` },
     }
 
     setLoading(true)
@@ -258,7 +258,7 @@ function BillingView(props) {
   const handleSearchProduct = description => {
     if (description === '') return
 
-    const params = { description: { $like: `${description}%` } }
+    const params = { description: { $like: `${description}%25` } }
 
     setLoading(true)
 
@@ -272,7 +272,7 @@ function BillingView(props) {
   const handleSearchProject = name => {
     if (name === '') return
 
-    const params = { name: { $like: `${name}%` } }
+    const params = { name: { $like: `${name}%25` } }
 
     setLoading(true)
 

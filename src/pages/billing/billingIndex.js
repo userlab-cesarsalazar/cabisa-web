@@ -57,10 +57,10 @@ function Billing(props) {
     billingSrc
       .getInvoices({
         payment_method: filters.paymentMethods,
-        // nit: filters.nit ? `${filters.nit}%` : '',
-        id: filters.id ? `${filters.id}%` : '',
+        // nit: filters.nit ? `${filters.nit}%25` : '',
+        id: filters.id ? `${filters.id}%25` : '',
         created_at: filters.created_at
-          ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%` }
+          ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
           : '',
       })
       .then(data => setDataSource(data))

@@ -18,7 +18,7 @@ function ProductIndex() {
     setLoading(true)
 
     InventorySrc.getProducts({
-      description: { $like: `${searchText}%` },
+      description: { $like: `${searchText}%25` },
       product_category: categoryFilter,
     })
       .then(result => setInventoryProducts(result))

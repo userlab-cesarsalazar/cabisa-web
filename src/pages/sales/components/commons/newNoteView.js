@@ -214,7 +214,7 @@ function NewNoteView({ canViewPrice }) {
 
     const params = {
       status: productsStatus.ACTIVE,
-      description: { $like: `${product_description}%` },
+      description: { $like: `${product_description}%25` },
     }
 
     fetchProductsOptions(saleDispatch, params)
@@ -342,7 +342,7 @@ function NewNoteView({ canViewPrice }) {
     const params = {
       status: { $ne: projectsStatus.FINISHED },
       stakeholder_id: sale.stakeholder_id,
-      name: { $like: `${project_name}%` },
+      name: { $like: `${project_name}%25` },
     }
 
     fetchProjectsOptions(saleDispatch, params)
@@ -353,7 +353,7 @@ function NewNoteView({ canViewPrice }) {
 
     const params = {
       status: stakeholdersStatus.ACTIVE,
-      name: { $like: `${stakeholder_name}%` },
+      name: { $like: `${stakeholder_name}%25` },
     }
 
     fetchStakeholdersOptions(saleDispatch, params)

@@ -11,8 +11,8 @@ const getClients = params =>
   })
 const getClientsFilter = name =>
   api.get(url, {
-    name: { $like: `${name}%` },
-    nit: { $or: true, $like: `${name}%` },
+    name: { $like: `${name}%25` },
+    nit: { $or: true, $like: `${name}%25` },
   })
 const createClient = _users => api.post(url, _users)
 const updateClient = _users => api.put(url, _users)

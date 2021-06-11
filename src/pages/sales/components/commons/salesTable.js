@@ -61,11 +61,11 @@ function SalesTable(props) {
   }, [saleDispatch])
 
   const getSearchParams = (key, value) => {
-    if (key === 'text') return { id: { $like: `${value}%` } }
+    if (key === 'text') return { id: { $like: `${value}%25` } }
 
     if (key === 'date') {
       const start_date = value
-        ? { $like: `${moment(value).format('YYYY-MM-DD')}%` }
+        ? { $like: `${moment(value).format('YYYY-MM-DD')}%25` }
         : ''
       return { start_date }
     }
