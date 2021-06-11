@@ -40,7 +40,7 @@ function ProductDrawer(props) {
           productCategoriesList={props.productCategoriesList}
           productsTaxesList={props.productsTaxesList}
         />
-        <InventoryHistory dataDetail={props.editData?.product_history} />
+        <InventoryHistory dataDetail={props.editData} />
       </Spin>
     </Drawer>
   )
