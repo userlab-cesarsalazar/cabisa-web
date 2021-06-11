@@ -12,8 +12,8 @@ const getClients = params =>
   })
 const getClientsFilter = name =>
   api.get(url, {
-    name: { $like: `${name}%25` },
-    nit: { $or: true, $like: `${name}%25` },
+    name: { $like: `%25${name}%25` },
+    nit: { $or: true, $like: `%25${name}%25` },
     stakeholder_type: { $ne: stakeholdersTypes.PROVIDER },
     status: stakeholdersStatus.ACTIVE,
   })

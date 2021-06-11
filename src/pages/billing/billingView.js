@@ -242,7 +242,7 @@ function BillingView(props) {
     if (stakeholder_name === '') return
 
     const params = {
-      name: { $like: `${stakeholder_name}%25` },
+      name: { $like: `%25${stakeholder_name}%25` },
     }
 
     setLoading(true)
@@ -257,7 +257,7 @@ function BillingView(props) {
   const handleSearchProduct = description => {
     if (description === '') return
 
-    const params = { description: { $like: `${description}%25` } }
+    const params = { description: { $like: `%25${description}%25` } }
 
     setLoading(true)
 
@@ -271,7 +271,7 @@ function BillingView(props) {
   const handleSearchProject = name => {
     if (name === '') return
 
-    const params = { name: { $like: `${name}%25` } }
+    const params = { name: { $like: `%25${name}%25` } }
 
     setLoading(true)
 

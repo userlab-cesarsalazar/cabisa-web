@@ -61,11 +61,11 @@ function SalesTable(props) {
   }, [saleDispatch])
 
   const getSearchParams = (key, value) => {
-    if (key === 'text') return { id: { $like: `${value}%25` } }
+    if (key === 'text') return { id: { $like: `%25${value}%25` } }
 
     if (key === 'date') {
       const start_date = value
-        ? { $like: `${moment(value).format('YYYY-MM-DD')}%25` }
+        ? { $like: `%25${moment(value).format('YYYY-MM-DD')}%25` }
         : ''
       return { start_date }
     }
@@ -138,6 +138,7 @@ function SalesTable(props) {
       key: 'id',
       render: (_, data) => (
         <ActionOptions
+          showApproveBtn={true}
           editPermissions={false}
           data={data}
           permissionId={props.permissions}
@@ -199,7 +200,7 @@ function SalesTable(props) {
           </Select>
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} className='text-right'>
-          {props.canViewPrice && (
+          {/*{props.canViewPrice && (*/}
             <Button
               className={
                 can('create')
@@ -210,7 +211,7 @@ function SalesTable(props) {
             >
               {props.buttonTitle}
             </Button>
-          )}
+          {/*)}*/}
         </Col>
       </Row>
       <Row>

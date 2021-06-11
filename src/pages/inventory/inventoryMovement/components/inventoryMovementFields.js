@@ -207,7 +207,7 @@ function InventoryMovementFields({ forbidEdition, editData }) {
 
     const params = {
       status: productsStatus.ACTIVE,
-      description: { $like: `${product_description}%25` },
+      description: { $like: `%25${product_description}%25` },
     }
 
     setLoading('productsOptionsList')
@@ -336,7 +336,7 @@ function InventoryMovementFields({ forbidEdition, editData }) {
 
     const params = {
       status: stakeholdersStatus.ACTIVE,
-      name: { $like: `${stakeholder_name}%25` },
+      name: { $like: `%25${stakeholder_name}%25` },
     }
 
     setLoading('stakeholdersOptionsList')
