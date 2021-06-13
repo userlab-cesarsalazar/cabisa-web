@@ -31,6 +31,7 @@ function ServiceView() {
         isDrawerVisible={isDrawerVisible}
         showDrawer={showDrawer}
         canViewPrice={canViewPrice}
+        history={history}
       />
       <LoadMoreButton
         handlerButton={handlerMoreButton}

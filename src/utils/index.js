@@ -60,6 +60,11 @@ const getErrorData = error => {
   return 'Unknown Error'
 }
 
+export const getPercent = number => {
+  const tax_fee = Number(number)
+  return !isNaN(tax_fee) && tax_fee > 0 ? tax_fee / 100 : 0
+}
+
 export const showErrors = error => {
   const data = getErrorData(error)
   const messages = typeof data === 'string' ? [data] : data

@@ -5,6 +5,7 @@ import UsersView from '../pages/users/userView'
 // Sales
 import Sales from '../pages/sales/salesIndex'
 import ServiceNoteView from '../pages/sales/components/serviceNote/serviceNoteView'
+import ServiceNoteBill from '../pages/sales/components/serviceNote/ServiceNoteBill'
 
 //Clients
 import Clients from '../pages/clients/clientsIndex'
@@ -92,7 +93,9 @@ const menu_routes = [
     icon: 'pos',
     route: '/sales',
     profilePermissions: [53],
-    routeGroup: [/^(\/sales)|(\/sales\/)|(\/serviceNoteView)/i],
+    routeGroup: [
+      /^(\/sales)|(\/sales\/)|(\/serviceNoteView)|(\/ServiceNoteBill)/i,
+    ],
   },
   {
     id: 4,
@@ -149,6 +152,11 @@ const menu_sub_routes = [
     id: 6,
     route: '/serviceNoteView',
     component: ServiceNoteView,
+  },
+  {
+    id: 6,
+    route: '/ServiceNoteBill',
+    component: ServiceNoteBill,
   },
   {
     id: 5,
@@ -246,4 +254,4 @@ const menu_sub_routes = [
     component: welcomePage,
   },
 ]
-export {menu_routes, menu_sub_routes}
+export { menu_routes, menu_sub_routes }
