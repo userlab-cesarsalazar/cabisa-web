@@ -62,6 +62,7 @@ function InventoryProduct(props) {
         editPermissions={false}
         data={data}
         permissionId={5}
+        showDeleteBtn
         handlerDeleteRow={DeleteRow}
         handlerEditRow={EditRow}
       />

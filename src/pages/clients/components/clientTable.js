@@ -64,6 +64,7 @@ function ClientTable(props) {
           editPermissions={false}
           data={data}
           permissionId={7}
+          showDeleteBtn
           handlerDeleteRow={handlerDeleteRow}
           handlerEditRow={handlerEditRow}
         />

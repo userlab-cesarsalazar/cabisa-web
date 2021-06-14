@@ -68,6 +68,12 @@ function BillingTable(props) {
       render: text => <Tag type='documentsPaymentMethods' value={text} />,
     },
     {
+      title: 'Status',
+      dataIndex: 'status', // Field that is goint to be rendered
+      key: 'status',
+      render: text => <Tag type='documentStatus' value={text} />,
+    },
+    {
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
@@ -76,6 +82,7 @@ function BillingTable(props) {
           editPermissions={false}
           data={data}
           permissionId={4}
+          showDeleteBtn
           handlerDeleteRow={handlerDeleteRow}
           handlerEditRow={handlerEditRow}
           deleteAction='cancel'

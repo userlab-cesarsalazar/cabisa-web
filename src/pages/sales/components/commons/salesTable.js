@@ -135,6 +135,7 @@ function SalesTable(props) {
       render: (_, data) => (
         <ActionOptions
           showApproveBtn={!data.has_related_invoice}
+          showDeleteBtn={!data.has_related_invoice}
           editPermissions={false}
           data={data}
           permissionId={props.permissions}
