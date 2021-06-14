@@ -24,6 +24,7 @@ const getColumnsDynamicTable = ({
   handleChangeDetail,
   handleSearchProduct,
   productsOptionsList,
+  isInvoiceFromSale,
 }) => [
   {
     title: 'Codigo',
@@ -56,7 +57,7 @@ const getColumnsDynamicTable = ({
         onChange={value => handleChangeDetail('id', value, rowIndex)}
         loading={loading}
         optionFilterProp='children'
-        disabled={edit}
+        disabled={edit || isInvoiceFromSale}
       >
         {productsOptionsList?.length > 0 ? (
           productsOptionsList.map(value => (
@@ -93,7 +94,7 @@ const getColumnsDynamicTable = ({
     key: 'quantity',
     render: (_, record, rowIndex) => (
       <Input
-        disabled={edit}
+        disabled={edit || isInvoiceFromSale}
         type={'number'}
         value={edit ? record.product_quantity : record.quantity}
         size={'large'}
@@ -123,7 +124,8 @@ const getColumnsDynamicTable = ({
     title: '',
     dataIndex: 'id',
     render: (_, __, rowIndex) =>
-      !edit && (
+      !edit &&
+      !isInvoiceFromSale && (
         <Popconfirm
           disabled={edit}
           title={'¿Seguro de eliminar?'}
@@ -142,6 +144,7 @@ function BillingFields(props) {
     handleChangeDetail: props.editableList?.handleChange,
     handleSearchProduct: props.handleSearchProduct,
     productsOptionsList: props.productsOptionsList,
+    isInvoiceFromSale: props.isInvoiceFromSale,
   })
 
   return (
@@ -173,7 +176,7 @@ function BillingFields(props) {
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Selecciona Cliente</div>
             <Select
-              disabled={props.edit}
+              disabled={props.edit || props.isInvoiceFromSale}
               className={'single-select'}
               placeholder={'Buscar cliente'}
               size={'large'}
@@ -289,7 +292,7 @@ function BillingFields(props) {
               onChange={props.handleChange('project_id')}
               loading={props.loading}
               optionFilterProp='children'
-              disabled={props.edit}
+              disabled={props.edit || props.isInvoiceFromSale}
             >
               {props.projectsOptionsList?.length > 0 ? (
                 props.projectsOptionsList.map(value => (
@@ -399,7 +402,7 @@ function BillingFields(props) {
 
         <DynamicTable columns={columnsDynamicTable} data={props.productsData} />
 
-        {!props.edit && (
+        {!props.edit && !props.isInvoiceFromSale && (
           <Row gutter={16} className={'section-space-list'}>
             <Col xs={24} sm={24} md={24} lg={24}>
               <Button

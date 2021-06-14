@@ -57,9 +57,11 @@ function ActionOptions({
             </Tooltip>
           )}
 
-          {can('edit') && can('delete') && <Divider type={'vertical'} />}
+          {can('edit') && can('delete') && props.showDeleteBtn && (
+            <Divider type={'vertical'} />
+          )}
 
-          {can('delete') && (
+          {can('delete') && props.showDeleteBtn && (
             <Tooltip
               title={deleteAction === 'delete' ? 'Eliminar' : 'Cancelar'}
               color={'red'}

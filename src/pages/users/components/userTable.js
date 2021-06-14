@@ -60,6 +60,7 @@ function UserTable(props) {
       render: (row, data) => (
         <ActionOptions
           editPermissions={true}
+          showDeleteBtn
           data={data}
           permissionId={2}
           handlerDeleteRow={handlerDeleteRow}

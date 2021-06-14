@@ -16,21 +16,14 @@ import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import { Cache } from 'aws-amplify'
-import { validatePermissions } from '../../../../utils'
 import ActionOptions from '../../../../components/actionOptions'
 import Tag from '../../../../components/Tag'
 import { useSale, saleActions } from '../../context'
-import { showErrors } from '../../../../utils'
+import { validatePermissions, showErrors } from '../../../../utils'
 
 const { Search } = Input
 const { Option } = Select
-const {
-  setSaleState,
-  fetchSales,
-  fetchSalesStatus,
-  approveSale,
-  cancelSale,
-} = saleActions
+const { setSaleState, fetchSales, fetchSalesStatus, cancelSale } = saleActions
 
 function SalesTable(props) {
   const [searchParams, setSearchParams] = useState({})
@@ -86,7 +79,10 @@ function SalesTable(props) {
   }
 
   const handlerApproveRow = row => {
-    approveSale(saleDispatch, { document_id: row.id })
+    props.history.push({
+      pathname: '/ServiceNoteBill',
+      state: row,
+    })
   }
 
   const handlerDeleteRow = row => {
@@ -138,7 +134,8 @@ function SalesTable(props) {
       key: 'id',
       render: (_, data) => (
         <ActionOptions
-          showApproveBtn={true}
+          showApproveBtn={!data.has_related_invoice}
+          showDeleteBtn={!data.has_related_invoice}
           editPermissions={false}
           data={data}
           permissionId={props.permissions}
@@ -146,7 +143,6 @@ function SalesTable(props) {
           handlerEditRow={handlerEditRow}
           handlerApproveRow={handlerApproveRow}
           deleteAction='cancel'
-          hasRelatedInvoice={data.has_related_invoice}
         />
       ),
     },
@@ -201,16 +197,16 @@ function SalesTable(props) {
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} className='text-right'>
           {/*{props.canViewPrice && (*/}
-            <Button
-              className={
-                can('create')
-                  ? 'title-cabisa new-button'
-                  : 'hide-component title-cabisa new-button'
-              }
-              onClick={props.newNote}
-            >
-              {props.buttonTitle}
-            </Button>
+          <Button
+            className={
+              can('create')
+                ? 'title-cabisa new-button'
+                : 'hide-component title-cabisa new-button'
+            }
+            onClick={props.newNote}
+          >
+            {props.buttonTitle}
+          </Button>
           {/*)}*/}
         </Col>
       </Row>

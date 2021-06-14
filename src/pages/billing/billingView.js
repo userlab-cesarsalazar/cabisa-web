@@ -5,7 +5,7 @@ import { message, Card } from 'antd'
 import BillingFields from './components/billingFields'
 import FooterButtons from '../../components/FooterButtons'
 import billingSrc from './billingSrc'
-import { showErrors, roundNumber } from '../../utils'
+import { showErrors, roundNumber, getPercent } from '../../utils'
 import { stakeholdersTypes } from '../../commons/types'
 import { useEditableList } from '../../hooks'
 
@@ -62,11 +62,6 @@ function BillingView(props) {
       return { ...prevState, ...totals }
     })
   }, [setData, productsData])
-
-  const getPercent = number => {
-    const tax_fee = Number(number)
-    return !isNaN(tax_fee) && tax_fee > 0 ? tax_fee / 100 : 0
-  }
 
   const updateInvoiceTotals = (field, value, rowIndex) => {
     const getProductSubtotal = (field, value, row, unit_discount) => {

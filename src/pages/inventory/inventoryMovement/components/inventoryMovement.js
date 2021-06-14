@@ -42,6 +42,7 @@ const getColumns = ({ DeleteRow, EditRow }) => [
         editPermissions={false}
         data={data}
         permissionId={5}
+        showDeleteBtn
         handlerDeleteRow={DeleteRow}
         handlerEditRow={EditRow}
         editAction='show'
