@@ -20,6 +20,8 @@ function BillingView(props) {
     stakeholderTypesOptionsList,
     setStakeholderTypesOptionsList,
   ] = useState([])
+  const [serviceTypesOptionsList, setServiceTypesOptionsList] = useState([])
+  const [creditDaysOptionsList, setCreditDaysOptionsList] = useState([])
   const [data, setData] = useState([])
   const [productsData, setProductsData] = useState([])
   const [discountInputValue, setDiscountInputValue] = useState(0)
@@ -30,6 +32,8 @@ function BillingView(props) {
     Promise.all([
       billingSrc.getPaymentMethods(),
       billingSrc.getStakeholderTypes(),
+      billingSrc.getServiceTypes(),
+      billingSrc.getCreditDays(),
     ])
       .then(data => {
         const stakeholdersTypesList = data[1].filter(
@@ -38,6 +42,8 @@ function BillingView(props) {
 
         setPaymentMethodsOptionsList(data[0])
         setStakeholderTypesOptionsList(stakeholdersTypesList)
+        setServiceTypesOptionsList(data[2])
+        setCreditDaysOptionsList(data[3])
       })
       .catch(_ => message.error('Error al cargar listados'))
       .finally(() => setLoading(false))
@@ -93,6 +99,7 @@ function BillingView(props) {
         unit_tax_amount: roundNumber(unit_price * getPercent(tax_fee)),
         unit_discount: roundNumber(unit_discount),
         subtotal: getProductSubtotal(field, value, row, unit_discount),
+        quantity: field === 'id' ? 1 : row.quantity,
       }
 
       return prevState.map((prevRow, index) =>
@@ -168,6 +175,9 @@ function BillingView(props) {
     stakeholder_id: data.stakeholder_id,
     project_id: data.project_id,
     payment_method: data.payment_method,
+    service_type: data.service_type,
+    credit_days: data.credit_days,
+    total_invoice: data.total,
     products: productsData.map(p => ({
       product_id: p.id,
       product_quantity: p.quantity,
@@ -183,6 +193,8 @@ function BillingView(props) {
       { key: 'stakeholder_id', value: 'Empresa' },
       { key: 'payment_method', value: 'Metodo de pago' },
       { key: 'project_id', value: 'Proyecto' },
+      { key: 'service_type', value: 'Tipo de Servicio' },
+      { key: 'credit_days', value: 'Dias de credito' },
     ]
     const requiredErrors = requiredFields.flatMap(field =>
       !data[field.key] ? field.value : []
@@ -301,6 +313,8 @@ function BillingView(props) {
           handleSearchProduct={handleSearchProduct}
           projectsOptionsList={projectsOptionsList}
           handleSearchProject={handleSearchProject}
+          serviceTypesOptionsList={serviceTypesOptionsList}
+          creditDaysOptionsList={creditDaysOptionsList}
           editableList={editableList}
         />
         <FooterButtons

@@ -6,6 +6,12 @@ export const documentsTypes = {
   RENT_INVOICE: 'RENT_INVOICE',
 }
 
+export const documentsServiceType = {
+  MACHINERY: 'MACHINERY',
+  EQUIPMENT: 'EQUIPMENT',
+  SERVICE: 'SERVICE',
+}
+
 export const documentsStatus = {
   PENDING: 'PENDING',
   CANCELLED: 'CANCELLED',

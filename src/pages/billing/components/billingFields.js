@@ -35,6 +35,7 @@ const getColumnsDynamicTable = ({
         value={record.code}
         size={'large'}
         placeholder={'Codigo'}
+        style={{ minWidth: '120px' }}
         disabled
       />
     ),
@@ -77,6 +78,7 @@ const getColumnsDynamicTable = ({
     key: 'unit_price',
     render: (_, record, rowIndex) => (
       <Input
+        style={{ minWidth: '80px' }}
         type={'number'}
         value={edit ? record.product_price : record.unit_price}
         size={'large'}
@@ -94,6 +96,7 @@ const getColumnsDynamicTable = ({
     key: 'quantity',
     render: (_, record, rowIndex) => (
       <Input
+        style={{ minWidth: '40px' }}
         disabled={edit || isInvoiceFromSale}
         type={'number'}
         value={edit ? record.product_quantity : record.quantity}
@@ -112,6 +115,7 @@ const getColumnsDynamicTable = ({
     key: 'subtotal',
     render: (_, record) => (
       <Input
+        style={{ minWidth: '80px' }}
         disabled
         type={'number'}
         size={'large'}
@@ -222,11 +226,6 @@ function BillingFields(props) {
               value={props.data.stakeholder_type}
               disabled
             >
-              {props.stakeholderTypesOptionsList?.map(value => (
-                <Option key={value} value={value}>
-                  <Tag type='stakeholderTypes' value={value} />
-                </Option>
-              ))}
               {props.stakeholderTypesOptionsList?.length > 0 ? (
                 props.stakeholderTypesOptionsList.map(value => (
                   <Option key={value} value={value}>
@@ -319,9 +318,20 @@ function BillingFields(props) {
               value={props.data.service_type}
               disabled={props.edit}
             >
-              <Option value={0}>Maquinaria</Option>
-              <Option value={1}>Equipo</Option>
-              <Option value={2}>Servicio</Option>
+              {props.serviceTypesOptionsList?.length > 0 ? (
+                props.serviceTypesOptionsList.map(value => (
+                  <Option key={value} value={value}>
+                    <Tag type='documentsServiceType' value={value} />
+                  </Option>
+                ))
+              ) : (
+                <Option value={props.data.service_type}>
+                  <Tag
+                    type='documentsServiceType'
+                    value={props.data.service_type}
+                  />
+                </Option>
+              )}
             </Select>
           </Col>
           <Col xs={8} sm={8} md={8} lg={8}>
@@ -361,14 +371,61 @@ function BillingFields(props) {
           justify='space-between'
           align='middle'
         >
-          <Col xs={12} sm={12} md={12} lg={18}>
+          <Col xs={12} sm={12} md={12} lg={10}>
             <h1>Detalle Factura</h1>
           </Col>
           <Col
-            xs={12}
-            sm={12}
-            md={12}
-            lg={6}
+            xs={6}
+            sm={6}
+            md={6}
+            lg={7}
+            style={{ display: 'flex', justifyContent: 'flex-end' }}
+          >
+            {(!props.edit || props.discountInputValue) && (
+              <>
+                <div
+                  style={{
+                    marginRight: '15px',
+                    marginTop: '10px',
+                    minWidth: '120px',
+                  }}
+                  className={'title-space-field'}
+                >
+                  <b>Dias de credito:</b>
+                </div>
+                <Select
+                  className={'single-select'}
+                  placeholder={'Dias de credito'}
+                  size={'large'}
+                  style={{ width: '100%', height: '40px', maxWidth: '150px' }}
+                  getPopupContainer={trigger => trigger.parentNode}
+                  onChange={props.handleChange('credit_days')}
+                  value={props.data.credit_days}
+                  disabled={props.edit}
+                >
+                  {props.creditDaysOptionsList?.length > 0 ? (
+                    <>
+                      <Option value={0}>0</Option>
+                      {props.creditDaysOptionsList.map(value => (
+                        <Option key={value} value={value}>
+                          {value}
+                        </Option>
+                      ))}
+                    </>
+                  ) : (
+                    <Option value={props.data.credit_days}>
+                      {props.data.credit_days}
+                    </Option>
+                  )}
+                </Select>
+              </>
+            )}
+          </Col>
+          <Col
+            xs={6}
+            sm={6}
+            md={6}
+            lg={7}
             style={{ display: 'flex', justifyContent: 'flex-end' }}
           >
             {(!props.edit || props.discountInputValue) && (
@@ -387,7 +444,12 @@ function BillingFields(props) {
                   type={'number'}
                   placeholder={'Aplicar Descuento'}
                   size={'large'}
-                  style={{ height: '40px', width: '75%', minWidth: '100px' }}
+                  style={{
+                    height: '40px',
+                    width: '75%',
+                    minWidth: '100px',
+                    maxWidth: '150px',
+                  }}
                   min={0}
                   onChange={props.handleDiscountChange}
                   value={props.discountInputValue}
