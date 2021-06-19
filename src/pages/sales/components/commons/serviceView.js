@@ -12,7 +12,7 @@ function ServiceView() {
   const [isDrawerVisible, setIsDrawerVisible] = useState(false)
   const history = useHistory()
 
-  const canViewPrice = validateRole(Cache.getItem('currentSession').rol_id, 1)
+  const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
 
   const handlerMoreButton = () => console.log('moreInfo')
 
@@ -30,7 +30,7 @@ function ServiceView() {
         newNote={NewNoteShipping}
         isDrawerVisible={isDrawerVisible}
         showDrawer={showDrawer}
-        canViewPrice={canViewPrice}
+        isAdmin={isAdmin}
         history={history}
       />
       <LoadMoreButton
@@ -41,7 +41,7 @@ function ServiceView() {
         closable={hideDrawer}
         visible={isDrawerVisible}
         setExistMoreInfo={setExistMoreInfo}
-        canViewPrice={canViewPrice}
+        isAdmin={isAdmin}
       />
     </>
   )

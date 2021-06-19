@@ -14,6 +14,8 @@ function ServiceNoteBill() {
 
   const [loading, setLoading] = useState(false)
   const [paymentMethodsOptionsList, setPaymentMethodsOptionsList] = useState([])
+  const [serviceTypesOptionsList, setServiceTypesOptionsList] = useState([])
+  const [creditDaysOptionsList, setCreditDaysOptionsList] = useState([])
   const [data, setData] = useState([])
   const [productsData, setProductsData] = useState([])
   const [discountInputValue, setDiscountInputValue] = useState(0)
@@ -30,10 +32,17 @@ function ServiceNoteBill() {
 
     setLoading(true)
 
-    billingSrc
-      .getPaymentMethods()
-      .then(data => setPaymentMethodsOptionsList(data))
-      .catch(_ => message.error('Error al cargar metodos de pago'))
+    Promise.all([
+      billingSrc.getPaymentMethods(),
+      billingSrc.getServiceTypes(),
+      billingSrc.getCreditDays(),
+    ])
+      .then(data => {
+        setPaymentMethodsOptionsList(data[0])
+        setServiceTypesOptionsList(data[1])
+        setCreditDaysOptionsList(data[2])
+      })
+      .catch(_ => message.error('Error al cargar listados'))
       .finally(() => setLoading(false))
   }, [location])
 
@@ -90,6 +99,9 @@ function ServiceNoteBill() {
   const getSaveData = () => ({
     document_id: data.id,
     payment_method: data.payment_method,
+    service_type: data.service_type,
+    credit_days: data.credit_days,
+    total_invoice: data.total,
     products: productsData.map(p => ({
       product_id: p.id,
       product_quantity: p.quantity,
@@ -101,7 +113,11 @@ function ServiceNoteBill() {
 
   const validateSaveData = data => {
     const errors = []
-    const requiredFields = [{ key: 'payment_method', value: 'Metodo de pago' }]
+    const requiredFields = [
+      { key: 'payment_method', value: 'Metodo de pago' },
+      { key: 'service_type', value: 'Tipo de Servicio' },
+      { key: 'credit_days', value: 'Dias de credito' },
+    ]
     const requiredErrors = requiredFields.flatMap(field =>
       !data[field.key] ? field.value : []
     )
@@ -162,15 +178,13 @@ function ServiceNoteBill() {
           data={data}
           productsData={productsData}
           paymentMethodsOptionsList={paymentMethodsOptionsList}
-          // stakeholderTypesOptionsList={stakeholderTypesOptionsList}
+          serviceTypesOptionsList={serviceTypesOptionsList}
+          creditDaysOptionsList={creditDaysOptionsList}
           discountInputValue={discountInputValue}
           handleDiscountChange={handleDiscountChange}
           handleChange={handleChange}
-          // stakeholdersOptionsList={stakeholdersOptionsList}
           handleSearchStakeholder={() => {}}
-          // productsOptionsList={productsOptionsList}
           handleSearchProduct={() => {}}
-          // projectsOptionsList={projectsOptionsList}
           handleSearchProject={() => {}}
           editableList={{}}
         />

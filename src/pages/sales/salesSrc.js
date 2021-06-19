@@ -2,14 +2,11 @@ import api from '../../commons/api'
 import { stage } from '../../commons/credentials'
 
 const urlSale = stage.saleUrl
-const urlProject = stage.projectUrl
 const urlProduct = stage.productUrl
 const urlStakeholder = stage.stakeholderUrl
 
-const getProjects = params => api.get(urlProject, { ...params })
-const getProjectsStatus = () => api.get(`${urlProject}-status`)
 const getProjectsOptions = params =>
-  api.get(`${urlProject}-options`, { ...params })
+  api.get(`${urlStakeholder}/projects-options`, params)
 const getProductsOptions = params =>
   api.get(`${urlProduct}-options`, { ...params })
 const getStakeholdersOptions = params =>
@@ -22,8 +19,6 @@ const cancelSale = data => api.put(`${urlSale}/cancel`, data)
 const updateSale = data => api.put(urlSale, data)
 
 const InventorySrc = {
-  getProjects,
-  getProjectsStatus,
   getProjectsOptions,
   getProductsOptions,
   getStakeholdersOptions,

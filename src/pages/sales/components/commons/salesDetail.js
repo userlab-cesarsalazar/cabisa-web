@@ -16,11 +16,7 @@ import {
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import DynamicTable from '../../../../components/DynamicTable'
-import {
-  productsStatus,
-  projectsStatus,
-  stakeholdersStatus,
-} from '../../../../commons/types'
+import { productsStatus, stakeholdersStatus } from '../../../../commons/types'
 import { useSale, saleActions } from '../../context'
 import { useEditableList } from '../../../../hooks'
 import { showErrors } from '../../../../utils'
@@ -46,7 +42,7 @@ const getColumnsDynamicTable = ({
   status,
   loading,
   forbidEdition,
-  canViewPrice,
+  isAdmin,
 }) => {
   const columns = [
     {
@@ -81,7 +77,7 @@ const getColumnsDynamicTable = ({
           onChange={value => handleChangeDetail('id', value, rowIndex)}
           loading={status === 'LOADING' && loading === 'fetchProductsOptions'}
           optionFilterProp='children'
-          disabled={forbidEdition || !canViewPrice}
+          disabled={forbidEdition || !isAdmin}
         >
           {productsOptionsList.length > 0 ? (
             productsOptionsList?.map(value => (
@@ -110,7 +106,7 @@ const getColumnsDynamicTable = ({
           }
           min={0}
           type='number'
-          disabled={forbidEdition || !canViewPrice}
+          disabled={forbidEdition || !isAdmin}
         />
       ),
     },
@@ -149,10 +145,10 @@ const getColumnsDynamicTable = ({
       ),
   }
 
-  return canViewPrice ? [...columns, priceColumn, deleteButtonColumn] : columns
+  return isAdmin ? [...columns, priceColumn, deleteButtonColumn] : columns
 }
 
-function SalesDetail({ setExistMoreInfo, closable, visible, canViewPrice }) {
+function SalesDetail({ setExistMoreInfo, closable, visible, isAdmin }) {
   const [forbidEdition, setForbidEdition] = useState(false)
   const [sale, setSale] = useState([])
   const [dataSourceTable, setDataSourceTable] = useState([])
@@ -257,7 +253,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible, canViewPrice }) {
     status,
     loading,
     forbidEdition,
-    canViewPrice,
+    isAdmin,
   })
 
   const getSaveData = () => ({
@@ -368,8 +364,6 @@ function SalesDetail({ setExistMoreInfo, closable, visible, canViewPrice }) {
     if (project_name === '') return
 
     const params = {
-      status: { $ne: projectsStatus.FINISHED },
-      stakeholder_id: sale.stakeholder_id,
       name: { $like: `%25${project_name}%25` },
     }
 
@@ -381,7 +375,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible, canViewPrice }) {
 
     const params = {
       status: stakeholdersStatus.ACTIVE,
-      name: { $like: `$%25{stakeholder_name}%25` },
+      name: { $like: `%25${stakeholder_name}%25` },
     }
 
     fetchStakeholdersOptions(saleDispatch, params)
@@ -516,7 +510,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible, canViewPrice }) {
                 value={sale.end_date ? moment(sale.end_date) : ''}
                 onChange={handleChange('end_date')}
                 format='DD-MM-YYYY'
-                disabled={forbidEdition || !canViewPrice}
+                disabled={forbidEdition || !isAdmin}
               />
             </Col>
             <Col xs={8} sm={8} md={8} lg={8}>
@@ -540,7 +534,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible, canViewPrice }) {
                 data={dataSourceTable}
               />
             </Col>
-            {!forbidEdition && canViewPrice && (
+            {!forbidEdition && isAdmin && (
               <Col xs={24} sm={24} md={24} lg={24}>
                 <Button
                   type='dashed'
@@ -560,7 +554,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible, canViewPrice }) {
                 rows={4}
                 value={sale.comments}
                 onChange={handleChange('comments')}
-                disabled={forbidEdition || !canViewPrice}
+                disabled={forbidEdition || !isAdmin}
               />
             </Col>
           </Row>
@@ -582,12 +576,12 @@ function SalesDetail({ setExistMoreInfo, closable, visible, canViewPrice }) {
                 size={'large'}
                 value={sale.received_by}
                 onChange={handleChange('received_by')}
-                disabled={forbidEdition || !canViewPrice}
+                disabled={forbidEdition || !isAdmin}
               />
             </Col>
           </Row>
         </div>
-        {!forbidEdition && canViewPrice && (
+        {!forbidEdition && isAdmin && (
           <FooterButtons
             saveData={saveData}
             cancelButton={handleCancelButton}

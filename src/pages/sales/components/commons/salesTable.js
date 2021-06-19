@@ -163,7 +163,7 @@ function SalesTable(props) {
         </Col>
         <Col xs={5} sm={5} md={5} lg={5}>
           <DatePicker
-            placeholder={'Buscar desde esta fecha'}
+            placeholder={'Buscar por fecha'}
             style={{ width: '100%', height: '40px', borderRadius: '8px' }}
             format='DD-MM-YYYY'
             onChange={e => getFilteredData('date', e)}
@@ -196,7 +196,7 @@ function SalesTable(props) {
           </Select>
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} className='text-right'>
-          {/*{props.canViewPrice && (*/}
+          {/*{props.isAdmin && (*/}
           <Button
             className={
               can('create')
@@ -228,8 +228,8 @@ function SalesTable(props) {
                       <div className={'text-left'}>
                         <p>
                           <b>Encargado </b>{' '}
-                          {record.project_business_man !== null
-                            ? record.project_business_man
+                          {record.stakeholder_business_man !== null
+                            ? record.stakeholder_business_man
                             : ''}{' '}
                         </p>
                         <p>

@@ -18,11 +18,7 @@ import HeaderPage from '../../../../components/HeaderPage'
 import DynamicTable from '../../../../components/DynamicTable'
 import { useSale, saleActions } from '../../context'
 import { showErrors } from '../../../../utils'
-import {
-  productsStatus,
-  projectsStatus,
-  stakeholdersStatus,
-} from '../../../../commons/types'
+import { productsStatus } from '../../../../commons/types'
 import { useEditableList } from '../../../../hooks'
 const {
   fetchProductsOptions,
@@ -42,7 +38,7 @@ const getColumnsDynamicTable = ({
   productsOptionsList,
   status,
   loading,
-  canViewPrice,
+  isAdmin,
 }) => {
   const columns = [
     {
@@ -144,12 +140,12 @@ const getColumnsDynamicTable = ({
     ),
   }
 
-  const columnsWithPrice = canViewPrice ? [...columns, priceColumn] : columns
+  const columnsWithPrice = isAdmin ? [...columns, priceColumn] : columns
 
   return [...columnsWithPrice, deleteButtonColumn]
 }
 
-function NewNoteView({ canViewPrice }) {
+function NewNoteView({ isAdmin }) {
   const history = useHistory()
   const [sale, setSale] = useState([])
   const [dataSourceTable, setDataSourceTable] = useState([])
@@ -182,6 +178,7 @@ function NewNoteView({ canViewPrice }) {
         id: product.id,
         code: product.code,
         unit_price: product.unit_price,
+        quantity: 1,
       }
 
       return prevState.map((row, index) => (index === rowIndex ? newRow : row))
@@ -228,7 +225,7 @@ function NewNoteView({ canViewPrice }) {
     productsOptionsList: saleState.productsOptionsList,
     status,
     loading,
-    canViewPrice,
+    isAdmin,
   })
 
   const getSaveData = () => ({
@@ -341,8 +338,6 @@ function NewNoteView({ canViewPrice }) {
     if (project_name === '') return
 
     const params = {
-      status: { $ne: projectsStatus.FINISHED },
-      stakeholder_id: sale.stakeholder_id,
       name: { $like: `%25${project_name}%25` },
     }
 
@@ -353,7 +348,6 @@ function NewNoteView({ canViewPrice }) {
     if (stakeholder_name === '') return
 
     const params = {
-      status: stakeholdersStatus.ACTIVE,
       name: { $like: `%25${stakeholder_name}%25` },
     }
 
