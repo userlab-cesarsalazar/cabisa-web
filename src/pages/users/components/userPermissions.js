@@ -8,7 +8,10 @@ import {
   Drawer,
   Row,
   Typography,
+  message,
 } from 'antd'
+import UsersSrc from '../usersSrc'
+import { showErrors } from '../../../utils'
 
 const { Title } = Typography
 
@@ -90,22 +93,25 @@ function UserPermissions(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.visible])
 
-  const onCancel = () => {
-    props.closable()
-  }
+  const onCancel = () => props.closable()
 
   const savePermissions = () => {
-    setLoading(false)
-    let saveObj = {
+    const data = {
       id: props.permissionsData.id,
-      fullName: props.permissionsData.full_name,
-      is_active: 1,
-      email: props.permissionsData.email,
-      rolId: props.permissionsData.rol_id,
       permissions: tableDataSource,
     }
 
-    props.savePermissions(saveObj)
+    setLoading(true)
+
+    UsersSrc.updatePermissions(data)
+      .then(() => {
+        message.success('Permisos actualizados exitosamente')
+      })
+      .catch(error => showErrors(error))
+      .finally(() => {
+        setLoading(false)
+        props.closeOnSave()
+      })
   }
 
   const handlePermissionsChange = (e, changedRow) => {
@@ -127,9 +133,16 @@ function UserPermissions(props) {
       visible={props.visible}
       width={800}
     >
-      <Title> {'Editar permisos'} </Title>
-      <Divider className={'divider-cxustom-margins-users'} />
-      <Row gutter={16} className={'section-space-field'}>
+      <Title>
+        {' '}
+        {'Editar permisos'}
+        <Divider className={'divider-cxustom-margins-users'} />
+      </Title>
+      <Row
+        gutter={16}
+        className={'section-space-field'}
+        style={{ height: '100%' }}
+      >
         <Col xs={24} sm={24} md={24} lg={24}>
           <Table
             id='edit-permissions-table'
@@ -142,8 +155,8 @@ function UserPermissions(props) {
           />
         </Col>
       </Row>
-      <Divider className={'divider-custom-margins-users'} />
       <Row gutter={16}>
+        <Divider className={'divider-custom-margins-users'} />
         <Col xs={24} sm={24} md={24} lg={24}>
           <div className='text-right'>
             <div>

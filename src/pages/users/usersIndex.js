@@ -124,6 +124,11 @@ function Users(props) {
     }
   }
 
+  const closeUserPermissions = () => {
+    setShowPermissions(false)
+    loadUserData()
+  }
+
   return (
     <div>
       <HeaderPage
@@ -150,13 +155,11 @@ function Users(props) {
         saveButtonEdit={saveInformation}
       />
       <UserPermissions
-        closable={() => {
-          setShowPermissions(false)
-        }}
+        closable={() => setShowPermissions(false)}
+        closeOnSave={closeUserPermissions}
         visible={showPermissions}
         userId={userId}
         permissionsData={dataPermissions}
-        savePermissions={saveInformation}
       />
     </div>
   )
