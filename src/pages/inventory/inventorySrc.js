@@ -24,8 +24,7 @@ const createProduct = _products => api.post(urlProduct, _products)
 const updateProduct = _products => api.put(urlProduct, _products)
 const deleteProduct = _products => api.remove(urlProduct, _products)
 
-const getServices = params =>
-  api.get(urlService, { ...params, product_type: productsTypes.SERVICE })
+const getServices = params => api.get(urlService, params)
 const getServicesStatus = () => api.get(`${urlService}-status`)
 const createService = _services => api.post(urlService, _services)
 const updateService = _services => api.put(urlService, _services)

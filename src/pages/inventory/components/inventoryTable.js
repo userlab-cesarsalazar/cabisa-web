@@ -66,7 +66,7 @@ function InventoryTable(props) {
             Cache.getItem('currentSession').userPermissions,
             5
           ).permissionsSection[0].create &&
-            props.canViewPrice && (
+            props.isAdmin && (
               <Button
                 className='title-cabisa new-button'
                 onClick={props.showDraweTbl}

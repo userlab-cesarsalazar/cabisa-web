@@ -12,7 +12,7 @@ function ProductView(props) {
   const [productCategoriesList, setProductCategoriesList] = useState([])
   const [productsTaxesList, setProductsTaxesList] = useState([])
 
-  const canViewPrice = validateRole(Cache.getItem('currentSession').rol_id, 1)
+  const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
 
   useEffect(() => {
     setViewLoading(true)
@@ -60,7 +60,7 @@ function ProductView(props) {
           productStatusList={productStatusList}
           productCategoriesList={productCategoriesList}
           productsTaxesList={productsTaxesList}
-          canViewPrice={canViewPrice}
+          isAdmin={isAdmin}
         />
       </Card>
     </Spin>

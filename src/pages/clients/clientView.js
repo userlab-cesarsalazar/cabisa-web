@@ -8,20 +8,19 @@ import { showErrors } from '../../utils'
 function ClientView(props) {
   const [viewLoading, setViewLoading] = useState(false)
 
-  const saveData = (method, data, user_id) => {
-    if (!method) {
-      setViewLoading(true)
-      ClientsSrc.createClient(data)
-        .then(_ => {
-          message.success('Usuario creado.')
-          props.history.push('/clients')
-        })
-        .catch(error => {
-          setViewLoading(false)
-          console.log('CREATE CLIENT ERROR ', error)
-          showErrors(error)
-        })
-    }
+  const saveData = data => {
+    setViewLoading(true)
+
+    ClientsSrc.createClient(data)
+      .then(() => {
+        message.success('Usuario creado.')
+        props.history.push('/clients')
+      })
+      .catch(error => {
+        console.log('CREATE CLIENT ERROR ', error)
+        showErrors(error)
+      })
+      .finally(() => setViewLoading(false))
   }
 
   return (

@@ -72,7 +72,7 @@ function ServiceFields(props) {
           </Col>
         </Row>
         <Row gutter={16} className={'section-space-field'}>
-          {props.canViewPrice && (
+          {props.isAdmin && (
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Precio de venta</div>
               <Input

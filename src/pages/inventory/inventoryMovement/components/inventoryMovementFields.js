@@ -18,7 +18,11 @@ import {
 import FooterButtons from '../../../../components/FooterButtons'
 import DynamicTable from '../../../../components/DynamicTable'
 import { showErrors } from '../../../../utils'
-import { productsStatus, stakeholdersStatus } from '../../../../commons/types'
+import {
+  productsStatus,
+  stakeholdersStatus,
+  productsTypes,
+} from '../../../../commons/types'
 import { useEditableList } from '../../../../hooks'
 import inventorySrc from '../../inventorySrc'
 
@@ -206,9 +210,9 @@ function InventoryMovementFields({ forbidEdition, editData }) {
     if (product_description === '') return
 
     const params = {
-      status: productsStatus.ACTIVE,
-      stock: { $gt: 0 },
       description: { $like: `%25${product_description}%25` },
+      status: productsStatus.ACTIVE,
+      product_type: { $ne: productsTypes.SERVICE },
     }
 
     setLoading('productsOptionsList')

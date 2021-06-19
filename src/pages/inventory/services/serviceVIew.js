@@ -10,7 +10,7 @@ function ServiceView(props) {
   const [viewLoading, setViewLoading] = useState(false)
   const [serviceStatusList, setServiceStatusList] = useState([])
 
-  const canViewPrice = validateRole(Cache.getItem('currentSession').rol_id, 1)
+  const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
 
   useEffect(() => {
     setViewLoading(true)
@@ -47,7 +47,7 @@ function ServiceView(props) {
           data={props.editData}
           cancelButton={props.cancelButton}
           serviceStatusList={serviceStatusList}
-          canViewPrice={canViewPrice}
+          isAdmin={isAdmin}
         />
       </Card>
     </Spin>
