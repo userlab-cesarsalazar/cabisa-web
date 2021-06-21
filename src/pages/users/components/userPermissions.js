@@ -106,11 +106,11 @@ function UserPermissions(props) {
     UsersSrc.updatePermissions(data)
       .then(() => {
         message.success('Permisos actualizados exitosamente')
+        props.closeOnSave()
       })
       .catch(error => showErrors(error))
       .finally(() => {
         setLoading(false)
-        props.closeOnSave()
       })
   }
 
