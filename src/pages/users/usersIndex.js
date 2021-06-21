@@ -50,7 +50,7 @@ function Users(props) {
   const searchText = name => {
     setLoading(true)
 
-    UsersSrc.getUsersByName({ name: { $like: `${name}%25` } })
+    UsersSrc.getUsersByName({ full_name: { $like: `${name}%25` } })
       .then(data => {
         setLoading(false)
         setDataSource(data)

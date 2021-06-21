@@ -78,7 +78,7 @@ function UserTable(props) {
           <Search
             className={'customSearch'}
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Presiona enter para buscar'
+            placeholder='Presiona enter para buscar por nombre'
             style={{ width: '70%', height: '40px' }}
             size={'large'}
             onSearch={e => getFilteredData(e)}
