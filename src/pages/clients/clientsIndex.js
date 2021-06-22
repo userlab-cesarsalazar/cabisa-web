@@ -88,10 +88,6 @@ function Clients(props) {
       })
   }
 
-  const onSaveButton = () => {
-    loadData()
-  }
-
   return (
     <>
       <HeaderPage
@@ -113,7 +109,7 @@ function Clients(props) {
         edit={editMode}
         editData={editDataDrawer}
         cancelButton={onClose}
-        saveButton={onSaveButton}
+        loadData={loadData}
       />
     </>
   )

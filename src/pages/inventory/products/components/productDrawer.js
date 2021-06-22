@@ -30,7 +30,7 @@ function ProductDrawer(props) {
     >
       <Spin spinning={loadingDrawer}>
         <ProductFields
-          canViewPrice={props.canViewPrice}
+          isAdmin={props.isAdmin}
           saveUserData={onSaveBtn}
           visible={props.visible}
           edit={props.edit}

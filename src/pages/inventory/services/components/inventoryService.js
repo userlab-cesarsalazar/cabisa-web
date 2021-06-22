@@ -48,9 +48,9 @@ function InventoryService(props) {
     ),
   }
 
-  const canViewPrice = validateRole(Cache.getItem('currentSession').rol_id, 1)
+  const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
 
-  const columnsWithPrice = canViewPrice ? [...columns, priceColumn] : columns
+  const columnsWithPrice = isAdmin ? [...columns, priceColumn] : columns
 
   const inventoryColumns = [...columnsWithPrice, actionsColumn]
 
@@ -104,7 +104,7 @@ function InventoryService(props) {
         handlerEditRow={EditRow}
         handlerDeleteRow={DeleteRow}
         columns={inventoryColumns}
-        canViewPrice={canViewPrice}
+        isAdmin={isAdmin}
       />
 
       <ServiceDrawer
@@ -116,7 +116,7 @@ function InventoryService(props) {
         cancelButton={onClose}
         closeAfterSave={onCloseAfterSave}
         serviceStatusList={props.serviceStatusList}
-        canViewPrice={canViewPrice}
+        isAdmin={isAdmin}
       />
     </>
   )

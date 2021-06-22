@@ -69,9 +69,9 @@ function InventoryProduct(props) {
     ),
   }
 
-  const canViewPrice = validateRole(Cache.getItem('currentSession').rol_id, 1)
+  const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
 
-  const columnsWithPrice = canViewPrice ? [...columns, priceColumn] : columns
+  const columnsWithPrice = isAdmin ? [...columns, priceColumn] : columns
 
   const wareHouseColumns = [...columnsWithPrice, actionsColumn]
 
@@ -127,7 +127,7 @@ function InventoryProduct(props) {
         handlerCategorySearch={searchByCategory}
         columns={wareHouseColumns}
         productCategoriesList={props.productCategoriesList}
-        canViewPrice={canViewPrice}
+        isAdmin={isAdmin}
       />
 
       <ProductDrawer
@@ -141,7 +141,7 @@ function InventoryProduct(props) {
         productStatusList={props.productStatusList}
         productCategoriesList={props.productCategoriesList}
         productsTaxesList={props.productsTaxesList}
-        canViewPrice={canViewPrice}
+        isAdmin={isAdmin}
       />
     </>
   )

@@ -7,20 +7,16 @@ import { showErrors } from '../../../utils'
 function ClientsDrawer(props) {
   const [loadingDrawer, setLoadingDrawer] = useState(false)
 
-  const onSaveButton = (method, data, id) => {
+  const onSaveButton = data => {
     setLoadingDrawer(true)
-    data.id = id
+
     ClientsSrc.updateClient(data)
       .then(_ => {
-        setLoadingDrawer(false)
-        message.success('Informacion actualizada.')
-        props.saveButton()
+        message.success('Cliente actualizado exitosamente')
+        props.loadData()
       })
-      .catch(err => {
-        setLoadingDrawer(false)
-        console.log('ERROR ON UPDATE CLIENT', err)
-        showErrors(err)
-      })
+      .catch(error => showErrors(error))
+      .finally(() => setLoadingDrawer(false))
   }
 
   return (
@@ -29,7 +25,7 @@ function ClientsDrawer(props) {
       closable={false}
       onClose={props.closable}
       visible={props.visible}
-      width={800}
+      width='70%'
     >
       <Spin spinning={loadingDrawer}>
         <ClientFields
