@@ -14,10 +14,12 @@ function Billing(props) {
 
   if (!initFilters.current) {
     initFilters.current = {
-      payment_method: '',
-      nit: '',
       id: '',
+      nit: '',
       created_at: '',
+      serviceTypes: '',
+      paymentMethods: '',
+      totalInvoice: '',
     }
   }
 
@@ -31,6 +33,8 @@ function Billing(props) {
     stakeholderTypesOptionsList,
     setStakeholderTypesOptionsList,
   ] = useState([])
+  const [serviceTypesOptionsList, setServiceTypesOptionsList] = useState([])
+  const [creditDaysOptionsList, setCreditDaysOptionsList] = useState([])
 
   useEffect(() => {
     setLoading(true)
@@ -38,6 +42,8 @@ function Billing(props) {
     Promise.all([
       billingSrc.getPaymentMethods(),
       billingSrc.getStakeholderTypes(),
+      billingSrc.getServiceTypes(),
+      billingSrc.getCreditDays(),
     ])
       .then(data => {
         const stakeholdersTypesList = data[1].filter(
@@ -46,6 +52,8 @@ function Billing(props) {
 
         setPaymentMethodsOptionsList(data[0])
         setStakeholderTypesOptionsList(stakeholdersTypesList)
+        setServiceTypesOptionsList(data[2])
+        setCreditDaysOptionsList(data[3])
       })
       .catch(_ => message.error('Error al cargar listados'))
       .finally(() => setLoading(false))
@@ -56,12 +64,14 @@ function Billing(props) {
 
     billingSrc
       .getInvoices({
-        payment_method: filters.paymentMethods,
-        // nit: filters.nit ? `${filters.nit}%25` : '',
-        id: filters.id ? `${filters.id}%25` : '',
+        id: { $like: `%25${filters.id}%25` }, // Nro de Serie
+        nit: { $like: `%25${filters.nit}%25` },
         created_at: filters.created_at
           ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
           : '',
+        service_type: filters.serviceTypes,
+        payment_method: filters.paymentMethods,
+        total_invoice: { $like: `%25${filters.totalInvoice}%25` },
       })
       .then(data => setDataSource(data))
       .catch(_ => message.error('Error al cargar facturas'))
@@ -127,6 +137,7 @@ function Billing(props) {
         showDetail={showDetail}
         handleFiltersChange={setSearchFilters}
         paymentMethodsOptionsList={paymentMethodsOptionsList}
+        serviceTypesOptionsList={serviceTypesOptionsList}
         handlerDeleteRow={handlerDeleteRow}
         loading={loading}
       />
@@ -144,6 +155,8 @@ function Billing(props) {
         productsData={showInvoiceData?.products}
         paymentMethodsOptionsList={paymentMethodsOptionsList}
         stakeholderTypesOptionsList={stakeholderTypesOptionsList}
+        serviceTypesOptionsList={serviceTypesOptionsList}
+        creditDaysOptionsList={creditDaysOptionsList}
         discountInputValue={showInvoiceData.discount_percentage}
       />
     </>

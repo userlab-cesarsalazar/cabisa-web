@@ -30,10 +30,10 @@ function BillingTable(props) {
       render: text => <span>{text}</span>,
     },
     {
-      title: 'Tipo de servicio',
+      title: 'Tipo de Servicio',
       dataIndex: 'service_type', // Field that is goint to be rendered
       key: 'service_type',
-      render: text => <span>{text}</span>,
+      render: text => <Tag type='documentsServiceType' value={text} />,
     },
     {
       title: 'Cliente',
@@ -112,7 +112,7 @@ function BillingTable(props) {
             placeholder='Nit'
             className={'cabisa-table-search customSearch'}
             size={'large'}
-            // onSearch={props.handleFiltersChange('nit')}
+            onSearch={props.handleFiltersChange('nit')}
           />
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
@@ -130,10 +130,17 @@ function BillingTable(props) {
             size={'large'}
             style={{ width: '100%', height: '40px' }}
             getPopupContainer={trigger => trigger.parentNode}
+            onChange={props.handleFiltersChange('serviceTypes')}
+            defaultValue=''
           >
-            <Option value={'MACHINE'}>Maquinaria</Option>
-            <Option value={'EQUIPMENT'}>Equipo</Option>
-            <Option value={'SERVICE'}>Servicio</Option>
+            <Option value={''}>
+              <AntTag color='gray'>Todo</AntTag>
+            </Option>
+            {props.serviceTypesOptionsList?.map(value => (
+              <Option key={value} value={value}>
+                <Tag type='documentsServiceType' value={value} />
+              </Option>
+            ))}
           </Select>
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
@@ -162,6 +169,7 @@ function BillingTable(props) {
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
             placeholder='Total'
             className={'cabisa-table-search customSearch'}
+            onSearch={props.handleFiltersChange('totalInvoice')}
             size={'large'}
           />
         </Col>

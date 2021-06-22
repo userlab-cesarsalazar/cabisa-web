@@ -2,6 +2,11 @@
 import { Tag as AntTag } from 'antd'
 
 const config = {
+  documentsServiceType: {
+    MACHINERY: { color: 'geekblue', text: 'Maquinaria' },
+    EQUIPMENT: { color: 'green', text: 'Equipo' },
+    SERVICE: { color: 'cyan', text: 'Servicio' },
+  },
   documentStatus: {
     APPROVED: { color: '#87d068', text: 'Aprobado' },
     CANCELLED: { color: '#f50', text: 'Anulado' },
@@ -36,6 +41,12 @@ const config = {
   productCategories: {
     EQUIPMENT: { color: 'blue', text: 'Equipo' },
     PART: { color: 'orange', text: 'Repuesto' },
+  },
+  roles: {
+    ADMIN: { color: '#187fce', text: 'Administrador' },
+    SELLS: { color: '#87d067', text: 'Vendedor' },
+    WAREHOUSE: { color: '#f50', text: 'Bodega' },
+    OPERATOR: { color: '#fec842', text: 'Operador' },
   },
   stakeholderTypes: {
     CLIENT_INDIVIDUAL: { color: 'geekblue', text: 'Cliente individual' },
