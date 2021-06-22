@@ -37,7 +37,6 @@ function ResetPassword(props) {
   }
 
   const submitPassHandler = () => {
-    console.log('Reset password')
     if (oldPass === '' || newPass === '' || confirmNewPass === '') {
       return message.warning(validateMessages.required)
     }

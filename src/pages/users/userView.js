@@ -16,7 +16,6 @@ function UserView(props) {
     setLoading(true)
     try {
       //verify is user existe on BD
-
       let existsUser = await UsersSrc.getUsersPermissions(
         encodeURIComponent(data.email)
       )

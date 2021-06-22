@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import {
   Col,
   Input,
@@ -8,80 +8,55 @@ import {
   message,
   Divider,
   Typography,
-  Tag,
   Switch,
 } from 'antd'
-
 import EyeTwoTone from '@ant-design/icons/lib/icons/EyeTwoTone'
 import EyeInvisibleOutlined from '@ant-design/icons/lib/icons/EyeInvisibleOutlined'
 import FooterButtons from '../../../components/FooterButtons'
+import Tag from '../../../components/Tag'
 import { validateEmail } from '../../../utils'
-import {
-  admin_permission,
-  sells_permission,
-  warehouse_permission,
-  operator_permission,
-} from '../../../commons/roles_permissions'
+import usersSrc from '../usersSrc'
 
 const { Option } = Select
+const { Title } = Typography
 const validateMessageFields = 'Por favor, verifique los campos obligatorios'
 
-const rolesData = [
-  { id: 1, name: 'Administrador', color: '#187fce' },
-  { id: 2, name: 'Vendedor', color: '#87d067' },
-  { id: 3, name: 'Bodega', color: '#f50' },
-  { id: 4, name: 'Operador', color: '#fec842' },
-]
-const { Title } = Typography
-
-function UserFields(props) {
+function UserFields({ edit, data, visible, ...props }) {
+  const [loading, setLoading] = useState(false)
+  const [rolesOptionsList, setRolesOptionsList] = useState([])
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [role, setRole] = useState(null)
-
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [rolesList, setRolesList] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [changedRole, setChangedRole] = useState(false)
   const [changePass, setChangePass] = useState(false)
 
-  const loadUserInformation = () => {
-    setName(props.edit ? props.data.full_name : '')
-    setEmail(props.edit ? props.data.email : '')
-    setRole(props.edit ? props.data.rol_id : null)
-    setChangePass(!props.edit)
+  const loadUserInformation = useCallback(() => {
+    setName(edit ? data.full_name : '')
+    setEmail(edit ? data.email : '')
+    setRole(edit ? data.rol_id : null)
+    setChangePass(!edit)
     setPassword('')
     setConfirmPassword('')
-  }
+  }, [edit, data])
+
+  const getRoles = useCallback(() => {
+    setLoading(true)
+
+    usersSrc
+      .getRoles()
+      .then(data => setRolesOptionsList(data))
+      .catch(() => message.error('Error al consultar listado de roles'))
+      .finally(() => setLoading(false))
+  }, [])
 
   useEffect(() => {
-    loadUserInformation()
-    if (props.visible) {
+    if (visible) {
+      loadUserInformation()
       getRoles()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.visible])
+  }, [loadUserInformation, visible, getRoles])
 
-  const getRoles = () => {
-    setLoading(false)
-    setRolesList(rolesData)
-  }
-
-  const defineRoles = roleId => {
-    switch (roleId) {
-      case 1:
-        return admin_permission
-      case 2:
-        return sells_permission
-      case 3:
-        return warehouse_permission
-      case 4:
-        return operator_permission
-      default:
-        return null
-    }
-  }
   const saveData = () => {
     if (name === '' || email === '') {
       return message.warning(validateMessageFields)
@@ -94,37 +69,18 @@ function UserFields(props) {
     }
 
     //validations
-    if (!validateEmail(email)) {
-      return message.warning('Ingresa un email valido')
-    }
+    if (!validateEmail(email)) return message.warning('Ingresa un email valido')
 
     //create request
-    let requestData
-    if (props.edit) {
-      requestData = {
-        id: props.data.id,
-        fullName: name,
-        is_active: 1,
-        email: email,
-        rolId: role,
-        password: confirmPassword,
-        permissions: changedRole ? defineRoles(role) : props.data.permissions,
-      }
-    } else {
-      requestData = {
-        fullName: name,
-        password: confirmPassword,
-        email: email,
-        rolId: role,
-        permissions: defineRoles(role),
-      }
+    const requestData = {
+      id: data?.id,
+      fullName: name,
+      email: email,
+      rolId: role,
+      password: confirmPassword,
     }
-    props.saveUserData(requestData)
-  }
 
-  const changeRole = value => {
-    setRole(value)
-    setChangedRole(true)
+    props.saveUserData(requestData)
   }
 
   const contentPopHover = () => {
@@ -137,9 +93,9 @@ function UserFields(props) {
   return (
     <>
       <div>
-        {props.edit && (
+        {edit && (
           <>
-            <Title> {props.edit ? 'Editar Usuario' : 'Nuevo Usuario'} </Title>
+            <Title> {edit ? 'Editar Usuario' : 'Nuevo Usuario'} </Title>
             <span>Cambiar contraseña?</span>
             <br />
             <Switch checked={changePass} onChange={val => setChangePass(val)} />
@@ -150,7 +106,7 @@ function UserFields(props) {
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Nombre</div>
             <Input
-              disabled={props.edit}
+              disabled={edit}
               value={name}
               placeholder={'Nombre'}
               size={'large'}
@@ -160,7 +116,7 @@ function UserFields(props) {
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Email</div>
             <Input
-              disabled={props.edit}
+              disabled={edit}
               value={email}
               placeholder={'Email'}
               size={'large'}
@@ -178,15 +134,14 @@ function UserFields(props) {
               size={'large'}
               style={{ width: '100%' }}
               value={role}
-              onChange={value => changeRole(value)}
+              onChange={value => setRole(value)}
               getPopupContainer={trigger => trigger.parentNode}
             >
-              {rolesList &&
-                rolesList.map(data => (
-                  <Option key={data.id} value={data.id}>
-                    <Tag color={data.color}>{data.name}</Tag>
-                  </Option>
-                ))}
+              {rolesOptionsList?.map(role => (
+                <Option key={role.id} value={role.id}>
+                  <Tag type='roles' value={role.name} />
+                </Option>
+              ))}
             </Select>
           </Col>
         </Row>
@@ -235,7 +190,7 @@ function UserFields(props) {
       <FooterButtons
         saveData={saveData}
         cancelButton={props.cancelButton}
-        edit={props.edit}
+        edit={edit}
         cancelLink='/users'
       />
     </>
