@@ -4,11 +4,11 @@ import NewNoteView from '../commons/newNoteView'
 import { validateRole } from '../../../../utils'
 
 function ServiceNoteview() {
-  const canViewPrice = validateRole(Cache.getItem('currentSession').rol_id, 1)
+  const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
 
   return (
     <div>
-      <NewNoteView canViewPrice={canViewPrice} />
+      <NewNoteView isAdmin={isAdmin} />
     </div>
   )
 }
