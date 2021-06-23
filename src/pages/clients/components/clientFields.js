@@ -20,12 +20,14 @@ import { validateEmail, showErrors, validateRole } from '../../../utils'
 const { Title } = Typography
 const { Option } = Select
 
-const RemoveProjectPopConfirmMessage = () => {
+const RemoveProjectPopConfirmMessage = ({ edit }) => {
   return (
     <>
-      <div>
-        Tambien eliminara todos los documentos asociados a este proyecto
-      </div>
+      {edit && (
+        <div>
+          Tambien eliminara todos los documentos asociados a este proyecto
+        </div>
+      )}
       <div>¿Esta seguro de eliminar?</div>
     </>
   )
@@ -35,7 +37,11 @@ const getColumnsProjects = ({
   handleRemoveProject,
   handleChangeProject,
   isAdmin,
+  edit,
 }) => {
+  // Can not select days before today and today
+  const disabledDate = current => current && current < moment().endOf('day')
+
   const columns = [
     {
       width: 180,
@@ -59,6 +65,7 @@ const getColumnsProjects = ({
           value={record.start_date ? moment(record.start_date) : ''}
           onChange={value => handleChangeProject('start_date', value, rowIndex)}
           disabled={!isAdmin}
+          disabledDate={disabledDate}
         />
       ),
     },
@@ -100,7 +107,7 @@ const getColumnsProjects = ({
     dataIndex: 'id',
     render: (_, __, rowIndex) => (
       <Popconfirm
-        title={<RemoveProjectPopConfirmMessage />}
+        title={<RemoveProjectPopConfirmMessage edit={edit} />}
         onConfirm={() => handleRemoveProject(rowIndex)}
       >
         <span style={{ color: 'red' }}>Eliminar</span>
@@ -111,7 +118,7 @@ const getColumnsProjects = ({
   return isAdmin ? [...columns, deleteColumn] : columns
 }
 
-function ClientFields(props) {
+function ClientFields({ edit, editData, ...props }) {
   const [name, setName] = useState('')
   const [clientTypeID, setClientTypeID] = useState(null)
   const [nit, setNit] = useState('')
@@ -125,15 +132,17 @@ function ClientFields(props) {
   const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
 
   useEffect(() => {
-    setName(props.edit ? props.editData.name : '')
-    setClientTypeID(props.edit ? props.editData.stakeholder_type : null)
-    setNit(props.edit ? props.editData.nit : '')
-    setEmail(props.edit ? props.editData.email : '')
-    setPhone(props.edit ? props.editData.phone : '')
-    setAddress(props.edit ? props.editData.address : '')
-    setBusiness_man(props.edit ? props.editData.business_man : '')
-    setPayments_man(props.edit ? props.editData.payments_man : '')
-    setProjectsData(props.edit ? props.editData.projects : [])
+    setName(edit ? editData.name : '')
+    setClientTypeID(edit ? editData.stakeholder_type : null)
+    setNit(edit ? editData.nit : '')
+    setEmail(edit ? editData.email : '')
+    setPhone(edit ? editData.phone : '')
+    setAddress(edit ? editData.address : '')
+    setBusiness_man(edit ? editData.business_man : '')
+    setPayments_man(edit ? editData.payments_man : '')
+    setProjectsData(
+      edit ? editData.projects : projectsData.length > 0 ? projectsData : []
+    )
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.visible])
@@ -152,11 +161,10 @@ function ClientFields(props) {
       end_date: '',
       name: '',
     },
-    minimumLength: 0,
   })
 
   const getSaveData = () => ({
-    id: props?.editData?.id,
+    id: editData?.id,
     name,
     stakeholder_type: clientTypeID,
     nit,
@@ -196,7 +204,7 @@ function ClientFields(props) {
     const projectRequiredPositions = data.projects.flatMap((p, i) =>
       projectsRequiredFields.some(k => !p[k]) ? i + 1 : []
     )
-    if (projectRequiredPositions.length > 0) {
+    if (data?.projects?.length > 0 && projectRequiredPositions.length > 0) {
       projectRequiredPositions.forEach(p => {
         errors.push(
           `Los campos Proyecto y Fecha inicial del proyecto ${p} son obligatorios`
@@ -228,14 +236,15 @@ function ClientFields(props) {
     handleRemoveProject,
     handleChangeProject,
     isAdmin,
+    edit,
   })
 
   return (
     <>
       <div>
-        {props.edit && (
+        {edit && (
           <>
-            <Title>{props.edit ? 'Editar Cliente' : 'Nuevo Cliente'}</Title>
+            <Title>{edit ? 'Editar Cliente' : 'Nuevo Cliente'}</Title>
             <Divider className={'divider-custom-margins-users'} />
           </>
         )}
@@ -339,35 +348,32 @@ function ClientFields(props) {
             />
           </Col>
         </Row>
-        {props.edit && (
-          <>
-            <Row gutter={16} className={'section-space-field'}>
-              <Col xs={24} sm={24} md={24} lg={24}>
-                <DynamicTable columns={columnsProjects} data={projectsData} />
-              </Col>
-            </Row>
 
-            {isAdmin && (
-              <Row gutter={16} className={'section-space-list'}>
-                <Col xs={24} sm={24} md={24} lg={24}>
-                  <Button
-                    type='dashed'
-                    className={'shop-add-turn'}
-                    onClick={handleAddProject}
-                  >
-                    Agregar Detalle
-                  </Button>
-                </Col>
-              </Row>
-            )}
-          </>
+        <Row gutter={16} className={'section-space-field'}>
+          <Col xs={24} sm={24} md={24} lg={24}>
+            <DynamicTable columns={columnsProjects} data={projectsData} />
+          </Col>
+        </Row>
+
+        {isAdmin && (
+          <Row gutter={16} className={'section-space-list'}>
+            <Col xs={24} sm={24} md={24} lg={24}>
+              <Button
+                type='dashed'
+                className={'shop-add-turn'}
+                onClick={handleAddProject}
+              >
+                Agregar Proyecto
+              </Button>
+            </Col>
+          </Row>
         )}
       </div>
       {isAdmin && (
         <FooterButtons
           saveData={saveData}
           cancelButton={props.cancelButton}
-          edit={props.edit}
+          edit={edit}
           cancelLink='/clients'
         />
       )}
