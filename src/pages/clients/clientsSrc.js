@@ -21,9 +21,11 @@ const createClient = _users => api.post(url, _users)
 const updateClient = _users => api.put(url, _users)
 const deleteClient = id =>
   api.put(`${url}/status`, { id, status: stakeholdersStatus.INACTIVE })
+const getClientTypes = () => api.get(`${url}/types`)
 
 const ClientsSrc = {
   getClients,
+  getClientTypes,
   createClient,
   updateClient,
   deleteClient,

@@ -7,16 +7,20 @@ import {
   Input,
   Row,
   Select,
-  Tag,
   Typography,
   Button,
   Popconfirm,
   DatePicker,
+  message,
 } from 'antd'
 import FooterButtons from '../../../components/FooterButtons'
 import DynamicTable from '../../../components/DynamicTable'
+import Tag from '../../../components/Tag'
 import { useEditableList } from '../../../hooks'
 import { validateEmail, showErrors, validateRole } from '../../../utils'
+import { stakeholdersTypes } from '../../../commons/types'
+import ClientsSrc from '../clientsSrc'
+
 const { Title } = Typography
 const { Option } = Select
 
@@ -128,8 +132,28 @@ function ClientFields({ edit, editData, ...props }) {
   const [payments_man, setPayments_man] = useState('')
   const [business_man, setBusiness_man] = useState('')
   const [projectsData, setProjectsData] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [
+    stakeholderTypesOptionsList,
+    setStakeholderTypesOptionsList,
+  ] = useState([])
 
   const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
+
+  useEffect(() => {
+    setLoading(true)
+
+    ClientsSrc.getClientTypes()
+      .then(data => {
+        const stakeholdersTypesList = data.filter(
+          s => s !== stakeholdersTypes.PROVIDER
+        )
+
+        setStakeholderTypesOptionsList(stakeholdersTypesList)
+      })
+      .catch(_ => message.error('Error al cargar tipos de cliente'))
+      .finally(() => setLoading(false))
+  }, [])
 
   useEffect(() => {
     setName(edit ? editData.name : '')
@@ -161,6 +185,8 @@ function ClientFields({ edit, editData, ...props }) {
       end_date: '',
       name: '',
     },
+    includeInitRow: false,
+    minimumLength: 0,
   })
 
   const getSaveData = () => ({
@@ -271,13 +297,22 @@ function ClientFields({ edit, editData, ...props }) {
               onChange={value => setClientTypeID(value)}
               getPopupContainer={trigger => trigger.parentNode}
               disabled={!isAdmin}
+              loading={loading}
             >
-              <Option value={'CLIENT_INDIVIDUAL'}>
-                <Tag color='geekblue'>Persona individual</Tag>
-              </Option>
-              <Option value={'CLIENT_COMPANY'}>
-                <Tag color='cyan'>Empresa</Tag>
-              </Option>
+              {stakeholderTypesOptionsList?.length > 0 ? (
+                stakeholderTypesOptionsList.map(value => (
+                  <Option key={value} value={value}>
+                    <Tag type='stakeholderTypes' value={value} />
+                  </Option>
+                ))
+              ) : (
+                <Option value={editData?.stakeholder_type}>
+                  <Tag
+                    type='stakeholderTypes'
+                    value={editData?.stakeholder_type}
+                  />
+                </Option>
+              )}
             </Select>
           </Col>
         </Row>
