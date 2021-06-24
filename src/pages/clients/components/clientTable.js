@@ -1,9 +1,10 @@
 import React from 'react'
-import { Table, Col, Input, Row, Card, Tag } from 'antd'
+import { Table, Col, Input, Row, Card } from 'antd'
 import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../components/actionOptions'
+import Tag from '../../../components/Tag'
 
 const { Search } = Input
 
@@ -17,19 +18,9 @@ function ClientTable(props) {
     },
     {
       title: 'Tipo',
-      dataIndex: 'client_type', // Field that is goint to be rendered
-      key: 'client_type',
-      render: text => (
-        <span>
-          {text === 'INDIVIDUAL' ? (
-            <Tag color='geekblue'>Persona individual</Tag>
-          ) : text === 'COMPANY' ? (
-            <Tag color='cyan'>Empresa</Tag>
-          ) : (
-            ''
-          )}
-        </span>
-      ),
+      dataIndex: 'stakeholder_type', // Field that is goint to be rendered
+      key: 'stakeholder_type',
+      render: text => <Tag type='stakeholderTypes' value={text} />,
     },
     {
       title: 'NIT',
