@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { Cache } from 'aws-amplify'
 import HeaderPage from '../../../components/HeaderPage'
 import { Card, message, Spin } from 'antd'
 import InventorySrc from '../inventorySrc'
 import ServiceFields from './components/serviceFields'
 import { showErrors, validateRole } from '../../../utils'
+import { permissions, roles } from '../../../commons/types'
 
 function ServiceView(props) {
   const [viewLoading, setViewLoading] = useState(false)
   const [serviceStatusList, setServiceStatusList] = useState([])
 
-  const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
+  const isAdmin = validateRole(roles.ADMIN)
 
   useEffect(() => {
     setViewLoading(true)
@@ -38,7 +38,10 @@ function ServiceView(props) {
 
   return (
     <Spin spinning={viewLoading}>
-      <HeaderPage title={'Crear Nuevo Servicio'} permissions={5} />
+      <HeaderPage
+        title={'Crear Nuevo Servicio'}
+        permissions={permissions.INVENTARIO}
+      />
       <Card className={'card-border-radius margin-top-15'}>
         <ServiceFields
           saveUserData={saveData}

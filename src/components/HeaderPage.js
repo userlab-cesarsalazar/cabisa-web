@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, Col, Row, Typography } from 'antd'
 // Context
 import { validatePermissions } from '../utils'
-import { Cache } from 'aws-amplify'
+import { actions } from '../commons/types'
 const { Title } = Typography
 
 function HeaderPage(props) {
@@ -31,10 +31,7 @@ function HeaderPage(props) {
           {props.titleButton && (
             <Button
               className={
-                validatePermissions(
-                  Cache.getItem('currentSession').userPermissions,
-                  props.permissions
-                ).permissionsSection[0].create
+                validatePermissions(props.permissions)(actions.CREATE)
                   ? 'title-cabisa new-button'
                   : 'hide-component title-cabisa new-button'
               }

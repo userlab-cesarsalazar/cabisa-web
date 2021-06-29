@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Cache } from 'aws-amplify'
 import InventoryTable from '../../components/inventoryTable'
 import ProductDrawer from './productDrawer'
 import { withRouter } from 'react-router'
 import Tag from '../../../../components/Tag'
 import ActionOptions from '../../../../components/actionOptions'
 import { validateRole } from '../../../../utils'
+import { permissions, roles } from '../../../../commons/types'
 
 function InventoryProduct(props) {
   const [editMode, setEditMode] = useState(false)
@@ -61,7 +61,7 @@ function InventoryProduct(props) {
       <ActionOptions
         editPermissions={false}
         data={data}
-        permissionId={5}
+        permissionId={permissions.INVENTARIO}
         showDeleteBtn
         handlerDeleteRow={DeleteRow}
         handlerEditRow={EditRow}
@@ -69,7 +69,7 @@ function InventoryProduct(props) {
     ),
   }
 
-  const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
+  const isAdmin = validateRole(roles.ADMIN)
 
   const columnsWithPrice = isAdmin ? [...columns, priceColumn] : columns
 

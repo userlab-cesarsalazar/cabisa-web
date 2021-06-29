@@ -1,5 +1,6 @@
 //libraries
 import React, { useEffect, useState } from 'react'
+import { withRouter } from 'react-router'
 import { message } from 'antd'
 import UsersSrc from './usersSrc'
 //components
@@ -8,7 +9,7 @@ import HeaderPage from '../../components/HeaderPage'
 import UserDrawer from './components/userDrawer'
 import UserPermissions from './components/userPermissions'
 import { showErrors } from '../../utils'
-import { withRouter } from 'react-router'
+import { permissions } from '../../commons/types'
 
 function Users(props) {
   const [dataSource, setDataSource] = useState([])
@@ -50,7 +51,7 @@ function Users(props) {
   const searchText = name => {
     setLoading(true)
 
-    UsersSrc.getUsersByName({ full_name: { $like: `${name}%25` } })
+    UsersSrc.getUsersByName({ full_name: { $like: `%25${name}%25` } })
       .then(data => {
         setLoading(false)
         setDataSource(data)
@@ -135,7 +136,7 @@ function Users(props) {
         titleButton={'Nuevo usuario'}
         title={'Usuarios'}
         showDrawer={showDrawer}
-        permissions={2}
+        permissions={permissions.USUARIOS}
       />
       <UserTable
         dataSource={dataSource}

@@ -2,12 +2,11 @@ import React, { useCallback, useEffect, useState, useRef } from 'react'
 import moment from 'moment'
 import HeaderPage from '../../components/HeaderPage'
 import BillingTable from './components/BillingTable'
-import LoadMoreButton from '../../components/LoadMoreButton'
 import DetailBilling from './components/detailBilling'
 import billingSrc from './billingSrc'
 import { message } from 'antd'
 import { showErrors, roundNumber } from '../../utils'
-import { stakeholdersTypes } from '../../commons/types'
+import { stakeholdersTypes, permissions } from '../../commons/types'
 
 function Billing(props) {
   const initFilters = useRef()
@@ -130,7 +129,7 @@ function Billing(props) {
         titleButton={'Factura Nueva'}
         title={'Facturación'}
         showDrawer={newBill}
-        permissions={4}
+        permissions={permissions.FACTURACION}
       />
       <BillingTable
         dataSource={dataSource}
@@ -140,10 +139,6 @@ function Billing(props) {
         serviceTypesOptionsList={serviceTypesOptionsList}
         handlerDeleteRow={handlerDeleteRow}
         loading={loading}
-      />
-      <LoadMoreButton
-        handlerButton={() => console.log('more Button')}
-        moreInfo={false}
       />
       <DetailBilling
         closable={closeDetail}

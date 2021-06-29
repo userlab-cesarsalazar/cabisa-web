@@ -8,6 +8,7 @@ import { showErrors } from '../../utils'
 // UI components
 import HeaderPage from '../../components/HeaderPage'
 import UserFields from './components/userFields'
+import { permissions } from '../../commons/types'
 
 function UserView(props) {
   const [loading, setLoading] = useState(false)
@@ -73,7 +74,7 @@ function UserView(props) {
 
   return (
     <Spin spinning={loading}>
-      <HeaderPage title={'Crear Usuario'} permissions={2} />
+      <HeaderPage title={'Crear Usuario'} permissions={permissions.USUARIOS} />
       <Card className={'card-border-radius margin-top-15'}>
         <UserFields
           saveUserData={saveData}

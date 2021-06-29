@@ -4,6 +4,7 @@ import { Tag } from 'antd'
 import ReportAccountsReceivableFilters from './components/reportAccountsReceivableFilters'
 import HeaderPage from '../../../components/HeaderPage'
 import ActionOptions from '../../../components/actionOptions'
+import { permissions } from '../../../commons/types'
 
 function ReportAccountsReceivable() {
   const [loading, setLoading] = useState(true)
@@ -117,7 +118,7 @@ function ReportAccountsReceivable() {
         <ActionOptions
           editPermissions={false}
           data={data}
-          permissionId={3}
+          permissionId={permissions.REPORTES}
           handlerDeleteRow={handlerDeleteRow}
           handlerEditRow={handlerEditRow}
         />

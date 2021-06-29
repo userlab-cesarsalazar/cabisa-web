@@ -1,20 +1,16 @@
 import React, { useState } from 'react'
-import { Cache } from 'aws-amplify'
 import { useHistory } from 'react-router-dom'
 
-import LoadMoreButton from '../../../../components/LoadMoreButton'
 import SalesTable from '../commons/salesTable'
 import SalesDetail from '../commons/salesDetail'
 import { validateRole } from '../../../../utils'
+import { permissions, roles } from '../../../../commons/types'
 
 function ServiceView() {
-  const [existMoreInfo, setExistMoreInfo] = useState(false)
   const [isDrawerVisible, setIsDrawerVisible] = useState(false)
   const history = useHistory()
 
-  const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
-
-  const handlerMoreButton = () => console.log('moreInfo')
+  const isAdmin = validateRole(roles.ADMIN)
 
   const showDrawer = () => setIsDrawerVisible(true)
 
@@ -26,21 +22,16 @@ function ServiceView() {
     <>
       <SalesTable
         buttonTitle={'Nueva nota de servicio'}
-        permissions={6}
+        permissions={permissions.VENTAS}
         newNote={NewNoteShipping}
         isDrawerVisible={isDrawerVisible}
         showDrawer={showDrawer}
         isAdmin={isAdmin}
         history={history}
       />
-      <LoadMoreButton
-        handlerButton={handlerMoreButton}
-        moreInfo={existMoreInfo}
-      />
       <SalesDetail
         closable={hideDrawer}
         visible={isDrawerVisible}
-        setExistMoreInfo={setExistMoreInfo}
         isAdmin={isAdmin}
       />
     </>

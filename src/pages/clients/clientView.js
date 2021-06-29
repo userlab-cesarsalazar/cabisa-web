@@ -4,6 +4,7 @@ import { Card, message, Spin } from 'antd'
 import ClientFields from './components/clientFields'
 import ClientsSrc from './clientsSrc'
 import { showErrors } from '../../utils'
+import { permissions } from '../../commons/types'
 
 function ClientView(props) {
   const [viewLoading, setViewLoading] = useState(false)
@@ -25,7 +26,7 @@ function ClientView(props) {
 
   return (
     <Spin spinning={viewLoading}>
-      <HeaderPage title={'Crear Cliente'} permissions={7} />
+      <HeaderPage title={'Crear Cliente'} permissions={permissions.CLIENTES} />
       <Card className={'card-border-radius margin-top-15'}>
         <ClientFields
           saveUserData={saveData}

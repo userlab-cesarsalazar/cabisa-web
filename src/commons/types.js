@@ -92,3 +92,29 @@ export const usersStatus = {
   INACTIVE: 'INACTIVE',
   BLOCKED: 'BLOCKED',
 }
+
+// ROLES AND PERMISSIONS
+// sigue el formato { name: id }
+export const roles = {
+  ADMIN: 1,
+  SELLS: 2,
+  WAREHOUSE: 3,
+  OPERATOR: 4,
+}
+
+export const permissions = {
+  CONFIGURACION_GENERAL: 1,
+  USUARIOS: 2,
+  REPORTES: 3,
+  FACTURACION: 4,
+  INVENTARIO: 5,
+  VENTAS: 6,
+  CLIENTES: 7,
+}
+
+export const actions = {
+  CREATE: 'create',
+  DELETE: 'delete',
+  EDIT: 'edit',
+  VIEW: 'view',
+}

@@ -13,6 +13,7 @@ import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../components/actionOptions'
 import Tag from '../../../components/Tag'
 import moment from 'moment'
+import { permissions } from '../../../commons/types'
 
 const { Search } = Input
 const { Option } = Select
@@ -81,7 +82,7 @@ function BillingTable(props) {
         <ActionOptions
           editPermissions={false}
           data={data}
-          permissionId={4}
+          permissionId={permissions.FACTURACION}
           showDeleteBtn
           handlerDeleteRow={handlerDeleteRow}
           handlerEditRow={handlerEditRow}
@@ -185,7 +186,7 @@ function BillingTable(props) {
                   className={'CustomTableClass'}
                   dataSource={props.dataSource}
                   columns={columns}
-                  pagination={false}
+                  pagination={{ pageSize: 5 }}
                   loading={props.loading}
                   rowKey='id'
                 />

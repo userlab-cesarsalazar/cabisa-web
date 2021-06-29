@@ -1,13 +1,14 @@
 import React, { useEffect, useCallback, useState } from 'react'
 import moment from 'moment'
 import { useHistory } from 'react-router'
+import { message } from 'antd'
 import ActionOptions from '../../../../components/actionOptions'
 import InventoryMovementTable from './inventoryMovementTable'
 import InventoryMovementDrawer from './inventoryMovementDrawer'
 import inventorySrc from '../../inventorySrc'
-import { showErrors } from '../../../../utils'
 import Tag from '../../../../components/Tag'
-import { message } from 'antd'
+import { showErrors } from '../../../../utils'
+import { permissions } from '../../../../commons/types'
 
 const getColumns = ({ DeleteRow, EditRow }) => [
   {
@@ -41,7 +42,7 @@ const getColumns = ({ DeleteRow, EditRow }) => [
       <ActionOptions
         editPermissions={false}
         data={data}
-        permissionId={5}
+        permissionId={permissions.INVENTARIO}
         showDeleteBtn
         handlerDeleteRow={DeleteRow}
         handlerEditRow={EditRow}

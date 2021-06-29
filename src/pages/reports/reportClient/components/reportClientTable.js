@@ -3,6 +3,7 @@ import { Card, Col, DatePicker, Row, Select, Table, Tag } from 'antd'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 import ActionOptions from '../../../../components/actionOptions'
+import { permissions } from '../../../../commons/types'
 const { Option } = Select
 
 function ReportClientTable(props) {
@@ -77,11 +78,11 @@ function ReportClientTable(props) {
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
-      render: (row, data) => (
+      render: (_, data) => (
         <ActionOptions
           editPermissions={false}
           data={data}
-          permissionId={3}
+          permissionId={permissions.REPORTES}
           handlerDeleteRow={handlerDeleteRow}
           handlerEditRow={handlerEditRow}
         />

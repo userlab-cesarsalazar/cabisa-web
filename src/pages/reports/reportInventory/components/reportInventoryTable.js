@@ -2,6 +2,7 @@ import React from 'react'
 import { Card, Col, DatePicker, Input, Row, Select, Table, Tag } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../../components/actionOptions'
+import { permissions } from '../../../../commons/types'
 
 const { Search } = Input
 const { Option } = Select
@@ -55,11 +56,11 @@ function ReportInventoryTable(props) {
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
-      render: (row, data) => (
+      render: (_, data) => (
         <ActionOptions
           editPermissions={false}
           data={data}
-          permissionId={3}
+          permissionId={permissions.REPORTES}
           handlerDeleteRow={handlerDeleteRow}
           handlerEditRow={handlerEditRow}
         />

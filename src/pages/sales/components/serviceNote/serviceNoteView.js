@@ -1,10 +1,10 @@
 import React from 'react'
-import { Cache } from 'aws-amplify'
 import NewNoteView from '../commons/newNoteView'
 import { validateRole } from '../../../../utils'
+import { roles } from '../../../../commons/types'
 
 function ServiceNoteview() {
-  const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
+  const isAdmin = validateRole(roles.ADMIN)
 
   return (
     <div>

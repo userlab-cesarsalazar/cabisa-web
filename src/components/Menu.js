@@ -13,8 +13,8 @@ import {
 } from '@ant-design/icons'
 import { Link, useHistory } from 'react-router-dom'
 import { menu_routes } from './Menu_routes'
-import { Cache } from 'aws-amplify'
 import { validatePermissions } from '../utils'
+import { actions } from '../commons/types'
 
 const { SubMenu } = Menu
 
@@ -91,14 +91,11 @@ function MenuView() {
     <Menu mode='inline' selectedKeys={[key]} className={'ant-menu-custom'}>
       {menu_routes &&
         menu_routes.length > 0 &&
-        menu_routes.map((option, i) =>
+        menu_routes.map(option =>
           option.sub_menu ? (
             <SubMenu
               className={
-                validatePermissions(
-                  Cache.getItem('currentSession').userPermissions,
-                  option.id
-                ).enableSection
+                validatePermissions(option.id)(actions.VIEW)
                   ? ''
                   : 'hide-component'
               }
@@ -106,7 +103,7 @@ function MenuView() {
               icon={returnIcon(option.icon)}
               title={option.name}
             >
-              {option.sub_menu.map((subMenuOption, index) => {
+              {option.sub_menu.map(subMenuOption => {
                 return (
                   <Menu.Item
                     key={subMenuOption.key}
@@ -125,10 +122,7 @@ function MenuView() {
           ) : (
             <Menu.Item
               className={
-                validatePermissions(
-                  Cache.getItem('currentSession').userPermissions,
-                  option.id
-                ).enableSection
+                validatePermissions(option.id)(actions.VIEW)
                   ? ''
                   : 'hide-component'
               }

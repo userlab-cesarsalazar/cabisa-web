@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { Cache } from 'aws-amplify'
 import moment from 'moment'
 import {
   Col,
@@ -18,7 +17,7 @@ import DynamicTable from '../../../components/DynamicTable'
 import Tag from '../../../components/Tag'
 import { useEditableList } from '../../../hooks'
 import { validateEmail, showErrors, validateRole } from '../../../utils'
-import { stakeholdersTypes } from '../../../commons/types'
+import { stakeholdersTypes, roles } from '../../../commons/types'
 import ClientsSrc from '../clientsSrc'
 
 const { Title } = Typography
@@ -43,8 +42,9 @@ const getColumnsProjects = ({
   isAdmin,
   edit,
 }) => {
-  // Can not select days before today and today
-  const disabledDate = current => current && current < moment().endOf('day')
+  // Can not select days before today
+  const disabledDate = current =>
+    current && moment(current).add(1, 'days') < moment().endOf('day')
 
   const columns = [
     {
@@ -86,6 +86,7 @@ const getColumnsProjects = ({
           value={record.end_date ? moment(record.end_date) : ''}
           onChange={value => handleChangeProject('end_date', value, rowIndex)}
           disabled={!isAdmin}
+          disabledDate={disabledDate}
         />
       ),
     },
@@ -138,7 +139,7 @@ function ClientFields({ edit, editData, ...props }) {
     setStakeholderTypesOptionsList,
   ] = useState([])
 
-  const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
+  const isAdmin = validateRole(roles.ADMIN)
 
   useEffect(() => {
     setLoading(true)
