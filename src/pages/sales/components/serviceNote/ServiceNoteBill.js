@@ -6,7 +6,12 @@ import billingSrc from '../../../billing/billingSrc'
 import saleSrc from '../../salesSrc'
 import BillingFields from '../../../billing/components/billingFields'
 import FooterButtons from '../../../../components/FooterButtons'
-import { showErrors, roundNumber, getPercent } from '../../../../utils'
+import {
+  showErrors,
+  roundNumber,
+  getPercent,
+  validateDynamicTableProducts,
+} from '../../../../utils'
 
 function ServiceNoteBill() {
   const location = useLocation()
@@ -59,6 +64,7 @@ function ServiceNoteBill() {
           subtotal: roundNumber(subtotal) || 0,
           total_tax: roundNumber(total_tax) || 0,
           total: roundNumber(total) || 0,
+          credit_days: prevState.credit_days ? prevState.credit_days : 0,
         }
       }, {})
 
@@ -116,7 +122,6 @@ function ServiceNoteBill() {
     const requiredFields = [
       { key: 'payment_method', value: 'Metodo de pago' },
       { key: 'service_type', value: 'Tipo de Servicio' },
-      { key: 'credit_days', value: 'Dias de credito' },
     ]
     const requiredErrors = requiredFields.flatMap(field =>
       !data[field.key] ? field.value : []
@@ -132,14 +137,35 @@ function ServiceNoteBill() {
       'product_price',
     ]
 
-    const productRequiredPositions = data.products.flatMap((p, i) =>
-      productsRequiredFields.some(k => !p[k]) ? i + 1 : []
+    const productErrors = validateDynamicTableProducts(
+      data.products,
+      productsRequiredFields
     )
-    if (productRequiredPositions.length > 0) {
-      productRequiredPositions.forEach(p => {
-        errors.push(`Todos los campos del producto ${p} son obligatorios`)
-      })
+
+    if (productErrors.required.length > 0) {
+      errors.push(
+        `Los campos Precio y Cantidad de los productos en posicion ${productErrors.required.join(
+          ', '
+        )} deben ser mayor o igual a cero`
+      )
     }
+
+    Object.keys(productErrors.duplicate).forEach(k => {
+      if (productErrors.duplicate[k]?.length > 1) {
+        errors.push(
+          `Los productos en posicion ${productErrors.duplicate[k].join(
+            ', '
+          )} no pueden estar duplicados`
+        )
+      }
+    })
+
+    if (!discountInputValue || discountInputValue < 0) {
+      errors.push(
+        `El campo Descuento (%) debe contener un valor mayor o igual a cero`
+      )
+    }
+
     return {
       isInvalid: errors.length > 0,
       error: {

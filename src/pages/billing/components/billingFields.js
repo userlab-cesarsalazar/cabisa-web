@@ -291,7 +291,11 @@ function BillingFields(props) {
               onChange={props.handleChange('project_id')}
               loading={props.loading}
               optionFilterProp='children'
-              disabled={props.edit || props.isInvoiceFromSale}
+              disabled={
+                props.edit ||
+                props.isInvoiceFromSale ||
+                !props.data.stakeholder_id
+              }
             >
               {props.projectsOptionsList?.length > 0 ? (
                 props.projectsOptionsList.map(value => (

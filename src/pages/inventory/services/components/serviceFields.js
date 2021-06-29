@@ -25,10 +25,15 @@ function ServiceFields(props) {
   }, [props.visible])
 
   const saveData = () => {
+    const errors = []
     const requiredValues = [code, description, price, status]
 
     if (requiredValues.some(v => !v))
-      return message.warning('Todos los campos son obligatorios.')
+      errors.push('Todos los campos son obligatorios.')
+    if (price < 0)
+      errors.push('El Precio de venta debe ser mayor o igual a cero.')
+
+    if (errors.length > 0) return errors.forEach(e => message.warning(e))
 
     const data = {
       id: props?.editData?.id,
@@ -81,6 +86,7 @@ function ServiceFields(props) {
                 value={price}
                 placeholder={'Costo'}
                 size={'large'}
+                min={0}
                 onChange={value => setPrice(value.target.value)}
               />
             </Col>

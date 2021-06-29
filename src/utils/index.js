@@ -44,6 +44,40 @@ export const validatePermissions = permissionId => {
   return action => currentPermission && currentPermission[action]
 }
 
+export const validateDynamicTableProducts = (
+  products,
+  productsRequiredFields
+) => {
+  return products.reduce(
+    (result, p, i) => {
+      const newPosition = [...(result.duplicate[p.product_id] || []), i + 1]
+      const newResult = {
+        ...result,
+        duplicate: p.product_id
+          ? {
+              ...result.duplicate,
+              [p.product_id]: newPosition,
+            }
+          : result.duplicate,
+      }
+
+      const hasRequiredError = productsRequiredFields.some(
+        k => !p[k] || p[k] < 0
+      )
+
+      if (hasRequiredError) {
+        return {
+          ...newResult,
+          required: [...newResult.required, i + 1],
+        }
+      }
+
+      return newResult
+    },
+    { required: [], duplicate: {} }
+  )
+}
+
 const getErrorData = error => {
   if (error?.response?.data?.error?.errors)
     return error.response.data.error.errors

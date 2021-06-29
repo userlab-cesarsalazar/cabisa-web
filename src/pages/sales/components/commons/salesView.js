@@ -1,6 +1,5 @@
 import React from 'react'
 
-import LoadMoreButton from '../../../../components/LoadMoreButton'
 import SalesTable from '../commons/salesTable'
 import SalesDetail from '../commons/salesDetail'
 
@@ -15,10 +14,6 @@ function SalesView(props) {
         handlerDeleteRow={props.deleteRow}
         buttonTitle={props.buttonTitle}
         newNote={props.newNote}
-      />
-      <LoadMoreButton
-        handlerButton={props.handlerMoreButton}
-        moreInfo={props.existsMoreInfo}
       />
       <SalesDetail
         closable={props.onCancelButton}
