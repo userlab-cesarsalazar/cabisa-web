@@ -5,6 +5,7 @@ import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../components/actionOptions'
 import Tag from '../../../components/Tag'
+import { permissions } from '../../../commons/types'
 
 const { Search } = Input
 
@@ -50,11 +51,11 @@ function ClientTable(props) {
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
-      render: (row, data) => (
+      render: (_, data) => (
         <ActionOptions
           editPermissions={false}
           data={data}
-          permissionId={7}
+          permissionId={permissions.CLIENTES}
           showDeleteBtn
           handlerDeleteRow={handlerDeleteRow}
           handlerEditRow={handlerEditRow}
@@ -63,17 +64,11 @@ function ClientTable(props) {
     },
   ]
 
-  const getFilteredData = data => {
-    props.handlerTextSearch(data)
-  }
+  const getFilteredData = data => props.handlerTextSearch(data)
 
-  const handlerEditRow = row => {
-    props.handlerEditRow(row)
-  }
+  const handlerEditRow = row => props.handlerEditRow(row)
 
-  const handlerDeleteRow = row => {
-    props.handlerDeleteRow(row)
-  }
+  const handlerDeleteRow = row => props.handlerDeleteRow(row)
 
   return (
     <>

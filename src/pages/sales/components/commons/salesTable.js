@@ -15,11 +15,11 @@ import {
 import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import { Cache } from 'aws-amplify'
 import ActionOptions from '../../../../components/actionOptions'
 import Tag from '../../../../components/Tag'
 import { useSale, saleActions } from '../../context'
 import { validatePermissions, showErrors } from '../../../../utils'
+import { actions } from '../../../../commons/types'
 
 const { Search } = Input
 const { Option } = Select
@@ -89,11 +89,7 @@ function SalesTable(props) {
     cancelSale(saleDispatch, { document_id: row.id })
   }
 
-  const can = action =>
-    validatePermissions(
-      Cache.getItem('currentSession').userPermissions,
-      props.permissions
-    ).permissionsSection[0][action]
+  const can = validatePermissions(props.permissions)
 
   const columns = [
     {
@@ -199,7 +195,7 @@ function SalesTable(props) {
           {/*{props.isAdmin && (*/}
           <Button
             className={
-              can('create')
+              can(actions.CREATE)
                 ? 'title-cabisa new-button'
                 : 'hide-component title-cabisa new-button'
             }
@@ -221,7 +217,7 @@ function SalesTable(props) {
                   className={'CustomTableClass'}
                   dataSource={saleState?.sales}
                   columns={columns}
-                  pagination={false}
+                  pagination={{ pageSize: 5 }}
                   rowKey='id'
                   expandable={{
                     expandedRowRender: record => (

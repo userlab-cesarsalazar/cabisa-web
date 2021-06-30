@@ -11,8 +11,11 @@ import {
 } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import { validatePermissions } from '../../../../utils'
-import { Cache } from 'aws-amplify'
-import { documentsStatus } from '../../../../commons/types'
+import {
+  documentsStatus,
+  permissions,
+  actions,
+} from '../../../../commons/types'
 import Tag from '../../../../components/Tag'
 
 const { Search } = Input
@@ -27,9 +30,7 @@ function InventoryMovementTable(props) {
     props.handlerCategoryService(data)
   }
 
-  const can = action =>
-    validatePermissions(Cache.getItem('currentSession').userPermissions, 5)
-      .permissionsSection[0][action]
+  const can = validatePermissions(permissions.INVENTARIO)
 
   return (
     <>
@@ -66,7 +67,7 @@ function InventoryMovementTable(props) {
           </Select>
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} style={{ textAlign: 'right' }}>
-          {can('create') && (
+          {can(actions.CREATE) && (
             <Button
               className='title-cabisa new-button'
               onClick={props.goCreateNewItem}

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Cache } from 'aws-amplify'
 import HeaderPage from '../../../../components/HeaderPage'
 import { Card, message, Spin } from 'antd'
 import ProductFields from './productFields'
 import InventorySrc from '../../inventorySrc'
 import { showErrors, validateRole } from '../../../../utils'
+import { permissions, roles } from '../../../../commons/types'
 
 function ProductView(props) {
   const [viewLoading, setViewLoading] = useState(false)
@@ -12,7 +12,7 @@ function ProductView(props) {
   const [productCategoriesList, setProductCategoriesList] = useState([])
   const [productsTaxesList, setProductsTaxesList] = useState([])
 
-  const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
+  const isAdmin = validateRole(roles.ADMIN)
 
   useEffect(() => {
     setViewLoading(true)
@@ -48,7 +48,10 @@ function ProductView(props) {
 
   return (
     <Spin spinning={viewLoading}>
-      <HeaderPage title={'Crear Producto'} permissions={5} />
+      <HeaderPage
+        title={'Crear Producto'}
+        permissions={permissions.INVENTARIO}
+      />
       <Card className={'card-border-radius margin-top-15'}>
         <ProductFields
           warehouse={props.location.pathname.includes('warehouse')}

@@ -2,12 +2,11 @@ import React, { useCallback, useEffect, useState, useRef } from 'react'
 import moment from 'moment'
 import HeaderPage from '../../components/HeaderPage'
 import BillingTable from './components/BillingTable'
-import LoadMoreButton from '../../components/LoadMoreButton'
 import DetailBilling from './components/detailBilling'
 import billingSrc from './billingSrc'
 import { message } from 'antd'
 import { showErrors, roundNumber } from '../../utils'
-import { stakeholdersTypes } from '../../commons/types'
+import { stakeholdersTypes, permissions } from '../../commons/types'
 
 function Billing(props) {
   const initFilters = useRef()
@@ -26,7 +25,7 @@ function Billing(props) {
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
   const [dataSource, setDataSource] = useState(false)
-  const [showInvoiceData, setShowInvoiceData] = useState(false)
+  const [detailInvoiceData, setDetailInvoiceData] = useState(false)
   const [filters, setFilters] = useState(initFilters.current)
   const [paymentMethodsOptionsList, setPaymentMethodsOptionsList] = useState([])
   const [
@@ -106,7 +105,7 @@ function Billing(props) {
   const newBill = () => props.history.push('/billingView')
 
   const showDetail = data => {
-    setShowInvoiceData({
+    setDetailInvoiceData({
       ...data,
       discount_percentage: roundNumber(data.discount_percentage),
       discount: roundNumber(data.discount),
@@ -130,7 +129,7 @@ function Billing(props) {
         titleButton={'Factura Nueva'}
         title={'Facturación'}
         showDrawer={newBill}
-        permissions={4}
+        permissions={permissions.FACTURACION}
       />
       <BillingTable
         dataSource={dataSource}
@@ -141,23 +140,16 @@ function Billing(props) {
         handlerDeleteRow={handlerDeleteRow}
         loading={loading}
       />
-      <LoadMoreButton
-        handlerButton={() => console.log('more Button')}
-        moreInfo={false}
-      />
       <DetailBilling
         closable={closeDetail}
-        cancelButton={closeDetail}
         visible={visible}
         loading={loading}
         setLoading={setLoading}
-        data={showInvoiceData}
-        productsData={showInvoiceData?.products}
+        editData={detailInvoiceData}
         paymentMethodsOptionsList={paymentMethodsOptionsList}
         stakeholderTypesOptionsList={stakeholderTypesOptionsList}
         serviceTypesOptionsList={serviceTypesOptionsList}
         creditDaysOptionsList={creditDaysOptionsList}
-        discountInputValue={showInvoiceData.discount_percentage}
       />
     </>
   )

@@ -148,7 +148,7 @@ const getColumnsDynamicTable = ({
   return isAdmin ? [...columns, priceColumn, deleteButtonColumn] : columns
 }
 
-function SalesDetail({ setExistMoreInfo, closable, visible, isAdmin }) {
+function SalesDetail({ closable, visible, isAdmin }) {
   const [forbidEdition, setForbidEdition] = useState(false)
   const [sale, setSale] = useState([])
   const [dataSourceTable, setDataSourceTable] = useState([])
@@ -170,18 +170,9 @@ function SalesDetail({ setExistMoreInfo, closable, visible, isAdmin }) {
     if (status === 'SUCCESS' && loading === 'updateSale') {
       fetchSales(saleDispatch)
       message.success('Nota de Servicio actualizada exitosamente')
-      setExistMoreInfo(false)
       closable()
     }
-  }, [
-    error,
-    status,
-    loading,
-    saleDispatch,
-    setExistMoreInfo,
-    closable,
-    visible,
-  ])
+  }, [error, status, loading, saleDispatch, closable, visible])
 
   const getServiceDaysLength = (startDate, endDate) => {
     if (!startDate || !endDate) return null
@@ -289,11 +280,7 @@ function SalesDetail({ setExistMoreInfo, closable, visible, isAdmin }) {
       })
     }
 
-    const productsRequiredFields = [
-      'product_id',
-      'product_quantity',
-      'product_price',
-    ]
+    const productsRequiredFields = ['product_quantity', 'product_price']
     const productRequiredPositions = data.products.flatMap((p, i) =>
       productsRequiredFields.some(k => !p[k]) ? i + 1 : []
     )

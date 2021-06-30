@@ -12,12 +12,13 @@ import {
   Select,
   Popconfirm,
   message,
+  Spin,
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import HeaderPage from '../../../../components/HeaderPage'
 import DynamicTable from '../../../../components/DynamicTable'
 import { useSale, saleActions } from '../../context'
-import { showErrors } from '../../../../utils'
+import { showErrors, validateDynamicTableProducts } from '../../../../utils'
 import { productsStatus } from '../../../../commons/types'
 import { useEditableList } from '../../../../hooks'
 const {
@@ -262,20 +263,29 @@ function NewNoteView({ isAdmin }) {
       })
     }
 
-    const productsRequiredFields = [
-      'product_id',
-      'product_quantity',
-      'product_price',
-    ]
-    const productRequiredPositions = data.products.flatMap((p, i) =>
-      productsRequiredFields.some(k => !p[k]) ? i + 1 : []
+    const productsRequiredFields = ['product_quantity', 'product_price']
+    const productErrors = validateDynamicTableProducts(
+      data.products,
+      productsRequiredFields
     )
 
-    if (productRequiredPositions.length > 0) {
-      productRequiredPositions.forEach(p => {
-        errors.push(`Todos los campos del producto ${p} son obligatorios`)
-      })
+    if (productErrors.required.length > 0) {
+      errors.push(
+        `Los campos Precio y Cantidad de los productos en posicion ${productErrors.required.join(
+          ', '
+        )} deben ser mayor o igual a cero`
+      )
     }
+
+    Object.keys(productErrors.duplicate).forEach(k => {
+      if (productErrors.duplicate[k]?.length > 1) {
+        errors.push(
+          `Los productos en posicion ${productErrors.duplicate[k].join(
+            ', '
+          )} no pueden estar duplicados`
+        )
+      }
+    })
 
     return {
       isInvalid: errors.length > 0,
@@ -335,9 +345,10 @@ function NewNoteView({ isAdmin }) {
   }
 
   const handleSearchProject = project_name => {
-    if (project_name === '') return
+    if (project_name === '' || !sale.stakeholder_id) return
 
     const params = {
+      stakeholder_id: sale.stakeholder_id,
       name: { $like: `%25${project_name}%25` },
     }
 
@@ -356,8 +367,12 @@ function NewNoteView({ isAdmin }) {
 
   const handleCancelButton = () => history.push('/sales')
 
+  // Can not select days before today
+  const disabledDate = current =>
+    current && moment(current).add(1, 'days') < moment().endOf('day')
+
   return (
-    <>
+    <Spin spinning={status === 'LOADING'}>
       <HeaderPage titleButton={''} title={'Nueva nota de servicio'} />
       <div>
         <Row gutter={16} className={'section-space-field'}>
@@ -429,6 +444,7 @@ function NewNoteView({ isAdmin }) {
                 status === 'LOADING' && loading === 'fetchProjectsOptions'
               }
               optionFilterProp='children'
+              disabled={!sale.stakeholder_id}
             >
               {saleState.projectsOptionsList.length > 0 ? (
                 saleState.projectsOptionsList.map(value => (
@@ -471,6 +487,7 @@ function NewNoteView({ isAdmin }) {
               value={sale.start_date ? moment(sale.start_date) : ''}
               onChange={handleChange('start_date')}
               format='DD-MM-YYYY'
+              disabledDate={disabledDate}
             />
           </Col>
           <Col xs={8} sm={8} md={8} lg={8}>
@@ -480,6 +497,7 @@ function NewNoteView({ isAdmin }) {
               value={sale.end_date ? moment(sale.end_date) : ''}
               onChange={handleChange('end_date')}
               format='DD-MM-YYYY'
+              disabledDate={disabledDate}
             />
           </Col>
         </Row>
@@ -541,7 +559,7 @@ function NewNoteView({ isAdmin }) {
         edit={true}
         cancelLink=''
       />
-    </>
+    </Spin>
   )
 }
 

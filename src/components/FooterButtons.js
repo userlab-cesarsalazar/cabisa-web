@@ -19,6 +19,7 @@ function FooterButtons(props) {
                   type={'link'}
                   onClick={() => props.cancelButton()}
                   className='cancel-button'
+                  loading={props.loading}
                 >
                   Cancelar
                 </Button>
@@ -30,6 +31,7 @@ function FooterButtons(props) {
               <Button
                 className='title-cabisa new-button'
                 onClick={() => saveData()}
+                loading={props.loading}
               >
                 Guardar
               </Button>

@@ -4,6 +4,7 @@ import InventoryService from './components/inventoryService'
 import InventorySrc from '../inventorySrc'
 import { message } from 'antd'
 import { showErrors } from '../../../utils'
+import { permissions } from '../../../commons/types'
 
 function ServiceIndex() {
   const [inventoryServices, setInventoryServices] = useState([])
@@ -60,7 +61,11 @@ function ServiceIndex() {
 
   return (
     <>
-      <HeaderPage titleButton={''} title={'Servicios'} permissions={5} />
+      <HeaderPage
+        titleButton={''}
+        title={'Servicios'}
+        permissions={permissions.INVENTARIO}
+      />
       <InventoryService
         title={'Servicios'}
         searchByTxt={searchByTxt}

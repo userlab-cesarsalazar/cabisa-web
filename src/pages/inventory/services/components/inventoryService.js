@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Cache } from 'aws-amplify'
 import InventoryTable from '../../components/inventoryTable'
 import ServiceDrawer from './serviceDrawer'
 
@@ -7,6 +6,7 @@ import ActionOptions from '../../../../components/actionOptions'
 import { withRouter } from 'react-router'
 import Tag from '../../../../components/Tag'
 import { validateRole } from '../../../../utils'
+import { permissions, roles } from '../../../../commons/types'
 
 function InventoryService(props) {
   const [editMode, setEditMode] = useState(false)
@@ -40,7 +40,7 @@ function InventoryService(props) {
       <ActionOptions
         editPermissions={false}
         data={data}
-        permissionId={5}
+        permissionId={permissions.INVENTARIO}
         showDeleteBtn
         handlerDeleteRow={DeleteRow}
         handlerEditRow={EditRow}
@@ -48,7 +48,7 @@ function InventoryService(props) {
     ),
   }
 
-  const isAdmin = validateRole(Cache.getItem('currentSession').rol_id, 1)
+  const isAdmin = validateRole(roles.ADMIN)
 
   const columnsWithPrice = isAdmin ? [...columns, priceColumn] : columns
 

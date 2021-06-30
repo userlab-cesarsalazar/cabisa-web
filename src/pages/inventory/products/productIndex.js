@@ -4,6 +4,7 @@ import InventoryProduct from './components/inventoryProduct'
 import InventorySrc from '../inventorySrc'
 import { message } from 'antd'
 import { showErrors } from '../../../utils'
+import { permissions } from '../../../commons/types'
 
 function ProductIndex() {
   const [inventoryProducts, setInventoryProducts] = useState([])
@@ -79,7 +80,11 @@ function ProductIndex() {
 
   return (
     <>
-      <HeaderPage titleButton={''} title={'Productos'} permissions={5} />
+      <HeaderPage
+        titleButton={''}
+        title={'Productos'}
+        permissions={permissions.INVENTARIO}
+      />
       <InventoryProduct
         title={'Productos'}
         searchByCategory={searchByCategory}

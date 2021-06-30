@@ -2,6 +2,7 @@ import React from 'react'
 import { Table, Col, Input, Row, Card, Tag } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../components/actionOptions'
+import { permissions } from '../../../commons/types'
 
 const { Search } = Input
 
@@ -57,12 +58,12 @@ function UserTable(props) {
       title: '',
       dataIndex: '_id', // Field that is goint to be rendered
       key: '_id',
-      render: (row, data) => (
+      render: (_, data) => (
         <ActionOptions
           editPermissions={true}
           showDeleteBtn
           data={data}
-          permissionId={2}
+          permissionId={permissions.USUARIOS}
           handlerDeleteRow={handlerDeleteRow}
           handlerEditRow={handlerEditRow}
           handlerEditPermissions={handlerEditPermissions}

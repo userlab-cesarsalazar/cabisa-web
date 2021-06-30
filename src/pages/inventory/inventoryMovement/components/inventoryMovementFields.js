@@ -262,18 +262,17 @@ function InventoryMovementFields({ forbidEdition, editData }) {
       })
     }
 
-    const productsRequiredFields = [
-      'product_id',
-      'product_quantity',
-      'product_price',
-    ]
+    const productsRequiredFields = ['product_quantity', 'product_price']
+
     const productRequiredPositions = data.products.flatMap((p, i) =>
-      productsRequiredFields.some(k => !p[k]) ? i + 1 : []
+      productsRequiredFields.some(k => !p[k] || p[k] < 0) ? i + 1 : []
     )
 
     if (productRequiredPositions.length > 0) {
       productRequiredPositions.forEach(p => {
-        errors.push(`Todos los campos del producto ${p} son obligatorios`)
+        errors.push(
+          `Los campos Precio y Cantidad del producto ${p} deben ser mayor o igual a cero`
+        )
       })
     }
 

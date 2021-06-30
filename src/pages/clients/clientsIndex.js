@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
+import { message } from 'antd'
 import HeaderPage from '../../components/HeaderPage'
 import ClientTable from './components/clientTable'
 import ClientsDrawer from '../clients/components/clientsDrawer'
 
 //api
 import ClientsSrc from './clientsSrc'
-import { message } from 'antd'
+import { permissions } from '../../commons/types'
 
 function Clients(props) {
   const [visible, setVisible] = useState(false)
@@ -14,12 +15,9 @@ function Clients(props) {
   const [dataSource, setDataSource] = useState([])
   const [loading, setLoading] = useState(false)
 
-  const showDrawer = () => {
-    props.history.push('/clientView')
-  }
-  const onClose = () => {
-    setVisible(false)
-  }
+  const showDrawer = () => props.history.push('/clientView')
+
+  const onClose = () => setVisible(false)
 
   useEffect(() => {
     setVisible(false)
@@ -94,7 +92,7 @@ function Clients(props) {
         titleButton={'Nuevo Cliente'}
         title={'Clientes'}
         showDrawer={showDrawer}
-        permissions={6}
+        permissions={permissions.CLIENTES}
       />
       <ClientTable
         dataSource={dataSource}

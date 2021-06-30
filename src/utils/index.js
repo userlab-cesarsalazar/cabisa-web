@@ -1,4 +1,5 @@
 import { message } from 'antd'
+import { Cache } from 'aws-amplify'
 
 export const roundNumber = (input, decimals = 2) => {
   const number = Number(input)
@@ -28,23 +29,53 @@ export const validateEmail = email => {
   return re.test(String(email).toLowerCase())
 }
 
-export const validateRole = (roleId, inputRole) => roleId <= inputRole
+export const validateRole = rolId => {
+  const currentSessionRoleId = Cache.getItem('currentSession').rol_id
+  return currentSessionRoleId <= rolId
+}
 
-export const validatePermissions = (dataPermissions, id) => {
-  let permissionsData = {}
-  let sectionEnable = [id].every(perm =>
-    dataPermissions.some(v => v.id === perm)
+export const validatePermissions = permissionId => {
+  const currentSessionPermissions = Cache.getItem('currentSession')
+    .userPermissions
+  const currentPermission = currentSessionPermissions.find(
+    p => Number(p.id) === Number(permissionId)
   )
-  let dataSection = dataPermissions.filter(dataFilter => dataFilter.id === id)
 
-  if (sectionEnable) {
-    permissionsData.enableSection = dataSection[0].view
-    permissionsData.permissionsSection = dataSection
-  } else {
-    permissionsData.enableSection = sectionEnable
-    permissionsData.permissionsSection = dataSection
-  }
-  return permissionsData
+  return action => currentPermission && currentPermission[action]
+}
+
+export const validateDynamicTableProducts = (
+  products,
+  productsRequiredFields
+) => {
+  return products.reduce(
+    (result, p, i) => {
+      const newPosition = [...(result.duplicate[p.product_id] || []), i + 1]
+      const newResult = {
+        ...result,
+        duplicate: p.product_id
+          ? {
+              ...result.duplicate,
+              [p.product_id]: newPosition,
+            }
+          : result.duplicate,
+      }
+
+      const hasRequiredError = productsRequiredFields.some(
+        k => !p[k] || p[k] < 0
+      )
+
+      if (hasRequiredError) {
+        return {
+          ...newResult,
+          required: [...newResult.required, i + 1],
+        }
+      }
+
+      return newResult
+    },
+    { required: [], duplicate: {} }
+  )
 }
 
 const getErrorData = error => {
@@ -97,34 +128,18 @@ export const catchingErrors = errorCode => {
   }
 }
 
-const validatePermissionsLocalPermissions = (dataPermissions, id) => {
-  let permissionsData = {}
-  let sectionEnable = [id].every(perm =>
-    dataPermissions.some(v => v.id === perm)
-  )
-  let dataSection = dataPermissions.filter(dataFilter => dataFilter.id === id)
-
-  if (sectionEnable) {
-    permissionsData.enableSection = dataSection[0].view
-    permissionsData.permissionsSection = dataSection
-  } else {
-    permissionsData.enableSection = sectionEnable
-    permissionsData.permissionsSection = dataSection
-  }
-  return permissionsData
-}
-
-export const permissionsButton = (id, data) => {
-  return (
-    validatePermissionsLocalPermissions(data.userPermissions, id)
-      .permissionsSection[0].delete ||
-    validatePermissionsLocalPermissions(data.userPermissions, id)
-      .permissionsSection[0].edit
-  )
-}
-
 export const getBase64 = (img, callback) => {
   const reader = new FileReader()
   reader.addEventListener('load', () => callback(reader.result))
   reader.readAsDataURL(img)
+}
+
+export const isEmptyObject = obj => {
+  for (var prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      return false
+    }
+  }
+
+  return JSON.stringify(obj) === JSON.stringify({})
 }

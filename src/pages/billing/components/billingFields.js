@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import debounce from 'lodash/debounce'
 import {
   Button,
   Col,
@@ -12,7 +13,15 @@ import {
 } from 'antd'
 import DynamicTable from '../../../components/DynamicTable'
 import Tag from '../../../components/Tag'
-import debounce from 'lodash/debounce'
+import { useEditableList } from '../../../hooks'
+import {
+  showErrors,
+  roundNumber,
+  getPercent,
+  validateDynamicTableProducts,
+} from '../../../utils'
+import billingSrc from '../billingSrc'
+import FooterButtons from '../../../components/FooterButtons'
 
 const { Title } = Typography
 const { Option } = Select
@@ -141,14 +150,290 @@ const getColumnsDynamicTable = ({
   },
 ]
 
-function BillingFields(props) {
+function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
+  const [stakeholdersOptionsList, setStakeholdersOptionsList] = useState([])
+  const [productsOptionsList, setProductsOptionsList] = useState([])
+  const [projectsOptionsList, setProjectsOptionsList] = useState([])
+  const [data, setData] = useState({})
+  const [productsData, setProductsData] = useState([])
+  const [discountInputValue, setDiscountInputValue] = useState(0)
+
+  useEffect(() => {
+    if (editData && !isInvoiceFromSale) return
+
+    setData(prevState => {
+      const totals = productsData?.reduce((r, p) => {
+        const discount = (r.discount || 0) + p.unit_discount * p.quantity
+        const subtotal = (r.subtotal || 0) + p.unit_price * p.quantity
+        const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
+        const total = subtotal + total_tax
+
+        return {
+          discount: roundNumber(discount) || 0,
+          subtotal: roundNumber(subtotal) || 0,
+          total_tax: roundNumber(total_tax) || 0,
+          total: roundNumber(total) || 0,
+          credit_days: prevState.credit_days ? prevState.credit_days : 0,
+        }
+      }, {})
+
+      return { ...prevState, ...totals }
+    })
+  }, [setData, productsData, editData, isInvoiceFromSale])
+
+  useEffect(() => {
+    if (!editData) return
+
+    setData(editData)
+    setProductsData(editData.products)
+    setDiscountInputValue(editData.discount_percentage || 0)
+  }, [editData])
+
+  const updateInvoiceTotals = (field, value, rowIndex) => {
+    const getProductSubtotal = (field, value, row, unit_discount) => {
+      if (field === 'unit_price')
+        return roundNumber(row.quantity * (value - unit_discount))
+
+      if (field === 'quantity')
+        return roundNumber(value * (row.unit_price - unit_discount))
+
+      return 0
+    }
+
+    const product = productsOptionsList.find(option => option.id === value)
+
+    setProductsData(prevState => {
+      const row = prevState[rowIndex]
+      const baseUnitPrice = product ? product.unit_price : row.base_unit_price
+      const tax_fee = product ? product.tax_fee : row.tax_fee
+      const unit_discount = baseUnitPrice * getPercent(discountInputValue)
+      const unit_price = baseUnitPrice - unit_discount
+
+      const newRow = {
+        ...row,
+        id: product ? product.id : row.id,
+        code: product ? product.code : row.code,
+        tax_fee,
+        base_unit_price: row.base_unit_price || unit_price,
+        unit_price: roundNumber(unit_price),
+        unit_tax_amount: roundNumber(unit_price * getPercent(tax_fee)),
+        unit_discount: roundNumber(unit_discount),
+        subtotal: getProductSubtotal(field, value, row, unit_discount),
+        quantity: field === 'id' ? 1 : row.quantity,
+      }
+
+      return prevState.map((prevRow, index) =>
+        index === rowIndex ? newRow : prevRow
+      )
+    })
+  }
+
+  const {
+    handleChange: handleChangeDetail,
+    handleAdd: handleAddDetail,
+    handleRemove: handleRemoveDetail,
+  } = useEditableList({
+    state: productsData,
+    setState: setProductsData,
+    initRow: {
+      id: '',
+      code: '',
+      quantity: 0,
+      tax_fee: 12,
+      unit_price: 0,
+      base_unit_price: 0,
+      unit_tax_amount: 0,
+      subtotal: 0,
+    },
+    onChange: updateInvoiceTotals,
+  })
+
+  const handleDiscountChange = e => {
+    setDiscountInputValue(e?.target?.value || 0)
+
+    setProductsData(prevState =>
+      prevState.map(p => {
+        const unit_discount = p.base_unit_price * getPercent(e.target.value)
+        const unit_price = p.base_unit_price - unit_discount
+        const unit_tax_amount = unit_price * getPercent(p.tax_fee)
+        const subtotal = p.quantity * unit_price
+
+        return {
+          ...p,
+          unit_price: roundNumber(unit_price),
+          unit_discount: roundNumber(unit_discount),
+          unit_tax_amount: roundNumber(unit_tax_amount),
+          subtotal: roundNumber(subtotal),
+        }
+      })
+    )
+  }
+
+  const handleChange = field => e => {
+    const value = e?.target?.value === undefined ? e : e.target.value
+
+    if (field === 'stakeholder_id') {
+      const stakeholder = stakeholdersOptionsList.find(
+        option => option.id === value
+      )
+
+      return setData(prevState => ({
+        ...prevState,
+        stakeholder_id: stakeholder.id,
+        stakeholder_name: stakeholder.stakeholder_name,
+        stakeholder_type: stakeholder.stakeholder_type,
+        stakeholder_nit: stakeholder.nit,
+        stakeholder_email: stakeholder.email,
+        stakeholder_phone: stakeholder.phone,
+        stakeholder_address: stakeholder.address,
+      }))
+    }
+
+    setData(prevState => ({
+      ...prevState,
+      [field]: value,
+    }))
+  }
+
+  const getSaveData = () => ({
+    document_id: data?.id,
+    stakeholder_id: data.stakeholder_id,
+    project_id: data.project_id,
+    payment_method: data.payment_method,
+    service_type: data.service_type,
+    credit_days: data.credit_days,
+    total_invoice: data.total,
+    products: productsData.map(p => ({
+      product_id: p.id,
+      product_quantity: p.quantity,
+      product_price: p.unit_price,
+      product_discount_percentage: discountInputValue,
+      product_discount: p.unit_discount,
+    })),
+  })
+
+  const validateSaveData = data => {
+    const errors = []
+    const requiredFields = [
+      { key: 'stakeholder_id', value: 'Empresa' },
+      { key: 'payment_method', value: 'Metodo de pago' },
+      { key: 'project_id', value: 'Proyecto' },
+      { key: 'service_type', value: 'Tipo de Servicio' },
+    ]
+    const requiredErrors = requiredFields.flatMap(field =>
+      !data[field.key] ? field.value : []
+    )
+    if (requiredErrors.length > 0) {
+      requiredErrors.forEach(k => {
+        errors.push(`El campo ${k} es obligatorio`)
+      })
+    }
+    const productsRequiredFields = ['product_quantity', 'product_price']
+
+    const productErrors = validateDynamicTableProducts(
+      data.products,
+      productsRequiredFields
+    )
+
+    if (productErrors.required.length > 0) {
+      errors.push(
+        `Los campos Precio y Cantidad de los productos en posicion ${productErrors.required.join(
+          ', '
+        )} deben ser mayor o igual a cero`
+      )
+    }
+
+    Object.keys(productErrors.duplicate).forEach(k => {
+      if (productErrors.duplicate[k]?.length > 1) {
+        errors.push(
+          `Los productos en posicion ${productErrors.duplicate[k].join(
+            ', '
+          )} no pueden estar duplicados`
+        )
+      }
+    })
+
+    if (discountInputValue < 0) {
+      errors.push(
+        `El campo Descuento (%) debe contener un valor mayor o igual a cero`
+      )
+    }
+
+    return {
+      isInvalid: errors.length > 0,
+      error: {
+        message: errors,
+      },
+    }
+  }
+
+  const saveData = () => {
+    const saveData = getSaveData()
+
+    const { isInvalid, error } = validateSaveData(saveData)
+
+    if (isInvalid) return showErrors(error)
+
+    props.handleSaveData(saveData)
+  }
+
+  const handleSearchStakeholder = stakeholder_name => {
+    if (stakeholder_name === '') return
+
+    const params = {
+      name: { $like: `%25${stakeholder_name}%25` },
+    }
+
+    setLoading(true)
+
+    billingSrc
+      .getStakeholdersOptions(params)
+      .then(stakeholders => setStakeholdersOptionsList(stakeholders))
+      .catch(error => showErrors(error))
+      .finally(() => setLoading(false))
+  }
+
+  const handleSearchProduct = description => {
+    if (description === '') return
+
+    const params = {
+      stock: { $gt: 0 },
+      description: { $like: `%25${description}%25` },
+    }
+
+    setLoading(true)
+
+    billingSrc
+      .getProductsOptions(params)
+      .then(data => setProductsOptionsList(data))
+      .catch(error => showErrors(error))
+      .finally(() => setLoading(false))
+  }
+
+  const handleSearchProject = name => {
+    if (name === '' || !data.stakeholder_id) return
+
+    const params = {
+      stakeholder_id: data.stakeholder_id,
+      name: { $like: `%25${name}%25` },
+    }
+
+    setLoading(true)
+
+    billingSrc
+      .getProjectsOptions(params)
+      .then(data => setProjectsOptionsList(data))
+      .catch(error => showErrors(error))
+      .finally(() => setLoading(false))
+  }
+
   const columnsDynamicTable = getColumnsDynamicTable({
     edit: props.edit,
-    handleRemoveDetail: props.editableList?.handleRemove,
-    handleChangeDetail: props.editableList?.handleChange,
-    handleSearchProduct: props.handleSearchProduct,
-    productsOptionsList: props.productsOptionsList,
-    isInvoiceFromSale: props.isInvoiceFromSale,
+    handleRemoveDetail,
+    handleChangeDetail,
+    handleSearchProduct,
+    productsOptionsList,
+    isInvoiceFromSale,
   })
 
   return (
@@ -180,7 +465,7 @@ function BillingFields(props) {
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Selecciona Cliente</div>
             <Select
-              disabled={props.edit || props.isInvoiceFromSale}
+              disabled={props.edit || isInvoiceFromSale}
               className={'single-select'}
               placeholder={'Buscar cliente'}
               size={'large'}
@@ -188,19 +473,19 @@ function BillingFields(props) {
               getPopupContainer={trigger => trigger.parentNode}
               optionFilterProp='children'
               showSearch
-              onSearch={debounce(props.handleSearchStakeholder, 400)}
-              onChange={props.handleChange('stakeholder_id')}
-              value={props.data.stakeholder_id}
+              onSearch={debounce(handleSearchStakeholder, 400)}
+              onChange={handleChange('stakeholder_id')}
+              value={data.stakeholder_id}
             >
-              {props.stakeholdersOptionsList?.length > 0 ? (
-                props.stakeholdersOptionsList.map(value => (
+              {stakeholdersOptionsList?.length > 0 ? (
+                stakeholdersOptionsList.map(value => (
                   <Option key={value.id} value={value.id}>
                     {value.name}
                   </Option>
                 ))
               ) : (
-                <Option value={props.data.stakeholder_id}>
-                  {props.data.stakeholder_name}
+                <Option value={data.stakeholder_id}>
+                  {data.stakeholder_name}
                 </Option>
               )}
             </Select>
@@ -211,7 +496,7 @@ function BillingFields(props) {
               placeholder={'Escribir NIT'}
               size={'large'}
               style={{ height: '40px' }}
-              value={props.data.stakeholder_nit}
+              value={data.stakeholder_nit}
               disabled
             />
           </Col>
@@ -223,7 +508,7 @@ function BillingFields(props) {
               size={'large'}
               style={{ width: '100%' }}
               getPopupContainer={trigger => trigger.parentNode}
-              value={props.data.stakeholder_type}
+              value={data.stakeholder_type}
               disabled
             >
               {props.stakeholderTypesOptionsList?.length > 0 ? (
@@ -233,11 +518,8 @@ function BillingFields(props) {
                   </Option>
                 ))
               ) : (
-                <Option value={props.data.stakeholder_type}>
-                  <Tag
-                    type='stakeholderTypes'
-                    value={props.data.stakeholder_type}
-                  />
+                <Option value={data.stakeholder_type}>
+                  <Tag type='stakeholderTypes' value={data.stakeholder_type} />
                 </Option>
               )}
             </Select>
@@ -251,7 +533,7 @@ function BillingFields(props) {
               size={'large'}
               type={'email'}
               style={{ height: '40px' }}
-              value={props.data.stakeholder_email}
+              value={data.stakeholder_email}
               disabled
             />
           </Col>
@@ -261,7 +543,7 @@ function BillingFields(props) {
               placeholder={'Escribir telefono'}
               size={'large'}
               style={{ height: '40px' }}
-              value={props.data.stakeholder_phone}
+              value={data.stakeholder_phone}
               disabled
             />
           </Col>
@@ -271,7 +553,7 @@ function BillingFields(props) {
               placeholder={'Escribir direccion'}
               size={'large'}
               style={{ height: '40px' }}
-              value={props.data.stakeholder_address}
+              value={data.stakeholder_address}
               disabled
             />
           </Col>
@@ -286,23 +568,21 @@ function BillingFields(props) {
               style={{ width: '100%', height: '40px' }}
               getPopupContainer={trigger => trigger.parentNode}
               showSearch
-              onSearch={debounce(props.handleSearchProject, 400)}
-              value={props.data.project_id}
-              onChange={props.handleChange('project_id')}
+              onSearch={debounce(handleSearchProject, 400)}
+              value={data.project_id}
+              onChange={handleChange('project_id')}
               loading={props.loading}
               optionFilterProp='children'
-              disabled={props.edit || props.isInvoiceFromSale}
+              disabled={props.edit || isInvoiceFromSale || !data.stakeholder_id}
             >
-              {props.projectsOptionsList?.length > 0 ? (
-                props.projectsOptionsList.map(value => (
+              {projectsOptionsList?.length > 0 ? (
+                projectsOptionsList.map(value => (
                   <Option key={value.id} value={value.id}>
                     {value.name}
                   </Option>
                 ))
               ) : (
-                <Option value={props.data.project_id}>
-                  {props.data.project_name}
-                </Option>
+                <Option value={data.project_id}>{data.project_name}</Option>
               )}
             </Select>
           </Col>
@@ -314,8 +594,8 @@ function BillingFields(props) {
               size={'large'}
               style={{ width: '100%', height: '40px' }}
               getPopupContainer={trigger => trigger.parentNode}
-              onChange={props.handleChange('service_type')}
-              value={props.data.service_type}
+              onChange={handleChange('service_type')}
+              value={data.service_type}
               disabled={props.edit}
             >
               {props.serviceTypesOptionsList?.length > 0 ? (
@@ -325,11 +605,8 @@ function BillingFields(props) {
                   </Option>
                 ))
               ) : (
-                <Option value={props.data.service_type}>
-                  <Tag
-                    type='documentsServiceType'
-                    value={props.data.service_type}
-                  />
+                <Option value={data.service_type}>
+                  <Tag type='documentsServiceType' value={data.service_type} />
                 </Option>
               )}
             </Select>
@@ -342,8 +619,8 @@ function BillingFields(props) {
               size={'large'}
               style={{ width: '100%', height: '40px' }}
               getPopupContainer={trigger => trigger.parentNode}
-              onChange={props.handleChange('payment_method')}
-              value={props.data.payment_method}
+              onChange={handleChange('payment_method')}
+              value={data.payment_method}
               disabled={props.edit}
             >
               {props.paymentMethodsOptionsList?.length > 0 ? (
@@ -353,10 +630,10 @@ function BillingFields(props) {
                   </Option>
                 ))
               ) : (
-                <Option value={props.data.payment_method}>
+                <Option value={data.payment_method}>
                   <Tag
                     type='documentsPaymentMethods'
-                    value={props.data.payment_method}
+                    value={data.payment_method}
                   />
                 </Option>
               )}
@@ -381,7 +658,7 @@ function BillingFields(props) {
             lg={7}
             style={{ display: 'flex', justifyContent: 'flex-end' }}
           >
-            {(!props.edit || props.discountInputValue) && (
+            {(!props.edit || discountInputValue) && (
               <>
                 <div
                   style={{
@@ -399,8 +676,8 @@ function BillingFields(props) {
                   size={'large'}
                   style={{ width: '100%', height: '40px', maxWidth: '150px' }}
                   getPopupContainer={trigger => trigger.parentNode}
-                  onChange={props.handleChange('credit_days')}
-                  value={props.data.credit_days}
+                  onChange={handleChange('credit_days')}
+                  value={data.credit_days}
                   disabled={props.edit}
                 >
                   {props.creditDaysOptionsList?.length > 0 ? (
@@ -413,9 +690,7 @@ function BillingFields(props) {
                       ))}
                     </>
                   ) : (
-                    <Option value={props.data.credit_days}>
-                      {props.data.credit_days}
-                    </Option>
+                    <Option value={data.credit_days}>{data.credit_days}</Option>
                   )}
                 </Select>
               </>
@@ -428,7 +703,7 @@ function BillingFields(props) {
             lg={7}
             style={{ display: 'flex', justifyContent: 'flex-end' }}
           >
-            {(!props.edit || props.discountInputValue) && (
+            {(!props.edit || discountInputValue) && (
               <>
                 <div
                   style={{
@@ -451,8 +726,8 @@ function BillingFields(props) {
                     maxWidth: '150px',
                   }}
                   min={0}
-                  onChange={props.handleDiscountChange}
-                  value={props.discountInputValue}
+                  onChange={handleDiscountChange}
+                  value={discountInputValue}
                   disabled={props.edit}
                 />
               </>
@@ -462,49 +737,60 @@ function BillingFields(props) {
 
         <Divider className={'divider-custom-margins-users'} />
 
-        <DynamicTable columns={columnsDynamicTable} data={props.productsData} />
+        <DynamicTable columns={columnsDynamicTable} data={productsData} />
 
-        {!props.edit && !props.isInvoiceFromSale && (
+        {!props.edit && !isInvoiceFromSale && (
           <Row gutter={16} className={'section-space-list'}>
             <Col xs={24} sm={24} md={24} lg={24}>
               <Button
-                disabled={props.edit}
                 type='dashed'
                 className={'shop-add-turn'}
-                onClick={props.editableList?.handleAdd}
+                onClick={handleAddDetail}
               >
                 Agregar Detalle
               </Button>
             </Col>
           </Row>
         )}
+
         <Divider className={'divider-custom-margins-users'} />
+
         <Row gutter={16} style={{ textAlign: 'right' }} justify='end'>
           <Col span={6} style={{ textAlign: 'right' }}>
-            {!props.edit || props.data.discount ? (
+            {!props.edit || data.discount ? (
               <div className={'title-space-field'}>
-                <Statistic title='Descuento :' value={props.data.discount} />
+                <Statistic title='Descuento :' value={data.discount} />
               </div>
             ) : null}
           </Col>
           <Col span={6} style={{ textAlign: 'right' }}>
             <div className={'title-space-field'}>
-              <Statistic title='Subtotal :' value={props.data.subtotal} />
+              <Statistic title='Subtotal :' value={data.subtotal} />
             </div>
           </Col>
           <Col span={6} style={{ textAlign: 'right' }}>
             <div className={'title-space-field'}>
-              <Statistic title='Impuesto :' value={props.data.total_tax} />
+              <Statistic title='Impuesto :' value={data.total_tax} />
             </div>
           </Col>
           <Col span={6} style={{ textAlign: 'right' }}>
             <div className={'title-space-field'}>
-              <Statistic title='Total :' value={props.data.total} />
+              <Statistic title='Total :' value={data.total} />
             </div>
           </Col>
         </Row>
+
         <Divider className={'divider-custom-margins-users'} />
       </div>
+
+      {!props.edit && (
+        <FooterButtons
+          saveData={saveData}
+          edit={props.edit}
+          cancelLink={props.cancelLink}
+          loading={props.loading}
+        />
+      )}
     </>
   )
 }

@@ -1,5 +1,4 @@
 import React from 'react'
-import { Cache } from 'aws-amplify'
 import {
   Table,
   Col,
@@ -11,8 +10,9 @@ import {
   Select,
 } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import { validatePermissions } from '../../../utils'
 import Tag from '../../../components/Tag'
+import { validatePermissions } from '../../../utils'
+import { actions, permissions } from '../../../commons/types'
 
 const { Search } = Input
 const { Option } = Select
@@ -21,6 +21,8 @@ function InventoryTable(props) {
   const getFilteredData = data => props.handlerTextSearch(data)
 
   const filterCategory = data => props.handlerCategorySearch(data)
+
+  const can = validatePermissions(permissions.INVENTARIO)
 
   return (
     <>
@@ -62,18 +64,14 @@ function InventoryTable(props) {
           </Select>
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} style={{ textAlign: 'right' }}>
-          {validatePermissions(
-            Cache.getItem('currentSession').userPermissions,
-            5
-          ).permissionsSection[0].create &&
-            props.isAdmin && (
-              <Button
-                className='title-cabisa new-button'
-                onClick={props.showDraweTbl}
-              >
-                Nuevo Item
-              </Button>
-            )}
+          {can(actions.CREATE) && props.isAdmin && (
+            <Button
+              className='title-cabisa new-button'
+              onClick={props.showDraweTbl}
+            >
+              Nuevo Item
+            </Button>
+          )}
         </Col>
       </Row>
       <Row>
