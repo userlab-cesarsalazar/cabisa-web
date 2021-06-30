@@ -25,7 +25,7 @@ function Billing(props) {
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
   const [dataSource, setDataSource] = useState(false)
-  const [showInvoiceData, setShowInvoiceData] = useState(false)
+  const [detailInvoiceData, setDetailInvoiceData] = useState(false)
   const [filters, setFilters] = useState(initFilters.current)
   const [paymentMethodsOptionsList, setPaymentMethodsOptionsList] = useState([])
   const [
@@ -105,7 +105,7 @@ function Billing(props) {
   const newBill = () => props.history.push('/billingView')
 
   const showDetail = data => {
-    setShowInvoiceData({
+    setDetailInvoiceData({
       ...data,
       discount_percentage: roundNumber(data.discount_percentage),
       discount: roundNumber(data.discount),
@@ -142,17 +142,14 @@ function Billing(props) {
       />
       <DetailBilling
         closable={closeDetail}
-        cancelButton={closeDetail}
         visible={visible}
         loading={loading}
         setLoading={setLoading}
-        data={showInvoiceData}
-        productsData={showInvoiceData?.products}
+        editData={detailInvoiceData}
         paymentMethodsOptionsList={paymentMethodsOptionsList}
         stakeholderTypesOptionsList={stakeholderTypesOptionsList}
         serviceTypesOptionsList={serviceTypesOptionsList}
         creditDaysOptionsList={creditDaysOptionsList}
-        discountInputValue={showInvoiceData.discount_percentage}
       />
     </>
   )

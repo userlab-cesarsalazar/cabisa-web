@@ -262,11 +262,8 @@ function InventoryMovementFields({ forbidEdition, editData }) {
       })
     }
 
-    const productsRequiredFields = [
-      'product_id',
-      'product_quantity',
-      'product_price',
-    ]
+    const productsRequiredFields = ['product_quantity', 'product_price']
+
     const productRequiredPositions = data.products.flatMap((p, i) =>
       productsRequiredFields.some(k => !p[k] || p[k] < 0) ? i + 1 : []
     )

@@ -23,19 +23,6 @@ import ClientsSrc from '../clientsSrc'
 const { Title } = Typography
 const { Option } = Select
 
-const RemoveProjectPopConfirmMessage = ({ edit }) => {
-  return (
-    <>
-      {edit && (
-        <div>
-          Tambien eliminara todos los documentos asociados a este proyecto
-        </div>
-      )}
-      <div>¿Esta seguro de eliminar?</div>
-    </>
-  )
-}
-
 const getColumnsProjects = ({
   handleRemoveProject,
   handleChangeProject,
@@ -112,7 +99,7 @@ const getColumnsProjects = ({
     dataIndex: 'id',
     render: (_, __, rowIndex) => (
       <Popconfirm
-        title={<RemoveProjectPopConfirmMessage edit={edit} />}
+        title='¿Esta seguro de eliminar?'
         onConfirm={() => handleRemoveProject(rowIndex)}
       >
         <span style={{ color: 'red' }}>Eliminar</span>

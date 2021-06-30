@@ -12,6 +12,7 @@ import {
   Select,
   Popconfirm,
   message,
+  Spin,
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import HeaderPage from '../../../../components/HeaderPage'
@@ -262,11 +263,7 @@ function NewNoteView({ isAdmin }) {
       })
     }
 
-    const productsRequiredFields = [
-      'product_id',
-      'product_quantity',
-      'product_price',
-    ]
+    const productsRequiredFields = ['product_quantity', 'product_price']
     const productErrors = validateDynamicTableProducts(
       data.products,
       productsRequiredFields
@@ -375,7 +372,7 @@ function NewNoteView({ isAdmin }) {
     current && moment(current).add(1, 'days') < moment().endOf('day')
 
   return (
-    <>
+    <Spin spinning={status === 'LOADING'}>
       <HeaderPage titleButton={''} title={'Nueva nota de servicio'} />
       <div>
         <Row gutter={16} className={'section-space-field'}>
@@ -562,7 +559,7 @@ function NewNoteView({ isAdmin }) {
         edit={true}
         cancelLink=''
       />
-    </>
+    </Spin>
   )
 }
 

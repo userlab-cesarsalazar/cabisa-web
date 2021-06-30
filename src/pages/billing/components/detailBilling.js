@@ -16,16 +16,10 @@ function DetailBilling(props) {
           edit={true}
           loading={props.loading}
           setLoading={props.setLoading}
-          data={props.data}
-          productsData={props.productsData}
+          editData={props.editData}
           paymentMethodsOptionsList={props.paymentMethodsOptionsList}
           stakeholderTypesOptionsList={props.stakeholderTypesOptionsList}
-          discountInputValue={props.discountInputValue}
-          handleDiscountChange={() => {}}
-          handleChange={() => {}}
-          handleSearchStakeholder={() => {}}
-          handleSearchProduct={() => {}}
-          handleSearchProject={() => {}}
+          cancelLink='/billing'
         />
       </Card>
     </Drawer>

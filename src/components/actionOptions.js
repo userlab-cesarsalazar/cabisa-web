@@ -72,11 +72,11 @@ function ActionOptions({
             </Tooltip>
           )}
 
-          {can(actions.EDIT) && can(actions.DELETE) && props.showApproveBtn && (
+          {can(actions.CREATE) && can(actions.EDIT) && props.showApproveBtn && (
             <Divider type={'vertical'} />
           )}
 
-          {can(actions.EDIT) && props.showApproveBtn && (
+          {can(actions.CREATE) && can(actions.EDIT) && props.showApproveBtn && (
             <Tooltip title='Facturar'>
               <Popconfirm
                 title={`¿Estas seguro de facturar el elemento seleccionado?`}

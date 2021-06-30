@@ -9,7 +9,6 @@ function SalesView(props) {
       <SalesTable
         dataSource={props.dataSource}
         handlerTextSearch={props.searchText}
-        loading={props.loading}
         handlerEditRow={props.editRow}
         handlerDeleteRow={props.deleteRow}
         buttonTitle={props.buttonTitle}

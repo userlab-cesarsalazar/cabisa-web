@@ -133,3 +133,13 @@ export const getBase64 = (img, callback) => {
   reader.addEventListener('load', () => callback(reader.result))
   reader.readAsDataURL(img)
 }
+
+export const isEmptyObject = obj => {
+  for (var prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      return false
+    }
+  }
+
+  return JSON.stringify(obj) === JSON.stringify({})
+}
