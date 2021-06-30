@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import { Cache, Storage } from 'aws-amplify'
+import '../../../../amplify_config'
 import {
   productsStatus,
   productsCategories,
@@ -17,8 +19,8 @@ import {
   Upload,
 } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
-import { Cache } from 'aws-amplify'
-import { getBase64 } from '../../../../utils'
+import { showErrors } from '../../../../utils'
+
 const { Title } = Typography
 const { Option } = Select
 
@@ -91,21 +93,44 @@ function ProductFields(props) {
   const beforeUpload = file => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
     if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!')
+      message.error('Solo puede cargar imagenes en formato JPG o PNG')
     }
-    const isLt2M = file.size / 1024 / 1024 < 2
-    if (!isLt2M) {
-      message.error('Image must smaller than 2MB!')
+    const isLessThan5MB = file.size / 1024 / 1024 < 5 // 5 MB
+    if (!isLessThan5MB) {
+      message.error('La imagen debe ser menor a 5MB')
     }
-    return isJpgOrPng && isLt2M
+    return isJpgOrPng && isLessThan5MB
   }
 
-  const handleChange = info => {
-    if (info.file.status === 'uploading') {
-      getBase64(info.file.originFileObj, imageUrl => {
-        setImageUrl(imageUrl)
-        setLoading(false)
+  const handleChange = async e => {
+    try {
+      const file = e.target.files[0]
+
+      Storage.put(file.name, file, {
+        level: 'public',
+        contentType: 'image/png',
       })
+        .then(result => {
+          console.log('RESULTADO', result)
+        })
+        .catch(error => {
+          console.log('Error uploading file: ', error)
+        })
+      // if (info.file.status === 'uploading') {
+      // const fileExtension = info.file.name.substring(
+      //   info.file.name.lastIndexOf('.')
+      // )
+      // const currentTime = new Date().getTime()
+      // const fileName = `${code}${currentTime}${fileExtension}`
+      // console.log(info.file.originFileObj, fileName)
+      // const uploadedFile = await Storage.put(
+      //   fileName,
+      //   info.file.originFileObj
+      // )
+      // console.log(uploadedFile)
+      // }
+    } catch (error) {
+      showErrors(error)
     }
   }
 
@@ -148,7 +173,7 @@ function ProductFields(props) {
             />
           </Col>
           <Col xs={4} sm={4} md={4} lg={4} style={{ textAlign: 'center' }}>
-            <Upload
+            {/* <Upload
               name='avatar'
               listType='picture-card'
               className='avatar-uploader'
@@ -166,7 +191,8 @@ function ProductFields(props) {
               ) : (
                 UploadButton()
               )}
-            </Upload>
+            </Upload> */}
+            <input type='file' onChange={handleChange} />
           </Col>
         </Row>
         <Row gutter={16} className={'section-space-field'}>

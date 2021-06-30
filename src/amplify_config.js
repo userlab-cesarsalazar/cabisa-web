@@ -12,4 +12,9 @@ export default Amplify.configure({
     // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
     mandatorySignIn: false,
   },
+  Storage: {
+    bucket: 'cabisa-media-storage', //Your bucket ARN;
+    region: 'us-east-1', //Specify the region your bucket was created in;
+    identityPoolId: 'us-east-1:cbed129f-00a6-4b29-ac05-5671694ae887',
+  },
 })
