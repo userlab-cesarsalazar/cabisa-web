@@ -102,39 +102,26 @@ function ProductFields(props) {
     return isJpgOrPng && isLessThan5MB
   }
 
-  const handleChange = async e => {
-    try {
-      const file = e.target.files[0]
-      let name = 'CABISA_' + new Date().getTime() + '.png'
-      Storage.put(name, file, {
-        level: 'public',
-        contentType: 'image/png',
+  const uploadImage = ({ file }) => {
+    const currentTime = new Date().getTime()
+    const fileExtension = file.name.substring(file.name.lastIndexOf('.'))
+    const fileName = `CABISA_${currentTime}${fileExtension}`
+    setImageUrl(null)
+    setLoading(true)
+
+    Storage.put(fileName, file, {
+      level: 'public',
+      contentType: 'image/png',
+    })
+      .then(result => {
+        Storage.get(result.key).then(url => {
+          setImageUrl(url)
+        })
       })
-        .then(result => {
-          console.log('RESULTADO', result)
-          Storage.get(result.key).then(url =>{
-            console.log("URL",url)
-            })
-        })
-        .catch(error => {
-          console.log('Error uploading file: ', error)
-        })
-      // if (info.file.status === 'uploading') {
-      // const fileExtension = info.file.name.substring(
-      //   info.file.name.lastIndexOf('.')
-      // )
-      // const currentTime = new Date().getTime()
-      // const fileName = `${code}${currentTime}${fileExtension}`
-      // console.log(info.file.originFileObj, fileName)
-      // const uploadedFile = await Storage.put(
-      //   fileName,
-      //   info.file.originFileObj
-      // )
-      // console.log(uploadedFile)
-      // }
-    } catch (error) {
-      showErrors(error)
-    }
+      .catch(error => {
+        showErrors(error)
+      })
+      .finally(() => setLoading(false))
   }
 
   const UploadButton = () => {
@@ -176,12 +163,12 @@ function ProductFields(props) {
             />
           </Col>
           <Col xs={4} sm={4} md={4} lg={4} style={{ textAlign: 'center' }}>
-            {/* <Upload
+            <Upload
               name='avatar'
               listType='picture-card'
               className='avatar-uploader'
               showUploadList={false}
-              onChange={handleChange}
+              customRequest={uploadImage}
               beforeUpload={beforeUpload}
               maxCount={1}
             >
@@ -194,8 +181,7 @@ function ProductFields(props) {
               ) : (
                 UploadButton()
               )}
-            </Upload> */}
-            <input type='file' onChange={handleChange} />
+            </Upload>
           </Col>
         </Row>
         <Row gutter={16} className={'section-space-field'}>
