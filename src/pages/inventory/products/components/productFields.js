@@ -128,7 +128,7 @@ function ProductFields(props) {
     return (
       <div>
         {loading ? <LoadingOutlined /> : <PlusOutlined />}
-        <div>Subir foto</div>
+        <div>{loading ? 'Subiendo...' : 'Subir foto'}</div>
       </div>
     )
   }
