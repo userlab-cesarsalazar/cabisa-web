@@ -105,13 +105,16 @@ function ProductFields(props) {
   const handleChange = async e => {
     try {
       const file = e.target.files[0]
-
-      Storage.put(file.name, file, {
+      let name = 'CABISA_' + new Date().getTime() + '.png'
+      Storage.put(name, file, {
         level: 'public',
         contentType: 'image/png',
       })
         .then(result => {
           console.log('RESULTADO', result)
+          Storage.get(result.key).then(url =>{
+            console.log("URL",url)
+            })
         })
         .catch(error => {
           console.log('Error uploading file: ', error)
