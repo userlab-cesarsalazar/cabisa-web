@@ -95,11 +95,11 @@ function ProductFields(props) {
     if (!isJpgOrPng) {
       message.error('Solo puede cargar imagenes en formato JPG o PNG')
     }
-    const isLessThan5MB = file.size / 1024 / 1024 < 5 // 5 MB
-    if (!isLessThan5MB) {
-      message.error('La imagen debe ser menor a 5MB')
+    const isLessThan500KB = file.size / 1024 < 500 // 500 KB
+    if (!isLessThan500KB) {
+      message.error('La imagen debe ser menor a 500 KB')
     }
-    return isJpgOrPng && isLessThan5MB
+    return isJpgOrPng && isLessThan500KB
   }
 
   const uploadImage = ({ file }) => {
