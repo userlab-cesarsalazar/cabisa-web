@@ -339,7 +339,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       errors.push(
         `Los campos Precio y Cantidad de los productos en posicion ${productErrors.required.join(
           ', '
-        )} deben ser mayor o igual a cero`
+        )} deben ser mayor a cero`
       )
     }
 
