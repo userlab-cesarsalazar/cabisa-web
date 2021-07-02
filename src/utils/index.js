@@ -62,7 +62,7 @@ export const validateDynamicTableProducts = (
       }
 
       const hasRequiredError = productsRequiredFields.some(
-        k => !p[k] || p[k] < 0
+        k => !p[k] || p[k] <= 0
       )
 
       if (hasRequiredError) {

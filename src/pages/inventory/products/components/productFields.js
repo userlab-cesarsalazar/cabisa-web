@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import { Cache, Storage } from 'aws-amplify'
+import '../../../../amplify_config'
 import {
   productsStatus,
   productsCategories,
@@ -17,8 +19,8 @@ import {
   Upload,
 } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
-import { Cache } from 'aws-amplify'
-import { getBase64 } from '../../../../utils'
+import { showErrors } from '../../../../utils'
+
 const { Title } = Typography
 const { Option } = Select
 
@@ -91,29 +93,42 @@ function ProductFields(props) {
   const beforeUpload = file => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
     if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!')
+      message.error('Solo puede cargar imagenes en formato JPG o PNG')
     }
-    const isLt2M = file.size / 1024 / 1024 < 2
-    if (!isLt2M) {
-      message.error('Image must smaller than 2MB!')
+    const isLessThan500KB = file.size / 1024 < 500 // 500 KB
+    if (!isLessThan500KB) {
+      message.error('La imagen debe ser menor a 500 KB')
     }
-    return isJpgOrPng && isLt2M
+    return isJpgOrPng && isLessThan500KB
   }
 
-  const handleChange = info => {
-    if (info.file.status === 'uploading') {
-      getBase64(info.file.originFileObj, imageUrl => {
-        setImageUrl(imageUrl)
-        setLoading(false)
+  const uploadImage = ({ file }) => {
+    const currentTime = new Date().getTime()
+    const fileExtension = file.name.substring(file.name.lastIndexOf('.'))
+    const fileName = `CABISA_${currentTime}${fileExtension}`
+    setImageUrl(null)
+    setLoading(true)
+
+    Storage.put(fileName, file, {
+      level: 'public',
+      contentType: 'image/png',
+    })
+      .then(result => {
+        Storage.get(result.key).then(url => {
+          setImageUrl(url)
+        })
       })
-    }
+      .catch(error => {
+        showErrors(error)
+      })
+      .finally(() => setLoading(false))
   }
 
   const UploadButton = () => {
     return (
       <div>
         {loading ? <LoadingOutlined /> : <PlusOutlined />}
-        <div>Subir foto</div>
+        <div>{loading ? 'Subiendo...' : 'Subir foto'}</div>
       </div>
     )
   }
@@ -153,7 +168,7 @@ function ProductFields(props) {
               listType='picture-card'
               className='avatar-uploader'
               showUploadList={false}
-              onChange={handleChange}
+              customRequest={uploadImage}
               beforeUpload={beforeUpload}
               maxCount={1}
             >
