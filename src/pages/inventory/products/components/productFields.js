@@ -115,7 +115,8 @@ function ProductFields(props) {
     })
       .then(result => {
         Storage.get(result.key).then(url => {
-          setImageUrl(url)
+          const urlWithoutParams = url.substring(0, url.indexOf('?'))
+          setImageUrl(urlWithoutParams)
         })
       })
       .catch(error => {
@@ -276,4 +277,5 @@ function ProductFields(props) {
     </>
   )
 }
+
 export default ProductFields
