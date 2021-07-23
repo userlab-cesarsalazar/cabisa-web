@@ -4,7 +4,7 @@ import '../../../../amplify_config'
 import {
   productsStatus,
   productsCategories,
-  productsTaxes,
+  // productsTaxes,
 } from '../../../../commons/types'
 import FooterButtons from '../../../../components/FooterButtons'
 import Tag from '../../../../components/Tag'
@@ -34,7 +34,7 @@ function ProductFields(props) {
   const [loading, setLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState(null)
   const [status, setStatus] = useState(null)
-  const [taxId, setTaxId] = useState(null)
+  // const [taxId, setTaxId] = useState(null)
 
   useEffect(() => {
     setLoading(props.loading)
@@ -53,7 +53,7 @@ function ProductFields(props) {
     )
     setSpecialPermission(Cache.getItem('currentSession').rol_id !== 1)
     setStatus(props.edit ? props.editData.status : productsStatus.ACTIVE)
-    setTaxId(props.edit ? props.editData.tax_id : productsTaxes.IVA)
+    // setTaxId(props.edit ? props.editData.tax_id : productsTaxes.IVA)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.visible])
 
@@ -65,7 +65,7 @@ function ProductFields(props) {
       description,
       price,
       serviceCategory,
-      taxId,
+      // taxId,
     ]
 
     if (requiredValues.some(v => !v))
@@ -83,7 +83,7 @@ function ProductFields(props) {
       unit_price: price,
       product_category: serviceCategory,
       status,
-      tax_id: taxId,
+      tax_id: 2, //taxId,
       image_url: imageUrl,
     }
 
@@ -234,7 +234,7 @@ function ProductFields(props) {
           </Col>
         </Row>
         <Row gutter={16} className={'section-space-field'}>
-          <Col xs={8} sm={8} md={8} lg={8}>
+          {/* <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Impuesto</div>
             <Select
               value={taxId}
@@ -251,7 +251,7 @@ function ProductFields(props) {
                 </Option>
               ))}
             </Select>
-          </Col>
+          </Col> */}
           {props.isAdmin && (
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Precio de venta</div>
