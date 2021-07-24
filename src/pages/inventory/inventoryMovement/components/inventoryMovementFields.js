@@ -103,12 +103,12 @@ const getColumnsDynamicTable = ({
   },
   {
     width: '20%',
-    title: 'Precio',
+    title: 'Costo',
     dataIndex: 'unit_price', // Field that is goint to be rendered
     key: 'unit_price',
     render: (_, record, rowIndex) => (
       <Input
-        placeholder={'Precio'}
+        placeholder={'Costo'}
         size={'large'}
         value={record.unit_price}
         onChange={e =>
