@@ -119,6 +119,7 @@ function ClientFields({ edit, editData, ...props }) {
   const [address, setAddress] = useState('')
   const [payments_man, setPayments_man] = useState('')
   const [business_man, setBusiness_man] = useState('')
+  const [creditLimit, setCreditLimit] = useState(null)
   const [projectsData, setProjectsData] = useState([])
   const [loading, setLoading] = useState(false)
   const [
@@ -152,6 +153,7 @@ function ClientFields({ edit, editData, ...props }) {
     setAddress(edit ? editData.address : '')
     setBusiness_man(edit ? editData.business_man : '')
     setPayments_man(edit ? editData.payments_man : '')
+    setCreditLimit(edit ? editData.credit_limit || null : null)
     setProjectsData(
       edit ? editData.projects : projectsData.length > 0 ? projectsData : []
     )
@@ -186,6 +188,7 @@ function ClientFields({ edit, editData, ...props }) {
     phone,
     address,
     business_man,
+    credit_limit: creditLimit || null,
     payments_man,
     projects: projectsData.map(p => ({
       id: p.id,
@@ -338,13 +341,27 @@ function ClientFields({ edit, editData, ...props }) {
           </Col>
         </Row>
         <Row gutter={16} className={'section-space-field'}>
-          <Col xs={24} sm={24} md={24} lg={24}>
+          <Col xs={18} sm={18} md={18} lg={18}>
             <div className={'title-space-field'}>Direccion</div>
             <Input
               value={address}
               placeholder={'Escribir direccion'}
               size={'large'}
               onChange={value => setAddress(value.target.value)}
+              disabled={!isAdmin}
+            />
+          </Col>
+          <Col xs={6} sm={6} md={6} lg={6}>
+            <div className={'title-space-field'}>Limite de credito</div>
+            <Input
+              value={creditLimit}
+              placeholder={'Limite de credito'}
+              size={'large'}
+              onChange={e => {
+                const value = Number(e.target.value)
+                if (isNaN(value) || value < 0) return
+                setCreditLimit(value)
+              }}
               disabled={!isAdmin}
             />
           </Col>
