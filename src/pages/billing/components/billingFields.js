@@ -25,6 +25,7 @@ import FooterButtons from '../../../components/FooterButtons'
 
 const { Title } = Typography
 const { Option } = Select
+const { TextArea } = Input
 
 const getColumnsDynamicTable = ({
   edit,
@@ -303,6 +304,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     service_type: data.service_type,
     credit_days: data.credit_days,
     total_invoice: data.total,
+    description: data.description,
     products: productsData.map(p => ({
       product_id: p.id,
       product_quantity: p.quantity,
@@ -658,7 +660,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
             lg={7}
             style={{ display: 'flex', justifyContent: 'flex-end' }}
           >
-            {(!props.edit || discountInputValue) && (
+            {!props.edit || data.credit_days ? (
               <>
                 <div
                   style={{
@@ -694,7 +696,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
                   )}
                 </Select>
               </>
-            )}
+            ) : null}
           </Col>
           <Col
             xs={6}
@@ -703,7 +705,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
             lg={7}
             style={{ display: 'flex', justifyContent: 'flex-end' }}
           >
-            {(!props.edit || discountInputValue) && (
+            {!props.edit || discountInputValue ? (
               <>
                 <div
                   style={{
@@ -731,7 +733,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
                   disabled={props.edit}
                 />
               </>
-            )}
+            ) : null}
           </Col>
         </Row>
 
@@ -782,6 +784,20 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
 
         <Divider className={'divider-custom-margins-users'} />
       </div>
+
+      <Row gutter={16} className={'section-space-field'}>
+        <Col xs={24} sm={24} md={24} lg={24}>
+          <div className={'title-space-field'}>
+            <b>Descripcion</b>
+          </div>
+          <TextArea
+            rows={4}
+            value={data.description}
+            onChange={handleChange('description')}
+            disabled={props.edit}
+          />
+        </Col>
+      </Row>
 
       {!props.edit && (
         <FooterButtons
