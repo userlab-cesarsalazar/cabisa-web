@@ -70,11 +70,6 @@ export const projectsStatus = {
   FINISHED: 'FINISHED',
 }
 
-export const rolesStatus = {
-  ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE',
-}
-
 export const stakeholdersStatus = {
   ACTIVE: 'ACTIVE',
   INACTIVE: 'INACTIVE',
@@ -100,6 +95,11 @@ export const roles = {
   SELLS: 2,
   WAREHOUSE: 3,
   OPERATOR: 4,
+}
+
+export const rolesStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
 }
 
 export const permissions = {
