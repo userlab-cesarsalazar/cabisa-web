@@ -253,6 +253,7 @@ function SalesDetail({ closable, visible, isAdmin }) {
     start_date: sale.start_date,
     end_date: sale.end_date,
     received_by: sale.received_by,
+    dispatched_by: sale.dispatched_by,
     comments: sale.comments,
     related_external_document_id: null,
     products: dataSourceTable.map(p => ({
@@ -268,7 +269,8 @@ function SalesDetail({ closable, visible, isAdmin }) {
       { key: 'project_id', value: 'Proyecto' },
       { key: 'start_date', value: 'Fecha Inicio' },
       { key: 'end_date', value: 'Fecha Final' },
-      { key: 'received_by', value: 'Quien Recibe' },
+      // { key: 'received_by', value: 'Quien Recibe' },
+      // { key: 'dispatched_by', value: 'Quien Entrega' },
     ]
     const requiredErrors = requiredFields.flatMap(field =>
       !data[field.key] ? field.value : []
@@ -551,9 +553,9 @@ function SalesDetail({ closable, visible, isAdmin }) {
               <Input
                 placeholder={'Entrega'}
                 size={'large'}
-                value={sale.creator_name}
-                onChange={handleChange('creator_name')}
-                disabled
+                value={sale.dispatched_by}
+                onChange={handleChange('dispatched_by')}
+                disabled={forbidEdition || !isAdmin}
               />
             </Col>
             <Col xs={12} sm={12} md={12} lg={12}>

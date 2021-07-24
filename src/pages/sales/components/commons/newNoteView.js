@@ -234,6 +234,7 @@ function NewNoteView({ isAdmin }) {
     project_id: sale.project_id,
     start_date: sale.start_date,
     end_date: sale.end_date,
+    dispatched_by: sale.dispatched_by,
     received_by: sale.received_by,
     comments: sale.comments,
     related_external_document_id: null,
@@ -251,7 +252,8 @@ function NewNoteView({ isAdmin }) {
       { key: 'project_id', value: 'Proyecto' },
       { key: 'start_date', value: 'Fecha Inicio' },
       { key: 'end_date', value: 'Fecha Final' },
-      { key: 'received_by', value: 'Quien Recibe' },
+      // { key: 'dispatched_by', value: 'Quien Entrega' },
+      // { key: 'received_by', value: 'Quien Recibe' },
     ]
     const requiredErrors = requiredFields.flatMap(field =>
       !data[field.key] ? field.value : []
@@ -537,9 +539,8 @@ function NewNoteView({ isAdmin }) {
             <Input
               placeholder={'Entrega'}
               size={'large'}
-              value={sale.creator_name}
-              onChange={handleChange('creator_name')}
-              disabled
+              value={sale.dispatched_by}
+              onChange={handleChange('dispatched_by')}
             />
           </Col>
           <Col xs={12} sm={12} md={12} lg={12}>
