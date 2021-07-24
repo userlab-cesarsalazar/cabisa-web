@@ -21,6 +21,8 @@ export const documentsStatus = {
 export const documentsPaymentMethods = {
   CARD: 'CARD',
   CASH: 'CASH',
+  CHECK: 'CHECK',
+  DEPOSIT: 'DEPOSIT',
   TRANSFER: 'TRANSFER',
 }
 
