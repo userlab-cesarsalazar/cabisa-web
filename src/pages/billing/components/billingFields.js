@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import debounce from 'lodash/debounce'
 import {
   Button,
@@ -22,6 +22,7 @@ import {
 } from '../../../utils'
 import billingSrc from '../billingSrc'
 import FooterButtons from '../../../components/FooterButtons'
+import { appConfig } from '../../../commons/types'
 
 const { Title } = Typography
 const { Option } = Select
@@ -182,13 +183,65 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     })
   }, [setData, productsData, editData, isInvoiceFromSale])
 
+  const handleSearchStakeholder = useCallback(
+    (stakeholder_name, additionalParams = {}) => {
+      if (isInvoiceFromSale) return
+      if (stakeholder_name === '') return
+
+      const params = {
+        name: { $like: `%25${stakeholder_name}%25` },
+        ...additionalParams,
+      }
+
+      setLoading(true)
+
+      billingSrc
+        .getStakeholdersOptions(params)
+        .then(stakeholders => setStakeholdersOptionsList(stakeholders))
+        .catch(error => showErrors(error))
+        .finally(() => setLoading(false))
+    },
+    [setLoading, isInvoiceFromSale]
+  )
+
+  const handleSearchProduct = useCallback(
+    (product_description, additionalParams = {}) => {
+      if (isInvoiceFromSale) return
+      if (product_description === '') return
+
+      const params = {
+        stock: { $gt: 0 },
+        description: { $like: `%25${product_description}%25` },
+        ...additionalParams,
+      }
+
+      setLoading(true)
+
+      billingSrc
+        .getProductsOptions(params)
+        .then(data => setProductsOptionsList(data))
+        .catch(error => showErrors(error))
+        .finally(() => setLoading(false))
+    },
+    [setLoading, isInvoiceFromSale]
+  )
+
   useEffect(() => {
+    handleSearchStakeholder(null, {
+      $limit: appConfig.selectsInitLimit,
+      name: { $like: '%25%25' },
+    })
+    handleSearchProduct(null, {
+      $limit: appConfig.selectsInitLimit,
+      description: { $like: '%25%25' },
+    })
+
     if (!editData) return
 
     setData(editData)
     setProductsData(editData.products)
     setDiscountInputValue(editData.discount_percentage || 0)
-  }, [editData])
+  }, [editData, handleSearchStakeholder, handleSearchProduct])
 
   const updateInvoiceTotals = (field, value, rowIndex) => {
     const getProductSubtotal = (field, value, row, unit_discount) => {
@@ -274,6 +327,13 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     const value = e?.target?.value === undefined ? e : e.target.value
 
     if (field === 'stakeholder_id') {
+      if (!projectsOptionsList || projectsOptionsList?.length === 0) {
+        handleSearchProject(null, {
+          $limit: appConfig.selectsInitLimit,
+          name: { $like: '%25%25' },
+        })
+      }
+
       const stakeholder = stakeholdersOptionsList.find(
         option => option.id === value
       )
@@ -379,45 +439,13 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     props.handleSaveData(saveData)
   }
 
-  const handleSearchStakeholder = stakeholder_name => {
-    if (stakeholder_name === '') return
-
-    const params = {
-      name: { $like: `%25${stakeholder_name}%25` },
-    }
-
-    setLoading(true)
-
-    billingSrc
-      .getStakeholdersOptions(params)
-      .then(stakeholders => setStakeholdersOptionsList(stakeholders))
-      .catch(error => showErrors(error))
-      .finally(() => setLoading(false))
-  }
-
-  const handleSearchProduct = description => {
-    if (description === '') return
-
-    const params = {
-      stock: { $gt: 0 },
-      description: { $like: `%25${description}%25` },
-    }
-
-    setLoading(true)
-
-    billingSrc
-      .getProductsOptions(params)
-      .then(data => setProductsOptionsList(data))
-      .catch(error => showErrors(error))
-      .finally(() => setLoading(false))
-  }
-
-  const handleSearchProject = name => {
-    if (name === '' || !data.stakeholder_id) return
+  const handleSearchProject = (name, additionalParams = {}) => {
+    if (name === '' || (!data.stakeholder_id && name !== null)) return
 
     const params = {
       stakeholder_id: data.stakeholder_id,
       name: { $like: `%25${name}%25` },
+      ...additionalParams,
     }
 
     setLoading(true)

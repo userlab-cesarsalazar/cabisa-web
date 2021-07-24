@@ -1,3 +1,7 @@
+export const appConfig = {
+  selectsInitLimit: 10,
+}
+
 export const documentsTypes = {
   PURCHASE_ORDER: 'PURCHASE_ORDER',
   SELL_PRE_INVOICE: 'SELL_PRE_INVOICE',

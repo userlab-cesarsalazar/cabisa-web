@@ -22,6 +22,7 @@ import {
   productsStatus,
   stakeholdersStatus,
   productsTypes,
+  appConfig,
 } from '../../../../commons/types'
 import { useEditableList } from '../../../../hooks'
 import inventorySrc from '../../inventorySrc'
@@ -166,6 +167,15 @@ function InventoryMovementFields({ forbidEdition, editData }) {
   }
 
   useEffect(() => {
+    handleSearchStakeholder(null, {
+      $limit: appConfig.selectsInitLimit,
+      name: { $like: '%25%25' },
+    })
+    handleSearchProduct(null, {
+      $limit: appConfig.selectsInitLimit,
+      description: { $like: '%25%25' },
+    })
+
     if (!editData) return
 
     const { data, productsData } = getDataFromEditData(editData)
@@ -206,13 +216,14 @@ function InventoryMovementFields({ forbidEdition, editData }) {
     onChange: setProductData,
   })
 
-  const handleSearchProduct = product_description => {
+  const handleSearchProduct = (product_description, additionalParams = {}) => {
     if (product_description === '') return
 
     const params = {
       description: { $like: `%25${product_description}%25` },
       status: productsStatus.ACTIVE,
       product_type: { $ne: productsTypes.SERVICE },
+      ...additionalParams,
     }
 
     setLoading('productsOptionsList')
@@ -335,12 +346,13 @@ function InventoryMovementFields({ forbidEdition, editData }) {
     }))
   }
 
-  const handleSearchStakeholder = stakeholder_name => {
+  const handleSearchStakeholder = (stakeholder_name, additionalParams = {}) => {
     if (stakeholder_name === '') return
 
     const params = {
       status: stakeholdersStatus.ACTIVE,
       name: { $like: `%25${stakeholder_name}%25` },
+      ...additionalParams,
     }
 
     setLoading('stakeholdersOptionsList')
