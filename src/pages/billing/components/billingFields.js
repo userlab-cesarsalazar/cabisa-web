@@ -5,6 +5,7 @@ import {
   Col,
   Divider,
   Input,
+  message,
   Popconfirm,
   Row,
   Select,
@@ -22,7 +23,11 @@ import {
 } from '../../../utils'
 import billingSrc from '../billingSrc'
 import FooterButtons from '../../../components/FooterButtons'
-import { appConfig } from '../../../commons/types'
+import {
+  appConfig,
+  documentsServiceType,
+  productsTypes,
+} from '../../../commons/types'
 
 const { Title } = Typography
 const { Option } = Select
@@ -35,44 +40,157 @@ const getColumnsDynamicTable = ({
   handleChangeDetail,
   handleSearchProduct,
   productsOptionsList,
+  handleSearchChildProduct,
+  childProductsOptionsList,
   isInvoiceFromSale,
-}) => [
-  {
-    title: 'Codigo',
-    dataIndex: 'code', // Field that is goint to be rendered
-    key: 'code',
-    render: (_, record) => (
-      <Input
-        value={record.code}
-        size={'large'}
-        placeholder={'Codigo'}
-        style={{ minWidth: '120px' }}
-        disabled
-      />
-    ),
-  },
-  {
+  serviceType,
+}) => {
+  const leftColumns = [
+    {
+      title: 'Codigo',
+      dataIndex: 'code', // Field that is goint to be rendered
+      key: 'code',
+      render: (_, record) => (
+        <Input
+          value={record.code}
+          size={'large'}
+          placeholder={'Codigo'}
+          style={{ minWidth: '120px' }}
+          disabled
+        />
+      ),
+    },
+    {
+      width: '30%',
+      title: 'Descripcion',
+      dataIndex: 'id', // Field that is goint to be rendered
+      key: 'id',
+      render: (_, record, rowIndex) => (
+        <Select
+          className={'single-select'}
+          placeholder={'Descripcion'}
+          size={'large'}
+          style={{ width: '100%', height: '40px' }}
+          getPopupContainer={trigger => trigger.parentNode}
+          showSearch
+          onSearch={debounce(handleSearchProduct, 400)}
+          value={record.id}
+          onChange={value => handleChangeDetail('id', value, rowIndex)}
+          loading={loading}
+          optionFilterProp='children'
+          disabled={edit || isInvoiceFromSale}
+        >
+          {productsOptionsList?.length > 0 ? (
+            productsOptionsList.map(value => (
+              <Option key={value.id} value={value.id}>
+                {value.description}
+              </Option>
+            ))
+          ) : (
+            <Option value={record.id}>{record.description}</Option>
+          )}
+        </Select>
+      ),
+    },
+  ]
+
+  const rightColumns = [
+    {
+      title: 'Precio Unitario',
+      dataIndex: 'unit_price', // Field that is goint to be rendered
+      key: 'unit_price',
+      render: (_, record, rowIndex) => (
+        <Input
+          style={{ minWidth: '80px' }}
+          type={'number'}
+          value={edit ? record.product_price : record.unit_price}
+          size={'large'}
+          placeholder={'Precio unitario'}
+          onChange={event =>
+            handleChangeDetail('unit_price', event.target.value, rowIndex)
+          }
+          disabled
+        />
+      ),
+    },
+    {
+      title: 'Cantidad',
+      dataIndex: 'quantity', // Field that is goint to be rendered
+      key: 'quantity',
+      render: (_, record, rowIndex) => (
+        <Input
+          style={{ minWidth: '40px' }}
+          type={'number'}
+          value={edit ? record.product_quantity : record.quantity}
+          size={'large'}
+          placeholder={'Cantidad'}
+          onChange={event =>
+            handleChangeDetail('quantity', event.target.value, rowIndex)
+          }
+          min={1}
+          disabled={
+            edit ||
+            isInvoiceFromSale ||
+            (serviceType === productsTypes.SERVICE &&
+              (!record.id || !record.child_id))
+          }
+        />
+      ),
+    },
+    {
+      title: 'Subtotal',
+      dataIndex: 'subtotal', // Field that is goint to be rendered
+      key: 'subtotal',
+      render: (_, record) => (
+        <Input
+          style={{ minWidth: '80px' }}
+          disabled
+          type={'number'}
+          size={'large'}
+          placeholder={'Subtotal'}
+          value={record.subtotal}
+        />
+      ),
+    },
+    {
+      title: '',
+      dataIndex: 'id',
+      render: (_, __, rowIndex) =>
+        !edit &&
+        !isInvoiceFromSale && (
+          <Popconfirm
+            disabled={edit}
+            title={'¿Seguro de eliminar?'}
+            onConfirm={() => handleRemoveDetail(rowIndex)}
+          >
+            <span style={{ color: 'red' }}>Eliminar</span>
+          </Popconfirm>
+        ),
+    },
+  ]
+
+  const productColumn = {
     width: '30%',
-    title: 'Descripcion',
+    title: 'Producto',
     dataIndex: 'id', // Field that is goint to be rendered
     key: 'id',
     render: (_, record, rowIndex) => (
       <Select
         className={'single-select'}
-        placeholder={'Descripcion'}
+        placeholder={'Producto'}
         size={'large'}
         style={{ width: '100%', height: '40px' }}
         getPopupContainer={trigger => trigger.parentNode}
         showSearch
-        onSearch={debounce(handleSearchProduct, 400)}
-        value={record.id}
-        onChange={value => handleChangeDetail('id', value, rowIndex)}
+        onSearch={debounce(handleSearchChildProduct, 400)}
+        value={record.child_id}
+        onChange={value => handleChangeDetail('child_id', value, rowIndex)}
         loading={loading}
         optionFilterProp='children'
-        disabled={edit || isInvoiceFromSale}
+        disabled={edit || isInvoiceFromSale || !record.id}
       >
-        {productsOptionsList?.length > 0 ? (
-          productsOptionsList.map(value => (
+        {childProductsOptionsList?.length > 0 ? (
+          childProductsOptionsList.map(value => (
             <Option key={value.id} value={value.id}>
               {value.description}
             </Option>
@@ -82,80 +200,18 @@ const getColumnsDynamicTable = ({
         )}
       </Select>
     ),
-  },
-  {
-    title: 'Precio Unitario',
-    dataIndex: 'unit_price', // Field that is goint to be rendered
-    key: 'unit_price',
-    render: (_, record, rowIndex) => (
-      <Input
-        style={{ minWidth: '80px' }}
-        type={'number'}
-        value={edit ? record.product_price : record.unit_price}
-        size={'large'}
-        placeholder={'Precio unitario'}
-        onChange={event =>
-          handleChangeDetail('unit_price', event.target.value, rowIndex)
-        }
-        disabled
-      />
-    ),
-  },
-  {
-    title: 'Cantidad',
-    dataIndex: 'quantity', // Field that is goint to be rendered
-    key: 'quantity',
-    render: (_, record, rowIndex) => (
-      <Input
-        style={{ minWidth: '40px' }}
-        disabled={edit || isInvoiceFromSale}
-        type={'number'}
-        value={edit ? record.product_quantity : record.quantity}
-        size={'large'}
-        placeholder={'Cantidad'}
-        onChange={event =>
-          handleChangeDetail('quantity', event.target.value, rowIndex)
-        }
-        min={0}
-      />
-    ),
-  },
-  {
-    title: 'Subtotal',
-    dataIndex: 'subtotal', // Field that is goint to be rendered
-    key: 'subtotal',
-    render: (_, record) => (
-      <Input
-        style={{ minWidth: '80px' }}
-        disabled
-        type={'number'}
-        size={'large'}
-        placeholder={'Subtotal'}
-        value={record.subtotal}
-      />
-    ),
-  },
-  {
-    title: '',
-    dataIndex: 'id',
-    render: (_, __, rowIndex) =>
-      !edit &&
-      !isInvoiceFromSale && (
-        <Popconfirm
-          disabled={edit}
-          title={'¿Seguro de eliminar?'}
-          onConfirm={() => handleRemoveDetail(rowIndex)}
-        >
-          <span style={{ color: 'red' }}>Eliminar</span>
-        </Popconfirm>
-      ),
-  },
-]
+  }
+
+  return serviceType === documentsServiceType.SERVICE
+    ? [...leftColumns, productColumn, ...rightColumns]
+    : [...leftColumns, ...rightColumns]
+}
 
 function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   const [stakeholdersOptionsList, setStakeholdersOptionsList] = useState([])
-  const [productsOptionsList, setProductsOptionsList] = useState([])
   const [projectsOptionsList, setProjectsOptionsList] = useState([])
+  const [productsOptionsList, setProductsOptionsList] = useState([])
+  const [childProductsOptionsList, setChildProductsOptionsList] = useState([])
   const [data, setData] = useState({})
   const [productsData, setProductsData] = useState([])
   const [discountInputValue, setDiscountInputValue] = useState(0)
@@ -164,9 +220,19 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     if (editData && !isInvoiceFromSale) return
 
     setData(prevState => {
+      const getProductDiscount = p =>
+        data.service_type === productsTypes.SERVICE
+          ? p.parent_unit_discount + p.child_unit_discount * p.quantity
+          : p.unit_discount * p.quantity
+
+      const getProductSubtotal = p =>
+        data.service_type === productsTypes.SERVICE
+          ? p.parent_unit_price + p.child_unit_price * p.quantity
+          : p.unit_price * p.quantity
+
       const totals = productsData?.reduce((r, p) => {
-        const discount = (r.discount || 0) + p.unit_discount * p.quantity
-        const subtotal = (r.subtotal || 0) + p.unit_price * p.quantity
+        const discount = (r.discount || 0) + getProductDiscount(p)
+        const subtotal = (r.subtotal || 0) + getProductSubtotal(p)
         const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
         const total = subtotal + total_tax
 
@@ -181,7 +247,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
 
       return { ...prevState, ...totals }
     })
-  }, [setData, productsData, editData, isInvoiceFromSale])
+  }, [setData, productsData, editData, isInvoiceFromSale, data.service_type])
 
   const handleSearchStakeholder = useCallback(
     (stakeholder_name, additionalParams = {}) => {
@@ -208,10 +274,18 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     (product_description, additionalParams = {}) => {
       if (isInvoiceFromSale) return
       if (product_description === '') return
+      if (!data.service_type && product_description !== null)
+        return message.warning('Debe seleccionar el Tipo de servicio')
+
+      const product_type =
+        data.service_type === productsTypes.SERVICE
+          ? productsTypes.SERVICE
+          : productsTypes.PRODUCT
 
       const params = {
         stock: { $gt: 0 },
         description: { $like: `%25${product_description}%25` },
+        product_type,
         ...additionalParams,
       }
 
@@ -223,17 +297,49 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
         .catch(error => showErrors(error))
         .finally(() => setLoading(false))
     },
-    [setLoading, isInvoiceFromSale]
+    [setLoading, isInvoiceFromSale, data.service_type]
   )
+
+  const handleSearchChildProduct = useCallback(
+    (product_description, additionalParams = {}) => {
+      if (isInvoiceFromSale) return
+      if (product_description === '') return
+      if (data.service_type !== productsTypes.SERVICE) return
+
+      const params = {
+        stock: { $gt: 0 },
+        description: { $like: `%25${product_description}%25` },
+        product_type: productsTypes.PRODUCT,
+        ...additionalParams,
+      }
+
+      setLoading(true)
+
+      billingSrc
+        .getProductsOptions(params)
+        .then(data => setChildProductsOptionsList(data))
+        .catch(error => showErrors(error))
+        .finally(() => setLoading(false))
+    },
+    [setLoading, isInvoiceFromSale, data.service_type]
+  )
+
+  useEffect(() => {
+    handleSearchProduct(null, {
+      $limit: appConfig.selectsInitLimit,
+      description: { $like: '%25%25' },
+    })
+
+    handleSearchChildProduct(null, {
+      $limit: appConfig.selectsInitLimit,
+      description: { $like: '%25%25' },
+    })
+  }, [handleSearchProduct, handleSearchChildProduct])
 
   useEffect(() => {
     handleSearchStakeholder(null, {
       $limit: appConfig.selectsInitLimit,
       name: { $like: '%25%25' },
-    })
-    handleSearchProduct(null, {
-      $limit: appConfig.selectsInitLimit,
-      description: { $like: '%25%25' },
     })
 
     if (!editData) return
@@ -241,43 +347,42 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     setData(editData)
     setProductsData(editData.products)
     setDiscountInputValue(editData.discount_percentage || 0)
-  }, [editData, handleSearchStakeholder, handleSearchProduct])
+  }, [editData, handleSearchStakeholder])
 
   const updateInvoiceTotals = (field, value, rowIndex) => {
-    const getProductSubtotal = (field, value, row, unit_discount) => {
-      if (field === 'unit_price')
-        return roundNumber(row.quantity * (value - unit_discount))
+    const getParentProduct = (field, value, row) =>
+      productsOptionsList.find(o =>
+        field === 'id'
+          ? Number(o.id) === Number(value)
+          : Number(o.id) === row.id
+      )
 
-      if (field === 'quantity')
-        return roundNumber(value * (row.unit_price - unit_discount))
+    const getChildProduct = (field, value, row) => {
+      if (data.service_type !== productsTypes.SERVICE)
+        return { unit_price: 0, tax_fee: 0 }
 
-      return 0
+      return childProductsOptionsList.find(o =>
+        field === 'child_id'
+          ? Number(o.id) === Number(value)
+          : Number(o.id) === row.child_id
+      )
     }
-
-    const product = productsOptionsList.find(option => option.id === value)
 
     setProductsData(prevState => {
       const row = prevState[rowIndex]
-      const baseUnitPrice = product ? product.unit_price : row.base_unit_price
-      const tax_fee = product ? product.tax_fee : row.tax_fee
-      const unit_discount = baseUnitPrice * getPercent(discountInputValue)
-      const unit_price = baseUnitPrice - unit_discount
+      const parentProduct = getParentProduct(field, value, row)
+      const childProduct = getChildProduct(field, value, row)
 
-      const newRow = {
-        ...row,
-        id: product ? product.id : row.id,
-        code: product ? product.code : row.code,
-        tax_fee,
-        base_unit_price: row.base_unit_price || unit_price,
-        unit_price: roundNumber(unit_price),
-        unit_tax_amount: roundNumber(unit_price * getPercent(tax_fee)),
-        unit_discount: roundNumber(unit_discount),
-        subtotal: getProductSubtotal(field, value, row, unit_discount),
-        quantity: field === 'id' ? 1 : row.quantity,
-      }
+      const updatedRow = handleUpdateProductsData({
+        parentProduct,
+        childProduct,
+        row,
+        discountValue: discountInputValue,
+        field,
+      })
 
       return prevState.map((prevRow, index) =>
-        index === rowIndex ? newRow : prevRow
+        index === rowIndex ? updatedRow : prevRow
       )
     })
   }
@@ -290,37 +395,145 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     state: productsData,
     setState: setProductsData,
     initRow: {
+      // common fields
       id: '',
       code: '',
+      child_id: '',
       quantity: 0,
-      tax_fee: 12,
       unit_price: 0,
       base_unit_price: 0,
       unit_tax_amount: 0,
+      // parentProduct
+      parent_tax_fee: 0,
+      parent_unit_price: 0,
+      parent_base_unit_price: 0,
+      parent_unit_tax_amount: 0,
+      // childProduct
+      child_tax_fee: 0,
+      child_unit_price: 0,
+      child_base_unit_price: 0,
+      child_unit_tax_amount: 0,
       subtotal: 0,
     },
     onChange: updateInvoiceTotals,
   })
 
   const handleDiscountChange = e => {
+    const getParentProduct = p => ({
+      id: p.id,
+      code: p.code,
+      tax_fee: p.parent_tax_fee,
+      unit_tax_amount: p.parent_unit_tax_amount,
+      unit_discount: p.parent_unit_discount,
+    })
+
+    const getChildProduct = p => ({
+      id: p.child_id,
+      tax_fee: p.child_tax_fee,
+      unit_tax_amount: p.child_unit_tax_amount,
+      unit_discount: p.child_unit_discount,
+    })
+
     setDiscountInputValue(e?.target?.value || 0)
 
-    setProductsData(prevState =>
-      prevState.map(p => {
-        const unit_discount = p.base_unit_price * getPercent(e.target.value)
-        const unit_price = p.base_unit_price - unit_discount
-        const unit_tax_amount = unit_price * getPercent(p.tax_fee)
-        const subtotal = p.quantity * unit_price
+    setProductsData(prevState => {
+      return prevState.map(p => {
+        const parentProduct = getParentProduct(p)
+        const childProduct = getChildProduct(p)
 
-        return {
-          ...p,
-          unit_price: roundNumber(unit_price),
-          unit_discount: roundNumber(unit_discount),
-          unit_tax_amount: roundNumber(unit_tax_amount),
-          subtotal: roundNumber(subtotal),
-        }
+        const updatedProduct = handleUpdateProductsData({
+          parentProduct,
+          childProduct,
+          row: p,
+          discountValue: e?.target?.value,
+        })
+
+        return updatedProduct
       })
+    })
+  }
+
+  const handleUpdateProductsData = ({
+    parentProduct,
+    childProduct,
+    row,
+    discountValue,
+    field = '',
+  }) => {
+    console.log({ parentProduct, childProduct, row, discountValue })
+    // parentProduct
+    const parentBaseUnitPrice = parentProduct?.unit_price
+      ? parentProduct.unit_price
+      : row.parent_base_unit_price
+    const parent_tax_fee = parentProduct?.tax_fee
+      ? parentProduct.tax_fee
+      : row.parent_tax_fee
+    const parent_unit_discount = parentBaseUnitPrice * getPercent(discountValue)
+    const parent_unit_price = parentBaseUnitPrice - parent_unit_discount
+    const parent_unit_tax_amount =
+      parent_unit_price * getPercent(parent_tax_fee)
+    const parent_base_unit_price =
+      field === 'id' || field === 'child_id'
+        ? parent_unit_price + parent_unit_discount
+        : row.parent_base_unit_price || parent_unit_price
+    // childProduct
+    const childBaseUnitPrice = childProduct?.unit_price
+      ? childProduct.unit_price
+      : row.child_base_unit_price
+    const child_tax_fee = childProduct?.tax_fee
+      ? Number(childProduct.tax_fee)
+      : Number(row.child_tax_fee)
+    const child_unit_discount = childBaseUnitPrice * getPercent(discountValue)
+    const child_unit_price = childBaseUnitPrice - child_unit_discount
+    const child_unit_tax_amount = child_unit_price * getPercent(child_tax_fee)
+    const child_base_unit_price =
+      field === 'id' || field === 'child_id'
+        ? child_unit_price + child_unit_discount
+        : row.child_base_unit_price || child_unit_price
+    // common fields
+    const unit_discount = roundNumber(
+      child_unit_discount + parent_unit_discount
     )
+    const unit_price = roundNumber(child_unit_price + parent_unit_price)
+    const unit_tax_amount = roundNumber(
+      child_unit_tax_amount + parent_unit_tax_amount
+    )
+
+    const newRow = {
+      ...row,
+      // parentProduct
+      parent_tax_fee,
+      parent_unit_price,
+      parent_unit_tax_amount,
+      parent_unit_discount,
+      parent_base_unit_price,
+      // childProduct
+      child_tax_fee,
+      child_unit_price,
+      child_unit_tax_amount,
+      child_unit_discount,
+      child_base_unit_price,
+      // common fields
+      id: parentProduct ? Number(parentProduct.id) : row.id,
+      code: parentProduct ? parentProduct.code : row.code,
+      child_id: childProduct ? Number(childProduct.id) : row.child_id,
+      quantity: field === 'id' || field === 'child_id' ? 1 : row.quantity,
+      tax_fee:
+        unit_tax_amount && unit_price
+          ? (unit_tax_amount / unit_price) * 100
+          : 0,
+      unit_tax_amount,
+      unit_price,
+      unit_discount,
+      base_unit_price: child_base_unit_price + parent_base_unit_price,
+    }
+
+    const subtotal =
+      data.service_type === productsTypes.SERVICE
+        ? roundNumber(child_unit_price * newRow.quantity + parent_unit_price)
+        : roundNumber(newRow.unit_price * newRow.quantity)
+    console.log({ ...newRow, subtotal })
+    return { ...newRow, subtotal }
   }
 
   const handleChange = field => e => {
@@ -348,6 +561,19 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
         stakeholder_phone: stakeholder.phone,
         stakeholder_address: stakeholder.address,
       }))
+    }
+
+    if (field === 'service_type') {
+      const prevTypeIsService =
+        data.service_type === documentsServiceType.SERVICE
+      const nextTypeIsService = value === documentsServiceType.SERVICE
+
+      if (prevTypeIsService !== nextTypeIsService) {
+        setProductsData([])
+        setProductsOptionsList([])
+        setChildProductsOptionsList([])
+        handleAddDetail()
+      }
     }
 
     setData(prevState => ({
@@ -463,7 +689,10 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     handleChangeDetail,
     handleSearchProduct,
     productsOptionsList,
+    handleSearchChildProduct,
+    childProductsOptionsList,
     isInvoiceFromSale,
+    serviceType: data.service_type,
   })
 
   return (
