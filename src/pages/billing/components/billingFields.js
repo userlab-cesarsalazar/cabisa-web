@@ -460,7 +460,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     discountValue,
     field = '',
   }) => {
-    console.log({ parentProduct, childProduct, row, discountValue })
     // parentProduct
     const parentBaseUnitPrice = parentProduct?.unit_price
       ? parentProduct.unit_price
@@ -514,9 +513,9 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       child_unit_discount,
       child_base_unit_price,
       // common fields
-      id: parentProduct ? Number(parentProduct.id) : row.id,
-      code: parentProduct ? parentProduct.code : row.code,
-      child_id: childProduct ? Number(childProduct.id) : row.child_id,
+      id: parentProduct?.id ? Number(parentProduct.id) : row.id,
+      code: parentProduct?.code ? parentProduct.code : row.code,
+      child_id: childProduct?.id ? Number(childProduct.id) : row.child_id,
       quantity: field === 'id' || field === 'child_id' ? 1 : row.quantity,
       tax_fee:
         unit_tax_amount && unit_price
@@ -532,7 +531,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       data.service_type === productsTypes.SERVICE
         ? roundNumber(child_unit_price * newRow.quantity + parent_unit_price)
         : roundNumber(newRow.unit_price * newRow.quantity)
-    console.log({ ...newRow, subtotal })
+
     return { ...newRow, subtotal }
   }
 
@@ -591,13 +590,30 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     credit_days: data.credit_days,
     total_invoice: data.total,
     description: data.description,
-    products: productsData.map(p => ({
-      product_id: p.id,
-      product_quantity: p.quantity,
-      product_price: p.unit_price,
-      product_discount_percentage: discountInputValue,
-      product_discount: p.unit_discount,
-    })),
+    products: productsData.reduce((r, p) => {
+      const parentProduct = {
+        product_id: p.id,
+        product_quantity: isNaN(p.child_id) ? Number(p.quantity) : 1,
+        product_price: Number(p.parent_unit_price),
+        product_discount_percentage: Number(discountInputValue),
+        product_discount: Number(p.parent_unit_discount),
+      }
+
+      const childProduct = {
+        product_id: p.child_id,
+        product_quantity: Number(p.quantity),
+        product_price: Number(p.child_unit_price),
+        product_discount_percentage: Number(discountInputValue),
+        product_discount: Number(p.child_unit_discount),
+        parent_product_id: p.id,
+      }
+
+      const products = isNaN(p.child_id)
+        ? [parentProduct]
+        : [parentProduct, childProduct]
+
+      return [...(r || []), ...products]
+    }, []),
   })
 
   const validateSaveData = data => {
@@ -620,7 +636,8 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
 
     const productErrors = validateDynamicTableProducts(
       data.products,
-      productsRequiredFields
+      productsRequiredFields,
+      data.service_type === documentsServiceType.SERVICE
     )
 
     if (productErrors.required.length > 0) {
