@@ -196,7 +196,7 @@ const getColumnsDynamicTable = ({
             </Option>
           ))
         ) : (
-          <Option value={record.id}>{record.description}</Option>
+          <Option value={record.child_id}>{record.child_description}</Option>
         )}
       </Select>
     ),
