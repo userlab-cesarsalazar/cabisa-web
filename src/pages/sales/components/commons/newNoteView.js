@@ -17,14 +17,22 @@ import {
 import FooterButtons from '../../../../components/FooterButtons'
 import HeaderPage from '../../../../components/HeaderPage'
 import DynamicTable from '../../../../components/DynamicTable'
+import Tag from '../../../../components/Tag'
 import { useSale, saleActions } from '../../context'
 import { showErrors, validateDynamicTableProducts } from '../../../../utils'
-import { productsStatus, appConfig } from '../../../../commons/types'
+import {
+  productsTypes,
+  productsStatus,
+  appConfig,
+  documentsServiceType,
+} from '../../../../commons/types'
 import { useEditableList } from '../../../../hooks'
 const {
+  fetchChildProductsOptions,
   fetchProductsOptions,
   fetchProjectsOptions,
   fetchStakeholdersOptions,
+  fetchDocumentServiceTypeOptions,
   createSale,
   setSaleState,
 } = saleActions
@@ -36,14 +44,17 @@ const getColumnsDynamicTable = ({
   handleChangeDetail,
   handleRemoveDetail,
   handleSearchProduct,
+  handleSearchChildProduct,
+  childProductsOptionsList,
   productsOptionsList,
+  serviceType,
   status,
   loading,
   isAdmin,
 }) => {
   const columns = [
     {
-      width: '25%',
+      width: '15%',
       title: 'Codigo',
       dataIndex: 'code', // Field that is goint to be rendered
       key: 'code',
@@ -57,7 +68,6 @@ const getColumnsDynamicTable = ({
       ),
     },
     {
-      width: '40%',
       title: 'Descripcion',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
@@ -87,28 +97,27 @@ const getColumnsDynamicTable = ({
         </Select>
       ),
     },
-    {
-      width: '15%',
-      title: 'Cantidad',
-      dataIndex: 'product_quantity', // Field that is goint to be rendered
-      key: 'product_quantity',
-      render: (_, record, rowIndex) => (
-        <Input
-          placeholder={'Cantidad'}
-          size={'large'}
-          value={record.quantity}
-          onChange={e =>
-            handleChangeDetail('quantity', e.target.value, rowIndex)
-          }
-          min={0}
-          type='number'
-        />
-      ),
-    },
   ]
 
+  const quantityColumn = {
+    width: '15%',
+    title: 'Cantidad',
+    dataIndex: 'product_quantity', // Field that is goint to be rendered
+    key: 'product_quantity',
+    render: (_, record, rowIndex) => (
+      <Input
+        placeholder={'Cantidad'}
+        size={'large'}
+        value={record.quantity}
+        onChange={e => handleChangeDetail('quantity', e.target.value, rowIndex)}
+        min={1}
+        type='number'
+      />
+    ),
+  }
+
   const priceColumn = {
-    width: '20%',
+    width: '15%',
     title: 'Precio',
     dataIndex: 'unit_price', // Field that is goint to be rendered
     key: 'unit_price',
@@ -141,7 +150,48 @@ const getColumnsDynamicTable = ({
     ),
   }
 
-  const columnsWithPrice = isAdmin ? [...columns, priceColumn] : columns
+  const productColumn = {
+    title: 'Producto',
+    dataIndex: 'id', // Field that is goint to be rendered
+    key: 'id',
+    render: (_, record, rowIndex) => (
+      <Select
+        className={'single-select'}
+        placeholder={'Producto'}
+        size={'large'}
+        style={{ width: '100%', height: '40px' }}
+        getPopupContainer={trigger => trigger.parentNode}
+        showSearch
+        onSearch={debounce(handleSearchChildProduct, 400)}
+        value={record.child_id}
+        onChange={value => handleChangeDetail('child_id', value, rowIndex)}
+        optionFilterProp='children'
+        loading={
+          status === 'LOADING' && loading === 'fetchChildProductsOptions'
+        }
+        disabled={!record.id}
+      >
+        {childProductsOptionsList?.length > 0 ? (
+          childProductsOptionsList.map(value => (
+            <Option key={value.id} value={value.id}>
+              {value.description}
+            </Option>
+          ))
+        ) : (
+          <Option value={record.child_id}>{record.child_description}</Option>
+        )}
+      </Select>
+    ),
+  }
+
+  const columnsWithProduct =
+    serviceType === productsTypes.SERVICE
+      ? [...columns, productColumn, quantityColumn]
+      : [...columns, quantityColumn]
+
+  const columnsWithPrice = isAdmin
+    ? [...columnsWithProduct, priceColumn]
+    : columnsWithProduct
 
   return [...columnsWithPrice, deleteButtonColumn]
 }
@@ -171,18 +221,37 @@ function NewNoteView({ isAdmin }) {
   const handleSearchProduct = useCallback(
     (product_description, additionalParams = {}) => {
       if (product_description === '') return
+      if (!sale.service_type && product_description !== null)
+        return message.warning('Debe seleccionar el Tipo de servicio')
+
+      const product_type =
+        sale.service_type === productsTypes.SERVICE
+          ? productsTypes.SERVICE
+          : productsTypes.PRODUCT
 
       const params = {
         status: productsStatus.ACTIVE,
         stock: { $gt: 0 },
         description: { $like: `%25${product_description}%25` },
+        product_type,
         ...additionalParams,
       }
 
       fetchProductsOptions(saleDispatch, params)
     },
-    [saleDispatch]
+    [saleDispatch, sale.service_type]
   )
+
+  const fetchServiceTypeOptionsList = useCallback(() => {
+    fetchDocumentServiceTypeOptions(saleDispatch)
+  }, [saleDispatch])
+
+  useEffect(() => {
+    handleSearchProduct(null, {
+      $limit: appConfig.selectsInitLimit,
+      description: { $like: '%25%25' },
+    })
+  }, [handleSearchProduct])
 
   useEffect(() => {
     handleSearchStakeholder(null, {
@@ -190,11 +259,8 @@ function NewNoteView({ isAdmin }) {
       name: { $like: '%25%25' },
     })
 
-    handleSearchProduct(null, {
-      $limit: appConfig.selectsInitLimit,
-      description: { $like: '%25%25' },
-    })
-  }, [handleSearchStakeholder, handleSearchProduct])
+    fetchServiceTypeOptionsList()
+  }, [handleSearchStakeholder, fetchServiceTypeOptionsList])
 
   useEffect(() => {
     if (status === 'ERROR') {
@@ -209,21 +275,42 @@ function NewNoteView({ isAdmin }) {
   }, [error, status, loading, saleDispatch, history])
 
   const setProductData = (field, value, rowIndex) => {
-    if (field !== 'id') return
+    if (field !== 'id' && field !== 'child_id') return
 
-    const product = saleState.productsOptionsList.find(
-      option => option.id === value
+    if (field === 'id' && saleState.childProductsOptionsList.length === 0) {
+      handleSearchChildProduct(null, {
+        $limit: appConfig.selectsInitLimit,
+        description: { $like: '%25%25' },
+      })
+    }
+
+    const productsArray =
+      field === 'id'
+        ? saleState.productsOptionsList
+        : saleState.childProductsOptionsList
+
+    const product = productsArray.find(
+      option => Number(option.id) === Number(value)
     )
 
     setDataSourceTable(prevState => {
+      const row = prevState[rowIndex]
+      console.log(row)
       const newRow = {
-        ...prevState[rowIndex],
-        id: product.id,
-        code: product.code,
-        unit_price: product.unit_price,
+        ...row,
+        id: field === 'id' ? product.id : row.id,
+        code: field === 'id' ? product.code : row.code,
+        parent_unit_price:
+          field === 'id' ? product.unit_price : row.parent_unit_price,
+        child_unit_price:
+          field === 'child_id' ? product.unit_price : row.child_unit_price,
+        unit_price:
+          field === 'id'
+            ? product.unit_price + row.child_unit_price
+            : row.parent_unit_price + product.unit_price,
         quantity: 1,
       }
-
+      console.log(newRow)
       return prevState.map((row, index) => (index === rowIndex ? newRow : row))
     })
   }
@@ -239,6 +326,8 @@ function NewNoteView({ isAdmin }) {
       code: '',
       description: '',
       quantity: 0,
+      parent_unit_price: 0,
+      child_unit_price: 0,
       unit_price: 0,
     },
     onChange: setProductData,
@@ -249,11 +338,31 @@ function NewNoteView({ isAdmin }) {
     else return moment(endDate).diff(moment(startDate), 'days')
   }
 
+  const handleSearchChildProduct = (
+    product_description,
+    additionalParams = {}
+  ) => {
+    if (product_description === '') return
+
+    const params = {
+      status: productsStatus.ACTIVE,
+      stock: { $gt: 0 },
+      description: { $like: `%25${product_description}%25` },
+      product_type: productsTypes.PRODUCT,
+      ...additionalParams,
+    }
+
+    fetchChildProductsOptions(saleDispatch, params)
+  }
+
   const columnsDynamicTable = getColumnsDynamicTable({
     handleChangeDetail,
     handleRemoveDetail,
     handleSearchProduct,
+    handleSearchChildProduct,
+    childProductsOptionsList: saleState.childProductsOptionsList,
     productsOptionsList: saleState.productsOptionsList,
+    serviceType: sale.service_type,
     status,
     loading,
     isAdmin,
@@ -377,6 +486,21 @@ function NewNoteView({ isAdmin }) {
         stakeholder_phone: stakeholder.phone,
         stakeholder_business_man: stakeholder.business_man,
       }))
+    }
+
+    if (field === 'service_type') {
+      const prevTypeIsService =
+        sale.service_type === documentsServiceType.SERVICE
+      const nextTypeIsService = value === documentsServiceType.SERVICE
+
+      if (prevTypeIsService !== nextTypeIsService) {
+        setDataSourceTable([])
+        setSaleState(saleDispatch, {
+          childProductsOptionsList: [],
+          productsOptionsList: [],
+        })
+        handleAddDetail()
+      }
     }
 
     setSale(prevState => ({
@@ -531,6 +655,30 @@ function NewNoteView({ isAdmin }) {
               format='DD-MM-YYYY'
               disabledDate={disabledDate}
             />
+          </Col>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <div className={'title-space-field'}>Tipo de servicio</div>
+            <Select
+              className={'single-select'}
+              placeholder={'Elegir tipo servicio'}
+              size={'large'}
+              style={{ width: '100%', height: '40px' }}
+              getPopupContainer={trigger => trigger.parentNode}
+              onChange={handleChange('service_type')}
+              value={sale.service_type}
+            >
+              {saleState.documentServiceTypesOptionsList?.length > 0 ? (
+                saleState.documentServiceTypesOptionsList.map(value => (
+                  <Option key={value} value={value}>
+                    <Tag type='documentsServiceType' value={value} />
+                  </Option>
+                ))
+              ) : (
+                <Option value={sale.service_type}>
+                  <Tag type='documentsServiceType' value={sale.service_type} />
+                </Option>
+              )}
+            </Select>
           </Col>
         </Row>
         <Divider className={'divider-custom-margins-users'} />

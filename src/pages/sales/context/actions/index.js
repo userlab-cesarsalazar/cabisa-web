@@ -1,6 +1,21 @@
 import salesSrc from '../../salesSrc'
 
 const saleActions = {
+  fetchChildProductsOptions: async (dispatch, params = {}) => {
+    dispatch({ type: 'FETCH_CHILD_PRODUCTS_OPTIONS START' })
+    try {
+      const childProductsOptionsList = await salesSrc.getProductsOptions({
+        ...params,
+      })
+      dispatch({
+        type: 'FETCH_CHILD_PRODUCTS_OPTIONS END',
+        childProductsOptionsList,
+      })
+    } catch (error) {
+      dispatch({ type: 'FETCH_CHILD_PRODUCTS_OPTIONS ERROR', error })
+    }
+  },
+
   fetchProductsOptions: async (dispatch, params = {}) => {
     dispatch({ type: 'FETCH_PRODUCTS_OPTIONS START' })
     try {
@@ -37,6 +52,19 @@ const saleActions = {
       })
     } catch (error) {
       dispatch({ type: 'FETCH_STAKEHOLDERS_OPTIONS ERROR', error })
+    }
+  },
+
+  fetchDocumentServiceTypeOptions: async dispatch => {
+    dispatch({ type: 'FETCH_DOCUMENT_SERVICE_TYPE_OPTIONS START' })
+    try {
+      const documentServiceTypesOptionsList = await salesSrc.getServiceTypes()
+      dispatch({
+        type: 'FETCH_DOCUMENT_SERVICE_TYPE_OPTIONS END',
+        documentServiceTypesOptionsList,
+      })
+    } catch (error) {
+      dispatch({ type: 'FETCH_DOCUMENT_SERVICE_TYPE_OPTIONS ERROR', error })
     }
   },
 

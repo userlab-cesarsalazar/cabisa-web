@@ -480,6 +480,17 @@ function SalesDetail({ closable, visible, isAdmin }) {
                 disabled
               />
             </Col>
+            <Col xs={8} sm={8} md={8} lg={8}>
+              <div className={'title-space-field'}>
+                Duracion del servicio (dias)
+              </div>
+              <Input
+                placeholder={'Duracion del servicio'}
+                size={'large'}
+                value={serviceDaysLength}
+                disabled
+              />
+            </Col>
           </Row>
           <Row gutter={16} className={'section-space-field'}>
             <Col xs={8} sm={8} md={8} lg={8}>
@@ -500,17 +511,6 @@ function SalesDetail({ closable, visible, isAdmin }) {
                 onChange={handleChange('end_date')}
                 format='DD-MM-YYYY'
                 disabled={forbidEdition || !isAdmin}
-              />
-            </Col>
-            <Col xs={8} sm={8} md={8} lg={8}>
-              <div className={'title-space-field'}>
-                Duracion del servicio (dias)
-              </div>
-              <Input
-                placeholder={'Duracion del servicio'}
-                size={'large'}
-                value={serviceDaysLength}
-                disabled
               />
             </Col>
           </Row>

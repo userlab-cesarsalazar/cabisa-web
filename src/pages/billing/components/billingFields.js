@@ -27,6 +27,7 @@ import {
   appConfig,
   documentsServiceType,
   productsTypes,
+  productsStatus,
 } from '../../../commons/types'
 
 const { Title } = Typography
@@ -283,6 +284,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
           : productsTypes.PRODUCT
 
       const params = {
+        status: productsStatus.ACTIVE,
         stock: { $gt: 0 },
         description: { $like: `%25${product_description}%25` },
         product_type,
@@ -307,6 +309,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       if (data.service_type !== productsTypes.SERVICE) return
 
       const params = {
+        status: productsStatus.ACTIVE,
         stock: { $gt: 0 },
         description: { $like: `%25${product_description}%25` },
         product_type: productsTypes.PRODUCT,
