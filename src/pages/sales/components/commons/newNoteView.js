@@ -295,11 +295,12 @@ function NewNoteView({ isAdmin }) {
 
     setDataSourceTable(prevState => {
       const row = prevState[rowIndex]
-      console.log(row)
+
       const newRow = {
         ...row,
         id: field === 'id' ? product.id : row.id,
         code: field === 'id' ? product.code : row.code,
+        child_id: field === 'child_id' ? product.id : row.child_id,
         parent_unit_price:
           field === 'id' ? product.unit_price : row.parent_unit_price,
         child_unit_price:
@@ -310,7 +311,7 @@ function NewNoteView({ isAdmin }) {
             : row.parent_unit_price + product.unit_price,
         quantity: 1,
       }
-      console.log(newRow)
+
       return prevState.map((row, index) => (index === rowIndex ? newRow : row))
     })
   }
@@ -323,7 +324,9 @@ function NewNoteView({ isAdmin }) {
     state: dataSourceTable,
     setState: setDataSourceTable,
     initRow: {
+      id: '',
       code: '',
+      child_id: '',
       description: '',
       quantity: 0,
       parent_unit_price: 0,
@@ -376,12 +379,28 @@ function NewNoteView({ isAdmin }) {
     dispatched_by: sale.dispatched_by,
     received_by: sale.received_by,
     comments: sale.comments,
+    service_type: sale.service_type,
     related_external_document_id: null,
-    products: dataSourceTable.map(p => ({
-      product_id: p.id,
-      product_quantity: p.quantity,
-      product_price: p.unit_price,
-    })),
+    products: dataSourceTable.reduce((r, p) => {
+      const parentProduct = {
+        product_id: p.id,
+        product_quantity: !p.child_id ? Number(p.quantity) : 1,
+        product_price: Number(p.parent_unit_price),
+      }
+
+      const childProduct = {
+        product_id: p.child_id,
+        product_quantity: Number(p.quantity),
+        product_price: Number(p.child_unit_price),
+        parent_product_id: p.id,
+      }
+
+      const products = !p.child_id
+        ? [parentProduct]
+        : [parentProduct, childProduct]
+
+      return [...(r || []), ...products]
+    }, []),
   })
 
   const validateSaveData = data => {
