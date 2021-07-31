@@ -15,6 +15,8 @@ const config = {
   documentsPaymentMethods: {
     CARD: { color: 'geekblue', text: 'Tarjeta debito/credito' },
     CASH: { color: 'green', text: 'Efectivo' },
+    CHECK: { color: '#f50', text: 'Cheque' },
+    DEPOSIT: { color: 'grey', text: 'Deposito' },
     TRANSFER: { color: 'cyan', text: 'Transferencia' },
   },
   inventoryMovementsStatus: {

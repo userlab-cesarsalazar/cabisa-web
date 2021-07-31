@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useHistory } from 'react-router-dom'
 import debounce from 'lodash/debounce'
 import moment from 'moment'
@@ -19,7 +19,7 @@ import HeaderPage from '../../../../components/HeaderPage'
 import DynamicTable from '../../../../components/DynamicTable'
 import { useSale, saleActions } from '../../context'
 import { showErrors, validateDynamicTableProducts } from '../../../../utils'
-import { productsStatus } from '../../../../commons/types'
+import { productsStatus, appConfig } from '../../../../commons/types'
 import { useEditableList } from '../../../../hooks'
 const {
   fetchProductsOptions,
@@ -154,6 +154,48 @@ function NewNoteView({ isAdmin }) {
 
   const [{ error, loading, status, ...saleState }, saleDispatch] = useSale()
 
+  const handleSearchStakeholder = useCallback(
+    (stakeholder_name, additionalParams = {}) => {
+      if (stakeholder_name === '') return
+
+      const params = {
+        name: { $like: `%25${stakeholder_name}%25` },
+        ...additionalParams,
+      }
+
+      fetchStakeholdersOptions(saleDispatch, params)
+    },
+    [saleDispatch]
+  )
+
+  const handleSearchProduct = useCallback(
+    (product_description, additionalParams = {}) => {
+      if (product_description === '') return
+
+      const params = {
+        status: productsStatus.ACTIVE,
+        stock: { $gt: 0 },
+        description: { $like: `%25${product_description}%25` },
+        ...additionalParams,
+      }
+
+      fetchProductsOptions(saleDispatch, params)
+    },
+    [saleDispatch]
+  )
+
+  useEffect(() => {
+    handleSearchStakeholder(null, {
+      $limit: appConfig.selectsInitLimit,
+      name: { $like: '%25%25' },
+    })
+
+    handleSearchProduct(null, {
+      $limit: appConfig.selectsInitLimit,
+      description: { $like: '%25%25' },
+    })
+  }, [handleSearchStakeholder, handleSearchProduct])
+
   useEffect(() => {
     if (status === 'ERROR') {
       showErrors(error)
@@ -207,18 +249,6 @@ function NewNoteView({ isAdmin }) {
     else return moment(endDate).diff(moment(startDate), 'days')
   }
 
-  const handleSearchProduct = product_description => {
-    if (product_description === '') return
-
-    const params = {
-      status: productsStatus.ACTIVE,
-      stock: { $gt: 0 },
-      description: { $like: `%25${product_description}%25` },
-    }
-
-    fetchProductsOptions(saleDispatch, params)
-  }
-
   const columnsDynamicTable = getColumnsDynamicTable({
     handleChangeDetail,
     handleRemoveDetail,
@@ -234,6 +264,7 @@ function NewNoteView({ isAdmin }) {
     project_id: sale.project_id,
     start_date: sale.start_date,
     end_date: sale.end_date,
+    dispatched_by: sale.dispatched_by,
     received_by: sale.received_by,
     comments: sale.comments,
     related_external_document_id: null,
@@ -251,7 +282,8 @@ function NewNoteView({ isAdmin }) {
       { key: 'project_id', value: 'Proyecto' },
       { key: 'start_date', value: 'Fecha Inicio' },
       { key: 'end_date', value: 'Fecha Final' },
-      { key: 'received_by', value: 'Quien Recibe' },
+      // { key: 'dispatched_by', value: 'Quien Entrega' },
+      // { key: 'received_by', value: 'Quien Recibe' },
     ]
     const requiredErrors = requiredFields.flatMap(field =>
       !data[field.key] ? field.value : []
@@ -325,6 +357,15 @@ function NewNoteView({ isAdmin }) {
     }
 
     if (field === 'stakeholder_id') {
+      const projectsOptionsList = saleState.projectsOptionsList
+
+      if (!projectsOptionsList || projectsOptionsList?.length === 0) {
+        handleSearchProject(null, {
+          $limit: appConfig.selectsInitLimit,
+          name: { $like: '%25%25' },
+        })
+      }
+
       const stakeholder = saleState.stakeholdersOptionsList.find(
         option => option.id === value
       )
@@ -344,25 +385,16 @@ function NewNoteView({ isAdmin }) {
     }))
   }
 
-  const handleSearchProject = project_name => {
-    if (project_name === '' || !sale.stakeholder_id) return
+  const handleSearchProject = (name, additionalParams = {}) => {
+    if (name === '' || (!sale.stakeholder_id && name !== null)) return
 
     const params = {
       stakeholder_id: sale.stakeholder_id,
-      name: { $like: `%25${project_name}%25` },
+      name: { $like: `%25${name}%25` },
+      ...additionalParams,
     }
 
     fetchProjectsOptions(saleDispatch, params)
-  }
-
-  const handleSearchStakeholder = stakeholder_name => {
-    if (stakeholder_name === '') return
-
-    const params = {
-      name: { $like: `%25${stakeholder_name}%25` },
-    }
-
-    fetchStakeholdersOptions(saleDispatch, params)
   }
 
   const handleCancelButton = () => history.push('/sales')
@@ -389,7 +421,7 @@ function NewNoteView({ isAdmin }) {
               value={sale.stakeholder_id}
               onChange={handleChange('stakeholder_id')}
               loading={
-                status === 'LOADING' && loading === 'fetchProjectsOptions'
+                status === 'LOADING' && loading === 'fetchStakeholdersOptions'
               }
               optionFilterProp='children'
             >
@@ -537,9 +569,8 @@ function NewNoteView({ isAdmin }) {
             <Input
               placeholder={'Entrega'}
               size={'large'}
-              value={sale.creator_name}
-              onChange={handleChange('creator_name')}
-              disabled
+              value={sale.dispatched_by}
+              onChange={handleChange('dispatched_by')}
             />
           </Col>
           <Col xs={12} sm={12} md={12} lg={12}>

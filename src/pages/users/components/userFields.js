@@ -16,6 +16,7 @@ import FooterButtons from '../../../components/FooterButtons'
 import Tag from '../../../components/Tag'
 import { validateEmail } from '../../../utils'
 import usersSrc from '../usersSrc'
+import { roles } from '../../../commons/types'
 
 const { Option } = Select
 const { Title } = Typography
@@ -30,6 +31,7 @@ function UserFields({ edit, data, visible, ...props }) {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [changePass, setChangePass] = useState(false)
+  const [salesCommission, setSalesCommission] = useState(0)
 
   const loadUserInformation = useCallback(() => {
     setName(edit ? data.full_name : '')
@@ -38,6 +40,7 @@ function UserFields({ edit, data, visible, ...props }) {
     setChangePass(!edit)
     setPassword('')
     setConfirmPassword('')
+    setSalesCommission(edit ? data.sales_commission : 0)
   }, [edit, data])
 
   const getRoles = useCallback(() => {
@@ -66,6 +69,12 @@ function UserFields({ edit, data, visible, ...props }) {
       return message.warning('Contraseñas no coinciden')
     } else if (password.replace(/\s/g, '').length < 8 && changePass) {
       return message.warning('La contraseña debe tener al menos 8 caracteres')
+    } else if (
+      role === roles.SELLS &&
+      !salesCommission &&
+      salesCommission !== 0
+    ) {
+      return message.warning('Debe incluir un porcentaje de comision')
     }
 
     //validations
@@ -76,6 +85,7 @@ function UserFields({ edit, data, visible, ...props }) {
       id: data?.id,
       fullName: name,
       email: email,
+      sales_commission: salesCommission || null,
       rolId: role,
       password: confirmPassword,
     }
@@ -131,7 +141,6 @@ function UserFields({ edit, data, visible, ...props }) {
               loading={loading}
               className={'single-select'}
               placeholder={'Rol de usuario'}
-              size={'large'}
               style={{ width: '100%' }}
               value={role}
               onChange={value => setRole(value)}
@@ -146,6 +155,22 @@ function UserFields({ edit, data, visible, ...props }) {
           </Col>
         </Row>
         <Row gutter={16} className={'section-space-field'}>
+          {role === roles.SELLS && (
+            <Col xs={8} sm={8} md={8} lg={8}>
+              <div className={'title-space-field'}>Porcentaje de Comisión</div>
+              <Input
+                value={salesCommission}
+                placeholder={'Porcentaje de Comisión'}
+                size={'large'}
+                style={{ width: '100%' }}
+                onChange={e => {
+                  const value = Number(e.target.value)
+                  if (isNaN(value) || value < 0 || value > 100) return
+                  setSalesCommission(value)
+                }}
+              />
+            </Col>
+          )}
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Username*</div>
             <Input
@@ -155,6 +180,8 @@ function UserFields({ edit, data, visible, ...props }) {
               size={'large'}
             />
           </Col>
+        </Row>
+        <Row gutter={16} className={'section-space-field'}>
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Password*</div>
             <Popover content={contentPopHover} trigger='hover'>
