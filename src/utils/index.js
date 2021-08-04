@@ -1,12 +1,12 @@
 import { message } from 'antd'
 import { Cache } from 'aws-amplify'
 
-export const roundNumber = (input, decimals = 2) => {
-  const number = Number(input)
+export const roundNumber = input => {
+  const num = Number(input)
 
-  if (!input || isNaN(number)) return input
+  if (!input || isNaN(num)) return input
 
-  return Number(number.toFixed(decimals))
+  return Math.round((num + Number.EPSILON) * 100) / 100
 }
 
 export const formatNumber = number => {

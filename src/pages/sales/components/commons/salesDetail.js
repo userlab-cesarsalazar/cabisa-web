@@ -177,7 +177,7 @@ const getColumnsDynamicTable = ({
         loading={
           status === 'LOADING' && loading === 'fetchChildProductsOptions'
         }
-        disabled={!record.id}
+        disabled={!record.id || forbidEdition || !isAdmin}
       >
         {childProductsOptionsList?.length > 0 ? (
           childProductsOptionsList.map(value => (
@@ -346,7 +346,7 @@ function SalesDetail({ closable, visible, isAdmin }) {
     onChange: setProductData,
   })
 
-  const handleSearchProduct = product_description => {
+  const handleSearchProduct = (product_description, additionalParams = {}) => {
     if (product_description === '') return
 
     const product_type =
@@ -357,8 +357,9 @@ function SalesDetail({ closable, visible, isAdmin }) {
     const params = {
       status: productsStatus.ACTIVE,
       stock: { $gt: 0 },
-      description: { $like: `%25${product_description}%25` },
+      description: { $like: `%25${product_description || ''}%25` },
       product_type,
+      ...additionalParams,
     }
 
     fetchProductsOptions(saleDispatch, params)
@@ -408,7 +409,8 @@ function SalesDetail({ closable, visible, isAdmin }) {
     products: dataSourceTable.reduce((r, p) => {
       const parentProduct = {
         product_id: p.id,
-        product_quantity: !p.child_id ? Number(p.quantity) : 1,
+        product_quantity:
+          !p.child_id || isNaN(p.child_id) ? Number(p.quantity) : 1,
         product_price: Number(p.parent_unit_price),
       }
 
@@ -419,9 +421,10 @@ function SalesDetail({ closable, visible, isAdmin }) {
         parent_product_id: p.id,
       }
 
-      const products = !p.child_id
-        ? [parentProduct]
-        : [parentProduct, childProduct]
+      const products =
+        !p.child_id || isNaN(p.child_id)
+          ? [parentProduct]
+          : [parentProduct, childProduct]
 
       return [...(r || []), ...products]
     }, []),
@@ -533,6 +536,14 @@ function SalesDetail({ closable, visible, isAdmin }) {
         })
         handleAddDetail()
       }
+
+      handleSearchProduct(null, {
+        $limit: appConfig.selectsInitLimit,
+        description: { $like: '%25%25' },
+        product_type: nextTypeIsService
+          ? productsTypes.SERVICE
+          : productsTypes.PRODUCT,
+      })
     }
 
     setSale(prevState => ({
@@ -574,7 +585,7 @@ function SalesDetail({ closable, visible, isAdmin }) {
         closable={false}
         onClose={closable}
         visible={visible}
-        width={850}
+        width='70%'
       >
         <div>
           <Title> {'Detalle Nota de servicio'} </Title>
@@ -715,6 +726,7 @@ function SalesDetail({ closable, visible, isAdmin }) {
                 getPopupContainer={trigger => trigger.parentNode}
                 onChange={handleChange('service_type')}
                 value={sale.service_type}
+                disabled={forbidEdition || !isAdmin}
               >
                 {saleState.documentServiceTypesOptionsList?.length > 0 ? (
                   saleState.documentServiceTypesOptionsList.map(value => (
