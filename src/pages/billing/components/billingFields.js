@@ -356,12 +356,21 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   }, [handleSearchStakeholder, editData, isInvoiceFromSale])
 
   useEffect(() => {
+    handleSearchStakeholder(null, {
+      $limit: appConfig.selectsInitLimit,
+      name: { $like: '%25%25' },
+    })
+    handleSearchProduct(null, {
+      $limit: appConfig.selectsInitLimit,
+      description: { $like: '%25%25' },
+    })
+
     if (!editData) return
 
     setData(editData)
     setProductsData(editData.products)
     setDiscountInputValue(editData.discount_percentage || 0)
-  }, [editData])
+  }, [editData, handleSearchStakeholder, handleSearchProduct])
 
   const updateInvoiceTotals = (field, value, rowIndex) => {
     const getParentProduct = (field, value, row) =>
