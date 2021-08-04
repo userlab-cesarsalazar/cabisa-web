@@ -5,7 +5,7 @@ import HeaderPage from '../../../../components/HeaderPage'
 import billingSrc from '../../../billing/billingSrc'
 import saleSrc from '../../salesSrc'
 import BillingFields from '../../../billing/components/billingFields'
-import { showErrors } from '../../../../utils'
+import { showErrors, roundNumber } from '../../../../utils'
 
 function ServiceNoteBill() {
   const location = useLocation()
@@ -35,11 +35,37 @@ function ServiceNoteBill() {
 
   const getInvoiceData = () => ({
     ...location.state,
-    products: location.state?.products.map(p => ({
-      ...p,
-      base_unit_price: p.unit_price,
-      subtotal: p.unit_price * p.quantity,
-    })),
+    products: location.state?.products.flatMap(p => {
+      const child = location.state?.products.find(
+        p => Number(p.parent_product_id) === Number(p.id)
+      )
+
+      return {
+        ...p,
+        parent_tax_fee: p.tax_fee,
+        parent_unit_tax_amount: roundNumber(p.unit_tax_amount),
+        parent_unit_discount: 0,
+        parent_base_unit_price: roundNumber(p.unit_price),
+        parent_unit_price: roundNumber(p.unit_price),
+        child_id: child ? child.id : '',
+        child_description: child ? child.description : '',
+        child_tax_fee: child ? child.tax_fee : 0,
+        child_unit_tax_amount: child ? roundNumber(child.unit_tax_amount) : 0,
+        child_unit_discount: 0,
+        child_base_unit_price: child ? roundNumber(child.unit_price) : 0,
+        child_unit_price: child ? roundNumber(child.unit_price) : 0,
+        quantity: child ? child.quantity : p.quantity,
+        unit_tax_amount: child
+          ? roundNumber(p.unit_tax_amount + child.unit_tax_amount)
+          : roundNumber(p.unit_tax_amount),
+        unit_price: child
+          ? roundNumber(p.unit_price + child.unit_price)
+          : roundNumber(p.unit_price),
+        subtotal: child
+          ? roundNumber(p.unit_price + child.unit_price * child.quantity)
+          : roundNumber(p.unit_price * p.quantity),
+      }
+    }),
   })
 
   const handleSaveData = saveData => {

@@ -344,6 +344,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     handleSearchChildProduct,
     editData,
     isInvoiceFromSale,
+    data.service_type,
   ])
 
   useEffect(() => {
@@ -356,21 +357,12 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   }, [handleSearchStakeholder, editData, isInvoiceFromSale])
 
   useEffect(() => {
-    handleSearchStakeholder(null, {
-      $limit: appConfig.selectsInitLimit,
-      name: { $like: '%25%25' },
-    })
-    handleSearchProduct(null, {
-      $limit: appConfig.selectsInitLimit,
-      description: { $like: '%25%25' },
-    })
-
     if (!editData) return
 
     setData(editData)
     setProductsData(editData.products)
     setDiscountInputValue(editData.discount_percentage || 0)
-  }, [editData, handleSearchStakeholder, handleSearchProduct])
+  }, [editData])
 
   const updateInvoiceTotals = (field, value, rowIndex) => {
     const getParentProduct = (field, value, row) =>
@@ -422,6 +414,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       id: '',
       code: '',
       child_id: '',
+      child_description: '',
       quantity: 0,
       unit_price: 0,
       base_unit_price: 0,
@@ -562,12 +555,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     const value = e?.target?.value === undefined ? e : e.target.value
 
     if (field === 'stakeholder_id') {
-      if (!projectsOptionsList || projectsOptionsList?.length === 0) {
-        handleSearchProject(null, {
-          $limit: appConfig.selectsInitLimit,
-          name: { $like: '%25%25' },
-        })
-      }
+      handleSearchProject(value)()
 
       const stakeholder = stakeholdersOptionsList.find(
         option => option.id === value
@@ -575,6 +563,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
 
       return setData(prevState => ({
         ...prevState,
+        project_id: null,
         stakeholder_id: stakeholder.id,
         stakeholder_name: stakeholder.stakeholder_name,
         stakeholder_type: stakeholder.stakeholder_type,
@@ -616,7 +605,8 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     products: productsData.reduce((r, p) => {
       const parentProduct = {
         product_id: p.id,
-        product_quantity: isNaN(p.child_id) ? Number(p.quantity) : 1,
+        product_quantity:
+          !p.child_id || isNaN(p.child_id) ? Number(p.quantity) : 1,
         product_price: Number(p.parent_unit_price),
         product_discount_percentage: Number(discountInputValue),
         product_discount: Number(p.parent_unit_discount),
@@ -631,9 +621,10 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
         parent_product_id: p.id,
       }
 
-      const products = isNaN(p.child_id)
-        ? [parentProduct]
-        : [parentProduct, childProduct]
+      const products =
+        !p.child_id || isNaN(p.child_id)
+          ? [parentProduct]
+          : [parentProduct, childProduct]
 
       return [...(r || []), ...products]
     }, []),
@@ -705,13 +696,12 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     props.handleSaveData(saveData)
   }
 
-  const handleSearchProject = (name, additionalParams = {}) => {
-    if (name === '' || (!data.stakeholder_id && name !== null)) return
+  const handleSearchProject = stakeholder_id => name => {
+    if (name === '' || (!stakeholder_id && name !== null)) return
 
     const params = {
-      stakeholder_id: data.stakeholder_id,
-      name: { $like: `%25${name}%25` },
-      ...additionalParams,
+      stakeholder_id,
+      name: { $like: `%25${name || ''}%25` },
     }
 
     setLoading(true)
@@ -867,7 +857,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
               style={{ width: '100%', height: '40px' }}
               getPopupContainer={trigger => trigger.parentNode}
               showSearch
-              onSearch={debounce(handleSearchProject, 400)}
+              onSearch={debounce(handleSearchProject(data.stakeholder_id), 400)}
               value={data.project_id}
               onChange={handleChange('project_id')}
               loading={props.loading}
@@ -895,7 +885,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
               getPopupContainer={trigger => trigger.parentNode}
               onChange={handleChange('service_type')}
               value={data.service_type}
-              disabled={props.edit}
+              disabled={props.edit || isInvoiceFromSale}
             >
               {props.serviceTypesOptionsList?.length > 0 ? (
                 props.serviceTypesOptionsList.map(value => (

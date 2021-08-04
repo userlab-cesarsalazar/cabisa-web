@@ -218,40 +218,30 @@ function NewNoteView({ isAdmin }) {
     [saleDispatch]
   )
 
-  const handleSearchProduct = useCallback(
-    (product_description, additionalParams = {}) => {
-      if (product_description === '') return
-      if (!sale.service_type && product_description !== null)
-        return message.warning('Debe seleccionar el Tipo de servicio')
+  const handleSearchProduct = (product_description, additionalParams = {}) => {
+    if (product_description === '') return
+    if (!sale.service_type && product_description !== null)
+      return message.warning('Debe seleccionar el Tipo de servicio')
 
-      const product_type =
-        sale.service_type === productsTypes.SERVICE
-          ? productsTypes.SERVICE
-          : productsTypes.PRODUCT
+    const product_type =
+      sale.service_type === productsTypes.SERVICE
+        ? productsTypes.SERVICE
+        : productsTypes.PRODUCT
 
-      const params = {
-        status: productsStatus.ACTIVE,
-        stock: { $gt: 0 },
-        description: { $like: `%25${product_description}%25` },
-        product_type,
-        ...additionalParams,
-      }
+    const params = {
+      status: productsStatus.ACTIVE,
+      stock: { $gt: 0 },
+      description: { $like: `%25${product_description}%25` },
+      product_type,
+      ...additionalParams,
+    }
 
-      fetchProductsOptions(saleDispatch, params)
-    },
-    [saleDispatch, sale.service_type]
-  )
+    fetchProductsOptions(saleDispatch, params)
+  }
 
   const fetchServiceTypeOptionsList = useCallback(() => {
     fetchDocumentServiceTypeOptions(saleDispatch)
   }, [saleDispatch])
-
-  useEffect(() => {
-    handleSearchProduct(null, {
-      $limit: appConfig.selectsInitLimit,
-      description: { $like: '%25%25' },
-    })
-  }, [handleSearchProduct])
 
   useEffect(() => {
     handleSearchStakeholder(null, {
@@ -384,7 +374,8 @@ function NewNoteView({ isAdmin }) {
     products: dataSourceTable.reduce((r, p) => {
       const parentProduct = {
         product_id: p.id,
-        product_quantity: !p.child_id ? Number(p.quantity) : 1,
+        product_quantity:
+          !p.child_id || isNaN(p.child_id) ? Number(p.quantity) : 1,
         product_price: Number(p.parent_unit_price),
       }
 
@@ -395,9 +386,10 @@ function NewNoteView({ isAdmin }) {
         parent_product_id: p.id,
       }
 
-      const products = !p.child_id
-        ? [parentProduct]
-        : [parentProduct, childProduct]
+      const products =
+        !p.child_id || isNaN(p.child_id)
+          ? [parentProduct]
+          : [parentProduct, childProduct]
 
       return [...(r || []), ...products]
     }, []),
@@ -485,14 +477,7 @@ function NewNoteView({ isAdmin }) {
     }
 
     if (field === 'stakeholder_id') {
-      const projectsOptionsList = saleState.projectsOptionsList
-
-      if (!projectsOptionsList || projectsOptionsList?.length === 0) {
-        handleSearchProject(null, {
-          $limit: appConfig.selectsInitLimit,
-          name: { $like: '%25%25' },
-        })
-      }
+      handleSearchProject(value)()
 
       const stakeholder = saleState.stakeholdersOptionsList.find(
         option => option.id === value
@@ -500,6 +485,7 @@ function NewNoteView({ isAdmin }) {
 
       return setSale(prevState => ({
         ...prevState,
+        project_id: null,
         stakeholder_id: stakeholder.id,
         stakeholder_address: stakeholder.address,
         stakeholder_phone: stakeholder.phone,
@@ -520,6 +506,14 @@ function NewNoteView({ isAdmin }) {
         })
         handleAddDetail()
       }
+
+      handleSearchProduct(null, {
+        $limit: appConfig.selectsInitLimit,
+        description: { $like: '%25%25' },
+        product_type: nextTypeIsService
+          ? productsTypes.SERVICE
+          : productsTypes.PRODUCT,
+      })
     }
 
     setSale(prevState => ({
@@ -528,13 +522,12 @@ function NewNoteView({ isAdmin }) {
     }))
   }
 
-  const handleSearchProject = (name, additionalParams = {}) => {
-    if (name === '' || (!sale.stakeholder_id && name !== null)) return
+  const handleSearchProject = stakeholder_id => name => {
+    if (name === '' || (!stakeholder_id && name !== null)) return
 
     const params = {
-      stakeholder_id: sale.stakeholder_id,
-      name: { $like: `%25${name}%25` },
-      ...additionalParams,
+      stakeholder_id,
+      name: { $like: `%25${name || ''}%25` },
     }
 
     fetchProjectsOptions(saleDispatch, params)
@@ -612,7 +605,7 @@ function NewNoteView({ isAdmin }) {
               style={{ width: '100%', height: '40px' }}
               getPopupContainer={trigger => trigger.parentNode}
               showSearch
-              onSearch={debounce(handleSearchProject, 400)}
+              onSearch={debounce(handleSearchProject(sale.stakeholder_id), 400)}
               value={sale.project_id}
               onChange={handleChange('project_id')}
               loading={
