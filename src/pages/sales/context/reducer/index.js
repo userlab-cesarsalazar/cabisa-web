@@ -16,11 +16,13 @@
 import approveSaleReducer from './approveSaleReducer'
 import cancelSaleReducer from './cancelSaleReducer'
 import createSaleReducer from './createSaleReducer'
+import fetchChildProductsOptionsReducer from './fetchChildProductsOptionsReducer'
 import fetchProductsOptionsReducer from './fetchProductsOptionsReducer'
 import fetchProjectsOptionsReducer from './fetchProjectsOptionsReducer'
 import fetchProjectsReducer from './fetchProjectsReducer'
 import fetchProjectsStatusReducer from './fetchProjectsStatusReducer'
 import fetchStakeholdersOptionsReducer from './fetchStakeholdersOptionsReducer'
+import fetchDocumentServiceTypeOptionsReducer from './fetchDocumentServiceTypeOptionsReducer'
 import fetchSalesReducer from './fetchSalesReducer'
 import fetchSalesStatusReducer from './fetchSalesStatusReducer'
 import setReducer from './setReducer'
@@ -30,11 +32,13 @@ const slices = {
   approveSaleReducer,
   cancelSaleReducer,
   createSaleReducer,
+  fetchChildProductsOptionsReducer,
   fetchProductsOptionsReducer,
   fetchProjectsOptionsReducer,
   fetchProjectsReducer,
   fetchProjectsStatusReducer,
   fetchStakeholdersOptionsReducer,
+  fetchDocumentServiceTypeOptionsReducer,
   fetchSalesReducer,
   fetchSalesStatusReducer,
   setReducer,

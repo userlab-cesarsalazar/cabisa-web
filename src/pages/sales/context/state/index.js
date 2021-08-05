@@ -19,10 +19,12 @@
 // export default initialState
 
 const initialState = {
+  childProductsOptionsList: [],
   productsOptionsList: [],
   projectsOptionsList: [],
   projectsStatusList: [],
   stakeholdersOptionsList: [],
+  documentServiceTypesOptionsList: [],
   sales: [],
   salesStatusList: [],
   currentSale: {},

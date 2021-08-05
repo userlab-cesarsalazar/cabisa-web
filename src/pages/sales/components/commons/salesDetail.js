@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import debounce from 'lodash/debounce'
 import moment from 'moment'
 import {
@@ -16,11 +16,21 @@ import {
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import DynamicTable from '../../../../components/DynamicTable'
-import { productsStatus, stakeholdersStatus } from '../../../../commons/types'
+import Tag from '../../../../components/Tag'
+import {
+  productsStatus,
+  stakeholdersStatus,
+  productsTypes,
+  documentsServiceType,
+} from '../../../../commons/types'
 import { useSale, saleActions } from '../../context'
 import { useEditableList } from '../../../../hooks'
-import { showErrors } from '../../../../utils'
-import { documentsStatus } from '../../../../commons/types'
+import {
+  showErrors,
+  roundNumber,
+  validateDynamicTableProducts,
+} from '../../../../utils'
+import { appConfig, documentsStatus } from '../../../../commons/types'
 
 const { Title } = Typography
 const { TextArea } = Input
@@ -29,6 +39,8 @@ const {
   fetchProductsOptions,
   fetchProjectsOptions,
   fetchStakeholdersOptions,
+  fetchChildProductsOptions,
+  fetchDocumentServiceTypeOptions,
   updateSale,
   fetchSales,
   setSaleState,
@@ -38,15 +50,17 @@ const getColumnsDynamicTable = ({
   handleChangeDetail,
   handleRemoveDetail,
   handleSearchProduct,
+  handleSearchChildProduct,
   productsOptionsList,
+  childProductsOptionsList,
   status,
   loading,
   forbidEdition,
   isAdmin,
+  serviceType,
 }) => {
   const columns = [
     {
-      width: '25%',
       title: 'Codigo',
       dataIndex: 'code', // Field that is goint to be rendered
       key: 'code',
@@ -60,7 +74,7 @@ const getColumnsDynamicTable = ({
       ),
     },
     {
-      width: '40%',
+      width: '30%',
       title: 'Descripcion',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
@@ -91,29 +105,27 @@ const getColumnsDynamicTable = ({
         </Select>
       ),
     },
-    {
-      width: '15%',
-      title: 'Cantidad',
-      dataIndex: 'product_quantity', // Field that is goint to be rendered
-      key: 'product_quantity',
-      render: (_, record, rowIndex) => (
-        <Input
-          placeholder={'Cantidad'}
-          size={'large'}
-          value={record.quantity}
-          onChange={e =>
-            handleChangeDetail('quantity', e.target.value, rowIndex)
-          }
-          min={0}
-          type='number'
-          disabled={forbidEdition || !isAdmin}
-        />
-      ),
-    },
   ]
 
+  const quantityColumn = {
+    title: 'Cantidad',
+    dataIndex: 'product_quantity', // Field that is goint to be rendered
+    key: 'product_quantity',
+    render: (_, record, rowIndex) => (
+      <Input
+        placeholder={'Cantidad'}
+        size={'large'}
+        value={record.quantity}
+        onChange={e => handleChangeDetail('quantity', e.target.value, rowIndex)}
+        min={1}
+        type='number'
+        disabled={forbidEdition || !isAdmin}
+      />
+    ),
+  }
+
   const priceColumn = {
-    width: '20%',
+    width: '30%',
     title: 'Precio',
     dataIndex: 'unit_price', // Field that is goint to be rendered
     key: 'unit_price',
@@ -145,7 +157,51 @@ const getColumnsDynamicTable = ({
       ),
   }
 
-  return isAdmin ? [...columns, priceColumn, deleteButtonColumn] : columns
+  const productColumn = {
+    width: '30%',
+    title: 'Producto',
+    dataIndex: 'id', // Field that is goint to be rendered
+    key: 'id',
+    render: (_, record, rowIndex) => (
+      <Select
+        className={'single-select'}
+        placeholder={'Producto'}
+        size={'large'}
+        style={{ width: '100%', height: '40px' }}
+        getPopupContainer={trigger => trigger.parentNode}
+        showSearch
+        onSearch={debounce(handleSearchChildProduct, 400)}
+        value={record.child_id}
+        onChange={value => handleChangeDetail('child_id', value, rowIndex)}
+        optionFilterProp='children'
+        loading={
+          status === 'LOADING' && loading === 'fetchChildProductsOptions'
+        }
+        disabled={!record.id || forbidEdition || !isAdmin}
+      >
+        {childProductsOptionsList?.length > 0 ? (
+          childProductsOptionsList.map(value => (
+            <Option key={value.id} value={value.id}>
+              {value.description}
+            </Option>
+          ))
+        ) : (
+          <Option value={record.child_id}>{record.child_description}</Option>
+        )}
+      </Select>
+    ),
+  }
+
+  const columnsWithProduct =
+    serviceType === productsTypes.SERVICE
+      ? [...columns, productColumn, quantityColumn]
+      : [...columns, quantityColumn]
+
+  const columnsWithPrice = isAdmin
+    ? [...columnsWithProduct, priceColumn]
+    : columnsWithProduct
+
+  return [...columnsWithPrice, deleteButtonColumn]
 }
 
 function SalesDetail({ closable, visible, isAdmin }) {
@@ -158,6 +214,14 @@ function SalesDetail({ closable, visible, isAdmin }) {
     { error, loading, status, currentSale, ...saleState },
     saleDispatch,
   ] = useSale()
+
+  const fetchServiceTypeOptionsList = useCallback(() => {
+    fetchDocumentServiceTypeOptions(saleDispatch)
+  }, [saleDispatch])
+
+  useEffect(() => {
+    fetchServiceTypeOptionsList()
+  }, [fetchServiceTypeOptionsList])
 
   useEffect(() => {
     if (!visible) return
@@ -180,28 +244,82 @@ function SalesDetail({ closable, visible, isAdmin }) {
   }
 
   useEffect(() => {
+    const getChildProduct = (products, parentProduct) => {
+      const childProduct = products.find(
+        p => Number(p.parent_product_id) === Number(parentProduct.id)
+      )
+
+      if (!childProduct) return {}
+
+      return {
+        child_id: childProduct.id,
+        child_description: childProduct.description,
+        child_unit_price: roundNumber(childProduct.unit_price),
+        quantity: childProduct.quantity,
+        unit_price: roundNumber(
+          parentProduct.unit_price + childProduct.unit_price
+        ),
+      }
+    }
+
+    const productsDetails =
+      currentSale.products?.length > 0
+        ? currentSale.products.flatMap(p => {
+            if (p.parent_product_id) return []
+
+            return {
+              ...p,
+              parent_unit_price: roundNumber(p.unit_price),
+              unit_price: roundNumber(p.unit_price),
+              ...getChildProduct(currentSale.products, p),
+            }
+          })
+        : []
+
+    setDataSourceTable(productsDetails)
     setForbidEdition(currentSale.status !== documentsStatus.PENDING)
     setSale(currentSale)
-    setDataSourceTable(currentSale.products)
-
     setServiceDaysLength(
       getServiceDaysLength(currentSale.start_date, currentSale.end_date)
     )
   }, [currentSale, saleDispatch])
 
   const setProductData = (field, value, rowIndex) => {
-    if (field !== 'id') return
+    if (field !== 'id' && field !== 'child_id') return
 
-    const product = saleState.productsOptionsList.find(
-      option => option.id === value
+    if (field === 'id' && saleState.childProductsOptionsList.length === 0) {
+      handleSearchChildProduct(null, {
+        $limit: appConfig.selectsInitLimit,
+        description: { $like: '%25%25' },
+      })
+    }
+
+    const productsArray =
+      field === 'id'
+        ? saleState.productsOptionsList
+        : saleState.childProductsOptionsList
+
+    const product = productsArray.find(
+      option => Number(option.id) === Number(value)
     )
 
     setDataSourceTable(prevState => {
+      const row = prevState[rowIndex]
+
       const newRow = {
-        ...prevState[rowIndex],
-        id: product.id,
-        code: product.code,
-        unit_price: product.unit_price,
+        ...row,
+        id: field === 'id' ? product.id : row.id,
+        code: field === 'id' ? product.code : row.code,
+        child_id: field === 'child_id' ? product.id : row.child_id,
+        parent_unit_price:
+          field === 'id' ? product.unit_price : row.parent_unit_price,
+        child_unit_price:
+          field === 'child_id' ? product.unit_price : row.child_unit_price,
+        unit_price:
+          field === 'id'
+            ? product.unit_price + row.child_unit_price
+            : row.parent_unit_price + product.unit_price,
+        quantity: 1,
       }
 
       return prevState.map((row, index) => (index === rowIndex ? newRow : row))
@@ -216,35 +334,66 @@ function SalesDetail({ closable, visible, isAdmin }) {
     state: dataSourceTable,
     setState: setDataSourceTable,
     initRow: {
+      id: '',
       code: '',
+      child_id: '',
       description: '',
       quantity: 0,
+      parent_unit_price: 0,
+      child_unit_price: 0,
       unit_price: 0,
     },
     onChange: setProductData,
   })
 
-  const handleSearchProduct = product_description => {
+  const handleSearchProduct = (product_description, additionalParams = {}) => {
+    if (product_description === '') return
+
+    const product_type =
+      sale.service_type === productsTypes.SERVICE
+        ? productsTypes.SERVICE
+        : productsTypes.PRODUCT
+
+    const params = {
+      status: productsStatus.ACTIVE,
+      stock: { $gt: 0 },
+      description: { $like: `%25${product_description || ''}%25` },
+      product_type,
+      ...additionalParams,
+    }
+
+    fetchProductsOptions(saleDispatch, params)
+  }
+
+  const handleSearchChildProduct = (
+    product_description,
+    additionalParams = {}
+  ) => {
     if (product_description === '') return
 
     const params = {
       status: productsStatus.ACTIVE,
       stock: { $gt: 0 },
       description: { $like: `%25${product_description}%25` },
+      product_type: productsTypes.PRODUCT,
+      ...additionalParams,
     }
 
-    fetchProductsOptions(saleDispatch, params)
+    fetchChildProductsOptions(saleDispatch, params)
   }
 
   const columnsDynamicTable = getColumnsDynamicTable({
     handleChangeDetail,
     handleRemoveDetail,
     handleSearchProduct,
+    handleSearchChildProduct,
     productsOptionsList: saleState.productsOptionsList,
+    childProductsOptionsList: saleState.childProductsOptionsList,
     status,
     loading,
     forbidEdition,
     isAdmin,
+    serviceType: sale.service_type,
   })
 
   const getSaveData = () => ({
@@ -252,15 +401,33 @@ function SalesDetail({ closable, visible, isAdmin }) {
     project_id: sale.project_id,
     start_date: sale.start_date,
     end_date: sale.end_date,
-    received_by: sale.received_by,
     dispatched_by: sale.dispatched_by,
+    received_by: sale.received_by,
     comments: sale.comments,
+    service_type: sale.service_type,
     related_external_document_id: null,
-    products: dataSourceTable.map(p => ({
-      product_id: p.id,
-      product_quantity: p.quantity,
-      product_price: p.unit_price,
-    })),
+    products: dataSourceTable.reduce((r, p) => {
+      const parentProduct = {
+        product_id: p.id,
+        product_quantity:
+          !p.child_id || isNaN(p.child_id) ? Number(p.quantity) : 1,
+        product_price: Number(p.parent_unit_price),
+      }
+
+      const childProduct = {
+        product_id: p.child_id,
+        product_quantity: Number(p.quantity),
+        product_price: Number(p.child_unit_price),
+        parent_product_id: p.id,
+      }
+
+      const products =
+        !p.child_id || isNaN(p.child_id)
+          ? [parentProduct]
+          : [parentProduct, childProduct]
+
+      return [...(r || []), ...products]
+    }, []),
   })
 
   const validateSaveData = data => {
@@ -283,15 +450,28 @@ function SalesDetail({ closable, visible, isAdmin }) {
     }
 
     const productsRequiredFields = ['product_quantity', 'product_price']
-    const productRequiredPositions = data.products.flatMap((p, i) =>
-      productsRequiredFields.some(k => !p[k]) ? i + 1 : []
+    const productErrors = validateDynamicTableProducts(
+      data.products,
+      productsRequiredFields
     )
 
-    if (productRequiredPositions.length > 0) {
-      productRequiredPositions.forEach(p => {
-        errors.push(`Todos los campos del producto ${p} son obligatorios`)
-      })
+    if (productErrors.required.length > 0) {
+      errors.push(
+        `Los campos Precio y Cantidad de los productos en posicion ${productErrors.required.join(
+          ', '
+        )} deben ser mayor a cero`
+      )
     }
+
+    Object.keys(productErrors.duplicate).forEach(k => {
+      if (productErrors.duplicate[k]?.length > 1) {
+        errors.push(
+          `Los productos en posicion ${productErrors.duplicate[k].join(
+            ', '
+          )} no pueden estar duplicados`
+        )
+      }
+    })
 
     return {
       isInvalid: errors.length > 0,
@@ -343,6 +523,29 @@ function SalesDetail({ closable, visible, isAdmin }) {
       }))
     }
 
+    if (field === 'service_type') {
+      const prevTypeIsService =
+        sale.service_type === documentsServiceType.SERVICE
+      const nextTypeIsService = value === documentsServiceType.SERVICE
+
+      if (prevTypeIsService !== nextTypeIsService) {
+        setDataSourceTable([])
+        setSaleState(saleDispatch, {
+          childProductsOptionsList: [],
+          productsOptionsList: [],
+        })
+        handleAddDetail()
+      }
+
+      handleSearchProduct(null, {
+        $limit: appConfig.selectsInitLimit,
+        description: { $like: '%25%25' },
+        product_type: nextTypeIsService
+          ? productsTypes.SERVICE
+          : productsTypes.PRODUCT,
+      })
+    }
+
     setSale(prevState => ({
       ...prevState,
       [field]: value,
@@ -382,7 +585,7 @@ function SalesDetail({ closable, visible, isAdmin }) {
         closable={false}
         onClose={closable}
         visible={visible}
-        width={850}
+        width='70%'
       >
         <div>
           <Title> {'Detalle Nota de servicio'} </Title>
@@ -480,6 +683,17 @@ function SalesDetail({ closable, visible, isAdmin }) {
                 disabled
               />
             </Col>
+            <Col xs={8} sm={8} md={8} lg={8}>
+              <div className={'title-space-field'}>
+                Duracion del servicio (dias)
+              </div>
+              <Input
+                placeholder={'Duracion del servicio'}
+                size={'large'}
+                value={serviceDaysLength}
+                disabled
+              />
+            </Col>
           </Row>
           <Row gutter={16} className={'section-space-field'}>
             <Col xs={8} sm={8} md={8} lg={8}>
@@ -503,15 +717,32 @@ function SalesDetail({ closable, visible, isAdmin }) {
               />
             </Col>
             <Col xs={8} sm={8} md={8} lg={8}>
-              <div className={'title-space-field'}>
-                Duracion del servicio (dias)
-              </div>
-              <Input
-                placeholder={'Duracion del servicio'}
+              <div className={'title-space-field'}>Tipo de servicio</div>
+              <Select
+                className={'single-select'}
+                placeholder={'Elegir tipo servicio'}
                 size={'large'}
-                value={serviceDaysLength}
-                disabled
-              />
+                style={{ width: '100%', height: '40px' }}
+                getPopupContainer={trigger => trigger.parentNode}
+                onChange={handleChange('service_type')}
+                value={sale.service_type}
+                disabled={forbidEdition || !isAdmin}
+              >
+                {saleState.documentServiceTypesOptionsList?.length > 0 ? (
+                  saleState.documentServiceTypesOptionsList.map(value => (
+                    <Option key={value} value={value}>
+                      <Tag type='documentsServiceType' value={value} />
+                    </Option>
+                  ))
+                ) : (
+                  <Option value={sale.service_type}>
+                    <Tag
+                      type='documentsServiceType'
+                      value={sale.service_type}
+                    />
+                  </Option>
+                )}
+              </Select>
             </Col>
           </Row>
           <Divider className={'divider-custom-margins-users'} />

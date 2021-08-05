@@ -105,6 +105,28 @@ function Billing(props) {
   const newBill = () => props.history.push('/billingView')
 
   const showDetail = data => {
+    const getChildProduct = (products, parentProduct) => {
+      const childProduct = products.find(
+        p => Number(p.parent_product_id) === Number(parentProduct.id)
+      )
+
+      if (!childProduct) return {}
+
+      return {
+        child_id: childProduct.id,
+        child_description: childProduct.description,
+        child_tax_fee: childProduct.tax_fee,
+        child_unit_tax_amount: roundNumber(childProduct.unit_tax_amount),
+        child_unit_discount: roundNumber(childProduct.unit_discount_amount),
+        child_unit_price: roundNumber(childProduct.product_price),
+        product_quantity: childProduct.product_quantity,
+        product_price: roundNumber(
+          parentProduct.product_price + childProduct.product_price
+        ),
+        subtotal: roundNumber(parentProduct.subtotal + childProduct.subtotal),
+      }
+    }
+
     setDetailInvoiceData({
       ...data,
       discount_percentage: roundNumber(data.discount_percentage),
@@ -112,12 +134,22 @@ function Billing(props) {
       subtotal: roundNumber(data.subtotal),
       total_tax: roundNumber(data.total_tax),
       total: roundNumber(data.total),
-      products: data.products.map(p => ({
-        ...p,
-        product_price: roundNumber(p.product_price),
-        subtotal: roundNumber(p.subtotal),
-      })),
+      products: data.products.flatMap(p => {
+        if (p.parent_product_id) return []
+
+        return {
+          ...p,
+          parent_tax_fee: p.tax_fee,
+          parent_unit_tax_amount: roundNumber(p.unit_tax_amount),
+          parent_unit_discount: roundNumber(p.unit_discount_amount),
+          parent_unit_price: roundNumber(p.product_price),
+          product_price: roundNumber(p.product_price),
+          subtotal: roundNumber(p.subtotal),
+          ...getChildProduct(data.products, p),
+        }
+      }),
     })
+
     setVisible(true)
   }
 

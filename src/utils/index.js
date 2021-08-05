@@ -1,12 +1,12 @@
 import { message } from 'antd'
 import { Cache } from 'aws-amplify'
 
-export const roundNumber = (input, decimals = 2) => {
-  const number = Number(input)
+export const roundNumber = input => {
+  const num = Number(input)
 
-  if (!input || isNaN(number)) return input
+  if (!input || isNaN(num)) return input
 
-  return Number(number.toFixed(decimals))
+  return Math.round((num + Number.EPSILON) * 100) / 100
 }
 
 export const formatNumber = number => {
@@ -46,19 +46,25 @@ export const validatePermissions = permissionId => {
 
 export const validateDynamicTableProducts = (
   products,
-  productsRequiredFields
+  productsRequiredFields,
+  isServiceTypeService = false
 ) => {
   return products.reduce(
     (result, p, i) => {
-      const newPosition = [...(result.duplicate[p.product_id] || []), i + 1]
+      const newPosition = isServiceTypeService ? Math.ceil((i + 1) / 2) : i + 1
+      const positionsArray = [
+        ...(result.duplicate[p.product_id] || []),
+        newPosition,
+      ]
       const newResult = {
         ...result,
-        duplicate: p.product_id
-          ? {
-              ...result.duplicate,
-              [p.product_id]: newPosition,
-            }
-          : result.duplicate,
+        duplicate:
+          p.product_id && !p.parent_product_id
+            ? {
+                ...result.duplicate,
+                [p.product_id]: positionsArray,
+              }
+            : result.duplicate,
       }
 
       const hasRequiredError = productsRequiredFields.some(
