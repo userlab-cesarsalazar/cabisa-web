@@ -19,7 +19,11 @@ import HeaderPage from '../../../../components/HeaderPage'
 import DynamicTable from '../../../../components/DynamicTable'
 import Tag from '../../../../components/Tag'
 import { useSale, saleActions } from '../../context'
-import { showErrors, validateDynamicTableProducts } from '../../../../utils'
+import {
+  showErrors,
+  validateDynamicTableProducts,
+  formatPhone,
+} from '../../../../utils'
 import {
   productsTypes,
   productsStatus,
@@ -488,7 +492,7 @@ function NewNoteView({ isAdmin }) {
         project_id: null,
         stakeholder_id: stakeholder.id,
         stakeholder_address: stakeholder.address,
-        stakeholder_phone: stakeholder.phone,
+        stakeholder_phone: formatPhone(stakeholder.phone),
         stakeholder_business_man: stakeholder.business_man,
       }))
     }

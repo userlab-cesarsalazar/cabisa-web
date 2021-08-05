@@ -237,7 +237,10 @@ function SalesTable(props) {
                         <p>
                           <b>Telefono: </b>{' '}
                           {record.stakeholder_phone !== null
-                            ? record.stakeholder_phone
+                            ? `${record.stakeholder_phone.substring(
+                                1,
+                                4
+                              )}-${record.stakeholder_phone.substring(5, 9)}`
                             : ''}{' '}
                         </p>
                       </div>

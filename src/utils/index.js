@@ -149,3 +149,25 @@ export const isEmptyObject = obj => {
 
   return JSON.stringify(obj) === JSON.stringify({})
 }
+
+export const formatPhoneOnChange = (prevValue, nextValue) => {
+  if ((!nextValue && nextValue !== '') || nextValue.length > 9) return prevValue
+
+  return nextValue
+    .split('')
+    .map((v, i) =>
+      i === 4 && nextValue.length < 6 && nextValue.length > prevValue?.length
+        ? `-${v}`
+        : v
+    )
+    .join('')
+}
+
+export const formatPhone = value => {
+  if (!value || value.length > 8) return value
+
+  return value
+    .split('')
+    .map((v, i) => (i === 4 ? `-${v}` : v))
+    .join('')
+}

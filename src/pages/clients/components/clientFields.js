@@ -16,7 +16,13 @@ import FooterButtons from '../../../components/FooterButtons'
 import DynamicTable from '../../../components/DynamicTable'
 import Tag from '../../../components/Tag'
 import { useEditableList } from '../../../hooks'
-import { validateEmail, showErrors, validateRole } from '../../../utils'
+import {
+  validateEmail,
+  showErrors,
+  validateRole,
+  formatPhone,
+  formatPhoneOnChange,
+} from '../../../utils'
 import { stakeholdersTypes, roles } from '../../../commons/types'
 import ClientsSrc from '../clientsSrc'
 
@@ -149,7 +155,7 @@ function ClientFields({ edit, editData, ...props }) {
     setClientTypeID(edit ? editData.stakeholder_type : null)
     setNit(edit ? editData.nit : '')
     setEmail(edit ? editData.email : '')
-    setPhone(edit ? editData.phone : '')
+    setPhone(edit ? formatPhone(editData.phone) : '')
     setAddress(edit ? editData.address : '')
     setBusiness_man(edit ? editData.business_man : '')
     setPayments_man(edit ? editData.payments_man : '')
@@ -185,7 +191,10 @@ function ClientFields({ edit, editData, ...props }) {
     stakeholder_type: clientTypeID,
     nit,
     email,
-    phone,
+    phone: phone
+      .split('')
+      .flatMap(c => (c === '-' ? '' : c))
+      .join(''),
     address,
     business_man,
     credit_limit: creditLimit || null,
@@ -255,6 +264,12 @@ function ClientFields({ edit, editData, ...props }) {
     isAdmin,
     edit,
   })
+
+  const handleChangePhone = e => {
+    const rawValue = e?.target?.value !== undefined ? e.target.value : e
+    const value = formatPhoneOnChange(phone, rawValue)
+    setPhone(value)
+  }
 
   return (
     <>
@@ -335,7 +350,7 @@ function ClientFields({ edit, editData, ...props }) {
               value={phone}
               placeholder={'Escribir telefono'}
               size={'large'}
-              onChange={value => setPhone(value.target.value)}
+              onChange={handleChangePhone}
               disabled={!isAdmin}
             />
           </Col>

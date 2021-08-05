@@ -17,7 +17,7 @@ import {
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import DynamicTable from '../../../../components/DynamicTable'
-import { showErrors } from '../../../../utils'
+import { showErrors, formatPhone } from '../../../../utils'
 import {
   productsStatus,
   stakeholdersStatus,
@@ -150,7 +150,7 @@ function InventoryMovementFields({ forbidEdition, editData }) {
       stakeholder_name: editData.stakeholder_name,
       stakeholder_business_man: editData.stakeholder_business_man,
       stakeholder_address: editData.stakeholder_address,
-      stakeholder_phone: editData.stakeholder_phone,
+      stakeholder_phone: formatPhone(editData.stakeholder_phone),
       related_external_document_id: editData.related_external_document_id,
       start_date: editData.start_date,
     }
@@ -335,7 +335,7 @@ function InventoryMovementFields({ forbidEdition, editData }) {
         ...prevState,
         stakeholder_id: stakeholder.id,
         stakeholder_address: stakeholder.address,
-        stakeholder_phone: stakeholder.phone,
+        stakeholder_phone: formatPhone(stakeholder.phone),
         stakeholder_business_man: stakeholder.business_man,
       }))
     }

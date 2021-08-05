@@ -6,6 +6,7 @@ import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../components/actionOptions'
 import Tag from '../../../components/Tag'
 import { permissions } from '../../../commons/types'
+import { formatPhone } from '../../../utils'
 
 const { Search } = Input
 
@@ -39,7 +40,7 @@ function ClientTable(props) {
       title: 'Telefono',
       dataIndex: 'phone', // Field that is goint to be rendered
       key: 'phone',
-      render: text => <span>{text}</span>,
+      render: text => (text ? formatPhone(text) : null),
     },
     {
       title: 'Direccion',
