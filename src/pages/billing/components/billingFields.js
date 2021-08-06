@@ -214,6 +214,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   const [projectsOptionsList, setProjectsOptionsList] = useState([])
   const [productsOptionsList, setProductsOptionsList] = useState([])
   const [childProductsOptionsList, setChildProductsOptionsList] = useState([])
+  const [creditStatusOptionsList, setCreditStatusOptionsList] = useState([])
   const [data, setData] = useState({})
   const [productsData, setProductsData] = useState([])
   const [discountInputValue, setDiscountInputValue] = useState(0)
@@ -328,6 +329,16 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     [setLoading, isInvoiceFromSale, data.service_type]
   )
 
+  const fetchCreditStatusOptions = useCallback(() => {
+    setLoading(true)
+
+    billingSrc
+      .getCreditStatusOptions()
+      .then(creditStatus => setCreditStatusOptionsList(creditStatus))
+      .catch(error => showErrors(error))
+      .finally(() => setLoading(false))
+  }, [setLoading])
+
   useEffect(() => {
     if (editData && !isInvoiceFromSale) return
 
@@ -367,6 +378,12 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     setProductsData(editData.products)
     setDiscountInputValue(editData.discount_percentage || 0)
   }, [editData])
+
+  useEffect(() => {
+    if (!editData || isInvoiceFromSale) return
+
+    fetchCreditStatusOptions()
+  }, [fetchCreditStatusOptions, editData, isInvoiceFromSale])
 
   const updateInvoiceTotals = (field, value, rowIndex) => {
     const getParentProduct = (field, value, row) =>
@@ -591,6 +608,29 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       }
     }
 
+    if (field === 'credit_status') {
+      const params = {
+        document_id: data.id,
+        credit_status: value,
+      }
+
+      setLoading(true)
+
+      billingSrc
+        .updateCreditStatus(params)
+        .then(_ =>
+          message.success('Estado de credito actualizado exitosamente')
+        )
+        .catch(error => {
+          showErrors(error)
+          setData(prevState => ({
+            ...prevState,
+            credit_status: data.credit_status,
+          }))
+        })
+        .finally(() => setLoading(false))
+    }
+
     setData(prevState => ({
       ...prevState,
       [field]: value,
@@ -750,6 +790,48 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
                 </Button>
               </Col>
             </Row>
+
+            {data.credit_status && (
+              <Row>
+                <Col xs={24} sm={24} md={12} lg={12}></Col>
+                <Col
+                  xs={24}
+                  sm={24}
+                  md={12}
+                  lg={12}
+                  className='show-flex-component'
+                >
+                  <b
+                    style={{
+                      width: '35%',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                    className={'title-space-field'}
+                  >
+                    Estado de Credito
+                  </b>
+                  <Select
+                    className={'single-select'}
+                    placeholder={'Seleccione Estado de Credito'}
+                    size={'large'}
+                    style={{ width: '65%' }}
+                    getPopupContainer={trigger => trigger.parentNode}
+                    optionFilterProp='children'
+                    showSearch
+                    onChange={handleChange('credit_status')}
+                    value={data.credit_status}
+                  >
+                    {creditStatusOptionsList?.map(value => (
+                      <Option key={value} value={value}>
+                        <Tag type='creditStatus' value={value} />
+                      </Option>
+                    ))}
+                  </Select>
+                </Col>
+              </Row>
+            )}
+
             <Divider className={'divider-custom-margins-users'} />
           </>
         )}
