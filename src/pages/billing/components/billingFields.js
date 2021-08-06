@@ -806,6 +806,8 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
                       width: '35%',
                       display: 'flex',
                       alignItems: 'center',
+                      justifyContent: 'flex-end',
+                      paddingRight: '1em',
                     }}
                     className={'title-space-field'}
                   >
