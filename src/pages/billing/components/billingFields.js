@@ -29,6 +29,7 @@ import {
   documentsServiceType,
   productsTypes,
   productsStatus,
+  documentsStatus,
 } from '../../../commons/types'
 
 const { Title } = Typography
@@ -794,7 +795,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
               </Col>
             </Row>
 
-            {data.credit_status && (
+            {data.credit_status && data.status !== documentsStatus.CANCELLED && (
               <Row>
                 <Col xs={24} sm={24} md={12} lg={12}></Col>
                 <Col

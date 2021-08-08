@@ -33,40 +33,61 @@ function ServiceNoteBill() {
       .finally(() => setLoading(false))
   }, [location])
 
-  const getInvoiceData = () => ({
-    ...location.state,
-    products: location.state?.products.flatMap(p => {
-      const child = location.state?.products.find(
-        p => Number(p.parent_product_id) === Number(p.id)
+  const getInvoiceData = data => {
+    const getChildProduct = (products, parentProduct) => {
+      const childProduct = products.find(
+        p => Number(p.parent_product_id) === Number(parentProduct.id)
       )
 
       return {
-        ...p,
-        parent_tax_fee: p.tax_fee,
-        parent_unit_tax_amount: roundNumber(p.unit_tax_amount),
-        parent_unit_discount: 0,
-        parent_base_unit_price: roundNumber(p.unit_price),
-        parent_unit_price: roundNumber(p.unit_price),
-        child_id: child ? child.id : '',
-        child_description: child ? child.description : '',
-        child_tax_fee: child ? child.tax_fee : 0,
-        child_unit_tax_amount: child ? roundNumber(child.unit_tax_amount) : 0,
+        child_id: childProduct?.id || '',
+        child_description: childProduct?.description || '',
+        child_tax_fee: childProduct?.tax_fee || 0,
+        child_unit_tax_amount: childProduct?.unit_tax_amount
+          ? roundNumber(childProduct.unit_tax_amount)
+          : 0,
         child_unit_discount: 0,
-        child_base_unit_price: child ? roundNumber(child.unit_price) : 0,
-        child_unit_price: child ? roundNumber(child.unit_price) : 0,
-        quantity: child ? child.quantity : p.quantity,
-        unit_tax_amount: child
-          ? roundNumber(p.unit_tax_amount + child.unit_tax_amount)
-          : roundNumber(p.unit_tax_amount),
-        unit_price: child
-          ? roundNumber(p.unit_price + child.unit_price)
-          : roundNumber(p.unit_price),
-        subtotal: child
-          ? roundNumber(p.unit_price + child.unit_price * child.quantity)
-          : roundNumber(p.unit_price * p.quantity),
+        child_base_unit_price: childProduct?.unit_price
+          ? roundNumber(childProduct.unit_price)
+          : 0,
+        child_unit_price: childProduct?.unit_price
+          ? roundNumber(childProduct.unit_price)
+          : 0,
+        quantity: childProduct?.quantity || parentProduct.quantity,
+        unit_tax_amount: childProduct
+          ? roundNumber(
+              parentProduct.unit_tax_amount + childProduct.unit_tax_amount
+            )
+          : roundNumber(parentProduct.unit_tax_amount),
+        unit_price: childProduct
+          ? roundNumber(parentProduct.unit_price + childProduct.unit_price)
+          : roundNumber(parentProduct.unit_price),
+        subtotal: childProduct
+          ? roundNumber(
+              parentProduct.unit_price +
+                childProduct.unit_price * childProduct.quantity
+            )
+          : roundNumber(parentProduct.unit_price * parentProduct.quantity),
       }
-    }),
-  })
+    }
+
+    return {
+      ...data,
+      products: data.products?.flatMap(p => {
+        if (p.parent_product_id) return []
+
+        return {
+          ...p,
+          parent_tax_fee: p.tax_fee,
+          parent_unit_tax_amount: roundNumber(p.unit_tax_amount),
+          parent_unit_discount: 0,
+          parent_base_unit_price: roundNumber(p.unit_price),
+          parent_unit_price: roundNumber(p.unit_price),
+          ...getChildProduct(data.products, p),
+        }
+      }),
+    }
+  }
 
   const handleSaveData = saveData => {
     setLoading(true)
@@ -89,7 +110,7 @@ function ServiceNoteBill() {
           isInvoiceFromSale
           edit={false}
           loading={loading}
-          editData={getInvoiceData()}
+          editData={getInvoiceData(location.state)}
           paymentMethodsOptionsList={paymentMethodsOptionsList}
           serviceTypesOptionsList={serviceTypesOptionsList}
           creditDaysOptionsList={creditDaysOptionsList}
