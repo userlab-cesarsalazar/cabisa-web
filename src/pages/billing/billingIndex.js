@@ -70,7 +70,7 @@ function Billing(props) {
           : '',
         service_type: filters.serviceTypes,
         payment_method: filters.paymentMethods,
-        total_invoice: { $like: `%25${filters.totalInvoice}%25` },
+        total_amount: { $like: `%25${filters.totalInvoice}%25` },
       })
       .then(data => setDataSource(data))
       .catch(_ => message.error('Error al cargar facturas'))

@@ -35,6 +35,17 @@ const { Title } = Typography
 const { Option } = Select
 const { TextArea } = Input
 
+const getProductDiscount = (serviceType, product) =>
+  serviceType === productsTypes.SERVICE
+    ? product.parent_unit_discount +
+      product.child_unit_discount * product.quantity
+    : product.unit_discount * product.quantity
+
+export const getProductSubtotal = (serviceType, product) =>
+  serviceType === productsTypes.SERVICE
+    ? product.parent_unit_price + product.child_unit_price * product.quantity
+    : product.unit_price * product.quantity
+
 const getColumnsDynamicTable = ({
   edit,
   loading,
@@ -223,19 +234,11 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     if (editData && !isInvoiceFromSale) return
 
     setData(prevState => {
-      const getProductDiscount = p =>
-        data.service_type === productsTypes.SERVICE
-          ? p.parent_unit_discount + p.child_unit_discount * p.quantity
-          : p.unit_discount * p.quantity
-
-      const getProductSubtotal = p =>
-        data.service_type === productsTypes.SERVICE
-          ? p.parent_unit_price + p.child_unit_price * p.quantity
-          : p.unit_price * p.quantity
-
       const totals = productsData?.reduce((r, p) => {
-        const discount = (r.discount || 0) + getProductDiscount(p)
-        const subtotal = (r.subtotal || 0) + getProductSubtotal(p)
+        const discount =
+          (r.discount || 0) + getProductDiscount(data.service_type, p)
+        const subtotal =
+          (r.subtotal || 0) + getProductSubtotal(data.service_type, p)
         const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
         const total = subtotal + total_tax
 
@@ -564,10 +567,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       base_unit_price: child_base_unit_price + parent_base_unit_price,
     }
 
-    const subtotal =
-      data.service_type === productsTypes.SERVICE
-        ? roundNumber(child_unit_price * newRow.quantity + parent_unit_price)
-        : roundNumber(newRow.unit_price * newRow.quantity)
+    const subtotal = getProductSubtotal(data.service_type, newRow)
 
     return { ...newRow, subtotal }
   }
@@ -644,7 +644,10 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     payment_method: data.payment_method,
     service_type: data.service_type,
     credit_days: data.credit_days,
-    total_invoice: data.total,
+    subtotal_amount: data.subtotal,
+    total_discount_amount: data.discount,
+    total_tax_amount: data.total_tax,
+    total_amount: data.total,
     description: data.description,
     products: productsData.reduce((r, p) => {
       const parentProduct = {

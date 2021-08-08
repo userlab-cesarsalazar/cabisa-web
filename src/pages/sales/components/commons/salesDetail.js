@@ -32,6 +32,7 @@ import {
   formatPhone,
 } from '../../../../utils'
 import { appConfig, documentsStatus } from '../../../../commons/types'
+import { getProductSubtotal } from '../../../billing/components/billingFields'
 
 const { Title } = Typography
 const { TextArea } = Input
@@ -220,6 +221,15 @@ function SalesDetail({ closable, visible, isAdmin }) {
     fetchDocumentServiceTypeOptions(saleDispatch)
   }, [saleDispatch])
 
+  const handleClose = useCallback(() => {
+    setSaleState(saleDispatch, {
+      currentSale: {},
+      childProductsOptionsList: [],
+      productsOptionsList: [],
+    })
+    closable()
+  }, [saleDispatch, closable])
+
   useEffect(() => {
     fetchServiceTypeOptionsList()
   }, [fetchServiceTypeOptionsList])
@@ -235,9 +245,9 @@ function SalesDetail({ closable, visible, isAdmin }) {
     if (status === 'SUCCESS' && loading === 'updateSale') {
       fetchSales(saleDispatch)
       message.success('Nota de Servicio actualizada exitosamente')
-      closable()
+      handleClose()
     }
-  }, [error, status, loading, saleDispatch, closable, visible])
+  }, [error, status, loading, saleDispatch, handleClose, visible])
 
   const getServiceDaysLength = (startDate, endDate) => {
     if (!startDate || !endDate) return null
@@ -410,6 +420,10 @@ function SalesDetail({ closable, visible, isAdmin }) {
     comments: sale.comments,
     service_type: sale.service_type,
     related_external_document_id: null,
+    subtotal_amount: dataSourceTable.reduce(
+      (r, p) => r + getProductSubtotal(sale.service_type, p),
+      0
+    ),
     products: dataSourceTable.reduce((r, p) => {
       const parentProduct = {
         product_id: p.id,
@@ -577,17 +591,12 @@ function SalesDetail({ closable, visible, isAdmin }) {
     fetchStakeholdersOptions(saleDispatch, params)
   }
 
-  const handleCancelButton = () => {
-    setSaleState(saleDispatch, { currentSale: {} })
-    closable()
-  }
-
   return (
     <>
       <Drawer
         placement='right'
         closable={false}
-        onClose={closable}
+        onClose={handleClose}
         visible={visible}
         width='70%'
       >
@@ -808,7 +817,7 @@ function SalesDetail({ closable, visible, isAdmin }) {
         {!forbidEdition && isAdmin && (
           <FooterButtons
             saveData={saveData}
-            cancelButton={handleCancelButton}
+            cancelButton={handleClose}
             edit={true}
             cancelLink=''
           />

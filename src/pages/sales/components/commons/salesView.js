@@ -15,7 +15,6 @@ function SalesView(props) {
         newNote={props.newNote}
       />
       <SalesDetail
-        closable={props.onCancelButton}
         visible={props.visible}
         editData={props.detailData}
         cancelButton={props.onCancelButton}
