@@ -2,6 +2,11 @@
 import { Tag as AntTag } from 'antd'
 
 const config = {
+  creditStatus: {
+    UNPAID: { color: 'grey', text: 'Pago Pendiete' },
+    PAID: { color: '#87d068', text: 'Pagado' },
+    DEFAULT: { color: '#f50', text: 'En Mora' },
+  },
   documentsServiceType: {
     MACHINERY: { color: 'geekblue', text: 'Maquinaria' },
     EQUIPMENT: { color: 'green', text: 'Equipo' },

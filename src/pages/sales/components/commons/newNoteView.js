@@ -31,6 +31,8 @@ import {
   documentsServiceType,
 } from '../../../../commons/types'
 import { useEditableList } from '../../../../hooks'
+import { getProductSubtotal } from '../../../billing/components/billingFields'
+
 const {
   fetchChildProductsOptions,
   fetchProductsOptions,
@@ -375,6 +377,10 @@ function NewNoteView({ isAdmin }) {
     comments: sale.comments,
     service_type: sale.service_type,
     related_external_document_id: null,
+    subtotal_amount: dataSourceTable.reduce(
+      (r, p) => r + getProductSubtotal(sale.service_type, p),
+      0
+    ),
     products: dataSourceTable.reduce((r, p) => {
       const parentProduct = {
         product_id: p.id,

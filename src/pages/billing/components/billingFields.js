@@ -29,11 +29,23 @@ import {
   documentsServiceType,
   productsTypes,
   productsStatus,
+  documentsStatus,
 } from '../../../commons/types'
 
 const { Title } = Typography
 const { Option } = Select
 const { TextArea } = Input
+
+const getProductDiscount = (serviceType, product) =>
+  serviceType === productsTypes.SERVICE
+    ? product.parent_unit_discount +
+      product.child_unit_discount * product.quantity
+    : product.unit_discount * product.quantity
+
+export const getProductSubtotal = (serviceType, product) =>
+  serviceType === productsTypes.SERVICE
+    ? product.parent_unit_price + product.child_unit_price * product.quantity
+    : product.unit_price * product.quantity
 
 const getColumnsDynamicTable = ({
   edit,
@@ -214,6 +226,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   const [projectsOptionsList, setProjectsOptionsList] = useState([])
   const [productsOptionsList, setProductsOptionsList] = useState([])
   const [childProductsOptionsList, setChildProductsOptionsList] = useState([])
+  const [creditStatusOptionsList, setCreditStatusOptionsList] = useState([])
   const [data, setData] = useState({})
   const [productsData, setProductsData] = useState([])
   const [discountInputValue, setDiscountInputValue] = useState(0)
@@ -222,19 +235,11 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     if (editData && !isInvoiceFromSale) return
 
     setData(prevState => {
-      const getProductDiscount = p =>
-        data.service_type === productsTypes.SERVICE
-          ? p.parent_unit_discount + p.child_unit_discount * p.quantity
-          : p.unit_discount * p.quantity
-
-      const getProductSubtotal = p =>
-        data.service_type === productsTypes.SERVICE
-          ? p.parent_unit_price + p.child_unit_price * p.quantity
-          : p.unit_price * p.quantity
-
       const totals = productsData?.reduce((r, p) => {
-        const discount = (r.discount || 0) + getProductDiscount(p)
-        const subtotal = (r.subtotal || 0) + getProductSubtotal(p)
+        const discount =
+          (r.discount || 0) + getProductDiscount(data.service_type, p)
+        const subtotal =
+          (r.subtotal || 0) + getProductSubtotal(data.service_type, p)
         const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
         const total = subtotal + total_tax
 
@@ -328,6 +333,16 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     [setLoading, isInvoiceFromSale, data.service_type]
   )
 
+  const fetchCreditStatusOptions = useCallback(() => {
+    setLoading(true)
+
+    billingSrc
+      .getCreditStatusOptions()
+      .then(creditStatus => setCreditStatusOptionsList(creditStatus))
+      .catch(error => showErrors(error))
+      .finally(() => setLoading(false))
+  }, [setLoading])
+
   useEffect(() => {
     if (editData && !isInvoiceFromSale) return
 
@@ -359,14 +374,25 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
 
   useEffect(() => {
     if (!editData) return
-
-    setData({
+    
+    setData(prevState => ({
       ...editData,
       stakeholder_phone: formatPhone(editData.stakeholder_phone),
-    })
-    setProductsData(editData.products)
-    setDiscountInputValue(editData.discount_percentage || 0)
-  }, [editData])
+      ...prevState,
+    }))
+
+    setProductsData(prevState =>
+      prevState?.length > 1 ? prevState : editData.products
+    )
+    setDiscountInputValue(prevState =>
+      prevState ? prevState : editData.discount_percentage || 0
+    )}, [editData])
+
+  useEffect(() => {
+    if (!editData || isInvoiceFromSale) return
+
+    fetchCreditStatusOptions()
+  }, [fetchCreditStatusOptions, editData, isInvoiceFromSale])
 
   const updateInvoiceTotals = (field, value, rowIndex) => {
     const getParentProduct = (field, value, row) =>
@@ -547,10 +573,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       base_unit_price: child_base_unit_price + parent_base_unit_price,
     }
 
-    const subtotal =
-      data.service_type === productsTypes.SERVICE
-        ? roundNumber(child_unit_price * newRow.quantity + parent_unit_price)
-        : roundNumber(newRow.unit_price * newRow.quantity)
+    const subtotal = getProductSubtotal(data.service_type, newRow)
 
     return { ...newRow, subtotal }
   }
@@ -591,6 +614,29 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       }
     }
 
+    if (field === 'credit_status') {
+      const params = {
+        document_id: data.id,
+        credit_status: value,
+      }
+
+      setLoading(true)
+
+      billingSrc
+        .updateCreditStatus(params)
+        .then(_ =>
+          message.success('Estado de credito actualizado exitosamente')
+        )
+        .catch(error => {
+          showErrors(error)
+          setData(prevState => ({
+            ...prevState,
+            credit_status: data.credit_status,
+          }))
+        })
+        .finally(() => setLoading(false))
+    }
+
     setData(prevState => ({
       ...prevState,
       [field]: value,
@@ -604,7 +650,10 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     payment_method: data.payment_method,
     service_type: data.service_type,
     credit_days: data.credit_days,
-    total_invoice: data.total,
+    subtotal_amount: data.subtotal,
+    total_discount_amount: data.discount,
+    total_tax_amount: data.total_tax,
+    total_amount: data.total,
     description: data.description,
     products: productsData.reduce((r, p) => {
       const parentProduct = {
@@ -750,6 +799,50 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
                 </Button>
               </Col>
             </Row>
+
+            {data.credit_status && data.status !== documentsStatus.CANCELLED && (
+              <Row>
+                <Col xs={24} sm={24} md={12} lg={12}></Col>
+                <Col
+                  xs={24}
+                  sm={24}
+                  md={12}
+                  lg={12}
+                  className='show-flex-component'
+                >
+                  <b
+                    style={{
+                      width: '35%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'flex-end',
+                      paddingRight: '1em',
+                    }}
+                    className={'title-space-field'}
+                  >
+                    Estado de Credito
+                  </b>
+                  <Select
+                    className={'single-select'}
+                    placeholder={'Seleccione Estado de Credito'}
+                    size={'large'}
+                    style={{ width: '65%' }}
+                    getPopupContainer={trigger => trigger.parentNode}
+                    optionFilterProp='children'
+                    showSearch
+                    onChange={handleChange('credit_status')}
+                    value={data.credit_status}
+                  >
+                    {creditStatusOptionsList?.map(value => (
+                      <Option key={value} value={value}>
+                        <Tag type='creditStatus' value={value} />
+                      </Option>
+                    ))}
+                  </Select>
+                </Col>
+              </Row>
+            )}
+
             <Divider className={'divider-custom-margins-users'} />
           </>
         )}
