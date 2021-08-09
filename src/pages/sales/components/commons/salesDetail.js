@@ -29,6 +29,7 @@ import {
   showErrors,
   roundNumber,
   validateDynamicTableProducts,
+  formatPhone,
 } from '../../../../utils'
 import { appConfig, documentsStatus } from '../../../../commons/types'
 
@@ -278,7 +279,10 @@ function SalesDetail({ closable, visible, isAdmin }) {
 
     setDataSourceTable(productsDetails)
     setForbidEdition(currentSale.status !== documentsStatus.PENDING)
-    setSale(currentSale)
+    setSale({
+      ...currentSale,
+      stakeholder_phone: formatPhone(currentSale.stakeholder_phone),
+    })
     setServiceDaysLength(
       getServiceDaysLength(currentSale.start_date, currentSale.end_date)
     )
@@ -518,7 +522,7 @@ function SalesDetail({ closable, visible, isAdmin }) {
         ...prevState,
         stakeholder_id: stakeholder.id,
         stakeholder_address: stakeholder.address,
-        stakeholder_phone: stakeholder.phone,
+        stakeholder_phone: formatPhone(stakeholder.phone),
         stakeholder_business_man: stakeholder.business_man,
       }))
     }

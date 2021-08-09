@@ -20,6 +20,7 @@ import {
   roundNumber,
   getPercent,
   validateDynamicTableProducts,
+  formatPhone,
 } from '../../../utils'
 import billingSrc from '../billingSrc'
 import FooterButtons from '../../../components/FooterButtons'
@@ -359,7 +360,10 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   useEffect(() => {
     if (!editData) return
 
-    setData(editData)
+    setData({
+      ...editData,
+      stakeholder_phone: formatPhone(editData.stakeholder_phone),
+    })
     setProductsData(editData.products)
     setDiscountInputValue(editData.discount_percentage || 0)
   }, [editData])
@@ -569,7 +573,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
         stakeholder_type: stakeholder.stakeholder_type,
         stakeholder_nit: stakeholder.nit,
         stakeholder_email: stakeholder.email,
-        stakeholder_phone: stakeholder.phone,
+        stakeholder_phone: formatPhone(stakeholder.phone),
         stakeholder_address: stakeholder.address,
       }))
     }
@@ -742,7 +746,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
                 style={{ textAlign: 'right' }}
               >
                 <Button className='title-cabisa new-button'>
-                  Serie No. A-12312
+                  Serie No. {data.id}
                 </Button>
               </Col>
             </Row>

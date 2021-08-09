@@ -18,7 +18,7 @@ import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../../components/actionOptions'
 import Tag from '../../../../components/Tag'
 import { useSale, saleActions } from '../../context'
-import { validatePermissions, showErrors } from '../../../../utils'
+import { validatePermissions, showErrors, formatPhone } from '../../../../utils'
 import { actions } from '../../../../commons/types'
 
 const { Search } = Input
@@ -236,8 +236,8 @@ function SalesTable(props) {
                         </p>
                         <p>
                           <b>Telefono: </b>{' '}
-                          {record.stakeholder_phone !== null
-                            ? record.stakeholder_phone
+                          {record.stakeholder_phone
+                            ? formatPhone(record.stakeholder_phone)
                             : ''}{' '}
                         </p>
                       </div>
