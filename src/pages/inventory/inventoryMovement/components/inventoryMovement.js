@@ -8,7 +8,7 @@ import InventoryMovementDrawer from './inventoryMovementDrawer'
 import inventorySrc from '../../inventorySrc'
 import Tag from '../../../../components/Tag'
 import { showErrors } from '../../../../utils'
-import { permissions } from '../../../../commons/types'
+import { permissions, documentsStatus } from '../../../../commons/types'
 
 const getColumns = ({ DeleteRow, EditRow }) => [
   {
@@ -43,7 +43,7 @@ const getColumns = ({ DeleteRow, EditRow }) => [
         editPermissions={false}
         data={data}
         permissionId={permissions.INVENTARIO}
-        showDeleteBtn
+        showDeleteBtn={data.status !== documentsStatus.CANCELLED}
         handlerDeleteRow={DeleteRow}
         handlerEditRow={EditRow}
         editAction='show'

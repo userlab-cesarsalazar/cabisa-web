@@ -273,6 +273,7 @@ function ProductFields(props) {
         cancelButton={props.cancelButton}
         edit={props.edit}
         cancelLink='/inventoryProducts'
+        loading={loading}
       />
     </>
   )

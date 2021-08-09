@@ -375,12 +375,18 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   useEffect(() => {
     if (!editData) return
 
-    setData({
+    setData(prevState => ({
       ...editData,
       stakeholder_phone: formatPhone(editData.stakeholder_phone),
-    })
-    setProductsData(editData.products)
-    setDiscountInputValue(editData.discount_percentage || 0)
+      ...prevState,
+    }))
+
+    setProductsData(prevState =>
+      prevState?.length > 1 ? prevState : editData.products
+    )
+    setDiscountInputValue(prevState =>
+      prevState ? prevState : editData.discount_percentage || 0
+    )
   }, [editData])
 
   useEffect(() => {
