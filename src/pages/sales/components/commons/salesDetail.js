@@ -20,6 +20,7 @@ import Tag from '../../../../components/Tag'
 import {
   productsStatus,
   stakeholdersStatus,
+  stakeholdersTypes,
   productsTypes,
   documentsServiceType,
 } from '../../../../commons/types'
@@ -585,6 +586,7 @@ function SalesDetail({ closable, visible, isAdmin }) {
 
     const params = {
       status: stakeholdersStatus.ACTIVE,
+      stakeholder_type: { $ne: stakeholdersTypes.PROVIDER },
       name: { $like: `%25${stakeholder_name}%25` },
     }
 

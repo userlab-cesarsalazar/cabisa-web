@@ -21,6 +21,7 @@ import { showErrors, formatPhone } from '../../../../utils'
 import {
   productsStatus,
   stakeholdersStatus,
+  stakeholdersTypes,
   productsTypes,
   appConfig,
 } from '../../../../commons/types'
@@ -350,8 +351,9 @@ function InventoryMovementFields({ forbidEdition, editData }) {
     if (stakeholder_name === '') return
 
     const params = {
-      status: stakeholdersStatus.ACTIVE,
       name: { $like: `%25${stakeholder_name}%25` },
+      status: stakeholdersStatus.ACTIVE,
+      stakeholder_type: stakeholdersTypes.PROVIDER,
       ...additionalParams,
     }
 

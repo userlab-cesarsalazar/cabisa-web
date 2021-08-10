@@ -30,6 +30,8 @@ import {
   productsTypes,
   productsStatus,
   documentsStatus,
+  stakeholdersStatus,
+  stakeholdersTypes,
 } from '../../../commons/types'
 
 const { Title } = Typography
@@ -238,6 +240,8 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
 
       const params = {
         name: { $like: `%25${stakeholder_name}%25` },
+        status: stakeholdersStatus.ACTIVE,
+        stakeholder_type: { $ne: stakeholdersTypes.PROVIDER },
         ...additionalParams,
       }
 
