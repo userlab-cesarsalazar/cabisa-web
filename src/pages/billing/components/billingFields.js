@@ -231,31 +231,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   const [productsData, setProductsData] = useState([])
   const [discountInputValue, setDiscountInputValue] = useState(0)
 
-  useEffect(() => {
-    if (editData && !isInvoiceFromSale) return
-
-    setData(prevState => {
-      const totals = productsData?.reduce((r, p) => {
-        const discount =
-          (r.discount || 0) + getProductDiscount(data.service_type, p)
-        const subtotal =
-          (r.subtotal || 0) + getProductSubtotal(data.service_type, p)
-        const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
-        const total = subtotal + total_tax
-
-        return {
-          discount: roundNumber(discount) || 0,
-          subtotal: roundNumber(subtotal) || 0,
-          total_tax: roundNumber(total_tax) || 0,
-          total: roundNumber(total) || 0,
-          credit_days: prevState.credit_days ? prevState.credit_days : 0,
-        }
-      }, {})
-
-      return { ...prevState, ...totals }
-    })
-  }, [setData, productsData, editData, isInvoiceFromSale, data.service_type])
-
   const handleSearchStakeholder = useCallback(
     (stakeholder_name, additionalParams = {}) => {
       if (isInvoiceFromSale) return
@@ -343,6 +318,37 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       .finally(() => setLoading(false))
   }, [setLoading])
 
+  const resetOnClose = useCallback(() => {
+    setData({})
+    setProductsData([])
+    setDiscountInputValue(0)
+  }, [])
+
+  useEffect(() => {
+    if (editData && !isInvoiceFromSale) return
+
+    setData(prevState => {
+      const totals = productsData?.reduce((r, p) => {
+        const discount =
+          (r.discount || 0) + getProductDiscount(data.service_type, p)
+        const subtotal =
+          (r.subtotal || 0) + getProductSubtotal(data.service_type, p)
+        const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
+        const total = subtotal + total_tax
+
+        return {
+          discount: roundNumber(discount) || 0,
+          subtotal: roundNumber(subtotal) || 0,
+          total_tax: roundNumber(total_tax) || 0,
+          total: roundNumber(total) || 0,
+          credit_days: prevState.credit_days ? prevState.credit_days : 0,
+        }
+      }, {})
+
+      return { ...prevState, ...totals }
+    })
+  }, [setData, productsData, editData, isInvoiceFromSale, data.service_type])
+
   useEffect(() => {
     if (editData && !isInvoiceFromSale) return
 
@@ -374,7 +380,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
 
   useEffect(() => {
     if (!editData) return
-    
+
     setData(prevState => ({
       ...editData,
       stakeholder_phone: formatPhone(editData.stakeholder_phone),
@@ -386,13 +392,18 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     )
     setDiscountInputValue(prevState =>
       prevState ? prevState : editData.discount_percentage || 0
-    )}, [editData])
+    )
+  }, [editData])
 
   useEffect(() => {
     if (!editData || isInvoiceFromSale) return
 
     fetchCreditStatusOptions()
   }, [fetchCreditStatusOptions, editData, isInvoiceFromSale])
+
+  useEffect(() => {
+    !props.visible && resetOnClose()
+  }, [props.visible, resetOnClose])
 
   const updateInvoiceTotals = (field, value, rowIndex) => {
     const getParentProduct = (field, value, row) =>

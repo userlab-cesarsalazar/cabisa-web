@@ -116,6 +116,7 @@ export const permissions = {
   INVENTARIO: 5,
   VENTAS: 6,
   CLIENTES: 7,
+  PROVEEDORES: 8,
 }
 
 export const actions = {

@@ -1,24 +1,23 @@
 import React, { useState } from 'react'
 import HeaderPage from '../../components/HeaderPage'
 import { Card, message, Spin } from 'antd'
-import ClientFields from './components/clientFields'
-import ClientsSrc from './clientsSrc'
+import SupplierFields from './components/supplierFields'
+import SuppliersSrc from './suppliersSrc'
 import { showErrors } from '../../utils'
 import { permissions } from '../../commons/types'
 
-function ClientView(props) {
+function SupplierView(props) {
   const [viewLoading, setViewLoading] = useState(false)
 
   const saveData = data => {
     setViewLoading(true)
 
-    ClientsSrc.createClient(data)
+    SuppliersSrc.createSupplier(data)
       .then(() => {
-        message.success('Cliente creado')
-        props.history.push('/clients')
+        message.success('Proveedor creado')
+        props.history.push('/suppliers')
       })
       .catch(error => {
-        console.log('CREATE CLIENT ERROR ', error)
         showErrors(error)
       })
       .finally(() => setViewLoading(false))
@@ -26,9 +25,12 @@ function ClientView(props) {
 
   return (
     <Spin spinning={viewLoading}>
-      <HeaderPage title={'Crear Cliente'} permissions={permissions.CLIENTES} />
+      <HeaderPage
+        title={'Crear Proveedor'}
+        permissions={permissions.PROVEEDORES}
+      />
       <Card className={'card-border-radius margin-top-15'}>
-        <ClientFields
+        <SupplierFields
           saveUserData={saveData}
           visible={true}
           edit={false}
@@ -40,4 +42,4 @@ function ClientView(props) {
   )
 }
 
-export default ClientView
+export default SupplierView

@@ -74,6 +74,8 @@ function MenuView() {
         return <ShoppingOutlined className={'ant-icon-menu-cabisa'} />
       case 'clients':
         return <IdcardOutlined className={'ant-icon-menu-cabisa'} />
+      case 'suppliers':
+        return <IdcardOutlined className={'ant-icon-menu-cabisa'} />
       case 'configurations':
         return <SettingOutlined className={'ant-icon-menu-cabisa'} />
       case 'inventory':

@@ -4,34 +4,32 @@ import { stakeholdersTypes, stakeholdersStatus } from '../../commons/types'
 
 const url = stage.stakeholderUrl
 
-const getClients = params =>
+const getSuppliers = params =>
   api.get(url, {
     ...params,
-    stakeholder_type: { $ne: stakeholdersTypes.PROVIDER },
+    stakeholder_type: stakeholdersTypes.PROVIDER,
     status: stakeholdersStatus.ACTIVE,
   })
-const getClientsFilter = name =>
+const getSuppliersFilter = name =>
   api.get(url, {
     open_parenthesis: 'name',
     close_parenthesis: 'nit',
     name: { $like: `%25${name}%25` },
     nit: { $or: true, $like: `%25${name}%25` },
-    stakeholder_type: { $ne: stakeholdersTypes.PROVIDER },
+    stakeholder_type: stakeholdersTypes.PROVIDER,
     status: stakeholdersStatus.ACTIVE,
   })
-const createClient = _users => api.post(url, _users)
-const updateClient = _users => api.put(url, _users)
-const deleteClient = id =>
+const createSupplier = _users => api.post(url, _users)
+const updateSupplier = _users => api.put(url, _users)
+const deleteSupplier = id =>
   api.put(`${url}/status`, { id, status: stakeholdersStatus.INACTIVE })
-const getClientTypes = () => api.get(`${url}/types`)
 
-const ClientsSrc = {
-  getClients,
-  getClientTypes,
-  createClient,
-  updateClient,
-  deleteClient,
-  getClientsFilter,
+const SuppliersSrc = {
+  getSuppliers,
+  createSupplier,
+  updateSupplier,
+  deleteSupplier,
+  getSuppliersFilter,
 }
 
-export default ClientsSrc
+export default SuppliersSrc
