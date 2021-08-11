@@ -29,6 +29,8 @@ import {
   productsStatus,
   appConfig,
   documentsServiceType,
+  stakeholdersTypes,
+  stakeholdersStatus,
 } from '../../../../commons/types'
 import { useEditableList } from '../../../../hooks'
 import { getProductSubtotal } from '../../../billing/components/billingFields'
@@ -216,6 +218,8 @@ function NewNoteView({ isAdmin }) {
 
       const params = {
         name: { $like: `%25${stakeholder_name}%25` },
+        status: stakeholdersStatus.ACTIVE,
+        stakeholder_type: { $ne: stakeholdersTypes.PROVIDER },
         ...additionalParams,
       }
 
