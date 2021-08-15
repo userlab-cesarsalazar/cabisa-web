@@ -39,8 +39,8 @@ const numberFormat = ({
     }).format(value)
   }
 
-  const getValue = inputValue => {
-    const result = String(inputValue)
+  const getValue = formattedValue => {
+    const result = String(formattedValue)
       .replace(toRegExp(groupSeparator), '')
       .replace(fractionSeparator, groupSeparator)
 
@@ -113,13 +113,13 @@ function CurrencyInput({
   maximumFractionDigits = 2,
   ...props
 }) {
-  const [_inputValue, _setInputValue] = useState('')
-
-  const { handleChange, handleBlur } = numberFormat({
+  const { getFormattedValue, handleChange, handleBlur } = numberFormat({
     currencyFormat,
     minimumFractionDigits,
     maximumFractionDigits,
   })
+
+  const [_inputValue, _setInputValue] = useState(getFormattedValue(props.value))
 
   const _handleChange = e => {
     if (!props.onChange) return
