@@ -1,66 +1,31 @@
-import React, { useEffect, useState } from 'react'
-import { Input } from 'antd'
-import { numberFormat } from '../utils'
+import React from 'react'
+import ReactCurrencyInputField from 'react-currency-input-field'
 
-const CurrencyInput = ({
-  showPrefix = false,
-  showSuffix = false,
+function CurrencyInput({
+  currencyPrefix = false,
+  currencySuffix = false,
   currencySymbol = 'Q',
   currencyFormat = 'de-DE',
-  fractionDigits = 2,
+  fractionDigit = 2,
+  className = '',
   ...props
-}) => {
-  const { getFormattedValue, handleChange, handleBlur } = numberFormat({
-    currencyFormat,
-    fractionDigits,
-  })
-
-  const [_inputValue, _setInputValue] = useState(null)
-
-  useEffect(() => {
-    const value =
-      typeof props.value === 'number'
-        ? getFormattedValue(props.value)
-        : props.value
-
-    _setInputValue(value)
-  }, [props.value, getFormattedValue])
-
-  useEffect(function cleanUp() {
-    return () => {
-      _setInputValue(null)
-    }
-  }, [])
-
-  const _handleChange = e => {
-    if (!props.onChange) return
-
-    if (typeof props.onChange !== 'function')
-      throw new Error('The prop onChange must be a function')
-
-    const rawValue = e?.target?.value || ''
-    const { formattedValue } = handleChange(rawValue)
-
-    props.onChange(formattedValue)
-  }
-
-  const _handleBlur = e => {
-    const rawValue = e?.target?.value || ''
-    const formattedValue = handleBlur(rawValue)
-
-    typeof props.onChange === 'function' && props.onChange(formattedValue)
-    typeof props.onBlur === 'function' && props.onBlur(formattedValue)
-  }
+}) {
+  // currencyFormat = 'de-DE' usa punto para miles y coma para decimales
+  // currencyFormat = 'en-US' usa coma para miles y punto para decimales
+  const fractionSeparator = currencyFormat === 'de-DE' ? ',' : '.'
+  const groupSeparator = currencyFormat === 'de-DE' ? '.' : ','
 
   return (
-    <Input
-      prefix={showPrefix ? <div>{currencySymbol}</div> : null}
-      suffix={showSuffix ? <div>{currencySymbol}</div> : null}
+    <ReactCurrencyInputField
+      prefix={currencyPrefix ? <div>{currencySymbol}</div> : null}
+      suffix={currencySuffix ? <div>{currencySymbol}</div> : null}
+      size={'large'}
       {...props}
-      type='text'
-      value={_inputValue}
-      onChange={_handleChange}
-      onBlur={_handleBlur}
+      className={`ant-input ant-input-lg ${className}`}
+      fixedDecimalLength={fractionDigit}
+      decimalsLimit={fractionDigit}
+      decimalSeparator={fractionSeparator}
+      groupSeparator={groupSeparator}
     />
   )
 }

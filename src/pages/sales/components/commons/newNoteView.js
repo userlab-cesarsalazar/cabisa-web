@@ -8,21 +8,21 @@ import {
   Input,
   Row,
   DatePicker,
-  Button,
   Select,
-  Popconfirm,
   message,
   Spin,
+  Statistic,
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import HeaderPage from '../../../../components/HeaderPage'
-import DynamicTable from '../../../../components/DynamicTable'
 import Tag from '../../../../components/Tag'
+import SaleProductsList from '../../../../components/SaleProductsList'
 import { useSale, saleActions } from '../../context'
 import {
   showErrors,
   validateDynamicTableProducts,
   formatPhone,
+  numberFormat,
 } from '../../../../utils'
 import {
   productsTypes,
@@ -34,6 +34,9 @@ import {
 } from '../../../../commons/types'
 import { useEditableList } from '../../../../hooks'
 import { getProductSubtotal } from '../../../billing/components/billingFields'
+import { getOnChangeProductsListCallback } from '../../../billing/components/billingFields'
+
+const { getFormattedValue } = numberFormat()
 
 const {
   fetchChildProductsOptions,
@@ -47,162 +50,6 @@ const {
 
 const { TextArea } = Input
 const { Option } = Select
-
-const getColumnsDynamicTable = ({
-  handleChangeDetail,
-  handleRemoveDetail,
-  handleSearchProduct,
-  handleSearchChildProduct,
-  childProductsOptionsList,
-  productsOptionsList,
-  serviceType,
-  status,
-  loading,
-  isAdmin,
-}) => {
-  const columns = [
-    {
-      width: '15%',
-      title: 'Codigo',
-      dataIndex: 'code', // Field that is goint to be rendered
-      key: 'code',
-      render: (_, record) => (
-        <Input
-          value={record.code}
-          size={'large'}
-          placeholder={'Codigo'}
-          disabled
-        />
-      ),
-    },
-    {
-      title: 'Descripcion',
-      dataIndex: 'id', // Field that is goint to be rendered
-      key: 'id',
-      render: (_, record, rowIndex) => (
-        <Select
-          className={'single-select'}
-          placeholder={'Descripcion'}
-          size={'large'}
-          style={{ width: '100%', height: '40px', maxWidth: '300px' }}
-          getPopupContainer={trigger => trigger.parentNode}
-          showSearch
-          onSearch={debounce(handleSearchProduct, 400)}
-          value={record.id}
-          onChange={value => handleChangeDetail('id', value, rowIndex)}
-          loading={status === 'LOADING' && loading === 'fetchProductsOptions'}
-          optionFilterProp='children'
-        >
-          {productsOptionsList.length > 0 ? (
-            productsOptionsList?.map(value => (
-              <Option key={value.id} value={value.id}>
-                {value.description}
-              </Option>
-            ))
-          ) : (
-            <Option value={record.id}>{record.description}</Option>
-          )}
-        </Select>
-      ),
-    },
-  ]
-
-  const quantityColumn = {
-    width: '15%',
-    title: 'Cantidad',
-    dataIndex: 'product_quantity', // Field that is goint to be rendered
-    key: 'product_quantity',
-    render: (_, record, rowIndex) => (
-      <Input
-        placeholder={'Cantidad'}
-        size={'large'}
-        value={record.quantity}
-        onChange={e => handleChangeDetail('quantity', e.target.value, rowIndex)}
-        min={1}
-        type='number'
-      />
-    ),
-  }
-
-  const priceColumn = {
-    width: '15%',
-    title: 'Precio',
-    dataIndex: 'unit_price', // Field that is goint to be rendered
-    key: 'unit_price',
-    render: (_, record, rowIndex) => (
-      <Input
-        placeholder={'Precio'}
-        size={'large'}
-        value={record.unit_price}
-        onChange={e =>
-          handleChangeDetail('unit_price', e.target.value, rowIndex)
-        }
-        min={0}
-        type='number'
-        disabled
-      />
-    ),
-  }
-
-  const deleteButtonColumn = {
-    title: '',
-    render: (_, __, rowIndex) => (
-      <>
-        <Popconfirm
-          title={'¿Seguro de eliminar?'}
-          onConfirm={() => handleRemoveDetail(rowIndex)}
-        >
-          <span style={{ color: 'red' }}>Eliminar</span>
-        </Popconfirm>
-      </>
-    ),
-  }
-
-  const productColumn = {
-    title: 'Producto',
-    dataIndex: 'id', // Field that is goint to be rendered
-    key: 'id',
-    render: (_, record, rowIndex) => (
-      <Select
-        className={'single-select'}
-        placeholder={'Producto'}
-        size={'large'}
-        style={{ width: '100%', height: '40px' }}
-        getPopupContainer={trigger => trigger.parentNode}
-        showSearch
-        onSearch={debounce(handleSearchChildProduct, 400)}
-        value={record.child_id}
-        onChange={value => handleChangeDetail('child_id', value, rowIndex)}
-        optionFilterProp='children'
-        loading={
-          status === 'LOADING' && loading === 'fetchChildProductsOptions'
-        }
-        disabled={!record.id}
-      >
-        {childProductsOptionsList?.length > 0 ? (
-          childProductsOptionsList.map(value => (
-            <Option key={value.id} value={value.id}>
-              {value.description}
-            </Option>
-          ))
-        ) : (
-          <Option value={record.child_id}>{record.child_description}</Option>
-        )}
-      </Select>
-    ),
-  }
-
-  const columnsWithProduct =
-    serviceType === productsTypes.SERVICE
-      ? [...columns, productColumn, quantityColumn]
-      : [...columns, quantityColumn]
-
-  const columnsWithPrice = isAdmin
-    ? [...columnsWithProduct, priceColumn]
-    : columnsWithProduct
-
-  return [...columnsWithPrice, deleteButtonColumn]
-}
 
 function NewNoteView({ isAdmin }) {
   const history = useHistory()
@@ -253,6 +100,18 @@ function NewNoteView({ isAdmin }) {
     fetchDocumentServiceTypeOptions(saleDispatch)
   }, [saleDispatch])
 
+  useEffect(
+    function updateDataSourceTable() {
+      const subtotal_amount = dataSourceTable?.reduce(
+        (r, p) => r + getProductSubtotal(sale.service_type, p),
+        0
+      )
+
+      setSale(prevState => ({ ...prevState, subtotal_amount }))
+    },
+    [dataSourceTable, sale.service_type]
+  )
+
   useEffect(() => {
     handleSearchStakeholder(null, {
       $limit: appConfig.selectsInitLimit,
@@ -274,9 +133,15 @@ function NewNoteView({ isAdmin }) {
     }
   }, [error, status, loading, saleDispatch, history])
 
-  const setProductData = (field, value, rowIndex) => {
-    if (field !== 'id' && field !== 'child_id') return
+  useEffect(function cleanUp() {
+    return () => {
+      setSale([])
+      setDataSourceTable([])
+      setServiceDaysLength(null)
+    }
+  }, [])
 
+  const updateSaleTotals = (field, value, rowIndex) => {
     if (field === 'id' && saleState.childProductsOptionsList.length === 0) {
       handleSearchChildProduct(null, {
         $limit: appConfig.selectsInitLimit,
@@ -284,56 +149,48 @@ function NewNoteView({ isAdmin }) {
       })
     }
 
-    const productsArray =
-      field === 'id'
-        ? saleState.productsOptionsList
-        : saleState.childProductsOptionsList
-
-    const product = productsArray.find(
-      option => Number(option.id) === Number(value)
-    )
-
-    setDataSourceTable(prevState => {
-      const row = prevState[rowIndex]
-
-      const newRow = {
-        ...row,
-        id: field === 'id' ? product.id : row.id,
-        code: field === 'id' ? product.code : row.code,
-        child_id: field === 'child_id' ? product.id : row.child_id,
-        parent_unit_price:
-          field === 'id' ? product.unit_price : row.parent_unit_price,
-        child_unit_price:
-          field === 'child_id' ? product.unit_price : row.child_unit_price,
-        unit_price:
-          field === 'id'
-            ? product.unit_price + row.child_unit_price
-            : row.parent_unit_price + product.unit_price,
-        quantity: 1,
-      }
-
-      return prevState.map((row, index) => (index === rowIndex ? newRow : row))
+    const onChangeListCallback = getOnChangeProductsListCallback({
+      productsOptionsList: saleState.productsOptionsList,
+      childProductsOptionsList: saleState.childProductsOptionsList,
+      serviceType: sale.service_type,
+      discountValue: 0,
     })
+
+    const setProductsDataCallback = onChangeListCallback(field, value, rowIndex)
+
+    setDataSourceTable(setProductsDataCallback)
   }
 
   const {
+    handleChange: handleChangeDetail,
     handleAdd: handleAddDetail,
     handleRemove: handleRemoveDetail,
-    handleChange: handleChangeDetail,
   } = useEditableList({
     state: dataSourceTable,
     setState: setDataSourceTable,
     initRow: {
+      // common fields
       id: '',
       code: '',
       child_id: '',
-      description: '',
+      child_description: '',
       quantity: 0,
-      parent_unit_price: 0,
-      child_unit_price: 0,
       unit_price: 0,
+      base_unit_price: 0,
+      unit_tax_amount: 0,
+      // parentProduct
+      parent_tax_fee: 0,
+      parent_unit_price: 0,
+      parent_base_unit_price: 0,
+      parent_unit_tax_amount: 0,
+      // childProduct
+      child_tax_fee: 0,
+      child_unit_price: 0,
+      child_base_unit_price: 0,
+      child_unit_tax_amount: 0,
+      subtotal: 0,
     },
-    onChange: setProductData,
+    onChange: updateSaleTotals,
   })
 
   const getServiceDaysLength = (startDate, endDate) => {
@@ -358,19 +215,6 @@ function NewNoteView({ isAdmin }) {
     fetchChildProductsOptions(saleDispatch, params)
   }
 
-  const columnsDynamicTable = getColumnsDynamicTable({
-    handleChangeDetail,
-    handleRemoveDetail,
-    handleSearchProduct,
-    handleSearchChildProduct,
-    childProductsOptionsList: saleState.childProductsOptionsList,
-    productsOptionsList: saleState.productsOptionsList,
-    serviceType: sale.service_type,
-    status,
-    loading,
-    isAdmin,
-  })
-
   const getSaveData = () => ({
     stakeholder_id: sale.stakeholder_id,
     project_id: sale.project_id,
@@ -381,10 +225,7 @@ function NewNoteView({ isAdmin }) {
     comments: sale.comments,
     service_type: sale.service_type,
     related_external_document_id: null,
-    subtotal_amount: dataSourceTable.reduce(
-      (r, p) => r + getProductSubtotal(sale.service_type, p),
-      0
-    ),
+    subtotal_amount: sale.subtotal_amount,
     products: dataSourceTable.reduce((r, p) => {
       const parentProduct = {
         product_id: p.id,
@@ -549,7 +390,7 @@ function NewNoteView({ isAdmin }) {
 
   const handleCancelButton = () => history.push('/sales')
 
-  // Can not select days before today
+  // Cannot select days before today
   const disabledDate = current =>
     current && moment(current).add(1, 'days') < moment().endOf('day')
 
@@ -711,22 +552,38 @@ function NewNoteView({ isAdmin }) {
         <h2>Detalle Entrega:</h2>
         <Row gutter={16} className={'section-space-field'}>
           <Col xs={24} sm={24} md={24} lg={24}>
-            <DynamicTable
-              columns={columnsDynamicTable}
-              data={dataSourceTable}
+            <SaleProductsList
+              dataSource={dataSourceTable}
+              handleAddDetail={handleAddDetail}
+              handleChangeDetail={handleChangeDetail}
+              handleRemoveDetail={handleRemoveDetail}
+              handleSearchProduct={handleSearchProduct}
+              handleSearchChildProduct={handleSearchChildProduct}
+              productsOptionsList={saleState.productsOptionsList}
+              childProductsOptionsList={saleState.childProductsOptionsList}
+              serviceType={sale.service_type}
+              status={status}
+              loading={loading}
+              isAdmin={isAdmin}
             />
           </Col>
-          <Col xs={24} sm={24} md={24} lg={24}>
-            <Button
-              type='dashed'
-              className={'shop-add-turn'}
-              onClick={handleAddDetail}
-            >
-              Agregar Detalle
-            </Button>
-          </Col>
-          <Divider className={'divider-custom-margins-users'} />
         </Row>
+
+        <Divider className={'divider-custom-margins-users'} />
+
+        <Row gutter={16} style={{ textAlign: 'right' }} justify='end'>
+          <Col span={6} style={{ textAlign: 'right' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Total :'
+                value={getFormattedValue(sale.subtotal_amount)}
+              />
+            </div>
+          </Col>
+        </Row>
+
+        <Divider className={'divider-custom-margins-users'} />
+
         <Row gutter={16} className={'section-space-field'}>
           <Col xs={24} sm={24} md={24} lg={24}>
             <div className={'title-space-field'}>Observaciones</div>

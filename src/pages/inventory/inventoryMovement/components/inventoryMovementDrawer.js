@@ -10,6 +10,7 @@ function InventoryMovementDrawer(props) {
       onClose={props.closable}
       visible={props.visible}
       width={800}
+      destroyOnClose
     >
       <InventoryMovementFields
         forbidEdition={true}

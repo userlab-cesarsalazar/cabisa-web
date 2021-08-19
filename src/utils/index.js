@@ -171,3 +171,39 @@ export const formatPhone = value => {
     .map((v, i) => (i === 4 ? `-${v}` : v))
     .join('')
 }
+
+export const toRegExp = val => {
+  const escaped = val.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+  return new RegExp(escaped, 'g')
+}
+
+export const numberFormat = ({
+  currencyFormat = 'de-DE',
+  fractionDigits = 2,
+} = {}) => {
+  // currencyFormat = 'de-DE' usa punto para miles y coma para decimales
+  // currencyFormat = 'en-US' usa coma para miles y punto para decimales
+  const fractionSeparator = currencyFormat === 'de-DE' ? ',' : '.'
+  const groupSeparator = currencyFormat === 'de-DE' ? '.' : ','
+
+  return {
+    getFormattedValue: value => {
+      if (!value || isNaN(Number(value))) return value
+
+      return new Intl.NumberFormat(currencyFormat, {
+        minimumFractionDigits: fractionDigits,
+        maximumFractionDigits: fractionDigits,
+      }).format(value)
+    },
+
+    getValue: formattedValue => {
+      if (typeof formattedValue === 'number') return formattedValue
+
+      const result = String(formattedValue)
+        .replace(toRegExp(groupSeparator), '')
+        .replace(fractionSeparator, '.')
+
+      return Number(result)
+    },
+  }
+}

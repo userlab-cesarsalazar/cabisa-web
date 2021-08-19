@@ -75,6 +75,7 @@ function ResetPassword(props) {
       onClose={props.closable}
       visible={props.visible}
       width={500}
+      destroyOnClose
     >
       <div>
         <Title> {'Cambiar contraseña'} </Title>

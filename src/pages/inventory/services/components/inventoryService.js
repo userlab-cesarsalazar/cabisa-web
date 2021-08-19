@@ -5,7 +5,7 @@ import ServiceDrawer from './serviceDrawer'
 import ActionOptions from '../../../../components/actionOptions'
 import { withRouter } from 'react-router'
 import Tag from '../../../../components/Tag'
-import { validateRole } from '../../../../utils'
+import { validateRole, numberFormat } from '../../../../utils'
 import { permissions, roles } from '../../../../commons/types'
 
 function InventoryService(props) {
@@ -13,6 +13,8 @@ function InventoryService(props) {
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
   const [isVisible, setIsVisible] = useState(false)
+
+  const { getFormattedValue } = numberFormat()
 
   const columns = [
     { title: 'Codigo', dataIndex: 'code', key: 'code' },
@@ -26,10 +28,10 @@ function InventoryService(props) {
   ]
 
   const priceColumn = {
-    title: 'Precio de venta',
+    title: 'Precio de venta (Q)',
     dataIndex: 'unit_price',
     key: 'unit_price',
-    render: text => <span>{text.toFixed(2)}</span>,
+    render: text => (text ? <span>{getFormattedValue(text)}</span> : null),
   }
 
   const actionsColumn = {
