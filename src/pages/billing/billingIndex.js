@@ -32,6 +32,9 @@ export function getDetailData(data) {
       child_unit_tax_amount: roundNumber(childProduct?.unit_tax_amount || 0),
       child_unit_discount: roundNumber(childProduct?.unit_discount_amount || 0),
       child_unit_price: roundNumber(unitPrice),
+      unit_tax_amount: roundNumber(
+        parentProduct.unit_tax_amount + childProduct.unit_tax_amount
+      ),
       quantity,
       subtotal: roundNumber(parentProduct?.subtotal + subtotal),
     }
@@ -54,6 +57,7 @@ export function getDetailData(data) {
       parent_unit_tax_amount: roundNumber(p?.unit_tax_amount || 0),
       parent_unit_discount: roundNumber(p?.unit_discount_amount || 0),
       parent_unit_price: roundNumber(unitPrice),
+      unit_tax_amount: roundNumber(p?.unit_tax_amount || 0),
       quantity,
       subtotal: roundNumber(subtotal),
       ...getChildProduct(data?.products, {
