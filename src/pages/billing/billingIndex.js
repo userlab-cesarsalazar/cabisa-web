@@ -6,7 +6,81 @@ import DetailBilling from './components/detailBilling'
 import billingSrc from './billingSrc'
 import { message } from 'antd'
 import { showErrors, roundNumber } from '../../utils'
-import { stakeholdersTypes, permissions } from '../../commons/types'
+import {
+  stakeholdersTypes,
+  permissions,
+  documentsServiceType,
+} from '../../commons/types'
+
+export function getDetailData(data) {
+  const getChildProduct = (products, parentProduct) => {
+    const childProduct = products.find(
+      p => Number(p?.parent_product_id) === Number(parentProduct?.id)
+    )
+
+    if (!childProduct) return {}
+
+    const unitPrice = childProduct?.product_price || childProduct?.unit_price
+    const quantity = childProduct?.quantity || childProduct?.product_quantity
+    const subtotalFromProducts = unitPrice * quantity
+    const subtotal = childProduct?.subtotal || subtotalFromProducts
+
+    return {
+      child_id: childProduct?.id,
+      child_description: childProduct?.description,
+      child_tax_fee: childProduct?.tax_fee || '0',
+      child_unit_tax_amount: roundNumber(childProduct?.unit_tax_amount || 0),
+      child_unit_discount: roundNumber(childProduct?.unit_discount_amount || 0),
+      child_unit_price: roundNumber(unitPrice),
+      unit_tax_amount: roundNumber(
+        parentProduct.unit_tax_amount + childProduct.unit_tax_amount
+      ),
+      quantity,
+      subtotal: roundNumber(parentProduct?.subtotal + subtotal),
+    }
+  }
+
+  const products = data?.products?.flatMap(p => {
+    if (p?.parent_product_id) return []
+
+    const unitPrice = p?.product_price || p?.unit_price
+    const quantity = p?.quantity || p?.product_quantity
+    const subtotalFromProducts =
+      data.service_type === documentsServiceType.SERVICE
+        ? unitPrice
+        : unitPrice * quantity
+    const subtotal = p?.subtotal || subtotalFromProducts
+
+    return {
+      ...p,
+      parent_tax_fee: p?.tax_fee || 0,
+      parent_unit_tax_amount: roundNumber(p?.unit_tax_amount || 0),
+      parent_unit_discount: roundNumber(p?.unit_discount_amount || 0),
+      parent_unit_price: roundNumber(unitPrice),
+      unit_tax_amount: roundNumber(p?.unit_tax_amount || 0),
+      quantity,
+      subtotal: roundNumber(subtotal),
+      ...getChildProduct(data?.products, {
+        ...p,
+        product_price: unitPrice,
+        subtotal,
+      }),
+    }
+  })
+
+  const totalFromProducts = products?.reduce((r, v) => r + v.subtotal, 0)
+  const total = roundNumber(data?.total || totalFromProducts)
+
+  return {
+    ...data,
+    discount_percentage: roundNumber(data?.discount_percentage || 0),
+    discount: roundNumber(data?.discount || 0),
+    subtotal: roundNumber(data?.subtotal || 0),
+    total_tax: roundNumber(data?.total_tax || 0),
+    total,
+    products,
+  }
+}
 
 function Billing(props) {
   const initFilters = useRef()
@@ -105,50 +179,9 @@ function Billing(props) {
   const newBill = () => props.history.push('/billingView')
 
   const showDetail = data => {
-    const getChildProduct = (products, parentProduct) => {
-      const childProduct = products.find(
-        p => Number(p.parent_product_id) === Number(parentProduct.id)
-      )
+    const detailInvoiceData = getDetailData(data)
 
-      if (!childProduct) return {}
-
-      return {
-        child_id: childProduct.id,
-        child_description: childProduct.description,
-        child_tax_fee: childProduct.tax_fee,
-        child_unit_tax_amount: roundNumber(childProduct.unit_tax_amount),
-        child_unit_discount: roundNumber(childProduct.unit_discount_amount),
-        child_unit_price: roundNumber(childProduct.product_price),
-        product_quantity: childProduct.product_quantity,
-        product_price: roundNumber(
-          parentProduct.product_price + childProduct.product_price
-        ),
-        subtotal: roundNumber(parentProduct.subtotal + childProduct.subtotal),
-      }
-    }
-
-    setDetailInvoiceData({
-      ...data,
-      discount_percentage: roundNumber(data.discount_percentage),
-      discount: roundNumber(data.discount),
-      subtotal: roundNumber(data.subtotal),
-      total_tax: roundNumber(data.total_tax),
-      total: roundNumber(data.total),
-      products: data.products.flatMap(p => {
-        if (p.parent_product_id) return []
-
-        return {
-          ...p,
-          parent_tax_fee: p.tax_fee,
-          parent_unit_tax_amount: roundNumber(p.unit_tax_amount),
-          parent_unit_discount: roundNumber(p.unit_discount_amount),
-          parent_unit_price: roundNumber(p.product_price),
-          product_price: roundNumber(p.product_price),
-          subtotal: roundNumber(p.subtotal),
-          ...getChildProduct(data.products, p),
-        }
-      }),
-    })
+    setDetailInvoiceData(detailInvoiceData)
 
     setVisible(true)
   }

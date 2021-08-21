@@ -17,6 +17,7 @@ import {
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import DynamicTable from '../../../../components/DynamicTable'
+import CurrencyInput from '../../../../components/CurrencyInput'
 import { showErrors, formatPhone } from '../../../../utils'
 import {
   productsStatus,
@@ -105,19 +106,16 @@ const getColumnsDynamicTable = ({
   },
   {
     width: '20%',
-    title: 'Costo',
+    title: 'Costo (Q)',
     dataIndex: 'unit_price', // Field that is goint to be rendered
     key: 'unit_price',
     render: (_, record, rowIndex) => (
-      <Input
-        placeholder={'Costo'}
-        size={'large'}
+      <CurrencyInput
+        placeholder={'Costo (Q)'}
         value={record.unit_price}
-        onChange={e =>
-          handleChangeDetail('unit_price', e.target.value, rowIndex)
+        onValueChange={value =>
+          handleChangeDetail('unit_price', value, rowIndex)
         }
-        min={0}
-        type='number'
         disabled={forbidEdition}
       />
     ),
@@ -182,6 +180,11 @@ function InventoryMovementFields({ forbidEdition, editData }) {
     const { data, productsData } = getDataFromEditData(editData)
     setData(data)
     setProductsData(productsData)
+
+    return () => {
+      setData([])
+      setProductsData([])
+    }
   }, [editData])
 
   const setProductData = (field, value, rowIndex) => {
@@ -195,6 +198,7 @@ function InventoryMovementFields({ forbidEdition, editData }) {
         id: product.id,
         code: product.code,
         unit_price: product.unit_price,
+        quantity: 1,
       }
 
       return prevState.map((row, index) => (index === rowIndex ? newRow : row))

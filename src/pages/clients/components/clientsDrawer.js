@@ -26,6 +26,7 @@ function ClientsDrawer(props) {
       onClose={props.closable}
       visible={props.visible}
       width='70%'
+      destroyOnClose
     >
       <Spin spinning={loadingDrawer}>
         <ClientFields

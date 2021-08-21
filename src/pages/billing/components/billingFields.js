@@ -6,13 +6,12 @@ import {
   Divider,
   Input,
   message,
-  Popconfirm,
   Row,
   Select,
   Statistic,
   Typography,
 } from 'antd'
-import DynamicTable from '../../../components/DynamicTable'
+import BillingProductsList from '../../../components/BillingProductsList'
 import Tag from '../../../components/Tag'
 import { useEditableList } from '../../../hooks'
 import {
@@ -21,6 +20,7 @@ import {
   getPercent,
   validateDynamicTableProducts,
   formatPhone,
+  numberFormat,
 } from '../../../utils'
 import billingSrc from '../billingSrc'
 import FooterButtons from '../../../components/FooterButtons'
@@ -38,189 +38,150 @@ const { Title } = Typography
 const { Option } = Select
 const { TextArea } = Input
 
+const { getValue, getFormattedValue } = numberFormat()
+
 const getProductDiscount = (serviceType, product) =>
   serviceType === productsTypes.SERVICE
     ? product.parent_unit_discount +
       product.child_unit_discount * product.quantity
     : product.unit_discount * product.quantity
 
-export const getProductSubtotal = (serviceType, product) =>
-  serviceType === productsTypes.SERVICE
-    ? product.parent_unit_price + product.child_unit_price * product.quantity
-    : product.unit_price * product.quantity
+export const getProductSubtotal = (serviceType, product) => {
+  const result =
+    serviceType === productsTypes.SERVICE
+      ? Number(product.parent_unit_price) +
+        Number(product.child_unit_price) * product.quantity
+      : Number(product.unit_price) * product.quantity
 
-const getColumnsDynamicTable = ({
-  edit,
-  loading,
-  handleRemoveDetail,
-  handleChangeDetail,
-  handleSearchProduct,
-  productsOptionsList,
-  handleSearchChildProduct,
-  childProductsOptionsList,
-  isInvoiceFromSale,
+  return roundNumber(result)
+}
+
+export const handleUpdateProductsData = ({
+  parentProduct,
+  childProduct,
+  row,
+  discountValue,
+  field = '',
   serviceType,
 }) => {
-  const leftColumns = [
-    {
-      title: 'Codigo',
-      dataIndex: 'code', // Field that is goint to be rendered
-      key: 'code',
-      render: (_, record) => (
-        <Input
-          value={record.code}
-          size={'large'}
-          placeholder={'Codigo'}
-          style={{ minWidth: '120px' }}
-          disabled
-        />
-      ),
-    },
-    {
-      width: '30%',
-      title: 'Descripcion',
-      dataIndex: 'id', // Field that is goint to be rendered
-      key: 'id',
-      render: (_, record, rowIndex) => (
-        <Select
-          className={'single-select'}
-          placeholder={'Descripcion'}
-          size={'large'}
-          style={{ width: '100%', height: '40px' }}
-          getPopupContainer={trigger => trigger.parentNode}
-          showSearch
-          onSearch={debounce(handleSearchProduct, 400)}
-          value={record.id}
-          onChange={value => handleChangeDetail('id', value, rowIndex)}
-          loading={loading}
-          optionFilterProp='children'
-          disabled={edit || isInvoiceFromSale}
-        >
-          {productsOptionsList?.length > 0 ? (
-            productsOptionsList.map(value => (
-              <Option key={value.id} value={value.id}>
-                {value.description}
-              </Option>
-            ))
-          ) : (
-            <Option value={record.id}>{record.description}</Option>
-          )}
-        </Select>
-      ),
-    },
-  ]
+  // parentProduct
+  const parentBaseUnitPrice = parentProduct?.unit_price
+    ? getValue(parentProduct.unit_price)
+    : getValue(row.parent_base_unit_price)
+  const parent_tax_fee = parentProduct?.tax_fee
+    ? parentProduct.tax_fee
+    : row.parent_tax_fee
+  const parent_unit_discount = parentBaseUnitPrice * getPercent(discountValue)
+  const parent_unit_price = String(
+    roundNumber(parentBaseUnitPrice - parent_unit_discount)
+  )
+  const parent_unit_tax_amount =
+    Number(parent_unit_price) * getPercent(parent_tax_fee)
+  const parent_base_unit_price =
+    field === 'id' || field === 'child_id' || field === 'parent_unit_price'
+      ? Number(parent_unit_price) + parent_unit_discount
+      : row.parent_base_unit_price || Number(parent_unit_price)
+  // childProduct
+  const childBaseUnitPrice = childProduct?.unit_price
+    ? getValue(childProduct.unit_price)
+    : getValue(row.child_base_unit_price)
+  const child_tax_fee = childProduct?.tax_fee
+    ? Number(childProduct.tax_fee)
+    : Number(row.child_tax_fee)
+  const child_unit_discount = childBaseUnitPrice * getPercent(discountValue)
+  const child_unit_price = String(
+    roundNumber(childBaseUnitPrice - child_unit_discount)
+  )
+  const child_unit_tax_amount =
+    Number(child_unit_price) * getPercent(child_tax_fee)
+  const child_base_unit_price =
+    field === 'id' || field === 'child_id' || field === 'child_unit_price'
+      ? Number(child_unit_price) + child_unit_discount
+      : row.child_base_unit_price || Number(child_unit_price)
+  // common fields
+  const unit_discount = roundNumber(child_unit_discount + parent_unit_discount)
+  const unit_price = roundNumber(child_unit_price + Number(parent_unit_price))
+  const unit_tax_amount = roundNumber(
+    child_unit_tax_amount + parent_unit_tax_amount
+  )
 
-  const rightColumns = [
-    {
-      title: 'Precio Unitario',
-      dataIndex: 'unit_price', // Field that is goint to be rendered
-      key: 'unit_price',
-      render: (_, record, rowIndex) => (
-        <Input
-          style={{ minWidth: '80px' }}
-          type={'number'}
-          value={edit ? record.product_price : record.unit_price}
-          size={'large'}
-          placeholder={'Precio unitario'}
-          onChange={event =>
-            handleChangeDetail('unit_price', event.target.value, rowIndex)
-          }
-          disabled
-        />
-      ),
-    },
-    {
-      title: 'Cantidad',
-      dataIndex: 'quantity', // Field that is goint to be rendered
-      key: 'quantity',
-      render: (_, record, rowIndex) => (
-        <Input
-          style={{ minWidth: '40px' }}
-          type={'number'}
-          value={edit ? record.product_quantity : record.quantity}
-          size={'large'}
-          placeholder={'Cantidad'}
-          onChange={event =>
-            handleChangeDetail('quantity', event.target.value, rowIndex)
-          }
-          min={1}
-          disabled={
-            edit ||
-            isInvoiceFromSale ||
-            (serviceType === productsTypes.SERVICE &&
-              (!record.id || !record.child_id))
-          }
-        />
-      ),
-    },
-    {
-      title: 'Subtotal',
-      dataIndex: 'subtotal', // Field that is goint to be rendered
-      key: 'subtotal',
-      render: (_, record) => (
-        <Input
-          style={{ minWidth: '80px' }}
-          disabled
-          type={'number'}
-          size={'large'}
-          placeholder={'Subtotal'}
-          value={record.subtotal}
-        />
-      ),
-    },
-    {
-      title: '',
-      dataIndex: 'id',
-      render: (_, __, rowIndex) =>
-        !edit &&
-        !isInvoiceFromSale && (
-          <Popconfirm
-            disabled={edit}
-            title={'¿Seguro de eliminar?'}
-            onConfirm={() => handleRemoveDetail(rowIndex)}
-          >
-            <span style={{ color: 'red' }}>Eliminar</span>
-          </Popconfirm>
-        ),
-    },
-  ]
-
-  const productColumn = {
-    width: '30%',
-    title: 'Producto',
-    dataIndex: 'id', // Field that is goint to be rendered
-    key: 'id',
-    render: (_, record, rowIndex) => (
-      <Select
-        className={'single-select'}
-        placeholder={'Producto'}
-        size={'large'}
-        style={{ width: '100%', height: '40px' }}
-        getPopupContainer={trigger => trigger.parentNode}
-        showSearch
-        onSearch={debounce(handleSearchChildProduct, 400)}
-        value={record.child_id}
-        onChange={value => handleChangeDetail('child_id', value, rowIndex)}
-        loading={loading}
-        optionFilterProp='children'
-        disabled={edit || isInvoiceFromSale || !record.id}
-      >
-        {childProductsOptionsList?.length > 0 ? (
-          childProductsOptionsList.map(value => (
-            <Option key={value.id} value={value.id}>
-              {value.description}
-            </Option>
-          ))
-        ) : (
-          <Option value={record.child_id}>{record.child_description}</Option>
-        )}
-      </Select>
-    ),
+  const newRow = {
+    ...row,
+    // parentProduct
+    parent_tax_fee,
+    parent_unit_price,
+    parent_unit_tax_amount,
+    parent_unit_discount,
+    parent_base_unit_price,
+    // childProduct
+    child_tax_fee,
+    child_unit_price,
+    child_unit_tax_amount,
+    child_unit_discount,
+    child_base_unit_price,
+    // common fields
+    id: parentProduct?.id ? Number(parentProduct.id) : row.id,
+    code: parentProduct?.code ? parentProduct.code : row.code,
+    child_id: childProduct?.id ? Number(childProduct.id) : row.child_id,
+    quantity: field === 'id' || field === 'child_id' ? 1 : row.quantity,
+    tax_fee:
+      unit_tax_amount && unit_price ? (unit_tax_amount / unit_price) * 100 : 0,
+    unit_tax_amount,
+    unit_price,
+    unit_discount,
+    base_unit_price: child_base_unit_price + parent_base_unit_price,
   }
 
-  return serviceType === documentsServiceType.SERVICE
-    ? [...leftColumns, productColumn, ...rightColumns]
-    : [...leftColumns, ...rightColumns]
+  const subtotal = getProductSubtotal(serviceType, newRow)
+
+  return { ...newRow, subtotal }
+}
+
+export const getOnChangeProductsListCallback = ({
+  productsOptionsList,
+  childProductsOptionsList,
+  serviceType,
+  discountValue,
+}) => (field, value, rowIndex) => {
+  const getParentProduct = (field, value) => {
+    const product = productsOptionsList.find(
+      o => field === 'id' && Number(o.id) === Number(value)
+    )
+
+    const unit_price = value === undefined ? '0' : value
+    return field === 'parent_unit_price' ? { unit_price } : product
+  }
+
+  const getChildProduct = (field, value) => {
+    if (serviceType !== productsTypes.SERVICE)
+      return { unit_price: 0, tax_fee: 0 }
+
+    const product = childProductsOptionsList.find(
+      o => field === 'child_id' && Number(o.id) === Number(value)
+    )
+
+    const unit_price = value === undefined ? '0' : value
+    return field === 'child_unit_price' ? { unit_price } : product
+  }
+
+  return function setProductsDataCallback(prevState) {
+    const row = prevState[rowIndex]
+    const parentProduct = getParentProduct(field, value)
+    const childProduct = getChildProduct(field, value)
+
+    const updatedRow = handleUpdateProductsData({
+      parentProduct,
+      childProduct,
+      row,
+      discountValue,
+      field,
+      serviceType,
+    })
+
+    return prevState.map((prevRow, index) =>
+      index === rowIndex ? updatedRow : prevRow
+    )
+  }
 }
 
 function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
@@ -322,12 +283,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       .finally(() => setLoading(false))
   }, [setLoading])
 
-  const resetOnClose = useCallback(() => {
-    setData({})
-    setProductsData([])
-    setDiscountInputValue(0)
-  }, [])
-
   useEffect(() => {
     if (editData && !isInvoiceFromSale) return
 
@@ -405,52 +360,48 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     fetchCreditStatusOptions()
   }, [fetchCreditStatusOptions, editData, isInvoiceFromSale])
 
-  useEffect(() => {
-    !props.visible && resetOnClose()
-  }, [props.visible, resetOnClose])
+  useEffect(function cleanUp() {
+    return () => {
+      setData({})
+      setProductsData([])
+      setDiscountInputValue(0)
+    }
+  }, [])
 
   const updateInvoiceTotals = (field, value, rowIndex) => {
-    const getParentProduct = (field, value, row) =>
-      productsOptionsList.find(o =>
-        field === 'id'
-          ? Number(o.id) === Number(value)
-          : Number(o.id) === row.id
-      )
-
-    const getChildProduct = (field, value, row) => {
-      if (data.service_type !== productsTypes.SERVICE)
-        return { unit_price: 0, tax_fee: 0 }
-
-      return childProductsOptionsList.find(o =>
-        field === 'child_id'
-          ? Number(o.id) === Number(value)
-          : Number(o.id) === row.child_id
-      )
-    }
-
-    setProductsData(prevState => {
-      const row = prevState[rowIndex]
-      const parentProduct = getParentProduct(field, value, row)
-      const childProduct = getChildProduct(field, value, row)
-
-      const updatedRow = handleUpdateProductsData({
-        parentProduct,
-        childProduct,
-        row,
-        discountValue: discountInputValue,
-        field,
-      })
-
-      return prevState.map((prevRow, index) =>
-        index === rowIndex ? updatedRow : prevRow
-      )
+    const onChangeListCallback = getOnChangeProductsListCallback({
+      productsOptionsList,
+      childProductsOptionsList,
+      serviceType: data.service_type,
+      discountValue:
+        field !== 'parent_unit_price' && field !== 'child_unit_price'
+          ? discountInputValue
+          : 0,
     })
+
+    const setProductsDataCallback = onChangeListCallback(field, value, rowIndex)
+
+    setProductsData(setProductsDataCallback)
+  }
+
+  const updateInvoiceOnBlurPrice = (field, value, rowIndex) => {
+    const onChangeListCallback = getOnChangeProductsListCallback({
+      productsOptionsList,
+      childProductsOptionsList,
+      serviceType: data.service_type,
+      discountValue: discountInputValue,
+    })
+
+    const setProductsDataCallback = onChangeListCallback(field, value, rowIndex)
+
+    setProductsData(setProductsDataCallback)
   }
 
   const {
     handleChange: handleChangeDetail,
     handleAdd: handleAddDetail,
     handleRemove: handleRemoveDetail,
+    handleBlur: handleBlurDetail,
   } = useEditableList({
     state: productsData,
     setState: setProductsData,
@@ -477,6 +428,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       subtotal: 0,
     },
     onChange: updateInvoiceTotals,
+    onBlur: updateInvoiceOnBlurPrice,
   })
 
   const handleDiscountChange = e => {
@@ -507,90 +459,12 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
           childProduct,
           row: p,
           discountValue: e?.target?.value,
+          serviceType: data.service_type,
         })
 
         return updatedProduct
       })
     })
-  }
-
-  const handleUpdateProductsData = ({
-    parentProduct,
-    childProduct,
-    row,
-    discountValue,
-    field = '',
-  }) => {
-    // parentProduct
-    const parentBaseUnitPrice = parentProduct?.unit_price
-      ? parentProduct.unit_price
-      : row.parent_base_unit_price
-    const parent_tax_fee = parentProduct?.tax_fee
-      ? parentProduct.tax_fee
-      : row.parent_tax_fee
-    const parent_unit_discount = parentBaseUnitPrice * getPercent(discountValue)
-    const parent_unit_price = parentBaseUnitPrice - parent_unit_discount
-    const parent_unit_tax_amount =
-      parent_unit_price * getPercent(parent_tax_fee)
-    const parent_base_unit_price =
-      field === 'id' || field === 'child_id'
-        ? parent_unit_price + parent_unit_discount
-        : row.parent_base_unit_price || parent_unit_price
-    // childProduct
-    const childBaseUnitPrice = childProduct?.unit_price
-      ? childProduct.unit_price
-      : row.child_base_unit_price
-    const child_tax_fee = childProduct?.tax_fee
-      ? Number(childProduct.tax_fee)
-      : Number(row.child_tax_fee)
-    const child_unit_discount = childBaseUnitPrice * getPercent(discountValue)
-    const child_unit_price = childBaseUnitPrice - child_unit_discount
-    const child_unit_tax_amount = child_unit_price * getPercent(child_tax_fee)
-    const child_base_unit_price =
-      field === 'id' || field === 'child_id'
-        ? child_unit_price + child_unit_discount
-        : row.child_base_unit_price || child_unit_price
-    // common fields
-    const unit_discount = roundNumber(
-      child_unit_discount + parent_unit_discount
-    )
-    const unit_price = roundNumber(child_unit_price + parent_unit_price)
-    const unit_tax_amount = roundNumber(
-      child_unit_tax_amount + parent_unit_tax_amount
-    )
-
-    const newRow = {
-      ...row,
-      // parentProduct
-      parent_tax_fee,
-      parent_unit_price,
-      parent_unit_tax_amount,
-      parent_unit_discount,
-      parent_base_unit_price,
-      // childProduct
-      child_tax_fee,
-      child_unit_price,
-      child_unit_tax_amount,
-      child_unit_discount,
-      child_base_unit_price,
-      // common fields
-      id: parentProduct?.id ? Number(parentProduct.id) : row.id,
-      code: parentProduct?.code ? parentProduct.code : row.code,
-      child_id: childProduct?.id ? Number(childProduct.id) : row.child_id,
-      quantity: field === 'id' || field === 'child_id' ? 1 : row.quantity,
-      tax_fee:
-        unit_tax_amount && unit_price
-          ? (unit_tax_amount / unit_price) * 100
-          : 0,
-      unit_tax_amount,
-      unit_price,
-      unit_discount,
-      base_unit_price: child_base_unit_price + parent_base_unit_price,
-    }
-
-    const subtotal = getProductSubtotal(data.service_type, newRow)
-
-    return { ...newRow, subtotal }
   }
 
   const handleChange = field => e => {
@@ -780,18 +654,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       .catch(error => showErrors(error))
       .finally(() => setLoading(false))
   }
-
-  const columnsDynamicTable = getColumnsDynamicTable({
-    edit: props.edit,
-    handleRemoveDetail,
-    handleChangeDetail,
-    handleSearchProduct,
-    productsOptionsList,
-    handleSearchChildProduct,
-    childProductsOptionsList,
-    isInvoiceFromSale,
-    serviceType: data.service_type,
-  })
 
   return (
     <>
@@ -1138,21 +1000,20 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
 
         <Divider className={'divider-custom-margins-users'} />
 
-        <DynamicTable columns={columnsDynamicTable} data={productsData} />
-
-        {!props.edit && !isInvoiceFromSale && (
-          <Row gutter={16} className={'section-space-list'}>
-            <Col xs={24} sm={24} md={24} lg={24}>
-              <Button
-                type='dashed'
-                className={'shop-add-turn'}
-                onClick={handleAddDetail}
-              >
-                Agregar Detalle
-              </Button>
-            </Col>
-          </Row>
-        )}
+        <BillingProductsList
+          dataSource={productsData}
+          handleAddDetail={handleAddDetail}
+          handleChangeDetail={handleChangeDetail}
+          handleRemoveDetail={handleRemoveDetail}
+          handleBlurDetail={handleBlurDetail}
+          handleSearchProduct={handleSearchProduct}
+          productsOptionsList={productsOptionsList}
+          handleSearchChildProduct={handleSearchChildProduct}
+          childProductsOptionsList={childProductsOptionsList}
+          isInvoiceFromSale={isInvoiceFromSale}
+          serviceType={data.service_type}
+          isEditing={props.edit}
+        />
 
         <Divider className={'divider-custom-margins-users'} />
 
@@ -1160,23 +1021,35 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
           <Col span={6} style={{ textAlign: 'right' }}>
             {!props.edit || data.discount ? (
               <div className={'title-space-field'}>
-                <Statistic title='Descuento :' value={data.discount} />
+                <Statistic
+                  title='Descuento :'
+                  value={getFormattedValue(data.discount)}
+                />
               </div>
             ) : null}
           </Col>
           <Col span={6} style={{ textAlign: 'right' }}>
             <div className={'title-space-field'}>
-              <Statistic title='Subtotal :' value={data.subtotal} />
+              <Statistic
+                title='Subtotal :'
+                value={getFormattedValue(data.subtotal)}
+              />
             </div>
           </Col>
           <Col span={6} style={{ textAlign: 'right' }}>
             <div className={'title-space-field'}>
-              <Statistic title='Impuesto :' value={data.total_tax} />
+              <Statistic
+                title='Impuesto :'
+                value={getFormattedValue(data.total_tax)}
+              />
             </div>
           </Col>
           <Col span={6} style={{ textAlign: 'right' }}>
             <div className={'title-space-field'}>
-              <Statistic title='Total :' value={data.total} />
+              <Statistic
+                title='Total :'
+                value={getFormattedValue(data.total)}
+              />
             </div>
           </Col>
         </Row>

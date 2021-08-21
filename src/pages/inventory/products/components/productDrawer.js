@@ -27,6 +27,7 @@ function ProductDrawer(props) {
       onClose={props.closable}
       visible={props.visible}
       width={800}
+      destroyOnClose
     >
       <Spin spinning={loadingDrawer}>
         <ProductFields

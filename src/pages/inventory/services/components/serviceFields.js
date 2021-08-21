@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import FooterButtons from '../../../../components/FooterButtons'
 import { Col, Divider, Input, message, Row, Select, Typography } from 'antd'
 import Tag from '../../../../components/Tag'
+import CurrencyInput from '../../../../components/CurrencyInput'
 import { productsStatus } from '../../../../commons/types'
 import { Cache } from 'aws-amplify'
 const { Title } = Typography
@@ -79,15 +80,12 @@ function ServiceFields(props) {
         <Row gutter={16} className={'section-space-field'}>
           {props.isAdmin && (
             <Col xs={8} sm={8} md={8} lg={8}>
-              <div className={'title-space-field'}>Precio de venta</div>
-              <Input
+              <div className={'title-space-field'}>Precio de venta (Q)</div>
+              <CurrencyInput
                 disabled={specialPermission}
-                type={'number'}
                 value={price}
-                placeholder={'Costo'}
-                size={'large'}
-                min={0}
-                onChange={value => setPrice(value.target.value)}
+                placeholder={'Precio de venta (Q)'}
+                onValueChange={value => setPrice(value)}
               />
             </Col>
           )}

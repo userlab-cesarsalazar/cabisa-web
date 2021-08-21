@@ -8,6 +8,7 @@ import {
 } from '../../../../commons/types'
 import FooterButtons from '../../../../components/FooterButtons'
 import Tag from '../../../../components/Tag'
+import CurrencyInput from '../../../../components/CurrencyInput'
 import {
   Col,
   Divider,
@@ -254,14 +255,12 @@ function ProductFields(props) {
           </Col> */}
           {props.isAdmin && (
             <Col xs={8} sm={8} md={8} lg={8}>
-              <div className={'title-space-field'}>Precio de venta</div>
-              <Input
+              <div className={'title-space-field'}>Precio de venta (Q)</div>
+              <CurrencyInput
                 disabled={specialPermission}
-                type={'number'}
                 value={price}
-                placeholder={'Precio'}
-                size={'large'}
-                onChange={value => setPrice(value.target.value)}
+                placeholder={'Precio de venta (Q)'}
+                onValueChange={value => setPrice(value)}
               />
             </Col>
           )}

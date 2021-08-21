@@ -15,6 +15,7 @@ import {
 import FooterButtons from '../../../components/FooterButtons'
 import DynamicTable from '../../../components/DynamicTable'
 import Tag from '../../../components/Tag'
+import CurrencyInput from '../../../components/CurrencyInput'
 import { useEditableList } from '../../../hooks'
 import {
   validateEmail,
@@ -29,7 +30,7 @@ import ClientsSrc from '../clientsSrc'
 const { Title } = Typography
 const { Option } = Select
 
-const getColumnsProjects = ({
+const getProjectColumns = ({
   handleRemoveProject,
   handleChangeProject,
   isAdmin,
@@ -258,7 +259,7 @@ function ClientFields({ edit, editData, ...props }) {
     props.saveUserData(saveData)
   }
 
-  const columnsProjects = getColumnsProjects({
+  const projectsColumns = getProjectColumns({
     handleRemoveProject,
     handleChangeProject,
     isAdmin,
@@ -367,16 +368,11 @@ function ClientFields({ edit, editData, ...props }) {
             />
           </Col>
           <Col xs={6} sm={6} md={6} lg={6}>
-            <div className={'title-space-field'}>Limite de credito</div>
-            <Input
+            <div className={'title-space-field'}>Limite de credito (Q)</div>
+            <CurrencyInput
               value={creditLimit}
-              placeholder={'Limite de credito'}
-              size={'large'}
-              onChange={e => {
-                const value = Number(e.target.value)
-                if (isNaN(value) || value < 0) return
-                setCreditLimit(value)
-              }}
+              placeholder={'Limite de credito (Q)'}
+              onValueChange={value => setCreditLimit(value)}
               disabled={!isAdmin}
             />
           </Col>
@@ -406,7 +402,7 @@ function ClientFields({ edit, editData, ...props }) {
 
         <Row gutter={16} className={'section-space-field'}>
           <Col xs={24} sm={24} md={24} lg={24}>
-            <DynamicTable columns={columnsProjects} data={projectsData} />
+            <DynamicTable columns={projectsColumns} data={projectsData} />
           </Col>
         </Row>
 

@@ -14,6 +14,7 @@ function UserDrawer(props) {
       onClose={props.closable}
       visible={props.visible}
       width={800}
+      destroyOnClose
     >
       <UserFields
         saveUserData={saveData}

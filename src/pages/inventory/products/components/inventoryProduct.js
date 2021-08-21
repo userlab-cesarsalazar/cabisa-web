@@ -4,7 +4,7 @@ import ProductDrawer from './productDrawer'
 import { withRouter } from 'react-router'
 import Tag from '../../../../components/Tag'
 import ActionOptions from '../../../../components/actionOptions'
-import { validateRole } from '../../../../utils'
+import { validateRole, numberFormat } from '../../../../utils'
 import { permissions, roles } from '../../../../commons/types'
 
 function InventoryProduct(props) {
@@ -12,6 +12,8 @@ function InventoryProduct(props) {
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
   const [isVisible, setIsVisible] = useState(false)
+
+  const { getFormattedValue } = numberFormat()
 
   const columns = [
     {
@@ -47,10 +49,10 @@ function InventoryProduct(props) {
   ]
 
   const priceColumn = {
-    title: 'Precio de venta',
+    title: 'Precio de venta (Q)',
     dataIndex: 'unit_price', // Field that is goint to be rendered
     key: 'unit_price',
-    render: text => <span>{text?.toFixed(2)}</span>,
+    render: text => (text ? <span>{getFormattedValue(text)}</span> : null),
   }
 
   const actionsColumn = {

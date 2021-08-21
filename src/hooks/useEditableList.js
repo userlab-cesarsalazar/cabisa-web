@@ -9,6 +9,7 @@ export const useEditableList = ({
   onAdd,
   onRemove,
   onChange,
+  onBlur,
 }) => {
   const rowModel = useRef()
 
@@ -42,5 +43,9 @@ export const useEditableList = ({
     if (typeof onChange === 'function') onChange(field, value, rowIndex)
   }
 
-  return { handleAdd, handleRemove, handleChange }
+  const handleBlur = (field, value, rowIndex) => {
+    if (typeof onBlur === 'function') onBlur(field, value, rowIndex)
+  }
+
+  return { handleAdd, handleRemove, handleChange, handleBlur }
 }
