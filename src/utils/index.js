@@ -178,7 +178,7 @@ export const toRegExp = val => {
 }
 
 export const numberFormat = ({
-  currencyFormat = 'de-DE',
+  currencyFormat = 'en-US',
   fractionDigits = 2,
 } = {}) => {
   // currencyFormat = 'de-DE' usa punto para miles y coma para decimales

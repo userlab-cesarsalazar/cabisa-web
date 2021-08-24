@@ -5,7 +5,7 @@ function CurrencyInput({
   currencyPrefix = false,
   currencySuffix = false,
   currencySymbol = 'Q',
-  currencyFormat = 'de-DE',
+  currencyFormat = 'en-US',
   fractionDigit = 2,
   className = '',
   ...props
