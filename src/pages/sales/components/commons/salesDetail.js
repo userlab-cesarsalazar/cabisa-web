@@ -31,7 +31,7 @@ import {
   formatPhone,
   numberFormat,
 } from '../../../../utils'
-import { appConfig, documentsStatus } from '../../../../commons/types'
+import { documentsStatus } from '../../../../commons/types'
 import {
   getOnChangeProductsListCallback,
   getProductSubtotal,
@@ -137,13 +137,6 @@ function SalesDetail({ closable, visible, isAdmin }) {
   }, [])
 
   const updateSaleTotals = (field, value, rowIndex) => {
-    if (field === 'id' && saleState.childProductsOptionsList.length === 0) {
-      handleSearchChildProduct(null, {
-        $limit: appConfig.selectsInitLimit,
-        description: { $like: '%25%25' },
-      })
-    }
-
     const onChangeListCallback = getOnChangeProductsListCallback({
       productsOptionsList: saleState.productsOptionsList,
       childProductsOptionsList: saleState.childProductsOptionsList,
@@ -366,14 +359,6 @@ function SalesDetail({ closable, visible, isAdmin }) {
         })
         handleAddDetail()
       }
-
-      handleSearchProduct(null, {
-        $limit: appConfig.selectsInitLimit,
-        description: { $like: '%25%25' },
-        product_type: nextTypeIsService
-          ? productsTypes.SERVICE
-          : productsTypes.PRODUCT,
-      })
     }
 
     setSale(prevState => ({

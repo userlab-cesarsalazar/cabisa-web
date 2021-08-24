@@ -217,61 +217,58 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     [setLoading, isInvoiceFromSale]
   )
 
-  const handleSearchProduct = useCallback(
-    (product_description, additionalParams = {}) => {
-      if (isInvoiceFromSale) return
-      if (product_description === '') return
-      if (!data.service_type && product_description !== null)
-        return message.warning('Debe seleccionar el Tipo de servicio')
+  const handleSearchProduct = (product_description, additionalParams = {}) => {
+    if (isInvoiceFromSale) return
+    if (product_description === '') return
+    if (!data.service_type)
+      return message.warning('Debe seleccionar el Tipo de servicio')
 
-      const product_type =
-        data.service_type === productsTypes.SERVICE
-          ? productsTypes.SERVICE
-          : productsTypes.PRODUCT
+    const product_type =
+      data.service_type === productsTypes.SERVICE
+        ? productsTypes.SERVICE
+        : productsTypes.PRODUCT
 
-      const params = {
-        status: productsStatus.ACTIVE,
-        stock: { $gt: 0 },
-        description: { $like: `%25${product_description}%25` },
-        product_type,
-        ...additionalParams,
-      }
+    const params = {
+      status: productsStatus.ACTIVE,
+      stock: { $gt: 0 },
+      description: { $like: `%25${product_description}%25` },
+      product_type,
+      ...additionalParams,
+    }
 
-      setLoading(true)
+    setLoading(true)
 
-      billingSrc
-        .getProductsOptions(params)
-        .then(data => setProductsOptionsList(data))
-        .catch(error => showErrors(error))
-        .finally(() => setLoading(false))
-    },
-    [setLoading, isInvoiceFromSale, data.service_type]
-  )
+    billingSrc
+      .getProductsOptions(params)
+      .then(data => setProductsOptionsList(data))
+      .catch(error => showErrors(error))
+      .finally(() => setLoading(false))
+  }
 
-  const handleSearchChildProduct = useCallback(
-    (product_description, additionalParams = {}) => {
-      if (isInvoiceFromSale) return
-      if (product_description === '') return
-      if (data.service_type !== productsTypes.SERVICE) return
+  const handleSearchChildProduct = (
+    product_description,
+    additionalParams = {}
+  ) => {
+    if (isInvoiceFromSale) return
+    if (product_description === '') return
+    if (data.service_type !== productsTypes.SERVICE) return
 
-      const params = {
-        status: productsStatus.ACTIVE,
-        stock: { $gt: 0 },
-        description: { $like: `%25${product_description}%25` },
-        product_type: productsTypes.PRODUCT,
-        ...additionalParams,
-      }
+    const params = {
+      status: productsStatus.ACTIVE,
+      stock: { $gt: 0 },
+      description: { $like: `%25${product_description}%25` },
+      product_type: productsTypes.PRODUCT,
+      ...additionalParams,
+    }
 
-      setLoading(true)
+    setLoading(true)
 
-      billingSrc
-        .getProductsOptions(params)
-        .then(data => setChildProductsOptionsList(data))
-        .catch(error => showErrors(error))
-        .finally(() => setLoading(false))
-    },
-    [setLoading, isInvoiceFromSale, data.service_type]
-  )
+    billingSrc
+      .getProductsOptions(params)
+      .then(data => setChildProductsOptionsList(data))
+      .catch(error => showErrors(error))
+      .finally(() => setLoading(false))
+  }
 
   const fetchCreditStatusOptions = useCallback(() => {
     setLoading(true)
@@ -307,26 +304,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       return { ...prevState, ...totals }
     })
   }, [setData, productsData, editData, isInvoiceFromSale, data.service_type])
-
-  useEffect(() => {
-    if (editData && !isInvoiceFromSale) return
-
-    handleSearchProduct(null, {
-      $limit: appConfig.selectsInitLimit,
-      description: { $like: '%25%25' },
-    })
-
-    handleSearchChildProduct(null, {
-      $limit: appConfig.selectsInitLimit,
-      description: { $like: '%25%25' },
-    })
-  }, [
-    handleSearchProduct,
-    handleSearchChildProduct,
-    editData,
-    isInvoiceFromSale,
-    data.service_type,
-  ])
 
   useEffect(() => {
     if (editData && !isInvoiceFromSale) return

@@ -142,13 +142,6 @@ function NewNoteView({ isAdmin }) {
   }, [])
 
   const updateSaleTotals = (field, value, rowIndex) => {
-    if (field === 'id' && saleState.childProductsOptionsList.length === 0) {
-      handleSearchChildProduct(null, {
-        $limit: appConfig.selectsInitLimit,
-        description: { $like: '%25%25' },
-      })
-    }
-
     const onChangeListCallback = getOnChangeProductsListCallback({
       productsOptionsList: saleState.productsOptionsList,
       childProductsOptionsList: saleState.childProductsOptionsList,
@@ -361,14 +354,6 @@ function NewNoteView({ isAdmin }) {
         })
         handleAddDetail()
       }
-
-      handleSearchProduct(null, {
-        $limit: appConfig.selectsInitLimit,
-        description: { $like: '%25%25' },
-        product_type: nextTypeIsService
-          ? productsTypes.SERVICE
-          : productsTypes.PRODUCT,
-      })
     }
 
     setSale(prevState => ({
@@ -389,10 +374,6 @@ function NewNoteView({ isAdmin }) {
   }
 
   const handleCancelButton = () => history.push('/sales')
-
-  // Cannot select days before today
-  const disabledDate = current =>
-    current && moment(current).add(1, 'days') < moment().endOf('day')
 
   return (
     <Spin spinning={status === 'LOADING'}>
@@ -510,7 +491,6 @@ function NewNoteView({ isAdmin }) {
               value={sale.start_date ? moment(sale.start_date) : ''}
               onChange={handleChange('start_date')}
               format='DD-MM-YYYY'
-              disabledDate={disabledDate}
             />
           </Col>
           <Col xs={8} sm={8} md={8} lg={8}>
@@ -520,7 +500,6 @@ function NewNoteView({ isAdmin }) {
               value={sale.end_date ? moment(sale.end_date) : ''}
               onChange={handleChange('end_date')}
               format='DD-MM-YYYY'
-              disabledDate={disabledDate}
             />
           </Col>
           <Col xs={8} sm={8} md={8} lg={8}>
