@@ -108,7 +108,7 @@ function BillingTable(props) {
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
           <Search
-            type={'number'}
+            type='tel'
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
             placeholder='Nit'
             className={'cabisa-table-search customSearch'}
@@ -166,7 +166,7 @@ function BillingTable(props) {
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
           <Search
-            type={'number'}
+            type='tel'
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
             placeholder='Total'
             className={'cabisa-table-search customSearch'}

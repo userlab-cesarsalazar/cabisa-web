@@ -92,7 +92,7 @@ function InventoryHistory(props) {
             <b>Existencia:</b>
           </div>
           <Input
-            type={'number'}
+            type='tel'
             placeholder={'Existencia'}
             size={'large'}
             style={{ height: '40px', width: '75%', minWidth: '100px' }}

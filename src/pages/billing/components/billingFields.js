@@ -40,15 +40,15 @@ const { TextArea } = Input
 
 const { getValue, getFormattedValue } = numberFormat()
 
-const getProductDiscount = (serviceType, product) =>
-  serviceType === productsTypes.SERVICE
+const getProductDiscount = product =>
+  product.service_type === productsTypes.SERVICE
     ? product.parent_unit_discount +
       product.child_unit_discount * product.quantity
     : product.unit_discount * product.quantity
 
-export const getProductSubtotal = (serviceType, product) => {
+export const getProductSubtotal = product => {
   const result =
-    serviceType === productsTypes.SERVICE
+    product.service_type === productsTypes.SERVICE
       ? Number(product.parent_unit_price) +
         Number(product.child_unit_price) * product.quantity
       : Number(product.unit_price) * product.quantity
@@ -62,7 +62,6 @@ export const handleUpdateProductsData = ({
   row,
   discountValue,
   field = '',
-  serviceType,
 }) => {
   // parentProduct
   const parentBaseUnitPrice = parentProduct?.unit_price
@@ -72,8 +71,8 @@ export const handleUpdateProductsData = ({
     ? parentProduct.tax_fee
     : row.parent_tax_fee
   const parent_unit_discount = parentBaseUnitPrice * getPercent(discountValue)
-  const parent_unit_price = String(
-    roundNumber(parentBaseUnitPrice - parent_unit_discount)
+  const parent_unit_price = roundNumber(
+    parentBaseUnitPrice - parent_unit_discount
   )
   const parent_unit_tax_amount =
     Number(parent_unit_price) * getPercent(parent_tax_fee)
@@ -89,9 +88,7 @@ export const handleUpdateProductsData = ({
     ? Number(childProduct.tax_fee)
     : Number(row.child_tax_fee)
   const child_unit_discount = childBaseUnitPrice * getPercent(discountValue)
-  const child_unit_price = String(
-    roundNumber(childBaseUnitPrice - child_unit_discount)
-  )
+  const child_unit_price = roundNumber(childBaseUnitPrice - child_unit_discount)
   const child_unit_tax_amount =
     Number(child_unit_price) * getPercent(child_tax_fee)
   const child_base_unit_price =
@@ -132,7 +129,7 @@ export const handleUpdateProductsData = ({
     base_unit_price: child_base_unit_price + parent_base_unit_price,
   }
 
-  const subtotal = getProductSubtotal(serviceType, newRow)
+  const subtotal = getProductSubtotal(newRow)
 
   return { ...newRow, subtotal }
 }
@@ -140,7 +137,6 @@ export const handleUpdateProductsData = ({
 export const getOnChangeProductsListCallback = ({
   productsOptionsList,
   childProductsOptionsList,
-  serviceType,
   discountValue,
 }) => (field, value, rowIndex) => {
   const getParentProduct = (field, value) => {
@@ -153,9 +149,6 @@ export const getOnChangeProductsListCallback = ({
   }
 
   const getChildProduct = (field, value) => {
-    if (serviceType !== productsTypes.SERVICE)
-      return { unit_price: 0, tax_fee: 0 }
-
     const product = childProductsOptionsList.find(
       o => field === 'child_id' && Number(o.id) === Number(value)
     )
@@ -175,7 +168,6 @@ export const getOnChangeProductsListCallback = ({
       row,
       discountValue,
       field,
-      serviceType,
     })
 
     return prevState.map((prevRow, index) =>
@@ -217,23 +209,17 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     [setLoading, isInvoiceFromSale]
   )
 
-  const handleSearchProduct = (product_description, additionalParams = {}) => {
+  const handleSearchProduct = rowIndex => product_description => {
     if (isInvoiceFromSale) return
     if (product_description === '') return
-    if (!data.service_type)
+    if (!productsData[rowIndex].service_type)
       return message.warning('Debe seleccionar el Tipo de servicio')
-
-    const product_type =
-      data.service_type === productsTypes.SERVICE
-        ? productsTypes.SERVICE
-        : productsTypes.PRODUCT
 
     const params = {
       status: productsStatus.ACTIVE,
       stock: { $gt: 0 },
       description: { $like: `%25${product_description}%25` },
-      product_type,
-      ...additionalParams,
+      product_type: productsTypes.SERVICE,
     }
 
     setLoading(true)
@@ -245,20 +231,17 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       .finally(() => setLoading(false))
   }
 
-  const handleSearchChildProduct = (
-    product_description,
-    additionalParams = {}
-  ) => {
+  const handleSearchChildProduct = rowIndex => product_description => {
     if (isInvoiceFromSale) return
     if (product_description === '') return
-    if (data.service_type !== productsTypes.SERVICE) return
+    if (!productsData[rowIndex].service_type)
+      return message.warning('Debe seleccionar el Tipo de servicio')
 
     const params = {
       status: productsStatus.ACTIVE,
       stock: { $gt: 0 },
       description: { $like: `%25${product_description}%25` },
       product_type: productsTypes.PRODUCT,
-      ...additionalParams,
     }
 
     setLoading(true)
@@ -285,10 +268,8 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
 
     setData(prevState => {
       const totals = productsData?.reduce((r, p) => {
-        const discount =
-          (r.discount || 0) + getProductDiscount(data.service_type, p)
-        const subtotal =
-          (r.subtotal || 0) + getProductSubtotal(data.service_type, p)
+        const discount = (r.discount || 0) + getProductDiscount(p)
+        const subtotal = (r.subtotal || 0) + getProductSubtotal(p)
         const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
         const total = subtotal + total_tax
 
@@ -303,7 +284,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
 
       return { ...prevState, ...totals }
     })
-  }, [setData, productsData, editData, isInvoiceFromSale, data.service_type])
+  }, [setData, productsData, editData, isInvoiceFromSale])
 
   useEffect(() => {
     if (editData && !isInvoiceFromSale) return
@@ -346,10 +327,20 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   }, [])
 
   const updateInvoiceTotals = (field, value, rowIndex) => {
+    if (field === 'service_type') {
+      setProductsData(prevState => {
+        const row = prevState[rowIndex]
+        const newRow = { ...row, ...initRow, service_type: value }
+
+        return prevState.map((v, i) => (i === rowIndex ? newRow : v))
+      })
+
+      return
+    }
+
     const onChangeListCallback = getOnChangeProductsListCallback({
       productsOptionsList,
       childProductsOptionsList,
-      serviceType: data.service_type,
       discountValue:
         field !== 'parent_unit_price' && field !== 'child_unit_price'
           ? discountInputValue
@@ -365,7 +356,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     const onChangeListCallback = getOnChangeProductsListCallback({
       productsOptionsList,
       childProductsOptionsList,
-      serviceType: data.service_type,
       discountValue: discountInputValue,
     })
 
@@ -379,11 +369,13 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     handleAdd: handleAddDetail,
     handleRemove: handleRemoveDetail,
     handleBlur: handleBlurDetail,
+    rowModel: initRow,
   } = useEditableList({
     state: productsData,
     setState: setProductsData,
     initRow: {
       // common fields
+      service_type: '',
       id: '',
       code: '',
       child_id: '',
@@ -392,6 +384,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       unit_price: 0,
       base_unit_price: 0,
       unit_tax_amount: 0,
+      tax_fee: 0,
       // parentProduct
       parent_tax_fee: 0,
       parent_unit_price: 0,
@@ -436,7 +429,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
           childProduct,
           row: p,
           discountValue: e?.target?.value,
-          serviceType: data.service_type,
         })
 
         return updatedProduct
@@ -465,19 +457,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
         stakeholder_phone: formatPhone(stakeholder.phone),
         stakeholder_address: stakeholder.address,
       }))
-    }
-
-    if (field === 'service_type') {
-      const prevTypeIsService =
-        data.service_type === documentsServiceType.SERVICE
-      const nextTypeIsService = value === documentsServiceType.SERVICE
-
-      if (prevTypeIsService !== nextTypeIsService) {
-        setProductsData([])
-        setProductsOptionsList([])
-        setChildProductsOptionsList([])
-        handleAddDetail()
-      }
     }
 
     if (field === 'credit_status') {
@@ -514,7 +493,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     stakeholder_id: data.stakeholder_id,
     project_id: data.project_id,
     payment_method: data.payment_method,
-    service_type: data.service_type,
     credit_days: data.credit_days,
     subtotal_amount: data.subtotal,
     total_discount_amount: data.discount,
@@ -529,6 +507,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
         product_price: Number(p.parent_unit_price),
         product_discount_percentage: Number(discountInputValue),
         product_discount: Number(p.parent_unit_discount),
+        service_type: p.service_type,
       }
 
       const childProduct = {
@@ -537,13 +516,12 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
         product_price: Number(p.child_unit_price),
         product_discount_percentage: Number(discountInputValue),
         product_discount: Number(p.child_unit_discount),
-        parent_product_id: p.id,
+        parent_product_id: p.id || null,
+        service_type: p.service_type,
       }
 
       const products =
-        !p.child_id || isNaN(p.child_id)
-          ? [parentProduct]
-          : [parentProduct, childProduct]
+        !p.id || isNaN(p.id) ? [childProduct] : [childProduct, parentProduct]
 
       return [...(r || []), ...products]
     }, []),
@@ -555,7 +533,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       { key: 'stakeholder_id', value: 'Empresa' },
       { key: 'payment_method', value: 'Metodo de pago' },
       { key: 'project_id', value: 'Proyecto' },
-      { key: 'service_type', value: 'Tipo de Servicio' },
     ]
     const requiredErrors = requiredFields.flatMap(field =>
       !data[field.key] ? field.value : []
@@ -570,7 +547,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     const productErrors = validateDynamicTableProducts(
       data.products,
       productsRequiredFields,
-      data.service_type === documentsServiceType.SERVICE
+      documentsServiceType.SERVICE
     )
 
     if (productErrors.required.length > 0) {
@@ -827,31 +804,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
             </Select>
           </Col>
           <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Tipo de servicio</div>
-            <Select
-              className={'single-select'}
-              placeholder={'Elegir tipo servicio'}
-              size={'large'}
-              style={{ width: '100%', height: '40px' }}
-              getPopupContainer={trigger => trigger.parentNode}
-              onChange={handleChange('service_type')}
-              value={data.service_type}
-              disabled={props.edit || isInvoiceFromSale}
-            >
-              {props.serviceTypesOptionsList?.length > 0 ? (
-                props.serviceTypesOptionsList.map(value => (
-                  <Option key={value} value={value}>
-                    <Tag type='documentsServiceType' value={value} />
-                  </Option>
-                ))
-              ) : (
-                <Option value={data.service_type}>
-                  <Tag type='documentsServiceType' value={data.service_type} />
-                </Option>
-              )}
-            </Select>
-          </Col>
-          <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Metodo de pago</div>
             <Select
               className={'single-select'}
@@ -956,7 +908,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
                   <b>Descuento (%):</b>
                 </div>
                 <Input
-                  type={'number'}
+                  type='tel'
                   placeholder={'Aplicar Descuento'}
                   size={'large'}
                   style={{
@@ -988,8 +940,8 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
           handleSearchChildProduct={handleSearchChildProduct}
           childProductsOptionsList={childProductsOptionsList}
           isInvoiceFromSale={isInvoiceFromSale}
-          serviceType={data.service_type}
           isEditing={props.edit}
+          serviceTypesOptionsList={props.serviceTypesOptionsList}
         />
 
         <Divider className={'divider-custom-margins-users'} />

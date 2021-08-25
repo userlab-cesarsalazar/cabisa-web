@@ -15,7 +15,6 @@ import {
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import HeaderPage from '../../../../components/HeaderPage'
-import Tag from '../../../../components/Tag'
 import SaleProductsList from '../../../../components/SaleProductsList'
 import { useSale, saleActions } from '../../context'
 import {
@@ -75,22 +74,16 @@ function NewNoteView({ isAdmin }) {
     [saleDispatch]
   )
 
-  const handleSearchProduct = (product_description, additionalParams = {}) => {
+  const handleSearchProduct = rowIndex => product_description => {
     if (product_description === '') return
-    if (!sale.service_type && product_description !== null)
+    if (!dataSourceTable[rowIndex].service_type)
       return message.warning('Debe seleccionar el Tipo de servicio')
-
-    const product_type =
-      sale.service_type === productsTypes.SERVICE
-        ? productsTypes.SERVICE
-        : productsTypes.PRODUCT
 
     const params = {
       status: productsStatus.ACTIVE,
       stock: { $gt: 0 },
-      description: { $like: `%25${product_description}%25` },
-      product_type,
-      ...additionalParams,
+      description: { $like: `%25${product_description || ''}%25` },
+      product_type: productsTypes.SERVICE,
     }
 
     fetchProductsOptions(saleDispatch, params)
@@ -101,15 +94,15 @@ function NewNoteView({ isAdmin }) {
   }, [saleDispatch])
 
   useEffect(
-    function updateDataSourceTable() {
+    function updateSaleSubtotal() {
       const subtotal_amount = dataSourceTable?.reduce(
-        (r, p) => r + getProductSubtotal(sale.service_type, p),
+        (r, p) => r + getProductSubtotal(p),
         0
       )
 
       setSale(prevState => ({ ...prevState, subtotal_amount }))
     },
-    [dataSourceTable, sale.service_type]
+    [dataSourceTable]
   )
 
   useEffect(() => {
@@ -142,10 +135,20 @@ function NewNoteView({ isAdmin }) {
   }, [])
 
   const updateSaleTotals = (field, value, rowIndex) => {
+    if (field === 'service_type') {
+      setDataSourceTable(prevState => {
+        const row = prevState[rowIndex]
+        const newRow = { ...row, ...initRow, service_type: value }
+
+        return prevState.map((v, i) => (i === rowIndex ? newRow : v))
+      })
+
+      return
+    }
+
     const onChangeListCallback = getOnChangeProductsListCallback({
       productsOptionsList: saleState.productsOptionsList,
       childProductsOptionsList: saleState.childProductsOptionsList,
-      serviceType: sale.service_type,
       discountValue: 0,
     })
 
@@ -158,11 +161,13 @@ function NewNoteView({ isAdmin }) {
     handleChange: handleChangeDetail,
     handleAdd: handleAddDetail,
     handleRemove: handleRemoveDetail,
+    rowModel: initRow,
   } = useEditableList({
     state: dataSourceTable,
     setState: setDataSourceTable,
     initRow: {
       // common fields
+      service_type: '',
       id: '',
       code: '',
       child_id: '',
@@ -171,6 +176,7 @@ function NewNoteView({ isAdmin }) {
       unit_price: 0,
       base_unit_price: 0,
       unit_tax_amount: 0,
+      tax_fee: 0,
       // parentProduct
       parent_tax_fee: 0,
       parent_unit_price: 0,
@@ -191,18 +197,16 @@ function NewNoteView({ isAdmin }) {
     else return moment(endDate).diff(moment(startDate), 'days')
   }
 
-  const handleSearchChildProduct = (
-    product_description,
-    additionalParams = {}
-  ) => {
+  const handleSearchChildProduct = rowIndex => product_description => {
     if (product_description === '') return
+    if (!dataSourceTable[rowIndex].service_type)
+      return message.warning('Debe seleccionar el Tipo de servicio')
 
     const params = {
       status: productsStatus.ACTIVE,
       stock: { $gt: 0 },
       description: { $like: `%25${product_description}%25` },
       product_type: productsTypes.PRODUCT,
-      ...additionalParams,
     }
 
     fetchChildProductsOptions(saleDispatch, params)
@@ -216,7 +220,6 @@ function NewNoteView({ isAdmin }) {
     dispatched_by: sale.dispatched_by,
     received_by: sale.received_by,
     comments: sale.comments,
-    service_type: sale.service_type,
     related_external_document_id: null,
     subtotal_amount: sale.subtotal_amount,
     products: dataSourceTable.reduce((r, p) => {
@@ -225,6 +228,7 @@ function NewNoteView({ isAdmin }) {
         product_quantity:
           !p.child_id || isNaN(p.child_id) ? Number(p.quantity) : 1,
         product_price: Number(p.parent_unit_price),
+        service_type: p.service_type,
       }
 
       const childProduct = {
@@ -232,12 +236,11 @@ function NewNoteView({ isAdmin }) {
         product_quantity: Number(p.quantity),
         product_price: Number(p.child_unit_price),
         parent_product_id: p.id,
+        service_type: p.service_type,
       }
 
       const products =
-        !p.child_id || isNaN(p.child_id)
-          ? [parentProduct]
-          : [parentProduct, childProduct]
+        !p.id || isNaN(p.id) ? [childProduct] : [childProduct, parentProduct]
 
       return [...(r || []), ...products]
     }, []),
@@ -266,7 +269,8 @@ function NewNoteView({ isAdmin }) {
     const productsRequiredFields = ['product_quantity', 'product_price']
     const productErrors = validateDynamicTableProducts(
       data.products,
-      productsRequiredFields
+      productsRequiredFields,
+      documentsServiceType.SERVICE
     )
 
     if (productErrors.required.length > 0) {
@@ -339,21 +343,6 @@ function NewNoteView({ isAdmin }) {
         stakeholder_phone: formatPhone(stakeholder.phone),
         stakeholder_business_man: stakeholder.business_man,
       }))
-    }
-
-    if (field === 'service_type') {
-      const prevTypeIsService =
-        sale.service_type === documentsServiceType.SERVICE
-      const nextTypeIsService = value === documentsServiceType.SERVICE
-
-      if (prevTypeIsService !== nextTypeIsService) {
-        setDataSourceTable([])
-        setSaleState(saleDispatch, {
-          childProductsOptionsList: [],
-          productsOptionsList: [],
-        })
-        handleAddDetail()
-      }
     }
 
     setSale(prevState => ({
@@ -502,30 +491,6 @@ function NewNoteView({ isAdmin }) {
               format='DD-MM-YYYY'
             />
           </Col>
-          <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Tipo de servicio</div>
-            <Select
-              className={'single-select'}
-              placeholder={'Elegir tipo servicio'}
-              size={'large'}
-              style={{ width: '100%', height: '40px' }}
-              getPopupContainer={trigger => trigger.parentNode}
-              onChange={handleChange('service_type')}
-              value={sale.service_type}
-            >
-              {saleState.documentServiceTypesOptionsList?.length > 0 ? (
-                saleState.documentServiceTypesOptionsList.map(value => (
-                  <Option key={value} value={value}>
-                    <Tag type='documentsServiceType' value={value} />
-                  </Option>
-                ))
-              ) : (
-                <Option value={sale.service_type}>
-                  <Tag type='documentsServiceType' value={sale.service_type} />
-                </Option>
-              )}
-            </Select>
-          </Col>
         </Row>
         <Divider className={'divider-custom-margins-users'} />
         <h2>Detalle Entrega:</h2>
@@ -540,10 +505,12 @@ function NewNoteView({ isAdmin }) {
               handleSearchChildProduct={handleSearchChildProduct}
               productsOptionsList={saleState.productsOptionsList}
               childProductsOptionsList={saleState.childProductsOptionsList}
-              serviceType={sale.service_type}
               status={status}
               loading={loading}
               isAdmin={isAdmin}
+              documentServiceTypesOptionsList={
+                saleState.documentServiceTypesOptionsList
+              }
             />
           </Col>
         </Row>

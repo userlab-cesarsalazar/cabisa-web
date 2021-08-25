@@ -98,8 +98,8 @@ const getColumnsDynamicTable = ({
         size={'large'}
         value={record.quantity}
         onChange={e => handleChangeDetail('quantity', e.target.value, rowIndex)}
-        min={0}
-        type='number'
+        min={1}
+        type='tel'
         disabled={forbidEdition}
       />
     ),

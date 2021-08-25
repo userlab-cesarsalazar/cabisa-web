@@ -47,11 +47,12 @@ export const validatePermissions = permissionId => {
 export const validateDynamicTableProducts = (
   products,
   productsRequiredFields,
-  isServiceTypeService = false
+  serviceTypeService
 ) => {
   return products.reduce(
     (result, p, i) => {
-      const newPosition = isServiceTypeService ? Math.ceil((i + 1) / 2) : i + 1
+      const newPosition =
+        p.service_type === serviceTypeService ? Math.ceil((i + 1) / 2) : i + 1
       const positionsArray = [
         ...(result.duplicate[p.product_id] || []),
         newPosition,
