@@ -13,54 +13,53 @@ import {
 } from '../../commons/types'
 
 export function getDetailData(data) {
-  const getChildProduct = (products, parentProduct) => {
-    const childProduct = products.find(
-      p => Number(p?.parent_product_id) === Number(parentProduct?.id)
+  const getParentProduct = (products, childProduct) => {
+    if (!childProduct.parent_product_id) return {}
+
+    const parentProduct = products.find(
+      p => Number(p?.id) === Number(childProduct?.parent_product_id)
     )
 
-    if (!childProduct) return {}
-
-    const unitPrice = childProduct?.product_price || childProduct?.unit_price
-    const quantity = childProduct?.quantity || childProduct?.product_quantity
-    const subtotalFromProducts = unitPrice * quantity
-    const subtotal = childProduct?.subtotal || subtotalFromProducts
+    const unitPrice = parentProduct?.product_price || parentProduct?.unit_price
+    const subtotal = parentProduct?.subtotal || unitPrice
 
     return {
-      child_id: childProduct?.id,
-      child_description: childProduct?.description,
-      child_tax_fee: childProduct?.tax_fee || '0',
-      child_unit_tax_amount: roundNumber(childProduct?.unit_tax_amount || 0),
-      child_unit_discount: roundNumber(childProduct?.unit_discount_amount || 0),
-      child_unit_price: roundNumber(unitPrice),
+      id: parentProduct?.id || '',
+      description: parentProduct?.description || '',
+      parent_tax_fee: parentProduct?.tax_fee || 0,
+      parent_unit_tax_amount: roundNumber(parentProduct?.unit_tax_amount || 0),
+      parent_unit_discount: roundNumber(
+        parentProduct?.unit_discount_amount || 0
+      ),
+      parent_unit_price: roundNumber(unitPrice),
       unit_tax_amount: roundNumber(
         parentProduct.unit_tax_amount + childProduct.unit_tax_amount
       ),
-      quantity,
-      subtotal: roundNumber(parentProduct?.subtotal + subtotal),
+      subtotal: roundNumber(childProduct?.subtotal + subtotal),
     }
   }
 
   const products = data?.products?.flatMap(p => {
-    if (p?.parent_product_id) return []
+    if (p.service_type === documentsServiceType.SERVICE && !p.parent_product_id)
+      return []
 
-    const unitPrice = p?.product_price || p?.unit_price
-    const quantity = p?.quantity || p?.product_quantity
-    const subtotalFromProducts =
-      data.service_type === documentsServiceType.SERVICE
-        ? unitPrice
-        : unitPrice * quantity
-    const subtotal = p?.subtotal || subtotalFromProducts
+    const unitPrice = p?.product_price || p?.unit_price || 0
+    const quantity = p?.quantity || p?.product_quantity || 0
+    const subtotalFromProducts = unitPrice * quantity
+    const subtotal = roundNumber(p?.subtotal || subtotalFromProducts)
 
     return {
       ...p,
-      parent_tax_fee: p?.tax_fee || 0,
-      parent_unit_tax_amount: roundNumber(p?.unit_tax_amount || 0),
-      parent_unit_discount: roundNumber(p?.unit_discount_amount || 0),
-      parent_unit_price: roundNumber(unitPrice),
-      unit_tax_amount: roundNumber(p?.unit_tax_amount || 0),
+      child_id: p?.id || '',
+      child_description: p?.description || '',
+      child_tax_fee: p?.tax_fee || '0',
+      child_unit_tax_amount: roundNumber(p?.unit_tax_amount || 0),
+      child_unit_discount: roundNumber(p?.unit_discount_amount || 0),
+      child_unit_price: roundNumber(unitPrice),
+      unit_tax_amount: roundNumber(p.unit_tax_amount),
       quantity,
-      subtotal: roundNumber(subtotal),
-      ...getChildProduct(data?.products, {
+      subtotal,
+      ...getParentProduct(data.products, {
         ...p,
         product_price: unitPrice,
         subtotal,
