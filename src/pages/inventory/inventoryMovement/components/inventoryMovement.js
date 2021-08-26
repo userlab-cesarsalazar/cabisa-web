@@ -7,10 +7,10 @@ import InventoryMovementTable from './inventoryMovementTable'
 import InventoryMovementDrawer from './inventoryMovementDrawer'
 import inventorySrc from '../../inventorySrc'
 import Tag from '../../../../components/Tag'
-import { showErrors } from '../../../../utils'
-import { permissions, documentsStatus } from '../../../../commons/types'
+import { showErrors, validateRole } from '../../../../utils'
+import { permissions, documentsStatus, roles } from '../../../../commons/types'
 
-const getColumns = ({ DeleteRow, EditRow }) => [
+const getColumns = ({ DeleteRow, EditRow, isAdmin }) => [
   {
     title: 'Fecha',
     dataIndex: 'start_date', // Field that is goint to be rendered
@@ -46,7 +46,9 @@ const getColumns = ({ DeleteRow, EditRow }) => [
         showDeleteBtn={data.status !== documentsStatus.CANCELLED}
         handlerDeleteRow={DeleteRow}
         handlerEditRow={EditRow}
-        editAction='show'
+        editAction={
+          isAdmin && data.status !== documentsStatus.CANCELLED ? 'edit' : 'show'
+        }
         deleteAction='cancel'
       />
     ),
@@ -61,6 +63,8 @@ function InventoryMovementComponent() {
   const [searchText, setSearchText] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [editDataDrawer, setEditDataDrawer] = useState(null)
+
+  const isAdmin = validateRole(roles.ADMIN)
 
   const getPurchases = useCallback(() => {
     setLoading(true)
@@ -113,7 +117,7 @@ function InventoryMovementComponent() {
       .finally(() => setLoading(false))
   }
 
-  const columns = getColumns({ DeleteRow, EditRow })
+  const columns = getColumns({ DeleteRow, EditRow, isAdmin })
 
   return (
     <>
@@ -129,6 +133,10 @@ function InventoryMovementComponent() {
         closable={onClose}
         visible={isVisible}
         editData={editDataDrawer}
+        forbidEdition={
+          !isAdmin || editDataDrawer?.status === documentsStatus.CANCELLED
+        }
+        getPurchases={getPurchases}
       />
     </>
   )

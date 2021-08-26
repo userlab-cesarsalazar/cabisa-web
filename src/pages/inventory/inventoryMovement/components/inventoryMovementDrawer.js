@@ -1,8 +1,14 @@
 import React from 'react'
 import { Drawer } from 'antd'
 import InventoryMovementFields from './inventoryMovementFields'
+import inventorySrc from '../../inventorySrc'
 
 function InventoryMovementDrawer(props) {
+  const saveData = async data => {
+    await inventorySrc.updatePurchase(data)
+    return props.getPurchases()
+  }
+
   return (
     <Drawer
       placement='right'
@@ -13,9 +19,11 @@ function InventoryMovementDrawer(props) {
       destroyOnClose
     >
       <InventoryMovementFields
-        forbidEdition={true}
+        forbidEdition={props.forbidEdition}
         visible={props.visible}
         editData={props.editData}
+        saveData={saveData}
+        onClose={props.closable}
       />
     </Drawer>
   )

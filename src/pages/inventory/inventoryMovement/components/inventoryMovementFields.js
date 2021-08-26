@@ -8,16 +8,13 @@ import {
   Input,
   Row,
   DatePicker,
-  Button,
   Select,
-  Popconfirm,
-  message,
   Typography,
   Spin,
+  message,
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
-import DynamicTable from '../../../../components/DynamicTable'
-import CurrencyInput from '../../../../components/CurrencyInput'
+import InventoryMovementProductsList from '../../../../components/InventoryMovementProductsList'
 import { showErrors, formatPhone } from '../../../../utils'
 import {
   productsStatus,
@@ -33,106 +30,7 @@ const { Title } = Typography
 const { TextArea } = Input
 const { Option } = Select
 
-const getColumnsDynamicTable = ({
-  handleChangeDetail,
-  handleRemoveDetail,
-  handleSearchProduct,
-  productsOptionsList,
-  loading,
-  forbidEdition,
-}) => [
-  {
-    width: '25%',
-    title: 'Codigo',
-    dataIndex: 'code', // Field that is goint to be rendered
-    key: 'code',
-    render: (_, record) => (
-      <Input
-        value={record.code}
-        size={'large'}
-        placeholder={'Codigo'}
-        disabled
-      />
-    ),
-  },
-  {
-    width: '40%',
-    title: 'Descripcion',
-    dataIndex: 'id', // Field that is goint to be rendered
-    key: 'id',
-    render: (_, record, rowIndex) => (
-      <Select
-        className={'single-select'}
-        placeholder={'Descripcion'}
-        size={'large'}
-        style={{ width: '100%', height: '40px', maxWidth: '300px' }}
-        getPopupContainer={trigger => trigger.parentNode}
-        showSearch
-        onSearch={debounce(handleSearchProduct, 400)}
-        value={record.id}
-        onChange={value => handleChangeDetail('id', value, rowIndex)}
-        loading={loading === 'productsOptionsList'}
-        optionFilterProp='children'
-        disabled={forbidEdition}
-      >
-        {productsOptionsList.length > 0 ? (
-          productsOptionsList?.map(value => (
-            <Option key={value.id} value={value.id}>
-              {value.description}
-            </Option>
-          ))
-        ) : (
-          <Option value={record.id}>{record.description}</Option>
-        )}
-      </Select>
-    ),
-  },
-  {
-    width: '15%',
-    title: 'Cantidad',
-    dataIndex: 'product_quantity', // Field that is goint to be rendered
-    key: 'product_quantity',
-    render: (_, record, rowIndex) => (
-      <Input
-        placeholder={'Cantidad'}
-        size={'large'}
-        value={record.quantity}
-        onChange={e => handleChangeDetail('quantity', e.target.value, rowIndex)}
-        min={1}
-        type='tel'
-        disabled={forbidEdition}
-      />
-    ),
-  },
-  {
-    width: '20%',
-    title: 'Costo (Q)',
-    dataIndex: 'unit_price', // Field that is goint to be rendered
-    key: 'unit_price',
-    render: (_, record, rowIndex) => (
-      <CurrencyInput
-        placeholder={'Costo (Q)'}
-        value={record.unit_price}
-        onChange={value => handleChangeDetail('unit_price', value, rowIndex)}
-        disabled={forbidEdition}
-      />
-    ),
-  },
-  {
-    title: '',
-    render: (_, __, rowIndex) =>
-      !forbidEdition && (
-        <Popconfirm
-          title={'¿Seguro de eliminar?'}
-          onConfirm={() => handleRemoveDetail(rowIndex)}
-        >
-          <span style={{ color: 'red' }}>Eliminar</span>
-        </Popconfirm>
-      ),
-  },
-]
-
-function InventoryMovementFields({ forbidEdition, editData }) {
+function InventoryMovementFields({ forbidEdition, editData, ...props }) {
   const history = useHistory()
   const [loading, setLoading] = useState([])
   const [data, setData] = useState([])
@@ -142,6 +40,7 @@ function InventoryMovementFields({ forbidEdition, editData }) {
 
   const getDataFromEditData = editData => {
     const data = {
+      document_id: editData.id,
       comments: editData.comments,
       stakeholder_id: editData.stakeholder_id,
       stakeholder_name: editData.stakeholder_name,
@@ -174,7 +73,6 @@ function InventoryMovementFields({ forbidEdition, editData }) {
     })
 
     if (!editData) return
-
     const { data, productsData } = getDataFromEditData(editData)
     setData(data)
     setProductsData(productsData)
@@ -238,16 +136,8 @@ function InventoryMovementFields({ forbidEdition, editData }) {
       .finally(() => setLoading(null))
   }
 
-  const columnsDynamicTable = getColumnsDynamicTable({
-    handleChangeDetail,
-    handleRemoveDetail,
-    handleSearchProduct,
-    productsOptionsList,
-    loading,
-    forbidEdition,
-  })
-
   const getSaveData = () => ({
+    document_id: data?.document_id,
     stakeholder_id: data.stakeholder_id,
     start_date: data.start_date,
     comments: data.comments,
@@ -297,7 +187,8 @@ function InventoryMovementFields({ forbidEdition, editData }) {
       },
     }
   }
-  const saveData = () => {
+
+  const saveData = async () => {
     try {
       const saveData = getSaveData()
 
@@ -305,19 +196,22 @@ function InventoryMovementFields({ forbidEdition, editData }) {
 
       if (isInvalid) return showErrors(error)
 
-      setLoading('createPurchase')
+      setLoading(saveData?.document_id ? 'updatePurchase' : 'createPurchase')
 
-      inventorySrc
-        .createPurchase(saveData)
-        .then(_ => {
-          message.success('Venta creada exitosamente')
-          backToInventoryMovements()
-        })
-        .catch(error => showErrors(error))
-        .finally(() => setLoading(null))
+      await props.saveData(saveData)
+
+      message.success('Venta creada exitosamente')
+      onCancel()
     } catch (error) {
       showErrors(error)
+    } finally {
+      setLoading(null)
     }
+  }
+
+  const onCancel = () => {
+    if (typeof props.onClose === 'function') props.onClose()
+    else history.push('/inventoryMovements')
   }
 
   const getHandleChangeValue = (field, e) => {
@@ -368,8 +262,6 @@ function InventoryMovementFields({ forbidEdition, editData }) {
       .finally(() => setLoading(null))
   }
 
-  const backToInventoryMovements = () => history.push('/inventoryMovements')
-
   return (
     <Spin spinning={loading === 'createPurchase'}>
       <div>
@@ -394,7 +286,7 @@ function InventoryMovementFields({ forbidEdition, editData }) {
               onChange={handleChange('stakeholder_id')}
               loading={loading === 'stakeholdersOptionsList'}
               optionFilterProp='children'
-              disabled={forbidEdition}
+              disabled={forbidEdition || props.visible}
             >
               {stakeholdersOptionsList.length > 0 ? (
                 stakeholdersOptionsList.map(value => (
@@ -465,22 +357,17 @@ function InventoryMovementFields({ forbidEdition, editData }) {
         <Divider className={'divider-custom-margins-users'} />
         <Row gutter={16} className={'section-space-field'}>
           <Col xs={24} sm={24} md={24} lg={24}>
-            <DynamicTable columns={columnsDynamicTable} data={productsData} />
+            <InventoryMovementProductsList
+              dataSource={productsData}
+              handleAddDetail={handleAddDetail}
+              handleChangeDetail={handleChangeDetail}
+              handleRemoveDetail={handleRemoveDetail}
+              handleSearchProduct={handleSearchProduct}
+              productsOptionsList={productsOptionsList}
+              loading={loading}
+              forbidEdition={forbidEdition}
+            />
           </Col>
-          {!forbidEdition && (
-            <>
-              <Col xs={24} sm={24} md={24} lg={24}>
-                <Button
-                  type='dashed'
-                  className={'shop-add-turn'}
-                  onClick={handleAddDetail}
-                >
-                  Agregar Detalle
-                </Button>
-              </Col>
-              <Divider className={'divider-custom-margins-users'} />
-            </>
-          )}
         </Row>
         <Row gutter={16} className={'section-space-field'}>
           <Col xs={24} sm={24} md={24} lg={24}>
@@ -497,7 +384,7 @@ function InventoryMovementFields({ forbidEdition, editData }) {
       {!forbidEdition && (
         <FooterButtons
           saveData={saveData}
-          cancelButton={backToInventoryMovements}
+          cancelButton={onCancel}
           edit={true}
           cancelLink=''
         />

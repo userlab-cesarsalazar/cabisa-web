@@ -9,6 +9,7 @@ const urlStakeholder = stage.stakeholderUrl
 
 const getPurchases = params => api.get(urlPurchase, { ...params })
 const createPurchase = data => api.post(urlPurchase, data)
+const updatePurchase = data => api.put(urlPurchase, data)
 const cancelPurchase = data => api.put(`${urlPurchase}/cancel`, data)
 
 const getProducts = params =>
@@ -33,6 +34,7 @@ const deleteService = _services => api.remove(urlService, _services)
 const InventorySrc = {
   getPurchases,
   createPurchase,
+  updatePurchase,
   cancelPurchase,
   getProducts,
   getProductsCategories,

@@ -3,8 +3,11 @@ import { Card } from 'antd'
 import HeaderPage from '../../../../components/HeaderPage'
 import InventoryMovementFields from './inventoryMovementFields'
 import { permissions } from '../../../../commons/types'
+import inventorySrc from '../../inventorySrc'
 
 function InventoryMovementView() {
+  const saveData = async data => inventorySrc.createPurchase(data)
+
   return (
     <>
       <HeaderPage
@@ -12,7 +15,7 @@ function InventoryMovementView() {
         permissions={permissions.INVENTARIO}
       />
       <Card className={'card-border-radius margin-top-15'}>
-        <InventoryMovementFields forbidEdition={false} />
+        <InventoryMovementFields forbidEdition={false} saveData={saveData} />
       </Card>
     </>
   )
