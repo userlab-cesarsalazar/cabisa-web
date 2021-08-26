@@ -31,12 +31,6 @@ function BillingTable(props) {
       render: text => <span>{text}</span>,
     },
     {
-      title: 'Tipo de Servicio',
-      dataIndex: 'service_type', // Field that is goint to be rendered
-      key: 'service_type',
-      render: text => <Tag type='documentsServiceType' value={text} />,
-    },
-    {
       title: 'Cliente',
       dataIndex: 'client', // Field that is goint to be rendered
       key: 'client ',
@@ -123,26 +117,6 @@ function BillingTable(props) {
             format='DD-MM-YYYY'
             onChange={props.handleFiltersChange('created_at')}
           />
-        </Col>
-        <Col xs={4} sm={4} md={4} lg={4}>
-          <Select
-            className={'single-select'}
-            placeholder={'Elegir tipo servicio'}
-            size={'large'}
-            style={{ width: '100%', height: '40px' }}
-            getPopupContainer={trigger => trigger.parentNode}
-            onChange={props.handleFiltersChange('serviceTypes')}
-            defaultValue=''
-          >
-            <Option value={''}>
-              <AntTag color='gray'>Todo</AntTag>
-            </Option>
-            {props.serviceTypesOptionsList?.map(value => (
-              <Option key={value} value={value}>
-                <Tag type='documentsServiceType' value={value} />
-              </Option>
-            ))}
-          </Select>
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
           <Select

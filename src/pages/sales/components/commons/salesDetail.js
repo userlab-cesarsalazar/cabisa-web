@@ -86,7 +86,7 @@ function SalesDetail({ closable, visible, isAdmin }) {
 
       setSale(prevState => ({ ...prevState, subtotal_amount }))
     },
-    [dataSourceTable, sale.service_type]
+    [dataSourceTable]
   )
 
   useEffect(() => {
