@@ -113,9 +113,7 @@ const getColumnsDynamicTable = ({
       <CurrencyInput
         placeholder={'Costo (Q)'}
         value={record.unit_price}
-        onValueChange={value =>
-          handleChangeDetail('unit_price', value, rowIndex)
-        }
+        onChange={value => handleChangeDetail('unit_price', value, rowIndex)}
         disabled={forbidEdition}
       />
     ),

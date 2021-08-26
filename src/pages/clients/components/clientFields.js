@@ -372,7 +372,7 @@ function ClientFields({ edit, editData, ...props }) {
             <CurrencyInput
               value={creditLimit}
               placeholder={'Limite de credito (Q)'}
-              onValueChange={value => setCreditLimit(value)}
+              onChange={value => setCreditLimit(value)}
               disabled={!isAdmin}
             />
           </Col>

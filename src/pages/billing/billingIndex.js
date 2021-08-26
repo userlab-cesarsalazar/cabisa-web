@@ -31,6 +31,7 @@ export function getDetailData(data) {
       parent_unit_discount: roundNumber(
         parentProduct?.unit_discount_amount || 0
       ),
+      parent_base_unit_price: roundNumber(unitPrice),
       parent_unit_price: roundNumber(unitPrice),
       unit_tax_amount: roundNumber(
         parentProduct.unit_tax_amount + childProduct.unit_tax_amount
@@ -55,10 +56,18 @@ export function getDetailData(data) {
       child_tax_fee: p?.tax_fee || '0',
       child_unit_tax_amount: roundNumber(p?.unit_tax_amount || 0),
       child_unit_discount: roundNumber(p?.unit_discount_amount || 0),
+      child_base_unit_price: roundNumber(unitPrice),
       child_unit_price: roundNumber(unitPrice),
       unit_tax_amount: roundNumber(p.unit_tax_amount),
       quantity,
       subtotal,
+      id: '',
+      description: '',
+      parent_tax_fee: 0,
+      parent_unit_tax_amount: 0,
+      parent_unit_discount: 0,
+      parent_base_unit_price: 0,
+      parent_unit_price: 0,
       ...getParentProduct(data.products, {
         ...p,
         product_price: unitPrice,

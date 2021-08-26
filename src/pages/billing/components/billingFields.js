@@ -18,7 +18,7 @@ import {
   showErrors,
   roundNumber,
   getPercent,
-  validateDynamicTableProducts,
+  validateSaleOrBillingProducts,
   formatPhone,
   numberFormat,
 } from '../../../utils'
@@ -64,9 +64,10 @@ export const handleUpdateProductsData = ({
   field = '',
 }) => {
   // parentProduct
-  const parentBaseUnitPrice = parentProduct?.unit_price
-    ? getValue(parentProduct.unit_price)
-    : getValue(row.parent_base_unit_price)
+  const parentBaseUnitPrice =
+    parentProduct?.unit_price && field !== ''
+      ? getValue(parentProduct.unit_price)
+      : getValue(row.parent_base_unit_price)
   const parent_tax_fee = parentProduct?.tax_fee
     ? parentProduct.tax_fee
     : row.parent_tax_fee
@@ -81,9 +82,10 @@ export const handleUpdateProductsData = ({
       ? Number(parent_unit_price) + parent_unit_discount
       : row.parent_base_unit_price || Number(parent_unit_price)
   // childProduct
-  const childBaseUnitPrice = childProduct?.unit_price
-    ? getValue(childProduct.unit_price)
-    : getValue(row.child_base_unit_price)
+  const childBaseUnitPrice =
+    childProduct?.unit_price && field !== ''
+      ? getValue(childProduct.unit_price)
+      : getValue(row.child_base_unit_price)
   const child_tax_fee = childProduct?.tax_fee
     ? Number(childProduct.tax_fee)
     : Number(row.child_tax_fee)
@@ -377,6 +379,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       // common fields
       service_type: '',
       id: '',
+      description: '',
       code: '',
       child_id: '',
       child_description: '',
@@ -544,7 +547,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     }
     const productsRequiredFields = ['product_quantity', 'product_price']
 
-    const productErrors = validateDynamicTableProducts(
+    const productErrors = validateSaleOrBillingProducts(
       data.products,
       productsRequiredFields,
       documentsServiceType.SERVICE

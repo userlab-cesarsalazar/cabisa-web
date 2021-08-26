@@ -44,7 +44,7 @@ export const validatePermissions = permissionId => {
   return action => currentPermission && currentPermission[action]
 }
 
-export const validateDynamicTableProducts = (
+export const validateSaleOrBillingProducts = (
   products,
   productsRequiredFields,
   serviceTypeService

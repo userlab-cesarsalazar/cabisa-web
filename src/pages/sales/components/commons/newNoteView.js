@@ -19,7 +19,7 @@ import SaleProductsList from '../../../../components/SaleProductsList'
 import { useSale, saleActions } from '../../context'
 import {
   showErrors,
-  validateDynamicTableProducts,
+  validateSaleOrBillingProducts,
   formatPhone,
   numberFormat,
 } from '../../../../utils'
@@ -170,6 +170,7 @@ function NewNoteView({ isAdmin }) {
       service_type: '',
       id: '',
       code: '',
+      description: '',
       child_id: '',
       child_description: '',
       quantity: 0,
@@ -267,7 +268,7 @@ function NewNoteView({ isAdmin }) {
     }
 
     const productsRequiredFields = ['product_quantity', 'product_price']
-    const productErrors = validateDynamicTableProducts(
+    const productErrors = validateSaleOrBillingProducts(
       data.products,
       productsRequiredFields,
       documentsServiceType.SERVICE

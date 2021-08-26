@@ -26,7 +26,7 @@ import { useSale, saleActions } from '../../context'
 import { useEditableList } from '../../../../hooks'
 import {
   showErrors,
-  validateDynamicTableProducts,
+  validateSaleOrBillingProducts,
   formatPhone,
   numberFormat,
 } from '../../../../utils'
@@ -170,6 +170,7 @@ function SalesDetail({ closable, visible, isAdmin }) {
       // common fields
       service_type: '',
       id: '',
+      description: '',
       code: '',
       child_id: '',
       child_description: '',
@@ -277,7 +278,7 @@ function SalesDetail({ closable, visible, isAdmin }) {
     }
 
     const productsRequiredFields = ['product_quantity', 'product_price']
-    const productErrors = validateDynamicTableProducts(
+    const productErrors = validateSaleOrBillingProducts(
       data.products,
       productsRequiredFields,
       documentsServiceType.SERVICE
@@ -387,7 +388,7 @@ function SalesDetail({ closable, visible, isAdmin }) {
         closable={false}
         onClose={handleClose}
         visible={visible}
-        width='70%'
+        width='80%'
         destroyOnClose
       >
         <div>

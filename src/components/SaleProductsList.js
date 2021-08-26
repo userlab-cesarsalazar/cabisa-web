@@ -55,6 +55,7 @@ function SaleProductsList({
   ...props
 }) {
   const config = getColumnsConfig()
+  const showDeleteButton = !forbidEdition
 
   return (
     <List
@@ -64,54 +65,53 @@ function SaleProductsList({
       rowKey='index'
       dataSource={dataSource}
       header={
-        <Row className={'section-space-field show-delete-btn'}>
-          {config.serviceType.visible && (
-            <Col sm={config.serviceType.col}>
-              <b className='center-flex-div'>{config.serviceType.label}</b>
+        <Row
+          className={`section-space-field ${
+            showDeleteButton ? 'show-delete-btn' : ''
+          }`}
+        >
+          {config?.serviceType?.visible && (
+            <Col sm={config?.serviceType?.col}>
+              <b className='center-flex-div'>{config?.serviceType?.label}</b>
             </Col>
           )}
-          {config.code.visible && (
-            <Col sm={config.code.col}>
-              <b className='center-flex-div'>{config.code.label}</b>
+          {config?.code?.visible && (
+            <Col sm={config?.code?.col}>
+              <b className='center-flex-div'>{config?.code?.label}</b>
             </Col>
           )}
-          {config.parentProduct.visible && (
-            <Col sm={config.parentProduct.col}>
-              <b className='center-flex-div'>{config.parentProduct.label}</b>
+          {config?.parentProduct?.visible && (
+            <Col sm={config?.parentProduct?.col}>
+              <b className='center-flex-div'>{config?.parentProduct?.label}</b>
             </Col>
           )}
-          {config.parentProductPrice.visible && (
-            <Col sm={config.parentProductPrice.col}>
+          {config?.parentProductPrice?.visible && (
+            <Col sm={config?.parentProductPrice?.col}>
               <b className='center-flex-div'>
-                {config.parentProductPrice.label}
+                {config?.parentProductPrice?.label}
               </b>
             </Col>
           )}
-          {config.childProduct.visible && (
-            <Col sm={config.childProduct.col}>
-              <b className='center-flex-div'>{config.childProduct.label}</b>
+          {config?.childProduct?.visible && (
+            <Col sm={config?.childProduct?.col}>
+              <b className='center-flex-div'>{config?.childProduct?.label}</b>
             </Col>
           )}
-          {config.childProductPrice.visible && (
-            <Col sm={config.childProductPrice.col}>
+          {config?.childProductPrice?.visible && (
+            <Col sm={config?.childProductPrice?.col}>
               <b className='center-flex-div'>
-                {config.childProductPrice.label}
+                {config?.childProductPrice?.label}
               </b>
             </Col>
           )}
-          {config.quantity.visible && (
-            <Col sm={config.quantity.col}>
-              <b className='center-flex-div'>{config.quantity.label}</b>
+          {config?.quantity?.visible && (
+            <Col sm={config?.quantity?.col}>
+              <b className='center-flex-div'>{config?.quantity?.label}</b>
             </Col>
           )}
-          {config.subtotal.visible && (
-            <Col sm={config.subtotal.col}>
-              <b className='center-flex-div'>{config.subtotal.label}</b>
-            </Col>
-          )}
-          {config.deleteButton.visible && (
-            <Col sm={config.deleteButton.col}>
-              <b className='center-flex-div'>{config.deleteButton.label}</b>
+          {config?.subtotal?.visible && (
+            <Col sm={config?.subtotal?.col}>
+              <b className='center-flex-div'>{config?.subtotal?.label}</b>
             </Col>
           )}
         </Row>
@@ -120,10 +120,12 @@ function SaleProductsList({
         <List.Item>
           <Row
             gutter={16}
-            className={'list-item-padding w-100 show-delete-btn'}
+            className={`list-item-padding w-100 list-item-row ${
+              showDeleteButton ? 'show-delete-btn' : ''
+            }`}
           >
-            {config.serviceType.visible && (
-              <Col sm={config.serviceType.col}>
+            {config?.serviceType?.visible && (
+              <Col sm={config?.serviceType?.col}>
                 <Select
                   className={'single-select'}
                   placeholder={'Elegir tipo servicio'}
@@ -134,6 +136,7 @@ function SaleProductsList({
                     handleChangeDetail('service_type', value, index)
                   }
                   value={row.service_type}
+                  disabled={forbidEdition}
                 >
                   {documentServiceTypesOptionsList?.length > 0 ? (
                     documentServiceTypesOptionsList.map(value => (
@@ -152,22 +155,22 @@ function SaleProductsList({
                 </Select>
               </Col>
             )}
-            {config.code.visible && (
-              <Col sm={config.code.col}>
+            {config?.code?.visible && (
+              <Col sm={config?.code?.col}>
                 <Input
                   className='product-list-input'
                   value={row.code}
                   size={'large'}
-                  placeholder={config.code.label}
+                  placeholder={config?.code?.label}
                   disabled
                 />
               </Col>
             )}
-            {config.parentProduct.visible && (
-              <Col sm={config.parentProduct.col}>
+            {config?.parentProduct?.visible && (
+              <Col sm={config?.parentProduct?.col}>
                 <Select
                   className={'single-select'}
-                  placeholder={config.parentProduct.label}
+                  placeholder={config?.parentProduct?.label}
                   size={'large'}
                   style={{ width: '100%', height: '40px' }}
                   getPopupContainer={trigger => trigger.parentNode}
@@ -197,11 +200,11 @@ function SaleProductsList({
                 </Select>
               </Col>
             )}
-            {config.parentProductPrice.visible && (
-              <Col sm={config.parentProductPrice.col}>
+            {config?.parentProductPrice?.visible && (
+              <Col sm={config?.parentProductPrice?.col}>
                 <CurrencyInput
                   className='product-list-input'
-                  placeholder={config.parentProductPrice.label}
+                  placeholder={config?.parentProductPrice?.label}
                   value={row.parent_unit_price}
                   disabled={
                     row.service_type !== documentsServiceType.SERVICE ||
@@ -218,11 +221,11 @@ function SaleProductsList({
                 />
               </Col>
             )}
-            {config.childProduct.visible && (
-              <Col sm={config.childProduct.col}>
+            {config?.childProduct?.visible && (
+              <Col sm={config?.childProduct?.col}>
                 <Select
                   className={'single-select'}
-                  placeholder={config.childProduct.label}
+                  placeholder={config?.childProduct?.label}
                   size={'large'}
                   style={{ width: '100%', height: '40px' }}
                   getPopupContainer={trigger => trigger.parentNode}
@@ -259,11 +262,11 @@ function SaleProductsList({
                 </Select>
               </Col>
             )}
-            {config.childProductPrice.visible && (
-              <Col sm={config.childProductPrice.col}>
+            {config?.childProductPrice?.visible && (
+              <Col sm={config?.childProductPrice?.col}>
                 <CurrencyInput
                   className='product-list-input'
-                  placeholder={config.childProductPrice.label}
+                  placeholder={config?.childProductPrice?.label}
                   value={row.child_unit_price}
                   disabled={!row.child_id || forbidEdition || !isAdmin}
                   onChange={value =>
@@ -275,8 +278,8 @@ function SaleProductsList({
                 />
               </Col>
             )}
-            {config.quantity.visible && (
-              <Col sm={config.quantity.col}>
+            {config?.quantity?.visible && (
+              <Col sm={config?.quantity?.col}>
                 <Input
                   className='product-list-input'
                   placeholder={'Cantidad'}
@@ -291,11 +294,11 @@ function SaleProductsList({
                 />
               </Col>
             )}
-            {config.subtotal.visible && (
-              <Col sm={config.subtotal.col}>
+            {config?.subtotal?.visible && (
+              <Col sm={config?.subtotal?.col}>
                 <CurrencyInput
                   className='product-list-input'
-                  placeholder={config.subtotal.label}
+                  placeholder={config?.subtotal?.label}
                   value={row.subtotal}
                   disabled
                   onChange={value =>
@@ -305,33 +308,33 @@ function SaleProductsList({
                 />
               </Col>
             )}
-            {config.deleteButton.visible && (
-              <Col sm={config.deleteButton.col} className='center-flex-div'>
-                <Popconfirm
-                  title={'¿Seguro de eliminar?'}
-                  onConfirm={() => handleRemoveDetail(index)}
-                >
-                  <span className='delete-btn'>
-                    <DeleteOutlined />
-                  </span>
-                </Popconfirm>
-              </Col>
+            {showDeleteButton && (
+              <Popconfirm
+                title={'¿Seguro de eliminar?'}
+                onConfirm={() => handleRemoveDetail(index)}
+              >
+                <span className='delete-btn'>
+                  <DeleteOutlined />
+                </span>
+              </Popconfirm>
             )}
           </Row>
         </List.Item>
       )}
       footer={
-        <Row gutter={16} className={'section-space-field'}>
-          <Col xs={24} sm={24} md={24} lg={24}>
-            <Button
-              type='dashed'
-              className={'shop-add-turn'}
-              onClick={handleAddDetail}
-            >
-              Agregar Detalle
-            </Button>
-          </Col>
-        </Row>
+        !forbidEdition && (
+          <Row gutter={16} className={'section-space-field'}>
+            <Col xs={24} sm={24} md={24} lg={24}>
+              <Button
+                type='dashed'
+                className={'shop-add-turn'}
+                onClick={handleAddDetail}
+              >
+                Agregar Detalle
+              </Button>
+            </Col>
+          </Row>
+        )
       }
     />
   )

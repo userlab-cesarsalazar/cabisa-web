@@ -85,7 +85,7 @@ function ServiceFields(props) {
                 disabled={specialPermission}
                 value={price}
                 placeholder={'Precio de venta (Q)'}
-                onValueChange={value => setPrice(value)}
+                onChange={value => setPrice(value)}
               />
             </Col>
           )}

@@ -8,7 +8,7 @@ function DetailBilling(props) {
       closable={false}
       onClose={props.closable}
       visible={props.visible}
-      width='70%'
+      width='80%'
       destroyOnClose
     >
       <Card className={'card-border-radius margin-top-15'}>

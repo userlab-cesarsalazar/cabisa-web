@@ -70,48 +70,48 @@ function BillingProductsList({
             showDeleteButton ? 'show-delete-btn' : ''
           }`}
         >
-          {config.serviceType.visible && (
-            <Col sm={config.serviceType.col}>
-              <b className='center-flex-div'>{config.serviceType.label}</b>
+          {config?.serviceType?.visible && (
+            <Col sm={config?.serviceType?.col}>
+              <b className='center-flex-div'>{config?.serviceType?.label}</b>
             </Col>
           )}
-          {config.code.visible && (
-            <Col sm={config.code.col}>
-              <b className='center-flex-div'>{config.code.label}</b>
+          {config?.code?.visible && (
+            <Col sm={config?.code?.col}>
+              <b className='center-flex-div'>{config?.code?.label}</b>
             </Col>
           )}
-          {config.parentProduct.visible && (
-            <Col sm={config.parentProduct.col}>
-              <b className='center-flex-div'>{config.parentProduct.label}</b>
+          {config?.parentProduct?.visible && (
+            <Col sm={config?.parentProduct?.col}>
+              <b className='center-flex-div'>{config?.parentProduct?.label}</b>
             </Col>
           )}
-          {config.parentProductPrice.visible && (
-            <Col sm={config.parentProductPrice.col}>
+          {config?.parentProductPrice?.visible && (
+            <Col sm={config?.parentProductPrice?.col}>
               <b className='center-flex-div'>
-                {config.parentProductPrice.label}
+                {config?.parentProductPrice?.label}
               </b>
             </Col>
           )}
-          {config.childProduct.visible && (
-            <Col sm={config.childProduct.col}>
-              <b className='center-flex-div'>{config.childProduct.label}</b>
+          {config?.childProduct?.visible && (
+            <Col sm={config?.childProduct?.col}>
+              <b className='center-flex-div'>{config?.childProduct?.label}</b>
             </Col>
           )}
-          {config.childProductPrice.visible && (
-            <Col sm={config.childProductPrice.col}>
+          {config?.childProductPrice?.visible && (
+            <Col sm={config?.childProductPrice?.col}>
               <b className='center-flex-div'>
-                {config.childProductPrice.label}
+                {config?.childProductPrice?.label}
               </b>
             </Col>
           )}
-          {config.quantity.visible && (
-            <Col sm={config.quantity.col}>
-              <b className='center-flex-div'>{config.quantity.label}</b>
+          {config?.quantity?.visible && (
+            <Col sm={config?.quantity?.col}>
+              <b className='center-flex-div'>{config?.quantity?.label}</b>
             </Col>
           )}
-          {config.subtotal.visible && (
-            <Col sm={config.subtotal.col}>
-              <b className='center-flex-div'>{config.subtotal.label}</b>
+          {config?.subtotal?.visible && (
+            <Col sm={config?.subtotal?.col}>
+              <b className='center-flex-div'>{config?.subtotal?.label}</b>
             </Col>
           )}
         </Row>
@@ -124,8 +124,8 @@ function BillingProductsList({
               showDeleteButton ? 'show-delete-btn' : ''
             }`}
           >
-            {config.serviceType.visible && (
-              <Col sm={config.serviceType.col}>
+            {config?.serviceType?.visible && (
+              <Col sm={config?.serviceType?.col}>
                 <Select
                   className={'single-select'}
                   placeholder={'Elegir tipo servicio'}
@@ -155,22 +155,22 @@ function BillingProductsList({
                 </Select>
               </Col>
             )}
-            {config.code.visible && (
-              <Col sm={config.code.col}>
+            {config?.code?.visible && (
+              <Col sm={config?.code?.col}>
                 <Input
                   className='product-list-input'
                   value={row.code}
                   size={'large'}
-                  placeholder={config.code.label}
+                  placeholder={config?.code?.label}
                   disabled
                 />
               </Col>
             )}
-            {config.parentProduct.visible && (
-              <Col sm={config.parentProduct.col}>
+            {config?.parentProduct?.visible && (
+              <Col sm={config?.parentProduct?.col}>
                 <Select
                   className={'single-select'}
-                  placeholder={config.parentProduct.label}
+                  placeholder={config?.parentProduct?.label}
                   size={'large'}
                   style={{ width: '100%', height: '40px' }}
                   getPopupContainer={trigger => trigger.parentNode}
@@ -198,11 +198,11 @@ function BillingProductsList({
                 </Select>
               </Col>
             )}
-            {config.parentProductPrice.visible && (
-              <Col sm={config.parentProductPrice.col}>
+            {config?.parentProductPrice?.visible && (
+              <Col sm={config?.parentProductPrice?.col}>
                 <CurrencyInput
                   className='product-list-input'
-                  placeholder={config.parentProductPrice.label}
+                  placeholder={config?.parentProductPrice?.label}
                   value={row.parent_unit_price}
                   disabled={
                     row.service_type !== documentsServiceType.SERVICE ||
@@ -222,11 +222,11 @@ function BillingProductsList({
                 />
               </Col>
             )}
-            {config.childProduct.visible && (
-              <Col sm={config.childProduct.col}>
+            {config?.childProduct?.visible && (
+              <Col sm={config?.childProduct?.col}>
                 <Select
                   className={'single-select'}
-                  placeholder={config.childProduct.label}
+                  placeholder={config?.childProduct?.label}
                   size={'large'}
                   style={{ width: '100%', height: '40px' }}
                   getPopupContainer={trigger => trigger.parentNode}
@@ -260,11 +260,11 @@ function BillingProductsList({
                 </Select>
               </Col>
             )}
-            {config.childProductPrice.visible && (
-              <Col sm={config.childProductPrice.col}>
+            {config?.childProductPrice?.visible && (
+              <Col sm={config?.childProductPrice?.col}>
                 <CurrencyInput
                   className='product-list-input'
-                  placeholder={config.childProductPrice.label}
+                  placeholder={config?.childProductPrice?.label}
                   value={row.child_unit_price}
                   disabled={!row.child_id || isEditing || isInvoiceFromSale}
                   onChange={value =>
@@ -277,8 +277,8 @@ function BillingProductsList({
                 />
               </Col>
             )}
-            {config.quantity.visible && (
-              <Col sm={config.quantity.col}>
+            {config?.quantity?.visible && (
+              <Col sm={config?.quantity?.col}>
                 <Input
                   className='product-list-input'
                   placeholder={'Cantidad'}
@@ -293,11 +293,11 @@ function BillingProductsList({
                 />
               </Col>
             )}
-            {config.subtotal.visible && (
-              <Col sm={config.subtotal.col}>
+            {config?.subtotal?.visible && (
+              <Col sm={config?.subtotal?.col}>
                 <CurrencyInput
                   className='product-list-input'
-                  placeholder={config.subtotal.label}
+                  placeholder={config?.subtotal?.label}
                   value={row.subtotal}
                   disabled
                   onChange={value =>
