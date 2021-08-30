@@ -6,6 +6,7 @@ const urlProduct = stage.productUrl
 const urlPurchase = stage.purchaseUrl
 const urlService = stage.serviceUrl
 const urlStakeholder = stage.stakeholderUrl
+const urlInventoryMovement = stage.inventoryMovementUrl
 
 const getPurchases = params => api.get(urlPurchase, { ...params })
 const createPurchase = data => api.post(urlPurchase, data)
@@ -31,6 +32,11 @@ const createService = _services => api.post(urlService, _services)
 const updateService = _services => api.put(urlService, _services)
 const deleteService = _services => api.remove(urlService, _services)
 
+const getAdjustments = params =>
+  api.get(`${urlInventoryMovement}/adjustments`, params)
+const createAdjustment = data =>
+  api.post(`${urlInventoryMovement}/adjustments`, data)
+
 const InventorySrc = {
   getPurchases,
   createPurchase,
@@ -50,6 +56,8 @@ const InventorySrc = {
   createService,
   updateService,
   deleteService,
+  getAdjustments,
+  createAdjustment,
 }
 
 export default InventorySrc

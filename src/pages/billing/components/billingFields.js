@@ -11,7 +11,7 @@ import {
   Statistic,
   Typography,
 } from 'antd'
-import BillingProductsList from '../../../components/BillingProductsList'
+import BillingProductsList from './billingProductsList'
 import Tag from '../../../components/Tag'
 import { useEditableList } from '../../../hooks'
 import {
