@@ -18,6 +18,7 @@ import {
   productsTypes,
   productsStatus,
   productsCategories,
+  documentsStatus,
 } from '../../../commons/types'
 import { useEditableList } from '../../../hooks'
 import RepairsSrc from '../repairsSrc'
@@ -255,11 +256,7 @@ function RepairsFields({ isEditing, editData, setLoading, loading, ...props }) {
       <div>
         {isEditing && (
           <>
-            <Title>
-              {isEditing
-                ? 'Editar Orden de Reparacion'
-                : 'Nuevo Orden de Reparacion'}
-            </Title>
+            <Title>Editar Orden de Reparacion</Title>
             <Divider className={'divider-custom-margins-users'} />
           </>
         )}
@@ -335,6 +332,7 @@ function RepairsFields({ isEditing, editData, setLoading, loading, ...props }) {
               format='DD-MM-YYYY'
               value={data.end_date ? moment(data.end_date) : ''}
               onChange={handleChange('end_date')}
+              disabled={isEditing && data.status !== documentsStatus.PENDING}
             />
           </Col>
           <Col xs={8} sm={8} md={8} lg={8}>
@@ -357,6 +355,7 @@ function RepairsFields({ isEditing, editData, setLoading, loading, ...props }) {
               rows={4}
               value={data.description}
               onChange={handleChange('description')}
+              disabled={isEditing && data.status !== documentsStatus.PENDING}
             />
           </Col>
         </Row>
@@ -370,8 +369,8 @@ function RepairsFields({ isEditing, editData, setLoading, loading, ...props }) {
           handleRemoveDetail={handleRemoveDetail}
           handleSearchProduct={handleSearchPartProduct}
           productsOptionsList={partProductsOptionsList}
-          isEditing={isEditing}
           serviceTypesOptionsList={props.serviceTypesOptionsList}
+          forbidEdition={isEditing && data.status !== documentsStatus.PENDING}
         />
 
         <Divider className={'divider-custom-margins-users'} />
@@ -388,12 +387,15 @@ function RepairsFields({ isEditing, editData, setLoading, loading, ...props }) {
         </Row>
       </div>
 
-      <FooterButtons
-        saveData={saveData}
-        cancelButton={props.cancelButton}
-        edit={isEditing}
-        cancelLink='/repairs'
-      />
+      {(!isEditing ||
+        (isEditing && data.status === documentsStatus.PENDING)) && (
+        <FooterButtons
+          saveData={saveData}
+          cancelButton={props.cancelButton}
+          edit={isEditing}
+          cancelLink='/repairs'
+        />
+      )}
     </>
   )
 }

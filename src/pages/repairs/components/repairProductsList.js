@@ -6,7 +6,7 @@ import CurrencyInput from '../../../components/CurrencyInput'
 
 const { Option } = Select
 
-function BillingProductsList({
+function RepairProductsList({
   dataSource,
   handleAddDetail,
   handleChangeDetail,
@@ -14,16 +14,11 @@ function BillingProductsList({
   handleBlurDetail,
   handleSearchProduct,
   productsOptionsList,
-  handleSearchChildProduct,
-  childProductsOptionsList,
-  isInvoiceFromSale,
   loading,
-  isEditing,
-  isAdmin,
-  serviceTypesOptionsList,
+  forbidEdition,
   ...props
 }) {
-  const showDeleteButton = true
+  const showDeleteButton = !forbidEdition
 
   return (
     <List
@@ -85,6 +80,7 @@ function BillingProductsList({
                 onChange={value => handleChangeDetail('id', value, index)}
                 loading={loading}
                 optionFilterProp='children'
+                disabled={forbidEdition}
               >
                 {productsOptionsList.length > 0 ? (
                   productsOptionsList?.map(value => (
@@ -124,15 +120,15 @@ function BillingProductsList({
                 }
                 min={1}
                 type='tel'
-                disabled={!row.id}
+                disabled={!row.id || forbidEdition}
               />
             </Col>
             <Col sm={5}>
               <CurrencyInput
                 className='product-list-input'
                 value={row.subtotal}
-                disabled
                 onChange={value => handleChangeDetail('subtotal', value, index)}
+                disabled
               />
             </Col>
 
@@ -150,20 +146,22 @@ function BillingProductsList({
         </List.Item>
       )}
       footer={
-        <Row gutter={16} className={'section-space-field'}>
-          <Col xs={24} sm={24} md={24} lg={24}>
-            <Button
-              type='dashed'
-              className={'shop-add-turn'}
-              onClick={handleAddDetail}
-            >
-              Agregar Detalle
-            </Button>
-          </Col>
-        </Row>
+        !forbidEdition && (
+          <Row gutter={16} className={'section-space-field'}>
+            <Col xs={24} sm={24} md={24} lg={24}>
+              <Button
+                type='dashed'
+                className={'shop-add-turn'}
+                onClick={handleAddDetail}
+              >
+                Agregar Detalle
+              </Button>
+            </Col>
+          </Row>
+        )
       }
     />
   )
 }
 
-export default BillingProductsList
+export default RepairProductsList

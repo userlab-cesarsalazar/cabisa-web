@@ -47,6 +47,7 @@ export const operationsTypes = {
   SELL: 'SELL',
   PURCHASE: 'PURCHASE',
   RENT: 'RENT',
+  REPAIR: 'REPAIR',
 }
 
 export const productsCategories = {
