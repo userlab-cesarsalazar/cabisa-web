@@ -205,7 +205,7 @@ function RepairsFields({ isEditing, editData, setLoading, loading, ...props }) {
   const validateSaveData = data => {
     const errors = []
     const requiredFields = [
-      { key: 'product_id', value: 'Producto a Reparar' },
+      { key: 'product_id', value: 'Equipo a Reparar' },
       { key: 'start_date', value: 'Fecha Inicial' },
     ]
 
@@ -263,10 +263,10 @@ function RepairsFields({ isEditing, editData, setLoading, loading, ...props }) {
 
         <Row gutter={16} className={'section-space-field'}>
           <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Producto a Reparar</div>
+            <div className={'title-space-field'}>Equipo a Reparar</div>
             <Select
               className={'single-select'}
-              placeholder={'Producto a Reparar'}
+              placeholder={'Equipo a Reparar'}
               size={'large'}
               style={{ width: '100%', height: '40px' }}
               getPopupContainer={trigger => trigger.parentNode}
