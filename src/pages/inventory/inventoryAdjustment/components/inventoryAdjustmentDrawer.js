@@ -17,6 +17,7 @@ function InventoryAdjustmentDrawer(props) {
         visible={props.visible}
         editData={props.editData}
         onClose={props.closable}
+        isEditing={true}
       />
     </Drawer>
   )

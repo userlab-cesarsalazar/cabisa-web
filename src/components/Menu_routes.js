@@ -29,6 +29,10 @@ import InventoryMovementView from '../pages/inventory/inventoryMovement/componen
 import InventoryAdjustment from '../pages/inventory/inventoryAdjustment/inventoryAdjustmentIndex'
 import InventoryAdjustmentView from '../pages/inventory/inventoryAdjustment/components/inventoryAdjustmentView'
 
+// Repairs
+import Repairs from '../pages/repairs/repairsIndex'
+import RepairsView from '../pages/repairs/repairsView'
+
 //Reports
 import ReportMachine from '../pages/reports/reportMachine/reportMachineIndex'
 import ReportInventory from '../pages/reports/reportInventory/reportInventoryIndex'
@@ -90,6 +94,17 @@ const menu_routes = [
     profilePermissions: [61],
     routeGroup: [
       /^(\/suppliers)|(\/suppliers\/)|(\/supplierView)|(\/supplierView\/)|(\/supplierView\/[a-zA-z0-9]*)/i,
+    ],
+  },
+  {
+    id: 9,
+    name: 'Reparaciones',
+    key: 'repairs',
+    icon: 'cashRegister',
+    route: '/repairs',
+    profilePermissions: [25],
+    routeGroup: [
+      /^(\/repairs)|(\/repairs\/)|(\/repairsView)|(\/repairsView\/[a-zA-z0-9]*)/i,
     ],
   },
   {
@@ -170,6 +185,16 @@ const menu_sub_routes = [
     id: 8,
     route: '/supplierView',
     component: SupplierView,
+  },
+  {
+    id: 9,
+    route: '/repairs',
+    component: Repairs,
+  },
+  {
+    id: 9,
+    route: '/repairsView',
+    component: RepairsView,
   },
   {
     id: 6,

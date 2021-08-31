@@ -14,7 +14,7 @@ import {
   message,
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
-import InventoryMovementProductsList from '../../../../components/InventoryMovementProductsList'
+import InventoryMovementProductsList from './inventoryMovementProductsList'
 import { showErrors, formatPhone } from '../../../../utils'
 import {
   productsStatus,
@@ -265,7 +265,7 @@ function InventoryMovementFields({ forbidEdition, editData, ...props }) {
   return (
     <Spin spinning={loading === 'createPurchase'}>
       <div>
-        {forbidEdition && (
+        {props.isEditing && (
           <>
             <Title>{'Detalle de movimiento'}</Title>
             <Divider className={'divider-custom-margins-users'} />

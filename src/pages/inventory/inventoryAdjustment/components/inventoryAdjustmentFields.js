@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { Col, Divider, Input, Row, Spin, message } from 'antd'
+import { Typography, Col, Divider, Input, Row, Spin, message } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
-import InventoryMovementProductsList from '../../../../components/InventoryMovementProductsList'
+import InventoryAdjustmentProductsList from './inventoryAdjustmentProductsList'
 import { showErrors } from '../../../../utils'
 import {
   productsStatus,
@@ -12,9 +12,15 @@ import {
 import { useEditableList } from '../../../../hooks'
 import inventorySrc from '../../inventorySrc'
 
+const { Title } = Typography
 const { TextArea } = Input
 
-function InventoryAdjustmentFields({ forbidEdition, editData, ...props }) {
+function InventoryAdjustmentFields({
+  forbidEdition,
+  editData,
+  isEditing,
+  ...props
+}) {
   const history = useHistory()
   const [loading, setLoading] = useState([])
   const [data, setData] = useState([])
@@ -117,7 +123,7 @@ function InventoryAdjustmentFields({ forbidEdition, editData, ...props }) {
     if (productRequiredPositions.length > 0) {
       productRequiredPositions.forEach(p => {
         errors.push(
-          `Los campos Precio y Cantidad del producto ${p} deben ser mayor a cero`
+          `Los campos de stock del producto ${p} deben ser mayor a uno`
         )
       })
     }
@@ -165,6 +171,13 @@ function InventoryAdjustmentFields({ forbidEdition, editData, ...props }) {
   return (
     <Spin spinning={loading === 'createAdjustment'}>
       <div>
+        {isEditing && (
+          <>
+            <Title>Detalle de Ajuste</Title>
+            <Divider className={'divider-custom-margins-users'} />
+          </>
+        )}
+
         <Row gutter={16} className={'section-space-field'}>
           <Col xs={24} sm={24} md={24} lg={24}>
             <div className={'title-space-field'}>Motivo del ajuste</div>
@@ -181,7 +194,7 @@ function InventoryAdjustmentFields({ forbidEdition, editData, ...props }) {
 
         <Row gutter={16} className={'section-space-field'}>
           <Col xs={24} sm={24} md={24} lg={24}>
-            <InventoryMovementProductsList
+            <InventoryAdjustmentProductsList
               dataSource={productsData}
               handleAddDetail={handleAddDetail}
               handleChangeDetail={handleChangeDetail}

@@ -14,7 +14,7 @@ import { DeleteOutlined } from '@ant-design/icons'
 
 const { Option } = Select
 
-function InventoryMovementProductsList({
+function InventoryAdjustmentProductsList({
   dataSource,
   handleAddDetail,
   handleChangeDetail,
@@ -145,4 +145,4 @@ function InventoryMovementProductsList({
   )
 }
 
-export default InventoryMovementProductsList
+export default InventoryAdjustmentProductsList
