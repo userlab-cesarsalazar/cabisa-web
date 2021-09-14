@@ -44,14 +44,15 @@ export const validatePermissions = permissionId => {
   return action => currentPermission && currentPermission[action]
 }
 
-export const validateDynamicTableProducts = (
+export const validateSaleOrBillingProducts = (
   products,
   productsRequiredFields,
-  isServiceTypeService = false
+  serviceTypeService
 ) => {
   return products.reduce(
     (result, p, i) => {
-      const newPosition = isServiceTypeService ? Math.ceil((i + 1) / 2) : i + 1
+      const newPosition =
+        p.service_type === serviceTypeService ? Math.ceil((i + 1) / 2) : i + 1
       const positionsArray = [
         ...(result.duplicate[p.product_id] || []),
         newPosition,
@@ -178,7 +179,7 @@ export const toRegExp = val => {
 }
 
 export const numberFormat = ({
-  currencyFormat = 'de-DE',
+  currencyFormat = 'en-US',
   fractionDigits = 2,
 } = {}) => {
   // currencyFormat = 'de-DE' usa punto para miles y coma para decimales

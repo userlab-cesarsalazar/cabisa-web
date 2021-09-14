@@ -25,7 +25,7 @@ function SuppliersDrawer(props) {
       closable={false}
       onClose={props.closable}
       visible={props.visible}
-      width='70%'
+      width='80%'
       destroyOnClose
     >
       <Spin spinning={loadingDrawer}>

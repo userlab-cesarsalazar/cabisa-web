@@ -47,5 +47,11 @@ export const useEditableList = ({
     if (typeof onBlur === 'function') onBlur(field, value, rowIndex)
   }
 
-  return { handleAdd, handleRemove, handleChange, handleBlur }
+  return {
+    handleAdd,
+    handleRemove,
+    handleChange,
+    handleBlur,
+    rowModel: rowModel.current,
+  }
 }

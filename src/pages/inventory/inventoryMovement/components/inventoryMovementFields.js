@@ -98,8 +98,8 @@ const getColumnsDynamicTable = ({
         size={'large'}
         value={record.quantity}
         onChange={e => handleChangeDetail('quantity', e.target.value, rowIndex)}
-        min={0}
-        type='number'
+        min={1}
+        type='tel'
         disabled={forbidEdition}
       />
     ),
@@ -113,9 +113,7 @@ const getColumnsDynamicTable = ({
       <CurrencyInput
         placeholder={'Costo (Q)'}
         value={record.unit_price}
-        onValueChange={value =>
-          handleChangeDetail('unit_price', value, rowIndex)
-        }
+        onChange={value => handleChangeDetail('unit_price', value, rowIndex)}
         disabled={forbidEdition}
       />
     ),

@@ -74,7 +74,7 @@ function ResetPassword(props) {
       closable={false}
       onClose={props.closable}
       visible={props.visible}
-      width={500}
+      width='80%'
       destroyOnClose
     >
       <div>

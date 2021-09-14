@@ -9,7 +9,7 @@ function InventoryMovementDrawer(props) {
       closable={false}
       onClose={props.closable}
       visible={props.visible}
-      width={800}
+      width='80%'
       destroyOnClose
     >
       <InventoryMovementFields
