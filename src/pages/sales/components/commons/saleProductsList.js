@@ -33,7 +33,7 @@ const getColumnsConfig = () => {
       label: 'Precio Producto (Q)',
     },
     quantity: { col: 2, visible: true, label: 'Cantidad' },
-    subtotal: { col: 3, visible: true, label: 'Subtotal' },
+    subtotal: { col: 3, visible: true, label: 'Subtotal (Q)' },
   }
 }
 

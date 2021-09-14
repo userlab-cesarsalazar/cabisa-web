@@ -12,6 +12,7 @@ import {
 function ActionOptions({
   deleteAction = 'delete', // delete | cancel
   editAction = 'edit', // edit | show
+  approveAction = 'invoice', // invoice | approve
   ...props
 }) {
   const handlerEditRow = data => props.handlerEditRow(data)
@@ -77,9 +78,13 @@ function ActionOptions({
           )}
 
           {can(actions.CREATE) && can(actions.EDIT) && props.showApproveBtn && (
-            <Tooltip title='Facturar'>
+            <Tooltip
+              title={approveAction === 'invoice' ? 'Facturar' : 'Aprobar'}
+            >
               <Popconfirm
-                title={`¿Estas seguro de facturar el elemento seleccionado?`}
+                title={`¿Estas seguro de ${
+                  approveAction === 'invoice' ? 'facturar' : 'aprobar'
+                } el elemento seleccionado?`}
                 onConfirm={() => handlerApproveRow(props.data)}
                 okText='Si'
                 cancelText='No'

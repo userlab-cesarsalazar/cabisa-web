@@ -178,6 +178,32 @@ export const getOnChangeProductsListCallback = ({
   }
 }
 
+export const editableListInitRow = {
+  // common fields
+  service_type: '',
+  id: '',
+  description: '',
+  code: '',
+  child_id: '',
+  child_description: '',
+  quantity: 0,
+  unit_price: 0,
+  base_unit_price: 0,
+  unit_tax_amount: 0,
+  tax_fee: 0,
+  // parentProduct
+  parent_tax_fee: 0,
+  parent_unit_price: 0,
+  parent_base_unit_price: 0,
+  parent_unit_tax_amount: 0,
+  // childProduct
+  child_tax_fee: 0,
+  child_unit_price: 0,
+  child_base_unit_price: 0,
+  child_unit_tax_amount: 0,
+  subtotal: 0,
+}
+
 function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   const [stakeholdersOptionsList, setStakeholdersOptionsList] = useState([])
   const [projectsOptionsList, setProjectsOptionsList] = useState([])
@@ -375,31 +401,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   } = useEditableList({
     state: productsData,
     setState: setProductsData,
-    initRow: {
-      // common fields
-      service_type: '',
-      id: '',
-      description: '',
-      code: '',
-      child_id: '',
-      child_description: '',
-      quantity: 0,
-      unit_price: 0,
-      base_unit_price: 0,
-      unit_tax_amount: 0,
-      tax_fee: 0,
-      // parentProduct
-      parent_tax_fee: 0,
-      parent_unit_price: 0,
-      parent_base_unit_price: 0,
-      parent_unit_tax_amount: 0,
-      // childProduct
-      child_tax_fee: 0,
-      child_unit_price: 0,
-      child_base_unit_price: 0,
-      child_unit_tax_amount: 0,
-      subtotal: 0,
-    },
+    initRow: editableListInitRow,
     onChange: updateInvoiceTotals,
     onBlur: updateInvoiceOnBlurPrice,
   })

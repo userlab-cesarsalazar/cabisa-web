@@ -38,6 +38,7 @@ const config = {
     SELL: { color: 'green', text: 'Venta' },
     PURCHASE: { color: 'cyan', text: 'Compra' },
     RENT: { color: '#87d068', text: 'Servicio' },
+    REPAIR: { color: 'grey', text: 'Reparacion' },
   },
   productStatus: {
     // also apply to serviceStatus

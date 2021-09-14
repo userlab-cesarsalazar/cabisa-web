@@ -32,8 +32,11 @@ import {
   stakeholdersStatus,
 } from '../../../../commons/types'
 import { useEditableList } from '../../../../hooks'
-import { getProductSubtotal } from '../../../billing/components/billingFields'
-import { getOnChangeProductsListCallback } from '../../../billing/components/billingFields'
+import {
+  editableListInitRow,
+  getOnChangeProductsListCallback,
+  getProductSubtotal,
+} from '../../../billing/components/billingFields'
 
 const { getFormattedValue } = numberFormat()
 
@@ -165,31 +168,7 @@ function NewNoteView({ isAdmin }) {
   } = useEditableList({
     state: dataSourceTable,
     setState: setDataSourceTable,
-    initRow: {
-      // common fields
-      service_type: '',
-      id: '',
-      code: '',
-      description: '',
-      child_id: '',
-      child_description: '',
-      quantity: 0,
-      unit_price: 0,
-      base_unit_price: 0,
-      unit_tax_amount: 0,
-      tax_fee: 0,
-      // parentProduct
-      parent_tax_fee: 0,
-      parent_unit_price: 0,
-      parent_base_unit_price: 0,
-      parent_unit_tax_amount: 0,
-      // childProduct
-      child_tax_fee: 0,
-      child_unit_price: 0,
-      child_base_unit_price: 0,
-      child_unit_tax_amount: 0,
-      subtotal: 0,
-    },
+    initRow: editableListInitRow,
     onChange: updateSaleTotals,
   })
 

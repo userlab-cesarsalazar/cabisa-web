@@ -129,6 +129,7 @@ function InventoryMovementComponent() {
         handlerTextSearch={searchByTxt}
         handlerCategoryService={searchByStatus}
       />
+
       <InventoryMovementDrawer
         closable={onClose}
         visible={isVisible}

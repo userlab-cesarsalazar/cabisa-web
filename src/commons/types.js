@@ -8,6 +8,7 @@ export const documentsTypes = {
   SELL_INVOICE: 'SELL_INVOICE',
   RENT_PRE_INVOICE: 'RENT_PRE_INVOICE',
   RENT_INVOICE: 'RENT_INVOICE',
+  REPAIR_ORDER: 'REPAIR_ORDER',
 }
 
 export const documentsServiceType = {
@@ -46,6 +47,7 @@ export const operationsTypes = {
   SELL: 'SELL',
   PURCHASE: 'PURCHASE',
   RENT: 'RENT',
+  REPAIR: 'REPAIR',
 }
 
 export const productsCategories = {
@@ -117,6 +119,7 @@ export const permissions = {
   VENTAS: 6,
   CLIENTES: 7,
   PROVEEDORES: 8,
+  REPARACIONES: 9,
 }
 
 export const actions = {

@@ -24,6 +24,7 @@ function InventoryMovementDrawer(props) {
         editData={props.editData}
         saveData={saveData}
         onClose={props.closable}
+        isEditing
       />
     </Drawer>
   )
