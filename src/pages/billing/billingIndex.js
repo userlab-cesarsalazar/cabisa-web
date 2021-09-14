@@ -150,7 +150,6 @@ function Billing(props) {
         created_at: filters.created_at
           ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
           : '',
-        service_type: filters.serviceTypes,
         payment_method: filters.paymentMethods,
         total_amount: { $like: `%25${filters.totalInvoice}%25` },
       })
