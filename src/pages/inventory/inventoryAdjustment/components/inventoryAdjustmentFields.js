@@ -123,7 +123,7 @@ function InventoryAdjustmentFields({
     if (productRequiredPositions.length > 0) {
       productRequiredPositions.forEach(p => {
         errors.push(
-          `Los campos de stock del producto ${p} deben ser mayor a uno`
+          `Los campos de stock del producto ${p} deben ser mayor o igual a cero`
         )
       })
     }
