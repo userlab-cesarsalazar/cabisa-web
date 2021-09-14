@@ -11,7 +11,6 @@ import {
   Divider,
 } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
-import CurrencyInput from './CurrencyInput'
 
 const { Option } = Select
 
@@ -42,10 +41,10 @@ function InventoryMovementProductsList({
             <b className='center-flex-div'>Descripcion</b>
           </Col>
           <Col sm={3}>
-            <b className='center-flex-div'>Cantidad</b>
+            <b className='center-flex-div'>Stock Actual</b>
           </Col>
           <Col sm={5}>
-            <b className='center-flex-div'>Costo (Q)</b>
+            <b className='center-flex-div'>Nuevo Stock</b>
           </Col>
           <Col sm={1}></Col>
         </Row>
@@ -87,25 +86,26 @@ function InventoryMovementProductsList({
                 )}
               </Select>
             </Col>
-            <Col sm={3}>
+            <Col sm={4}>
               <Input
-                placeholder={'Cantidad'}
+                placeholder={'Stock Actual'}
                 size={'large'}
-                value={row.quantity}
+                value={row.preview_stock}
                 onChange={e =>
-                  handleChangeDetail('quantity', e.target.value, index)
+                  handleChangeDetail('preview_stock', e.target.value, index)
                 }
                 min={1}
                 type='tel'
-                disabled={forbidEdition}
+                disabled={true}
               />
             </Col>
-            <Col sm={5}>
-              <CurrencyInput
-                placeholder={'Costo (Q)'}
-                value={row.unit_price}
-                onChange={value =>
-                  handleChangeDetail('unit_price', value, index)
+            <Col sm={4}>
+              <Input
+                placeholder={'Nuevo Stock'}
+                value={row.next_stock}
+                type='tel'
+                onChange={e =>
+                  handleChangeDetail('next_stock', e.target.value, index)
                 }
                 disabled={forbidEdition}
               />

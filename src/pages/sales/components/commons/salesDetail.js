@@ -14,7 +14,7 @@ import {
   Statistic,
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
-import SaleProductsList from '../../../../components/SaleProductsList'
+import SaleProductsList from './saleProductsList'
 import {
   productsStatus,
   stakeholdersStatus,

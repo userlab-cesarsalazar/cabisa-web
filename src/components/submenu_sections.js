@@ -132,6 +132,16 @@ const submenu_sections_inventory = [
       </>
     ),
   },
+  {
+    name: 'Ajustes',
+    key: 'inventoryAdjustment',
+    route: '/inventoryAdjustment',
+    component: (
+      <>
+        <h1>Ajustes de Inventario</h1>
+      </>
+    ),
+  },
 ]
 
 export { submenu_sections, submenu_sections_inventory }

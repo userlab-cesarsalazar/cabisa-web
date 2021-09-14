@@ -15,7 +15,7 @@ import {
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import HeaderPage from '../../../../components/HeaderPage'
-import SaleProductsList from '../../../../components/SaleProductsList'
+import SaleProductsList from './saleProductsList'
 import { useSale, saleActions } from '../../context'
 import {
   showErrors,

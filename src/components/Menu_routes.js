@@ -26,6 +26,9 @@ import ServiceView from '../pages/inventory/services/serviceVIew'
 import InventoryMovement from '../pages/inventory/inventoryMovement/inventoryMovementIndex'
 import InventoryMovementView from '../pages/inventory/inventoryMovement/components/inventoryMovementView'
 
+import InventoryAdjustment from '../pages/inventory/inventoryAdjustment/inventoryAdjustmentIndex'
+import InventoryAdjustmentView from '../pages/inventory/inventoryAdjustment/components/inventoryAdjustmentView'
+
 //Reports
 import ReportMachine from '../pages/reports/reportMachine/reportMachineIndex'
 import ReportInventory from '../pages/reports/reportInventory/reportInventoryIndex'
@@ -97,7 +100,7 @@ const menu_routes = [
     route: '/inventory',
     profilePermissions: [25],
     routeGroup: [
-      /^(\/inventoryMovements)|(\/InventoryMovementsView)|(\/inventoryProducts)|(\/inventoryServices)|(\/inventoryProductsView)|(\/inventoryServicesView)/i,
+      /^(\/inventoryServices)|(\/inventoryServicesView)|(\/inventoryProducts)|(\/inventoryProductsView)|(\/inventoryMovements)|(\/InventoryMovementsView)|(\/inventoryAdjustment)|(\/InventoryAdjustmentView)/i,
     ],
     sub_menu: submenu_sections_inventory,
   },
@@ -212,6 +215,16 @@ const menu_sub_routes = [
     id: 5,
     route: '/InventoryMovementsView',
     component: InventoryMovementView,
+  },
+  {
+    id: 5,
+    route: '/inventoryAdjustment',
+    component: InventoryAdjustment,
+  },
+  {
+    id: 5,
+    route: '/InventoryAdjustmentView',
+    component: InventoryAdjustmentView,
   },
   {
     id: 4,

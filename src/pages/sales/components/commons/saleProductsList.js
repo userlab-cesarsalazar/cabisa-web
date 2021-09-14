@@ -2,9 +2,9 @@ import React from 'react'
 import debounce from 'lodash/debounce'
 import { List, Col, Input, Row, Button, Select, Popconfirm } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
-import CurrencyInput from '../components/CurrencyInput'
-import Tag from '../components/Tag'
-import { documentsServiceType } from '../commons/types'
+import CurrencyInput from '../../../../components/CurrencyInput'
+import Tag from '../../../../components/Tag'
+import { documentsServiceType } from '../../../../commons/types'
 
 const { Option } = Select
 
@@ -37,25 +37,25 @@ const getColumnsConfig = () => {
   }
 }
 
-function BillingProductsList({
+function SaleProductsList({
   dataSource,
   handleAddDetail,
   handleChangeDetail,
   handleRemoveDetail,
-  handleBlurDetail,
   handleSearchProduct,
   productsOptionsList,
   handleSearchChildProduct,
   childProductsOptionsList,
-  isInvoiceFromSale,
+  status,
   loading,
-  isEditing,
   isAdmin,
-  serviceTypesOptionsList,
+  forbidEdition,
+  handleChange,
+  documentServiceTypesOptionsList,
   ...props
 }) {
   const config = getColumnsConfig()
-  const showDeleteButton = !isEditing && !isInvoiceFromSale
+  const showDeleteButton = !forbidEdition
 
   return (
     <List
@@ -136,10 +136,10 @@ function BillingProductsList({
                     handleChangeDetail('service_type', value, index)
                   }
                   value={row.service_type}
-                  disabled={isEditing || isInvoiceFromSale}
+                  disabled={forbidEdition}
                 >
-                  {serviceTypesOptionsList?.length > 0 ? (
-                    serviceTypesOptionsList.map(value => (
+                  {documentServiceTypesOptionsList?.length > 0 ? (
+                    documentServiceTypesOptionsList.map(value => (
                       <Option key={value} value={value}>
                         <Tag type='documentsServiceType' value={value} />
                       </Option>
@@ -178,12 +178,14 @@ function BillingProductsList({
                   onSearch={debounce(handleSearchProduct(index), 400)}
                   value={row.id}
                   onChange={value => handleChangeDetail('id', value, index)}
-                  loading={loading}
+                  loading={
+                    status === 'LOADING' && loading === 'fetchProductsOptions'
+                  }
                   optionFilterProp='children'
                   disabled={
                     row.service_type !== documentsServiceType.SERVICE ||
-                    isEditing ||
-                    isInvoiceFromSale
+                    forbidEdition ||
+                    !isAdmin
                   }
                 >
                   {productsOptionsList.length > 0 ? (
@@ -207,17 +209,14 @@ function BillingProductsList({
                   disabled={
                     row.service_type !== documentsServiceType.SERVICE ||
                     !row.id ||
-                    isEditing ||
-                    isInvoiceFromSale
+                    forbidEdition ||
+                    !isAdmin
                   }
                   onChange={value =>
                     handleChangeDetail('parent_unit_price', value, index)
                   }
                   onFocus={() =>
                     handleChangeDetail('parent_unit_price', '', index)
-                  }
-                  onBlur={() =>
-                    handleBlurDetail('parent_unit_price', '', index)
                   }
                 />
               </Col>
@@ -237,13 +236,16 @@ function BillingProductsList({
                     handleChangeDetail('child_id', value, index)
                   }
                   optionFilterProp='children'
-                  loading={loading}
+                  loading={
+                    status === 'LOADING' &&
+                    loading === 'fetchChildProductsOptions'
+                  }
                   disabled={
                     !row.service_type ||
                     (!row.id &&
                       row.service_type === documentsServiceType.SERVICE) ||
-                    isEditing ||
-                    isInvoiceFromSale
+                    forbidEdition ||
+                    !isAdmin
                   }
                 >
                   {childProductsOptionsList?.length > 0 ? (
@@ -266,14 +268,13 @@ function BillingProductsList({
                   className='product-list-input'
                   placeholder={config?.childProductPrice?.label}
                   value={row.child_unit_price}
-                  disabled={!row.child_id || isEditing || isInvoiceFromSale}
+                  disabled={!row.child_id || forbidEdition || !isAdmin}
                   onChange={value =>
                     handleChangeDetail('child_unit_price', value, index)
                   }
                   onFocus={() =>
                     handleChangeDetail('child_unit_price', '', index)
                   }
-                  onBlur={_ => handleBlurDetail('child_unit_price', '', index)}
                 />
               </Col>
             )}
@@ -289,7 +290,7 @@ function BillingProductsList({
                   }
                   min={1}
                   type='tel'
-                  disabled={isEditing || isInvoiceFromSale || !row.child_id}
+                  disabled={forbidEdition || !isAdmin || !row.child_id}
                 />
               </Col>
             )}
@@ -321,8 +322,7 @@ function BillingProductsList({
         </List.Item>
       )}
       footer={
-        !isEditing &&
-        !isInvoiceFromSale && (
+        !forbidEdition && (
           <Row gutter={16} className={'section-space-field'}>
             <Col xs={24} sm={24} md={24} lg={24}>
               <Button
@@ -340,4 +340,4 @@ function BillingProductsList({
   )
 }
 
-export default BillingProductsList
+export default SaleProductsList
