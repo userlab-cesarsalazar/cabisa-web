@@ -15,6 +15,8 @@ const develop = {
   stakeholderUrl:
     'https://v5xx70s4r6.execute-api.us-east-1.amazonaws.com/dev/stakeholders',
   usersUrl: 'https://oj41d9rbdi.execute-api.us-east-1.amazonaws.com/dev/users',
+  repairsUrl:
+    'https://tqd5wf5c3i.execute-api.us-east-1.amazonaws.com/dev/repairs',
 }
 
 const enviroment = env => {
