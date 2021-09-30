@@ -128,3 +128,15 @@ export const actions = {
   EDIT: 'edit',
   VIEW: 'view',
 }
+
+export const creditDaysEnum = {
+  ONE_WEEK: 7,
+  TWO_WEEKS: 15,
+  ONE_MONTH: 30,
+}
+
+export const creditStatusEnum = {
+  UNPAID: 'UNPAID', // no pagado pero dentro del limite de dias
+  PAID: 'PAID', // pagado
+  DEFAULT: 'DEFAULT', // no pagado luego de vencer el limite de dias
+}

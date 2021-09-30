@@ -1554,3 +1554,7 @@ input:-webkit-autofill:focus {
   align-items: center;
   justify-content: center;
 }
+
+.ant-switch-checked {
+  background-color: var(--cabisa-light-blue) !important;
+}

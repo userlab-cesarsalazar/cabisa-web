@@ -369,7 +369,6 @@ function RepairsFields({ isEditing, editData, setLoading, loading, ...props }) {
           handleRemoveDetail={handleRemoveDetail}
           handleSearchProduct={handleSearchPartProduct}
           productsOptionsList={partProductsOptionsList}
-          serviceTypesOptionsList={props.serviceTypesOptionsList}
           forbidEdition={isEditing && data.status !== documentsStatus.PENDING}
         />
 

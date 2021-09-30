@@ -14,14 +14,15 @@ const remove = (url, data) => makeRequestApi(url, DELETE, data)
 const makeRequestApi = async (url, method, data) =>
   new Promise((resolve, reject) => {
     Auth.currentSession()
-      .then(_ => {
+      .then(session => {
         const params = method === GET ? getQueryParams(data) : ''
-
+        console.log(session)
         return axios({
           url: url + params,
           method,
           headers: {
             'Content-Type': 'application/json',
+            Authorization: session?.accessToken?.payload?.client_id || '',
           },
           data: method !== GET && JSON.stringify(data),
         })
