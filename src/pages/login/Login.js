@@ -57,6 +57,7 @@ function Login() {
                   email: user.attributes.email,
                   rol_id: userData?.rol_id,
                   rol_name: userData?.rol_name,
+                  user_id: userData?.id,
                 }
 
                 if (profileSettings.userPermissions.length === 0) {

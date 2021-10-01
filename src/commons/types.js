@@ -96,6 +96,19 @@ export const usersStatus = {
   BLOCKED: 'BLOCKED',
 }
 
+// CREDITS
+export const creditDaysEnum = {
+  ONE_WEEK: 7,
+  TWO_WEEKS: 15,
+  ONE_MONTH: 30,
+}
+
+export const creditStatusEnum = {
+  UNPAID: 'UNPAID', // no pagado pero dentro del limite de dias
+  PAID: 'PAID', // pagado
+  DEFAULT: 'DEFAULT', // no pagado luego de vencer el limite de dias
+}
+
 // ROLES AND PERMISSIONS
 // sigue el formato { name: id }
 export const roles = {
@@ -127,16 +140,4 @@ export const actions = {
   DELETE: 'delete',
   EDIT: 'edit',
   VIEW: 'view',
-}
-
-export const creditDaysEnum = {
-  ONE_WEEK: 7,
-  TWO_WEEKS: 15,
-  ONE_MONTH: 30,
-}
-
-export const creditStatusEnum = {
-  UNPAID: 'UNPAID', // no pagado pero dentro del limite de dias
-  PAID: 'PAID', // pagado
-  DEFAULT: 'DEFAULT', // no pagado luego de vencer el limite de dias
 }
