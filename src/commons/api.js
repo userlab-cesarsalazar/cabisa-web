@@ -16,8 +16,7 @@ const makeRequestApi = async (url, method, data) =>
     Auth.currentSession()
       .then(_ => {
         const params = method === GET ? getQueryParams(data) : ''
-        const currentSession = Cache.getItem('currentSession')
-        const sessionToken = window.btoa(JSON.stringify(currentSession))
+        const sessionToken = getSessionToken()
 
         return axios({
           url: url + params,
@@ -29,7 +28,12 @@ const makeRequestApi = async (url, method, data) =>
           data: method !== GET && JSON.stringify(data),
         })
       })
-      .then(data => (data.errors ? reject(data) : resolve(data.data)))
+      .then(data => {
+        if (data.errors || data.data.errors || data.data.errorMessage)
+          reject(data.data.errorMessage || data.data.errors || data.errors)
+
+        resolve(data.data)
+      })
       .catch(err => reject(err))
   })
 
@@ -54,6 +58,15 @@ const getQueryParams = (params, defaultParams = {}) => {
   })
 
   return `${result.length > 0 ? '?' : ''}${result.join('&')}`
+}
+
+const getSessionToken = () => {
+  const currentSession = Cache.getItem('currentSession')
+
+  if (!currentSession) return ''
+
+  delete currentSession.token
+  return window.btoa(JSON.stringify(currentSession))
 }
 
 const api = {

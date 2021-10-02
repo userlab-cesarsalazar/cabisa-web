@@ -45,7 +45,7 @@ function ReportClient() {
   const fetchClients = useCallback(() => {
     setLoading(true)
 
-    ReportsSrc.getClients({
+    ReportsSrc.getClientsAccountState({
       created_at: filters.created_at
         ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
         : '',

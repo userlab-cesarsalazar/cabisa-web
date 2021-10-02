@@ -14,8 +14,8 @@ const getAccountsReceivable = params =>
 const getCreditStatusOptions = () => api.get(`${urlInvoice}/credit-status`)
 const getStakeholderTypes = () => api.get(`${urlStakeholder}/types`)
 const getPaymentMethods = () => api.get(`${urlInvoice}/payment-methods`)
-const getClients = params =>
-  api.get(urlStakeholder, {
+const getClientsAccountState = params =>
+  api.get(`${urlReport}/clients-account-state`, {
     ...params,
     stakeholder_type: params.stakeholder_type
       ? params.stakeholder_type
@@ -29,7 +29,7 @@ const ReportsSrc = {
   getSales,
   getInventory,
   getAccountsReceivable,
-  getClients,
+  getClientsAccountState,
   getClientTypes,
   getCreditStatusOptions,
   getStakeholderTypes,

@@ -50,6 +50,12 @@ function ReportClientTable(props) {
       render: text => <Tag type='stakeholderTypes' value={text} />,
     },
     {
+      title: 'Limite de credito',
+      dataIndex: 'credit_limit', // Field that is goint to be rendered
+      key: 'credit_limit',
+      render: text => <span>{text}</span>,
+    },
+    {
       title: 'Cargos',
       dataIndex: 'total_credit', // Field that is goint to be rendered
       key: 'total_credit',
