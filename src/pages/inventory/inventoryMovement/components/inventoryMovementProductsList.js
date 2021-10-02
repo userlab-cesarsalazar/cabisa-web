@@ -102,10 +102,14 @@ function InventoryMovementProductsList({
             <Col sm={4}>
               <Input
                 placeholder={'Costo (Q)'}
-                value={row.unit_price}
+                value={row.inventory_unit_value}
                 type='tel'
                 onChange={e =>
-                  handleChangeDetail('unit_price', e.target.value, index)
+                  handleChangeDetail(
+                    'inventory_unit_value',
+                    e.target.value,
+                    index
+                  )
                 }
                 disabled={forbidEdition}
               />
