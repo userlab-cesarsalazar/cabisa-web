@@ -44,6 +44,7 @@ export const inventoryMovementsTypes = {
 }
 
 export const operationsTypes = {
+  INVENTORY_ADJUSTMENT: 'INVENTORY_ADJUSTMENT',
   SELL: 'SELL',
   PURCHASE: 'PURCHASE',
   RENT: 'RENT',

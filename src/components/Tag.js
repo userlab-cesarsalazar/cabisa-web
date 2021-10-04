@@ -35,6 +35,7 @@ const config = {
     IN: { color: '#87d068', text: 'Ingreso' },
   },
   operationsTypes: {
+    INVENTORY_ADJUSTMENT: { color: 'geekblue', text: 'Ajuste de Inventario' },
     SELL: { color: 'green', text: 'Venta' },
     PURCHASE: { color: 'cyan', text: 'Compra' },
     RENT: { color: '#87d068', text: 'Servicio' },

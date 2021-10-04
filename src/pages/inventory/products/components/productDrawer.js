@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Drawer, message, Spin } from 'antd'
 import ProductFields from './productFields'
-import InventoryHistory from '../../components/invetoryHistory'
+import InventoryHistory from '../../components/inventoryHistory'
 import InventorySrc from '../../inventorySrc'
 import { showErrors } from '../../../../utils'
 
