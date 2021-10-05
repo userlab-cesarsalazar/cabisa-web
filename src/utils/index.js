@@ -1,3 +1,4 @@
+import moment from 'moment'
 import { message } from 'antd'
 import { Cache } from 'aws-amplify'
 
@@ -205,6 +206,19 @@ export const numberFormat = ({
         .replace(fractionSeparator, '.')
 
       return Number(result)
+    },
+  }
+}
+
+export const getDateRangeFilter = dateRange => {
+  if (!dateRange) return {}
+
+  return {
+    start_date: {
+      $gte: moment(dateRange[0]).format('YYYY-MM-DD'),
+    },
+    end_date: {
+      $lte: moment(dateRange[1]).add(1, 'days').format('YYYY-MM-DD'),
     },
   }
 }

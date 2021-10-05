@@ -104,7 +104,7 @@ function InventoryAdjustmentFields({
     adjustment_reason: data.adjustment_reason,
     products: productsData.map(p => ({
       product_id: p.id,
-      preview_stock: p.preview_stock,
+      preview_stock: Number(p.preview_stock),
       next_stock: Number(p.next_stock),
     })),
   })
@@ -124,6 +124,18 @@ function InventoryAdjustmentFields({
       productRequiredPositions.forEach(p => {
         errors.push(
           `Los campos de stock del producto ${p} deben ser mayor o igual a cero`
+        )
+      })
+    }
+
+    const sameStockErrors = data.products.flatMap((p, i) =>
+      p.preview_stock === p.next_stock ? i + 1 : []
+    )
+
+    if (sameStockErrors.length > 0) {
+      sameStockErrors.forEach(p => {
+        errors.push(
+          `Los valores de Stock Actual y Nuevo Stock del producto ${p} no pueden ser iguales`
         )
       })
     }

@@ -112,12 +112,16 @@ export const handleUpdateProductsData = ({
     parent_unit_tax_amount,
     parent_unit_discount,
     parent_base_unit_price,
+    parent_inventory_unit_value:
+      parentProduct?.inventory_unit_value || row?.parent_inventory_unit_value,
     // childProduct
     child_tax_fee,
     child_unit_price,
     child_unit_tax_amount,
     child_unit_discount,
     child_base_unit_price,
+    child_inventory_unit_value:
+      childProduct?.inventory_unit_value || row?.child_inventory_unit_value,
     // common fields
     id: parentProduct?.id ? Number(parentProduct.id) : row.id,
     code: parentProduct?.code ? parentProduct.code : row.code,
@@ -196,11 +200,13 @@ export const editableListInitRow = {
   parent_unit_price: 0,
   parent_base_unit_price: 0,
   parent_unit_tax_amount: 0,
+  parent_inventory_unit_value: 0,
   // childProduct
   child_tax_fee: 0,
   child_unit_price: 0,
   child_base_unit_price: 0,
   child_unit_tax_amount: 0,
+  child_inventory_unit_value: 0,
   subtotal: 0,
 }
 

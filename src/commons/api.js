@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Auth } from 'aws-amplify'
+import { Auth, Cache } from 'aws-amplify'
 
 const GET = 'GET'
 const POST = 'POST'
@@ -16,17 +16,24 @@ const makeRequestApi = async (url, method, data) =>
     Auth.currentSession()
       .then(_ => {
         const params = method === GET ? getQueryParams(data) : ''
+        const sessionToken = getSessionToken()
 
         return axios({
           url: url + params,
           method,
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${sessionToken}`,
           },
           data: method !== GET && JSON.stringify(data),
         })
       })
-      .then(data => (data.errors ? reject(data) : resolve(data.data)))
+      .then(data => {
+        if (data.errors || data.data.errors || data.data.errorMessage)
+          reject(data.data.errorMessage || data.data.errors || data.errors)
+
+        resolve(data.data)
+      })
       .catch(err => reject(err))
   })
 
@@ -51,6 +58,15 @@ const getQueryParams = (params, defaultParams = {}) => {
   })
 
   return `${result.length > 0 ? '?' : ''}${result.join('&')}`
+}
+
+const getSessionToken = () => {
+  const currentSession = Cache.getItem('currentSession')
+
+  if (!currentSession) return ''
+
+  delete currentSession.token
+  return window.btoa(JSON.stringify(currentSession))
 }
 
 const api = {

@@ -1,145 +1,151 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
+import { message } from 'antd'
+import moment from 'moment'
 import GenericTable from '../../../components/genericTable'
-import { Tag } from 'antd'
 import ReportAccountsReceivableFilters from './components/reportAccountsReceivableFilters'
 import HeaderPage from '../../../components/HeaderPage'
-import ActionOptions from '../../../components/actionOptions'
-import { permissions } from '../../../commons/types'
+import Tag from '../../../components/Tag'
+import ReportsSrc from '../reportsSrc'
+import { showErrors } from '../../../utils'
+import { stakeholdersTypes } from '../../../commons/types'
+
+const columns = [
+  {
+    title: 'Cliente',
+
+    dataIndex: 'stakeholder_name', // Field that is goint to be rendered
+    key: 'stakeholder_name',
+    render: text => <span>{text}</span>,
+  },
+  {
+    title: 'Monto',
+    dataIndex: 'subtotal_amount', // Field that is goint to be rendered
+    key: 'subtotal_amount',
+    render: text => <span>{text}</span>,
+  },
+  {
+    title: 'Fecha de facturacion',
+    dataIndex: 'document_date', // Field that is goint to be rendered
+    key: 'document_date',
+    render: text =>
+      text ? <span>{moment(text).format('DD-MM-YYYY')}</span> : null,
+  },
+  {
+    title: 'Fecha a pagar',
+    dataIndex: 'credit_due_date', // Field that is goint to be rendered
+    key: 'credit_due_date',
+    render: text =>
+      text ? <span>{moment(text).format('DD-MM-YYYY')}</span> : null,
+  },
+  {
+    title: 'Fecha pago realizado',
+    dataIndex: 'credit_paid_date', // Field that is goint to be rendered
+    key: 'credit_paid_date',
+    render: text =>
+      text ? <span>{moment(text).format('DD-MM-YYYY')}</span> : null,
+  },
+  {
+    title: 'Situacion',
+    dataIndex: 'credit_status', // Field that is goint to be rendered
+    key: 'credit_status',
+    render: text => <Tag type='creditStatus' value={text} />,
+  },
+  {
+    title: 'Observacion',
+    dataIndex: 'id', // Field that is goint to be rendered
+    key: 'id',
+    render: (_, row) => (
+      <span>{row.comments ? row.comments : row.description}</span>
+    ),
+  },
+]
 
 function ReportAccountsReceivable() {
+  const initFilters = useRef()
+
+  if (!initFilters.current) {
+    initFilters.current = {
+      stakeholder_name: '',
+      credit_status: '',
+      stakeholder_type: '',
+      created_at: '',
+      credit_due_date: '',
+      credit_paid_date: '',
+    }
+  }
+
   const [loading, setLoading] = useState(true)
+  const [filters, setFilters] = useState(initFilters.current)
   const [dataSource, setDataSource] = useState([])
+  const [creditStatusOptionsList, setCreditStatusOptionsList] = useState([])
+  const [
+    stakeholderTypesOptionsList,
+    setStakeholderTypesOptionsList,
+  ] = useState([])
 
-  const handlerDeleteRow = data => {
-    console.log(data)
-  }
+  const fetchAccountsReceivable = useCallback(() => {
+    setLoading(true)
 
-  const handlerEditRow = data => {
-    console.log(data)
-  }
-
-  const data = [
-    {
-      id: 1,
-      client_name: 'Luis de leon',
-      client_type: 1,
-      amount: '5000.00',
-      bill_date: '11/02/2021',
-      payment_date: '10/12/2021',
-      payment_made_date: '10/12/2021',
-      situation: 1,
-      observation: 'Cliente nuevo etc.... 1234567890',
-    },
-    {
-      id: 2,
-      client_name: 'Luis de leon',
-      client_type: 2,
-      amount: '5000.00',
-      bill_date: '11/02/2021',
-      payment_date: '10/12/2021',
-      payment_made_date: '10/12/2021',
-      situation: 1,
-      observation: 'Cliente nuevo etc.... 1234567890',
-    },
-    {
-      id: 3,
-      client_name: 'Luis de leon',
-      client_type: 3,
-      amount: '5000.00',
-      bill_date: '11/02/2021',
-      payment_date: '10/12/2021',
-      payment_made_date: '10/12/2021',
-      situation: 1,
-      observation: 'Cliente nuevo etc.... 1234567890',
-    },
-  ]
-
-  const columns = [
-    {
-      title: 'Cliente',
-
-      dataIndex: 'client_name', // Field that is goint to be rendered
-      key: 'client_name',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: 'Monto',
-      dataIndex: 'amount', // Field that is goint to be rendered
-      key: 'amount',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: 'Fecha de facturacion',
-      dataIndex: 'bill_date', // Field that is goint to be rendered
-      key: 'bill_date',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: 'Fecha a pagar',
-      dataIndex: 'payment_date', // Field that is goint to be rendered
-      key: 'payment_date',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: 'Fecha pago realizado',
-      dataIndex: 'payment_made_date', // Field that is goint to be rendered
-      key: 'payment_made_date',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: 'Situacion',
-      dataIndex: 'situation', // Field that is goint to be rendered
-      key: 'situation',
-      render: text => (
-        <span>
-          {text === 1 ? (
-            <Tag color='#87d068'>PAGADO</Tag>
-          ) : text === 2 ? (
-            <Tag color='#f50'>SIN PAGAR</Tag>
-          ) : text === 3 ? (
-            <Tag color='#f50'>PAGO ATRASADO</Tag>
-          ) : (
-            ''
-          )}
-        </span>
-      ),
-    },
-    {
-      title: 'Observacion',
-      dataIndex: 'observation', // Field that is goint to be rendered
-      key: 'observation',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: '',
-      dataIndex: 'id', // Field that is goint to be rendered
-      key: 'id',
-      render: (row, data) => (
-        <ActionOptions
-          editPermissions={false}
-          data={data}
-          permissionId={permissions.REPORTES}
-          handlerDeleteRow={handlerDeleteRow}
-          handlerEditRow={handlerEditRow}
-        />
-      ),
-    },
-  ]
-
-  const filterData = data => {
-    console.log('DATA FILTERS', data)
-  }
+    ReportsSrc.getAccountsReceivable({
+      stakeholder_name: { $like: `%25${filters.stakeholder_name}%25` },
+      credit_status: filters.credit_status,
+      stakeholder_type: filters.stakeholder_type,
+      created_at: filters.created_at
+        ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
+        : '',
+      credit_due_date: filters.credit_due_date
+        ? {
+            $like: `${moment(filters.credit_due_date).format('YYYY-MM-DD')}%25`,
+          }
+        : '',
+      credit_paid_date: filters.credit_paid_date
+        ? {
+            $like: `${moment(filters.credit_paid_date).format(
+              'YYYY-MM-DD'
+            )}%25`,
+          }
+        : '',
+    })
+      .then(result => setDataSource(result))
+      .catch(error => showErrors(error))
+      .finally(() => setLoading(false))
+  }, [filters])
 
   useEffect(() => {
-    setDataSource(data)
-    setLoading(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchAccountsReceivable()
+  }, [fetchAccountsReceivable])
+
+  useEffect(() => {
+    setLoading(true)
+
+    Promise.all([
+      ReportsSrc.getCreditStatusOptions(),
+      ReportsSrc.getStakeholderTypes(),
+    ])
+      .then(data => {
+        const stakeholdersTypesList = data[1].filter(
+          s => s !== stakeholdersTypes.PROVIDER
+        )
+
+        setCreditStatusOptionsList(data[0])
+        setStakeholderTypesOptionsList(stakeholdersTypesList)
+      })
+      .catch(_ => message.error('Error al cargar listados'))
+      .finally(() => setLoading(false))
   }, [])
+
+  const setSearchFilters = field => value =>
+    setFilters(prevState => ({ ...prevState, [field]: value }))
 
   return (
     <>
       <HeaderPage title={'Reporte - Cuentas por cobrar'} />
-      <ReportAccountsReceivableFilters filterData={filterData} />
+      <ReportAccountsReceivableFilters
+        filters={filters}
+        setSearchFilters={setSearchFilters}
+        creditStatusOptionsList={creditStatusOptionsList}
+        stakeholderTypesOptionsList={stakeholderTypesOptionsList}
+      />
       <GenericTable data={dataSource} loading={loading} columns={columns} />
     </>
   )

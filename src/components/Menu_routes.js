@@ -38,6 +38,7 @@ import ReportMachine from '../pages/reports/reportMachine/reportMachineIndex'
 import ReportInventory from '../pages/reports/reportInventory/reportInventoryIndex'
 import ReportClient from '../pages/reports/reportClient/reportClientIndex'
 import ReportAccountsReceivable from '../pages/reports/reportAccountsReceivable/reportAccountsReceivableIndex'
+import ReportSales from '../pages/reports/reportSales/reportSalesIndex'
 
 //billing
 import Billing from '../pages/billing/billingIndex'
@@ -299,7 +300,7 @@ const menu_sub_routes = [
   {
     id: 3,
     route: '/reportSales',
-    component: genericPage,
+    component: ReportSales,
   },
   {
     id: 3,

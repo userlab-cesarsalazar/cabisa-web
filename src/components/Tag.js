@@ -3,7 +3,7 @@ import { Tag as AntTag } from 'antd'
 
 const config = {
   creditStatus: {
-    UNPAID: { color: 'grey', text: 'Pago Pendiete' },
+    UNPAID: { color: 'cyan', text: 'Pago Pendiete' },
     PAID: { color: '#87d068', text: 'Pagado' },
     DEFAULT: { color: '#f50', text: 'En Mora' },
   },
@@ -35,6 +35,7 @@ const config = {
     IN: { color: '#87d068', text: 'Ingreso' },
   },
   operationsTypes: {
+    INVENTORY_ADJUSTMENT: { color: 'geekblue', text: 'Ajuste de Inventario' },
     SELL: { color: 'green', text: 'Venta' },
     PURCHASE: { color: 'cyan', text: 'Compra' },
     RENT: { color: '#87d068', text: 'Servicio' },

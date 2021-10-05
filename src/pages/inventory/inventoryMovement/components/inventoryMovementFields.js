@@ -56,7 +56,7 @@ function InventoryMovementFields({ forbidEdition, editData, ...props }) {
       description: p.description,
       id: p.id,
       quantity: p.product_quantity,
-      unit_price: p.product_price,
+      inventory_unit_value: p.product_price,
     }))
 
     return { data, productsData }
@@ -93,7 +93,7 @@ function InventoryMovementFields({ forbidEdition, editData, ...props }) {
         ...prevState[rowIndex],
         id: product.id,
         code: product.code,
-        unit_price: product.unit_price,
+        inventory_unit_value: product.inventory_unit_value,
         quantity: 1,
       }
 
@@ -112,7 +112,7 @@ function InventoryMovementFields({ forbidEdition, editData, ...props }) {
       code: '',
       description: '',
       quantity: 0,
-      unit_price: 0,
+      inventory_unit_value: 0,
     },
     onChange: setProductData,
   })
@@ -145,7 +145,7 @@ function InventoryMovementFields({ forbidEdition, editData, ...props }) {
     products: productsData.map(p => ({
       product_id: p.id,
       product_quantity: p.quantity,
-      product_price: p.unit_price,
+      product_price: p.inventory_unit_value,
     })),
   })
 

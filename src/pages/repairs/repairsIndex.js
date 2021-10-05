@@ -54,7 +54,18 @@ function Repairs(props) {
         : '',
       status: { $like: `%25${filters.status}%25` },
     })
-      .then(data => setDataSource(data))
+      .then(data => {
+        const dataSource = data?.map(d => {
+          const products = d.products?.map(p => ({
+            ...p,
+            parent_inventory_unit_value: p.unit_price,
+          }))
+
+          return { ...d, products }
+        })
+
+        setDataSource(dataSource)
+      })
       .catch(_ => message.error('No se pudo obtener la informacion.'))
       .finally(() => setLoading(false))
   }, [filters])
