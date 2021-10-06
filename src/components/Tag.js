@@ -8,7 +8,7 @@ const config = {
     DEFAULT: { color: '#f50', text: 'En Mora' },
   },
   documentsServiceType: {
-    MACHINERY: { color: 'geekblue', text: 'Maquinaria' },
+    PART: { color: 'geekblue', text: 'Repuesto' },
     EQUIPMENT: { color: 'green', text: 'Equipo' },
     SERVICE: { color: 'cyan', text: 'Servicio' },
   },

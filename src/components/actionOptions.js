@@ -9,6 +9,12 @@ import {
   CheckSquareOutlined,
 } from '@ant-design/icons'
 
+const getEditAction = editAction => {
+  if (editAction === 'edit') return 'Editar'
+  if (editAction === 'show') return 'Ver Detalle'
+  if (editAction === 'add_payment') return 'Agregar Pago'
+}
+
 function ActionOptions({
   deleteAction = 'delete', // delete | cancel
   editAction = 'edit', // edit | show
@@ -43,7 +49,7 @@ function ActionOptions({
           )}
 
           {can(actions.EDIT) && (
-            <Tooltip title={editAction === 'edit' ? 'Editar' : 'Ver Detalle'}>
+            <Tooltip title={getEditAction(editAction)}>
               <Button
                 icon={<FileSearchOutlined />}
                 onClick={() => handlerEditRow(props.data)}
@@ -83,7 +89,7 @@ function ActionOptions({
             >
               <Popconfirm
                 title={`¿Estas seguro de ${
-                  approveAction === 'invoice' ? 'facturar' : 'aprobar'
+                  approveAction === 'invoice' ? 'Facturar' : 'Aprobar'
                 } el elemento seleccionado?`}
                 onConfirm={() => handlerApproveRow(props.data)}
                 okText='Si'

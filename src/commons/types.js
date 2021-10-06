@@ -12,7 +12,7 @@ export const documentsTypes = {
 }
 
 export const documentsServiceType = {
-  MACHINERY: 'MACHINERY',
+  PART: 'PART',
   EQUIPMENT: 'EQUIPMENT',
   SERVICE: 'SERVICE',
 }
@@ -134,6 +134,7 @@ export const permissions = {
   CLIENTES: 7,
   PROVEEDORES: 8,
   REPARACIONES: 9,
+  PAGOS: 10,
 }
 
 export const actions = {

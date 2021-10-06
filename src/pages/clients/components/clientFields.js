@@ -34,12 +34,7 @@ const getProjectColumns = ({
   handleRemoveProject,
   handleChangeProject,
   isAdmin,
-  edit,
 }) => {
-  // Can not select days before today
-  const disabledDate = current =>
-    current && moment(current).add(1, 'days') < moment().endOf('day')
-
   const columns = [
     {
       width: 180,
@@ -63,7 +58,6 @@ const getProjectColumns = ({
           value={record.start_date ? moment(record.start_date) : ''}
           onChange={value => handleChangeProject('start_date', value, rowIndex)}
           disabled={!isAdmin}
-          disabledDate={disabledDate}
         />
       ),
     },
@@ -80,7 +74,6 @@ const getProjectColumns = ({
           value={record.end_date ? moment(record.end_date) : ''}
           onChange={value => handleChangeProject('end_date', value, rowIndex)}
           disabled={!isAdmin}
-          disabledDate={disabledDate}
         />
       ),
     },
@@ -263,7 +256,6 @@ function ClientFields({ edit, editData, ...props }) {
     handleRemoveProject,
     handleChangeProject,
     isAdmin,
-    edit,
   })
 
   const handleChangePhone = e => {

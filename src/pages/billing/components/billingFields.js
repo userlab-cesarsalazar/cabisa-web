@@ -40,7 +40,7 @@ const { TextArea } = Input
 
 const { getValue, getFormattedValue } = numberFormat()
 
-const getProductDiscount = product =>
+export const getProductDiscount = product =>
   product.service_type === productsTypes.SERVICE
     ? product.parent_unit_discount +
       product.child_unit_discount * product.quantity
@@ -215,7 +215,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   const [projectsOptionsList, setProjectsOptionsList] = useState([])
   const [productsOptionsList, setProductsOptionsList] = useState([])
   const [childProductsOptionsList, setChildProductsOptionsList] = useState([])
-  const [creditStatusOptionsList, setCreditStatusOptionsList] = useState([])
   const [data, setData] = useState({})
   const [productsData, setProductsData] = useState([])
   const [discountInputValue, setDiscountInputValue] = useState(0)
@@ -287,16 +286,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       .finally(() => setLoading(false))
   }
 
-  const fetchCreditStatusOptions = useCallback(() => {
-    setLoading(true)
-
-    billingSrc
-      .getCreditStatusOptions()
-      .then(creditStatus => setCreditStatusOptionsList(creditStatus))
-      .catch(error => showErrors(error))
-      .finally(() => setLoading(false))
-  }, [setLoading])
-
   useEffect(() => {
     if (editData && !isInvoiceFromSale) return
 
@@ -345,12 +334,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       prevState ? prevState : editData.discount_percentage || 0
     )
   }, [editData])
-
-  useEffect(() => {
-    if (!editData || isInvoiceFromSale) return
-
-    fetchCreditStatusOptions()
-  }, [fetchCreditStatusOptions, editData, isInvoiceFromSale])
 
   useEffect(function cleanUp() {
     return () => {
@@ -468,29 +451,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
         stakeholder_phone: formatPhone(stakeholder.phone),
         stakeholder_address: stakeholder.address,
       }))
-    }
-
-    if (field === 'credit_status') {
-      const params = {
-        document_id: data.id,
-        credit_status: value,
-      }
-
-      setLoading(true)
-
-      billingSrc
-        .updateCreditStatus(params)
-        .then(_ =>
-          message.success('Estado de credito actualizado exitosamente')
-        )
-        .catch(error => {
-          showErrors(error)
-          setData(prevState => ({
-            ...prevState,
-            credit_status: data.credit_status,
-          }))
-        })
-        .finally(() => setLoading(false))
     }
 
     setData(prevState => ({
@@ -644,43 +604,21 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
 
             {data.credit_status && data.status !== documentsStatus.CANCELLED && (
               <Row>
-                <Col xs={24} sm={24} md={12} lg={12}></Col>
+                <Col xs={24} sm={24} md={16} lg={16}></Col>
                 <Col
                   xs={24}
                   sm={24}
-                  md={12}
-                  lg={12}
+                  md={8}
+                  lg={8}
                   className='show-flex-component'
                 >
                   <b
-                    style={{
-                      width: '35%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'flex-end',
-                      paddingRight: '1em',
-                    }}
+                    style={{ paddingRight: '1em' }}
                     className={'title-space-field'}
                   >
                     Estado de Credito
                   </b>
-                  <Select
-                    className={'single-select'}
-                    placeholder={'Seleccione Estado de Credito'}
-                    size={'large'}
-                    style={{ width: '65%' }}
-                    getPopupContainer={trigger => trigger.parentNode}
-                    optionFilterProp='children'
-                    showSearch
-                    onChange={handleChange('credit_status')}
-                    value={data.credit_status}
-                  >
-                    {creditStatusOptionsList?.map(value => (
-                      <Option key={value} value={value}>
-                        <Tag type='creditStatus' value={value} />
-                      </Option>
-                    ))}
-                  </Select>
+                  <Tag type='creditStatus' value={data.credit_status} />
                 </Col>
               </Row>
             )}

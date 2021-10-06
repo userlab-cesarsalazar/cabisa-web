@@ -12,7 +12,6 @@ const getServiceTypes = () => api.get(`${urlInvoice}/service-types`)
 const getCreditDays = () => api.get(`${urlInvoice}/credit-days`)
 const createInvoice = data => api.post(urlInvoice, data)
 const cancelInvoice = data => api.put(`${urlInvoice}/cancel`, data)
-const updateCreditStatus = data => api.put(`${urlInvoice}/credit-status`, data)
 
 const getProductsOptions = params =>
   api.get(`${urlProduct}-options`, { ...params })
@@ -38,7 +37,6 @@ const InventorySrc = {
   getServiceTypes,
   getStakeholdersOptions,
   getStakeholderTypes,
-  updateCreditStatus,
 }
 
 export default InventorySrc

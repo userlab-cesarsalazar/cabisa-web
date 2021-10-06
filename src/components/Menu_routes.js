@@ -44,6 +44,9 @@ import ReportSales from '../pages/reports/reportSales/reportSalesIndex'
 import Billing from '../pages/billing/billingIndex'
 import BillingView from '../pages/billing/billingView'
 
+//payments
+import Payments from '../pages/payments/paymentsIndex'
+
 import genericPage from '../pages/genericPage'
 
 import {
@@ -141,6 +144,15 @@ const menu_routes = [
     routeGroup: [
       /^(\/billing)|(\/billing\/)|(\/billingView)|(\/billingView\/)|(\/billingView\/[a-zA-z0-9]*)/i,
     ],
+  },
+  {
+    id: 10,
+    name: 'Pagos',
+    key: 'payments',
+    icon: 'inventory',
+    route: '/payments',
+    profilePermissions: [10],
+    routeGroup: [/^(\/payments)|(\/payments\/)/i],
   },
   {
     id: 3,
@@ -261,6 +273,11 @@ const menu_sub_routes = [
     id: 4,
     route: '/billingView',
     component: BillingView,
+  },
+  {
+    id: 10,
+    route: '/payments',
+    component: Payments,
   },
   {
     id: 3,
