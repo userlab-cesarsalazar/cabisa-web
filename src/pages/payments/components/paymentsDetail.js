@@ -1,8 +1,28 @@
-import React from 'react'
-import { Card, Drawer } from 'antd'
+import React, { useState } from 'react'
+import { Card, Drawer, message } from 'antd'
 import PaymentsFields from './paymentsFields'
+import PaymentsSrc from '../paymentsSrc'
+import { showErrors } from '../../../utils'
 
 function PaymentsDetail(props) {
+  const [loading, setLoading] = useState(false)
+
+  const handleSaveData = data => {
+    setLoading(true)
+
+    PaymentsSrc.crupdatePayment(data)
+      .then(a => {
+        console.log(a)
+        message.success('Pagos grabados exitosamente')
+      })
+      .catch(error => showErrors(error))
+      .finally(() => {
+        setLoading(false)
+        props.closable()
+        props.loadData()
+      })
+  }
+
   return (
     <Drawer
       placement='right'
@@ -16,11 +36,11 @@ function PaymentsDetail(props) {
         <PaymentsFields
           visible={props.visible}
           edit={true}
-          loading={props.loading}
-          setLoading={props.setLoading}
+          loading={loading}
           detailData={props.detailData}
           paymentMethodsOptionsList={props.paymentMethodsOptionsList}
           cancelButton={props.closable}
+          handleSaveData={handleSaveData}
         />
       </Card>
     </Drawer>

@@ -50,8 +50,8 @@ function PaymentsTable(props) {
     },
     {
       title: 'Monto',
-      dataIndex: 'total', // Field that is goint to be rendered
-      key: 'total ',
+      dataIndex: 'total_amount', // Field that is goint to be rendered
+      key: 'total_amount',
       render: text => (text ? <span>{text.toFixed(2)}</span> : null),
     },
     {
@@ -60,17 +60,11 @@ function PaymentsTable(props) {
       key: 'payment_method',
       render: text => <Tag type='documentsPaymentMethods' value={text} />,
     },
-    // {
-    //   title: 'Documento de pago',
-    //   dataIndex: 'payment_document', // Field that is goint to be rendered
-    //   key: 'payment_document ',
-    //   render: text => (text ? <span>{text.toFixed(2)}</span> : null),
-    // },
     {
       title: 'Estado de Credito',
       dataIndex: 'credit_status', // Field that is goint to be rendered
       key: 'credit_status',
-      render: text => <Tag type='documentStatus' value={text} />,
+      render: text => <Tag type='creditStatus' value={text} />,
     },
     {
       title: '',
@@ -90,7 +84,6 @@ function PaymentsTable(props) {
 
   return (
     <>
-      {/*FIELDS*/}
       <Row gutter={16}>
         <Col xs={4} sm={4} md={4} lg={4}>
           <Search

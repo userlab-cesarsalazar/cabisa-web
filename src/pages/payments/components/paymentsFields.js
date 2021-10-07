@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import moment from 'moment'
 import {
-  Button,
   Col,
   Divider,
   Input,
@@ -10,17 +8,13 @@ import {
   Statistic,
   Typography,
   Collapse,
-  DatePicker,
-  Popconfirm,
-  Tooltip,
 } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
 import PaymentsProductsList from './paymentsProductsList'
+import PaymentsList from './paymentsList'
 import Tag from '../../../components/Tag'
 import { useEditableList } from '../../../hooks'
 import { showErrors, formatPhone, numberFormat } from '../../../utils'
 import FooterButtons from '../../../components/FooterButtons'
-import DynamicTable from '../../../components/DynamicTable'
 import { editableListInitRow } from '../../billing/components/billingFields'
 
 const { Title } = Typography
@@ -30,113 +24,29 @@ const { Panel } = Collapse
 
 const { getFormattedValue } = numberFormat()
 
-const getPaymentsColumns = ({
-  handleChangePayments,
-  handleRemovePayments,
-  paymentMethodsOptionsList,
-}) => [
-  {
-    title: 'Fecha de Pago',
-    dataIndex: 'payment_date', // Field that is goint to be rendered
-    key: 'payment_date',
-    render: (_, record, rowIndex) => (
-      <DatePicker
-        style={{ width: '100%', height: '40px', borderRadius: '8px' }}
-        placeholder='Fecha final'
-        format='DD-MM-YYYY'
-        value={record.payment_date ? moment(record.payment_date) : ''}
-        onChange={value =>
-          handleChangePayments('payment_date', value, rowIndex)
-        }
-      />
-    ),
-  },
-  {
-    title: 'Monto',
-    dataIndex: 'payment_amount', // Field that is goint to be rendered
-    key: 'payment_amount',
-    render: (_, record, rowIndex) => (
-      <Input
-        placeholder={'Monto del pago'}
-        size={'large'}
-        style={{ height: '40px' }}
-        value={record.payment_amount}
-        onChange={e =>
-          handleChangePayments('payment_amount', e.target.value, rowIndex)
-        }
-      />
-    ),
-  },
-  {
-    title: 'Metodo de pago',
-    dataIndex: 'payment_method', // Field that is goint to be rendered
-    key: 'payment_method',
-    render: (_, record, rowIndex) => (
-      <Select
-        className={'single-select'}
-        placeholder={'Metodo de pago'}
-        size={'large'}
-        style={{ width: '100%', height: '40px' }}
-        getPopupContainer={trigger => trigger.parentNode}
-        onChange={value =>
-          handleChangePayments('payment_method', value, rowIndex)
-        }
-        value={record.payment_method}
-      >
-        {paymentMethodsOptionsList?.length > 0 ? (
-          paymentMethodsOptionsList.map(value => (
-            <Option key={value} value={value}>
-              <Tag type='documentsPaymentMethods' value={value} />
-            </Option>
-          ))
-        ) : (
-          <Option value={record.payment_method}>
-            <Tag type='documentsPaymentMethods' value={record.payment_method} />
-          </Option>
-        )}
-      </Select>
-    ),
-  },
-  {
-    title: '',
-    dataIndex: 'payment_id', // Field that is goint to be rendered
-    key: 'payment_id',
-    render: (_, __, rowIndex) => (
-      <Tooltip title='Eliminar' color='red'>
-        <Popconfirm
-          title={`¿Estas seguro de borrar el elemento seleccionado?`}
-          onConfirm={() => handleRemovePayments(rowIndex)}
-          okText='Si'
-          cancelText='No'
-        >
-          <Button danger icon={<DeleteOutlined />} />
-        </Popconfirm>
-      </Tooltip>
-    ),
-  },
-]
-
-const getPaymentsTotal = payments =>
+const getPaymentsTotal = (payments, totalUnpaidCredit) =>
   payments?.reduce(
     (r, p) => ({
       totalPayments: (r.totalPayments || 0) + Number(p.payment_amount),
+      totalUnpaidCredit: r.totalUnpaidCredit - Number(p.payment_amount),
     }),
-    {}
+    { totalUnpaidCredit }
   )
 
 const getSaveData = data => {
   const payments = data.payments?.map(p => ({
-    payment_date: p?.payment_date
+    payment_id: p?.payment_id,
+    payment_method: p?.payment_method,
+    payment_amount: Number(p?.payment_amount),
+    payment_date: p.payment_date
       ? new Date(p.payment_date).toISOString()
       : null,
-    payment_amount: Number(p?.payment_amount),
-    payment_method: p?.payment_method,
   }))
 
   return { document_id: data?.id, payments }
 }
 
-const validateSaveData = data => {
+const validateSaveData = (data, totalUnpaidCredit) => {
   const errors = []
   const requiredFields = [
     { key: 'payment_date', value: 'Fecha de Pago' },
@@ -157,6 +67,11 @@ const validateSaveData = data => {
     })
   }
 
+  if (totalUnpaidCredit < 0)
+    errors.push(
+      'El total de pagos no puede ser superior al credito de la factura'
+    )
+
   return {
     isInvalid: errors.length > 0,
     error: {
@@ -165,15 +80,16 @@ const validateSaveData = data => {
   }
 }
 
-function PaymentsFields({ setLoading, detailData, ...props }) {
+function PaymentsFields({ detailData, ...props }) {
   const [paymentsData, setPaymentsData] = useState([])
   const [totalPayments, setTotalPayments] = useState(0)
+  const [totalUnpaidCredit, setTotalUnpaidCredit] = useState([])
   const [invoiceData, setInvoiceData] = useState({})
   const [productsData, setProductsData] = useState([])
 
   useEffect(() => {
     if (!detailData) return
-    console.log(detailData)
+
     setPaymentsData(detailData?.payments || [])
 
     setInvoiceData(prevState => ({
@@ -190,10 +106,11 @@ function PaymentsFields({ setLoading, detailData, ...props }) {
   useEffect(() => {
     if (paymentsData?.length === 0) return
 
-    const totals = getPaymentsTotal(paymentsData)
+    const totals = getPaymentsTotal(paymentsData, invoiceData.subtotal_amount)
 
     setTotalPayments(totals?.totalPayments)
-  }, [paymentsData])
+    setTotalUnpaidCredit(totals?.totalUnpaidCredit)
+  }, [paymentsData, invoiceData])
 
   useEffect(function cleanUp() {
     return () => {
@@ -225,20 +142,14 @@ function PaymentsFields({ setLoading, detailData, ...props }) {
     },
   })
 
-  const paymentsColumns = getPaymentsColumns({
-    handleChangePayments,
-    handleRemovePayments,
-    paymentMethodsOptionsList: props.paymentMethodsOptionsList,
-  })
-
   const saveData = () => {
     const saveData = getSaveData({ ...invoiceData, payments: paymentsData })
 
-    const { isInvalid, error } = validateSaveData(saveData)
+    const { isInvalid, error } = validateSaveData(saveData, totalUnpaidCredit)
 
     if (isInvalid) return showErrors(error)
-    console.log(saveData)
-    // props.handleSaveData(saveData)
+
+    props.handleSaveData(saveData)
   }
 
   return (
@@ -394,40 +305,36 @@ function PaymentsFields({ setLoading, detailData, ...props }) {
                 disabled
               />
             </Col>
-            <Col xs={8} sm={8} md={8} lg={8}>
-              {invoiceData?.credit_days ? (
-                <>
-                  <div className={'title-space-field'}>Dias de Credito</div>
-                  <Select
-                    className={'single-select'}
-                    placeholder={'Dias de credito'}
-                    size={'large'}
-                    style={{ width: '100%', height: '40px' }}
-                    value={invoiceData?.credit_days}
-                    disabled
-                  >
-                    <Option value={invoiceData?.credit_days}>
-                      {invoiceData?.credit_days}
-                    </Option>
-                  </Select>
-                </>
-              ) : null}
-            </Col>
-            <Col xs={8} sm={8} md={8} lg={8}>
-              {invoiceData?.discount_percentage ? (
-                <>
-                  <div className={'title-space-field'}>Descuento (%)</div>
-                  <Input
-                    type='tel'
-                    placeholder={'Aplicar Descuento'}
-                    size={'large'}
-                    style={{ height: '40px', width: '100%' }}
-                    value={invoiceData?.discount_percentage}
-                    disabled
-                  />
-                </>
-              ) : null}
-            </Col>
+            {invoiceData?.credit_days ? (
+              <Col xs={8} sm={8} md={8} lg={8}>
+                <div className={'title-space-field'}>Dias de Credito</div>
+                <Select
+                  className={'single-select'}
+                  placeholder={'Dias de credito'}
+                  size={'large'}
+                  style={{ width: '100%', height: '40px' }}
+                  value={invoiceData?.credit_days}
+                  disabled
+                >
+                  <Option value={invoiceData?.credit_days}>
+                    {invoiceData?.credit_days}
+                  </Option>
+                </Select>
+              </Col>
+            ) : null}
+            {invoiceData?.discount_percentage ? (
+              <Col xs={8} sm={8} md={8} lg={8}>
+                <div className={'title-space-field'}>Descuento (%)</div>
+                <Input
+                  type='tel'
+                  placeholder={'Aplicar Descuento'}
+                  size={'large'}
+                  style={{ height: '40px', width: '100%' }}
+                  value={invoiceData?.discount_percentage}
+                  disabled
+                />
+              </Col>
+            ) : null}
           </Row>
 
           <Divider className={'divider-custom-margins-users'} />
@@ -505,23 +412,15 @@ function PaymentsFields({ setLoading, detailData, ...props }) {
       <div>
         <Row gutter={16} className={'section-space-field'}>
           <Col xs={24} sm={24} md={24} lg={24}>
-            <DynamicTable columns={paymentsColumns} data={paymentsData} />
+            <PaymentsList
+              dataSource={paymentsData}
+              paymentMethodsOptionsList={props.paymentMethodsOptionsList}
+              handleChangePayments={handleChangePayments}
+              handleAddPayments={handleAddPayments}
+              handleRemovePayments={handleRemovePayments}
+            />
           </Col>
         </Row>
-
-        <Row gutter={16} className={'section-space-list'}>
-          <Col xs={24} sm={24} md={24} lg={24}>
-            <Button
-              type='dashed'
-              className={'shop-add-turn'}
-              onClick={handleAddPayments}
-            >
-              Agregar Pago
-            </Button>
-          </Col>
-        </Row>
-
-        <Divider className={'divider-custom-margins-users'} />
 
         <Row gutter={16} style={{ textAlign: 'right' }} justify='end'>
           <Col span={6} style={{ textAlign: 'right' }}>
@@ -530,6 +429,16 @@ function PaymentsFields({ setLoading, detailData, ...props }) {
                 <Statistic
                   title='Total pagos :'
                   value={getFormattedValue(totalPayments)}
+                />
+              </div>
+            ) : null}
+          </Col>
+          <Col span={6} style={{ textAlign: 'right' }}>
+            {paymentsData.length > 0 ? (
+              <div className={'title-space-field'}>
+                <Statistic
+                  title='Total pendiente :'
+                  value={getFormattedValue(totalUnpaidCredit)}
                 />
               </div>
             ) : null}
