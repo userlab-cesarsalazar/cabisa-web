@@ -86,7 +86,7 @@ export function getDetailData(data) {
   }
 }
 
-function Payments(props) {
+function Payments() {
   const initFilters = useRef()
 
   if (!initFilters.current) {
@@ -96,7 +96,7 @@ function Payments(props) {
       created_at: '',
       paymentMethods: '',
       totalInvoice: '',
-      creditStatus: ',',
+      creditStatus: '',
     }
   }
 
@@ -134,6 +134,7 @@ function Payments(props) {
         : '',
       payment_method: filters.paymentMethods,
       total_amount: { $like: `%25${filters.totalInvoice}%25` },
+      credit_status: filters.creditStatus,
     })
       .then(data => setDataSource(data))
       .catch(_ => message.error('Error al cargar facturas'))
@@ -175,6 +176,7 @@ function Payments(props) {
         loading={loading}
         setLoading={setLoading}
         detailData={detailData}
+        loadData={loadData}
         paymentMethodsOptionsList={paymentMethodsOptionsList}
         stakeholderTypesOptionsList={[]}
         serviceTypesOptionsList={[]}
