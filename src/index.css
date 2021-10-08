@@ -109,6 +109,7 @@ body {
 
 .show-flex-component {
   display: flex !important;
+  justify-content: flex-end;
 }
 
 .label-bold {
@@ -1557,4 +1558,8 @@ input:-webkit-autofill:focus {
 
 .ant-switch-checked {
   background-color: var(--cabisa-light-blue) !important;
+}
+
+.ant-select-dropdown {
+  width: unset !important;
 }

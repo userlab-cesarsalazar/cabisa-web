@@ -5,7 +5,7 @@ import ServiceDrawer from './serviceDrawer'
 import ActionOptions from '../../../../components/actionOptions'
 import { withRouter } from 'react-router'
 import Tag from '../../../../components/Tag'
-import { validateRole, numberFormat } from '../../../../utils'
+import { validateRole } from '../../../../utils'
 import { permissions, roles } from '../../../../commons/types'
 
 function InventoryService(props) {
@@ -13,8 +13,6 @@ function InventoryService(props) {
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
   const [isVisible, setIsVisible] = useState(false)
-
-  const { getFormattedValue } = numberFormat()
 
   const columns = [
     { title: 'Codigo', dataIndex: 'code', key: 'code' },
@@ -25,36 +23,24 @@ function InventoryService(props) {
       key: 'status',
       render: text => <Tag type='productStatus' value={text} />,
     },
+    {
+      title: '',
+      dataIndex: 'id', // Field that is goint to be rendered
+      key: 'id',
+      render: (_, data) => (
+        <ActionOptions
+          editPermissions={false}
+          data={data}
+          permissionId={permissions.INVENTARIO}
+          showDeleteBtn
+          handlerDeleteRow={DeleteRow}
+          handlerEditRow={EditRow}
+        />
+      ),
+    },
   ]
 
-  const priceColumn = {
-    title: 'Precio de venta (Q)',
-    dataIndex: 'unit_price',
-    key: 'unit_price',
-    render: text => (text ? <span>{getFormattedValue(text)}</span> : null),
-  }
-
-  const actionsColumn = {
-    title: '',
-    dataIndex: 'id', // Field that is goint to be rendered
-    key: 'id',
-    render: (_, data) => (
-      <ActionOptions
-        editPermissions={false}
-        data={data}
-        permissionId={permissions.INVENTARIO}
-        showDeleteBtn
-        handlerDeleteRow={DeleteRow}
-        handlerEditRow={EditRow}
-      />
-    ),
-  }
-
   const isAdmin = validateRole(roles.ADMIN)
-
-  const columnsWithPrice = isAdmin ? [...columns, priceColumn] : columns
-
-  const inventoryColumns = [...columnsWithPrice, actionsColumn]
 
   const loadData = useCallback(() => {
     setDataSource(getClientData(props.dataSource))
@@ -105,7 +91,7 @@ function InventoryService(props) {
         handlerTextSearch={searchTextFinder}
         handlerEditRow={EditRow}
         handlerDeleteRow={DeleteRow}
-        columns={inventoryColumns}
+        columns={columns}
         isAdmin={isAdmin}
       />
 

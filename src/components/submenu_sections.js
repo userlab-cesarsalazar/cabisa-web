@@ -1,14 +1,14 @@
 const submenu_sections = [
-  {
-    name: 'Historial maquinas',
-    key: 'reportMachineHistory',
-    route: '/reportMachineHistory',
-    component: (
-      <>
-        <h1>Historial Maquinas</h1>
-      </>
-    ),
-  },
+  // {
+  //   name: 'Historial maquinas',
+  //   key: 'reportMachineHistory',
+  //   route: '/reportMachineHistory',
+  //   component: (
+  //     <>
+  //       <h1>Historial Maquinas</h1>
+  //     </>
+  //   ),
+  // },
   {
     name: 'Inventario',
     key: 'reportInventory',
@@ -39,36 +39,36 @@ const submenu_sections = [
       </>
     ),
   },
-  {
-    name: 'Equipo / Servicio',
-    key: 'report_equipment_service',
-    route: '/reportEquipmentService',
-    component: (
-      <>
-        <h1>Equipo / Servicio</h1>
-      </>
-    ),
-  },
-  {
-    name: 'Factura Mensual',
-    key: 'reportMonthlyBill',
-    route: '/reportMonthlyBill',
-    component: (
-      <>
-        <h1>Factura mensual</h1>
-      </>
-    ),
-  },
-  {
-    name: 'Envios',
-    key: 'reportShipping',
-    route: '/reportShipping',
-    component: (
-      <>
-        <h1>Envios por cliente</h1>
-      </>
-    ),
-  },
+  // {
+  //   name: 'Equipo / Servicio',
+  //   key: 'report_equipment_service',
+  //   route: '/reportEquipmentService',
+  //   component: (
+  //     <>
+  //       <h1>Equipo / Servicio</h1>
+  //     </>
+  //   ),
+  // },
+  // {
+  //   name: 'Factura Mensual',
+  //   key: 'reportMonthlyBill',
+  //   route: '/reportMonthlyBill',
+  //   component: (
+  //     <>
+  //       <h1>Factura mensual</h1>
+  //     </>
+  //   ),
+  // },
+  // {
+  //   name: 'Envios',
+  //   key: 'reportShipping',
+  //   route: '/reportShipping',
+  //   component: (
+  //     <>
+  //       <h1>Envios por cliente</h1>
+  //     </>
+  //   ),
+  // },
   {
     name: 'Ventas',
     key: 'reportSales',
@@ -79,26 +79,26 @@ const submenu_sections = [
       </>
     ),
   },
-  {
-    name: 'Comisiones',
-    key: 'reportCommissions',
-    route: '/reportCommissions',
-    component: (
-      <>
-        <h1>Comisiones</h1>
-      </>
-    ),
-  },
-  {
-    name: 'Equipo Costo-Venta',
-    key: 'reportCostSellingEquipment',
-    route: '/reportCostSellingEquipment',
-    component: (
-      <>
-        <h1>Equipo Costo-Venta</h1>
-      </>
-    ),
-  },
+  // {
+  //   name: 'Comisiones',
+  //   key: 'reportCommissions',
+  //   route: '/reportCommissions',
+  //   component: (
+  //     <>
+  //       <h1>Comisiones</h1>
+  //     </>
+  //   ),
+  // },
+  // {
+  //   name: 'Equipo Costo-Venta',
+  //   key: 'reportCostSellingEquipment',
+  //   route: '/reportCostSellingEquipment',
+  //   component: (
+  //     <>
+  //       <h1>Equipo Costo-Venta</h1>
+  //     </>
+  //   ),
+  // },
 ]
 
 const submenu_sections_inventory = [

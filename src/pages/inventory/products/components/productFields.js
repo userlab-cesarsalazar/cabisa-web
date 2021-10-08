@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Cache, Storage } from 'aws-amplify'
+import { Storage } from 'aws-amplify'
 import '../../../../amplify_config'
 import {
   productsStatus,
@@ -8,7 +8,6 @@ import {
 } from '../../../../commons/types'
 import FooterButtons from '../../../../components/FooterButtons'
 import Tag from '../../../../components/Tag'
-import CurrencyInput from '../../../../components/CurrencyInput'
 import {
   Col,
   Divider,
@@ -29,9 +28,7 @@ function ProductFields(props) {
   const [code, setCode] = useState('')
   const [serie, setSerie] = useState('')
   const [description, setDescription] = useState('')
-  const [price, setPrice] = useState('')
   const [serviceCategory, setServiceCategory] = useState(null)
-  const [specialPermission, setSpecialPermission] = useState(false)
   const [loading, setLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState(null)
   const [status, setStatus] = useState(null)
@@ -46,13 +43,11 @@ function ProductFields(props) {
     setCode(props.edit ? props.editData.code : '')
     setSerie(props.edit ? props.editData.serial_number : '')
     setDescription(props.edit ? props.editData.description : '')
-    setPrice(props.edit ? props.editData.unit_price : '')
     setServiceCategory(
       props.edit
         ? props.editData.product_category
         : productsCategories.EQUIPMENT
     )
-    setSpecialPermission(Cache.getItem('currentSession').rol_id !== 1)
     setStatus(props.edit ? props.editData.status : productsStatus.ACTIVE)
     // setTaxId(props.edit ? props.editData.tax_id : productsTaxes.IVA)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,15 +59,12 @@ function ProductFields(props) {
       code,
       serie,
       description,
-      price,
       serviceCategory,
       // taxId,
     ]
 
     if (requiredValues.some(v => !v))
       errors.push('Todos los campos son obligatorios.')
-    if (price < 0)
-      errors.push('El Precio de venta debe ser mayor o igual a cero.')
 
     if (errors.length > 0) return errors.forEach(e => message.warning(e))
 
@@ -81,7 +73,6 @@ function ProductFields(props) {
       code,
       serial_number: serie,
       description,
-      unit_price: price,
       product_category: serviceCategory,
       status,
       tax_id: 2, //taxId,
@@ -144,7 +135,7 @@ function ProductFields(props) {
             <Divider className={'divider-custom-margins-users'} />
           </>
         )}
-        {/*Fields section*/}
+
         <Row gutter={16} className={'section-space-field'}>
           <Col xs={10} sm={10} md={10} lg={10}>
             <div className={'title-space-field'}>Codigo</div>
@@ -253,19 +244,7 @@ function ProductFields(props) {
               ))}
             </Select>
           </Col> */}
-          {props.isAdmin && (
-            <Col xs={8} sm={8} md={8} lg={8}>
-              <div className={'title-space-field'}>Precio de venta (Q)</div>
-              <CurrencyInput
-                disabled={specialPermission}
-                value={price}
-                placeholder={'Precio de venta (Q)'}
-                onChange={value => setPrice(value)}
-              />
-            </Col>
-          )}
         </Row>
-        {/*End Fields section*/}
       </div>
       <FooterButtons
         saveData={saveData}

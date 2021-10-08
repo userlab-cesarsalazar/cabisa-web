@@ -4,7 +4,7 @@ import ProductDrawer from './productDrawer'
 import { withRouter } from 'react-router'
 import Tag from '../../../../components/Tag'
 import ActionOptions from '../../../../components/actionOptions'
-import { validateRole, numberFormat } from '../../../../utils'
+import { validateRole } from '../../../../utils'
 import { permissions, roles } from '../../../../commons/types'
 
 function InventoryProduct(props) {
@@ -12,8 +12,6 @@ function InventoryProduct(props) {
   const [editDataDrawer, setEditDataDrawer] = useState(null)
   const [dataSource, setDataSource] = useState([])
   const [isVisible, setIsVisible] = useState(false)
-
-  const { getFormattedValue } = numberFormat()
 
   const columns = [
     {
@@ -46,36 +44,24 @@ function InventoryProduct(props) {
       key: 'status',
       render: text => <Tag type='productStatus' value={text} />,
     },
+    {
+      title: '',
+      dataIndex: 'id', // Field that is goint to be rendered
+      key: 'id',
+      render: (_, data) => (
+        <ActionOptions
+          editPermissions={false}
+          data={data}
+          permissionId={permissions.INVENTARIO}
+          showDeleteBtn
+          handlerDeleteRow={DeleteRow}
+          handlerEditRow={EditRow}
+        />
+      ),
+    },
   ]
 
-  const priceColumn = {
-    title: 'Precio de venta (Q)',
-    dataIndex: 'unit_price', // Field that is goint to be rendered
-    key: 'unit_price',
-    render: text => (text ? <span>{getFormattedValue(text)}</span> : null),
-  }
-
-  const actionsColumn = {
-    title: '',
-    dataIndex: 'id', // Field that is goint to be rendered
-    key: 'id',
-    render: (_, data) => (
-      <ActionOptions
-        editPermissions={false}
-        data={data}
-        permissionId={permissions.INVENTARIO}
-        showDeleteBtn
-        handlerDeleteRow={DeleteRow}
-        handlerEditRow={EditRow}
-      />
-    ),
-  }
-
   const isAdmin = validateRole(roles.ADMIN)
-
-  const columnsWithPrice = isAdmin ? [...columns, priceColumn] : columns
-
-  const wareHouseColumns = [...columnsWithPrice, actionsColumn]
 
   const loadData = useCallback(() => {
     setDataSource(getClientData(props.dataSource))
@@ -127,7 +113,7 @@ function InventoryProduct(props) {
         loading={props.loading}
         handlerTextSearch={searchTextFinder}
         handlerCategorySearch={searchByCategory}
-        columns={wareHouseColumns}
+        columns={columns}
         productCategoriesList={props.productCategoriesList}
         isAdmin={isAdmin}
       />

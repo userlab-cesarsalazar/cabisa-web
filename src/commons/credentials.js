@@ -17,6 +17,10 @@ const develop = {
   usersUrl: 'https://oj41d9rbdi.execute-api.us-east-1.amazonaws.com/dev/users',
   repairsUrl:
     'https://tqd5wf5c3i.execute-api.us-east-1.amazonaws.com/dev/repairs',
+  reportUrl:
+    'https://ueuvc1n3sg.execute-api.us-east-1.amazonaws.com/dev/reports',
+  paymentsUrl:
+    'https://kqanan1fy6.execute-api.us-east-1.amazonaws.com/dev/payments',
 }
 
 const enviroment = env => {
