@@ -210,6 +210,283 @@ export const editableListInitRow = {
   subtotal: 0,
 }
 
+export const billingLogicFactory = ({
+  stakeholdersOptionsList,
+  setProjectsOptionsList,
+  productsData,
+  isInvoiceFromSale,
+  discountInputValue,
+  setLoading,
+  setData,
+  data,
+  setProductsOptionsList,
+  setChildProductsOptionsList,
+  setDiscountInputValue,
+  setProductsData,
+  handleSaveData,
+  isSaleValidation = false,
+}) => {
+  const handleSearchProject = stakeholder_id => name => {
+    if (name === '' || (!stakeholder_id && name !== null)) return
+
+    const params = {
+      stakeholder_id,
+      name: { $like: `%25${name || ''}%25` },
+    }
+
+    setLoading(true)
+
+    billingSrc
+      .getProjectsOptions(params)
+      .then(data => setProjectsOptionsList(data))
+      .catch(error => showErrors(error))
+      .finally(() => setLoading(false))
+  }
+
+  const getSaveData = () => ({
+    document_id: data.id,
+    stakeholder_id: data.stakeholder_id,
+    project_id: data.project_id,
+    start_date: data.start_date,
+    end_date: data.end_date,
+    payment_method: data.payment_method,
+    credit_days: data.credit_days,
+    dispatched_by: data.dispatched_by,
+    received_by: data.received_by,
+    comments: data.comments,
+    subtotal_amount: data.subtotal,
+    total_discount_amount: data.discount,
+    total_tax_amount: data.total_tax,
+    total_amount: data.total,
+    description: data.description,
+    products: productsData.reduce((r, p) => {
+      const parentProduct = {
+        product_id: p.id,
+        product_quantity:
+          !p.child_id || isNaN(p.child_id) ? Number(p.quantity) : 1,
+        product_price: Number(p.parent_unit_price),
+        product_discount_percentage: discountInputValue
+          ? Number(discountInputValue)
+          : null,
+        product_discount: p.parent_unit_discount
+          ? Number(p.parent_unit_discount)
+          : null,
+        service_type: p.service_type,
+      }
+
+      const childProduct = {
+        product_id: p.child_id,
+        product_quantity: Number(p.quantity),
+        product_price: Number(p.child_unit_price),
+        product_discount_percentage: discountInputValue
+          ? Number(discountInputValue)
+          : null,
+        product_discount: p.child_unit_discount
+          ? Number(p.child_unit_discount)
+          : null,
+        parent_product_id: p.id || null,
+        service_type: p.service_type,
+      }
+
+      const products =
+        !p.id || isNaN(p.id) ? [childProduct] : [childProduct, parentProduct]
+
+      return [...(r || []), ...products]
+    }, []),
+  })
+
+  const validateSaveData = data => {
+    const errors = []
+    const billRequiredFields = [
+      { key: 'stakeholder_id', value: 'Empresa' },
+      { key: 'payment_method', value: 'Metodo de pago' },
+      { key: 'project_id', value: 'Proyecto' },
+    ]
+    const saleRequiredFields = [
+      { key: 'stakeholder_id', value: 'Empresa' },
+      { key: 'project_id', value: 'Proyecto' },
+      { key: 'start_date', value: 'Fecha Inicio' },
+      { key: 'end_date', value: 'Fecha Final' },
+    ]
+    const requiredFields = isSaleValidation
+      ? saleRequiredFields
+      : billRequiredFields
+
+    const requiredErrors = requiredFields.flatMap(field =>
+      !data[field.key] ? field.value : []
+    )
+    if (requiredErrors.length > 0) {
+      requiredErrors.forEach(k => {
+        errors.push(`El campo ${k} es obligatorio`)
+      })
+    }
+    const productsRequiredFields = ['product_quantity', 'product_price']
+
+    const productErrors = validateSaleOrBillingProducts(
+      data.products,
+      productsRequiredFields,
+      documentsServiceType.SERVICE
+    )
+
+    if (productErrors.required.length > 0) {
+      errors.push(
+        `Los campos Precio y Cantidad de los productos en posicion ${productErrors.required.join(
+          ', '
+        )} deben ser mayor a cero`
+      )
+    }
+
+    Object.keys(productErrors.duplicate).forEach(k => {
+      if (productErrors.duplicate[k]?.length > 1) {
+        errors.push(
+          `Los productos en posicion ${productErrors.duplicate[k].join(
+            ', '
+          )} no pueden estar duplicados`
+        )
+      }
+    })
+
+    if (!isSaleValidation && discountInputValue < 0) {
+      errors.push(
+        `El campo Descuento (%) debe contener un valor mayor o igual a cero`
+      )
+    }
+
+    return {
+      isInvalid: errors.length > 0,
+      error: {
+        message: errors,
+      },
+    }
+  }
+
+  return {
+    handleSearchProject,
+
+    handleDiscountChange: e => {
+      const getParentProduct = p => ({
+        id: p.id,
+        code: p.code,
+        tax_fee: p.parent_tax_fee,
+        unit_tax_amount: p.parent_unit_tax_amount,
+        unit_discount: p.parent_unit_discount,
+      })
+
+      const getChildProduct = p => ({
+        id: p.child_id,
+        tax_fee: p.child_tax_fee,
+        unit_tax_amount: p.child_unit_tax_amount,
+        unit_discount: p.child_unit_discount,
+      })
+
+      setDiscountInputValue(e?.target?.value || 0)
+
+      setProductsData(prevState => {
+        return prevState.map(p => {
+          const parentProduct = getParentProduct(p)
+          const childProduct = getChildProduct(p)
+
+          const updatedProduct = handleUpdateProductsData({
+            parentProduct,
+            childProduct,
+            row: p,
+            discountValue: e?.target?.value,
+          })
+
+          return updatedProduct
+        })
+      })
+    },
+
+    handleSearchProduct: rowIndex => product_description => {
+      if (isInvoiceFromSale) return
+      if (product_description === '') return
+      if (!productsData[rowIndex].service_type)
+        return message.warning('Debe seleccionar el Tipo de servicio')
+
+      const params = {
+        status: productsStatus.ACTIVE,
+        stock: { $gt: 0 },
+        description: { $like: `%25${product_description}%25` },
+        product_type: productsTypes.SERVICE,
+      }
+
+      setLoading(true)
+
+      billingSrc
+        .getProductsOptions(params)
+        .then(data => setProductsOptionsList(data))
+        .catch(error => showErrors(error))
+        .finally(() => setLoading(false))
+    },
+
+    handleSearchChildProduct: rowIndex => product_description => {
+      if (isInvoiceFromSale) return
+      if (product_description === '') return
+      if (!productsData[rowIndex].service_type)
+        return message.warning('Debe seleccionar el Tipo de servicio')
+
+      const params = {
+        status: productsStatus.ACTIVE,
+        stock: { $gt: 0 },
+        description: { $like: `%25${product_description}%25` },
+        product_type: productsTypes.PRODUCT,
+      }
+
+      setLoading(true)
+
+      billingSrc
+        .getProductsOptions(params)
+        .then(data => setChildProductsOptionsList(data))
+        .catch(error => showErrors(error))
+        .finally(() => setLoading(false))
+    },
+
+    handleChange: field => e => {
+      const value = e?.target?.value === undefined ? e : e.target.value
+
+      if (field === 'stakeholder_id') {
+        handleSearchProject(value)()
+
+        const stakeholder = stakeholdersOptionsList.find(
+          option => option.id === value
+        )
+
+        return setData(prevState => ({
+          ...prevState,
+          project_id: null,
+          stakeholder_id: stakeholder.id,
+          stakeholder_name: stakeholder.stakeholder_name,
+          stakeholder_type: stakeholder.stakeholder_type,
+          stakeholder_nit: stakeholder.nit,
+          stakeholder_email: stakeholder.email,
+          stakeholder_phone: formatPhone(stakeholder.phone),
+          stakeholder_address: stakeholder.address,
+        }))
+      }
+
+      setData(prevState => ({
+        ...prevState,
+        [field]: value,
+      }))
+    },
+
+    getSaveData,
+
+    validateSaveData,
+
+    saveData: async () => {
+      const saveData = getSaveData()
+
+      const { isInvalid, error } = validateSaveData(saveData)
+
+      if (isInvalid) return showErrors(error)
+
+      await handleSaveData(saveData)
+    },
+  }
+}
+
 function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   const [stakeholdersOptionsList, setStakeholdersOptionsList] = useState([])
   const [projectsOptionsList, setProjectsOptionsList] = useState([])
@@ -218,6 +495,29 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
   const [data, setData] = useState({})
   const [productsData, setProductsData] = useState([])
   const [discountInputValue, setDiscountInputValue] = useState(0)
+
+  const {
+    saveData,
+    handleChange,
+    handleSearchChildProduct,
+    handleSearchProduct,
+    handleDiscountChange,
+    handleSearchProject,
+  } = billingLogicFactory({
+    stakeholdersOptionsList,
+    setProjectsOptionsList,
+    productsData,
+    isInvoiceFromSale,
+    discountInputValue,
+    setLoading,
+    setData,
+    data,
+    setProductsOptionsList,
+    setChildProductsOptionsList,
+    setDiscountInputValue,
+    setProductsData,
+    handleSaveData: props.handleSaveData,
+  })
 
   const handleSearchStakeholder = useCallback(
     (stakeholder_name, additionalParams = {}) => {
@@ -242,72 +542,33 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     [setLoading, isInvoiceFromSale]
   )
 
-  const handleSearchProduct = rowIndex => product_description => {
-    if (isInvoiceFromSale) return
-    if (product_description === '') return
-    if (!productsData[rowIndex].service_type)
-      return message.warning('Debe seleccionar el Tipo de servicio')
+  useEffect(
+    function updateStatistics() {
+      if (editData && !isInvoiceFromSale) return
 
-    const params = {
-      status: productsStatus.ACTIVE,
-      stock: { $gt: 0 },
-      description: { $like: `%25${product_description}%25` },
-      product_type: productsTypes.SERVICE,
-    }
+      setData(prevDataState => {
+        const totals = productsData?.reduce((r, p) => {
+          const discount = (r.discount || 0) + getProductDiscount(p)
+          const subtotal = (r.subtotal || 0) + getProductSubtotal(p)
+          const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
+          const total = subtotal + total_tax
 
-    setLoading(true)
+          return {
+            discount: roundNumber(discount) || 0,
+            subtotal: roundNumber(subtotal) || 0,
+            total_tax: roundNumber(total_tax) || 0,
+            total: roundNumber(total) || 0,
+            credit_days: prevDataState.credit_days
+              ? prevDataState.credit_days
+              : 0,
+          }
+        }, {})
 
-    billingSrc
-      .getProductsOptions(params)
-      .then(data => setProductsOptionsList(data))
-      .catch(error => showErrors(error))
-      .finally(() => setLoading(false))
-  }
-
-  const handleSearchChildProduct = rowIndex => product_description => {
-    if (isInvoiceFromSale) return
-    if (product_description === '') return
-    if (!productsData[rowIndex].service_type)
-      return message.warning('Debe seleccionar el Tipo de servicio')
-
-    const params = {
-      status: productsStatus.ACTIVE,
-      stock: { $gt: 0 },
-      description: { $like: `%25${product_description}%25` },
-      product_type: productsTypes.PRODUCT,
-    }
-
-    setLoading(true)
-
-    billingSrc
-      .getProductsOptions(params)
-      .then(data => setChildProductsOptionsList(data))
-      .catch(error => showErrors(error))
-      .finally(() => setLoading(false))
-  }
-
-  useEffect(() => {
-    if (editData && !isInvoiceFromSale) return
-
-    setData(prevState => {
-      const totals = productsData?.reduce((r, p) => {
-        const discount = (r.discount || 0) + getProductDiscount(p)
-        const subtotal = (r.subtotal || 0) + getProductSubtotal(p)
-        const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
-        const total = subtotal + total_tax
-
-        return {
-          discount: roundNumber(discount) || 0,
-          subtotal: roundNumber(subtotal) || 0,
-          total_tax: roundNumber(total_tax) || 0,
-          total: roundNumber(total) || 0,
-          credit_days: prevState.credit_days ? prevState.credit_days : 0,
-        }
-      }, {})
-
-      return { ...prevState, ...totals }
-    })
-  }, [setData, productsData, editData, isInvoiceFromSale])
+        return { ...prevDataState, ...totals }
+      })
+    },
+    [setData, productsData, editData, isInvoiceFromSale]
+  )
 
   useEffect(() => {
     if (editData && !isInvoiceFromSale) return
@@ -395,191 +656,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
     onBlur: updateInvoiceOnBlurPrice,
   })
 
-  const handleDiscountChange = e => {
-    const getParentProduct = p => ({
-      id: p.id,
-      code: p.code,
-      tax_fee: p.parent_tax_fee,
-      unit_tax_amount: p.parent_unit_tax_amount,
-      unit_discount: p.parent_unit_discount,
-    })
-
-    const getChildProduct = p => ({
-      id: p.child_id,
-      tax_fee: p.child_tax_fee,
-      unit_tax_amount: p.child_unit_tax_amount,
-      unit_discount: p.child_unit_discount,
-    })
-
-    setDiscountInputValue(e?.target?.value || 0)
-
-    setProductsData(prevState => {
-      return prevState.map(p => {
-        const parentProduct = getParentProduct(p)
-        const childProduct = getChildProduct(p)
-
-        const updatedProduct = handleUpdateProductsData({
-          parentProduct,
-          childProduct,
-          row: p,
-          discountValue: e?.target?.value,
-        })
-
-        return updatedProduct
-      })
-    })
-  }
-
-  const handleChange = field => e => {
-    const value = e?.target?.value === undefined ? e : e.target.value
-
-    if (field === 'stakeholder_id') {
-      handleSearchProject(value)()
-
-      const stakeholder = stakeholdersOptionsList.find(
-        option => option.id === value
-      )
-
-      return setData(prevState => ({
-        ...prevState,
-        project_id: null,
-        stakeholder_id: stakeholder.id,
-        stakeholder_name: stakeholder.stakeholder_name,
-        stakeholder_type: stakeholder.stakeholder_type,
-        stakeholder_nit: stakeholder.nit,
-        stakeholder_email: stakeholder.email,
-        stakeholder_phone: formatPhone(stakeholder.phone),
-        stakeholder_address: stakeholder.address,
-      }))
-    }
-
-    setData(prevState => ({
-      ...prevState,
-      [field]: value,
-    }))
-  }
-
-  const getSaveData = () => ({
-    document_id: data?.id,
-    stakeholder_id: data.stakeholder_id,
-    project_id: data.project_id,
-    payment_method: data.payment_method,
-    credit_days: data.credit_days,
-    subtotal_amount: data.subtotal,
-    total_discount_amount: data.discount,
-    total_tax_amount: data.total_tax,
-    total_amount: data.total,
-    description: data.description,
-    products: productsData.reduce((r, p) => {
-      const parentProduct = {
-        product_id: p.id,
-        product_quantity:
-          !p.child_id || isNaN(p.child_id) ? Number(p.quantity) : 1,
-        product_price: Number(p.parent_unit_price),
-        product_discount_percentage: Number(discountInputValue),
-        product_discount: Number(p.parent_unit_discount),
-        service_type: p.service_type,
-      }
-
-      const childProduct = {
-        product_id: p.child_id,
-        product_quantity: Number(p.quantity),
-        product_price: Number(p.child_unit_price),
-        product_discount_percentage: Number(discountInputValue),
-        product_discount: Number(p.child_unit_discount),
-        parent_product_id: p.id || null,
-        service_type: p.service_type,
-      }
-
-      const products =
-        !p.id || isNaN(p.id) ? [childProduct] : [childProduct, parentProduct]
-
-      return [...(r || []), ...products]
-    }, []),
-  })
-
-  const validateSaveData = data => {
-    const errors = []
-    const requiredFields = [
-      { key: 'stakeholder_id', value: 'Empresa' },
-      { key: 'payment_method', value: 'Metodo de pago' },
-      { key: 'project_id', value: 'Proyecto' },
-    ]
-    const requiredErrors = requiredFields.flatMap(field =>
-      !data[field.key] ? field.value : []
-    )
-    if (requiredErrors.length > 0) {
-      requiredErrors.forEach(k => {
-        errors.push(`El campo ${k} es obligatorio`)
-      })
-    }
-    const productsRequiredFields = ['product_quantity', 'product_price']
-
-    const productErrors = validateSaleOrBillingProducts(
-      data.products,
-      productsRequiredFields,
-      documentsServiceType.SERVICE
-    )
-
-    if (productErrors.required.length > 0) {
-      errors.push(
-        `Los campos Precio y Cantidad de los productos en posicion ${productErrors.required.join(
-          ', '
-        )} deben ser mayor a cero`
-      )
-    }
-
-    Object.keys(productErrors.duplicate).forEach(k => {
-      if (productErrors.duplicate[k]?.length > 1) {
-        errors.push(
-          `Los productos en posicion ${productErrors.duplicate[k].join(
-            ', '
-          )} no pueden estar duplicados`
-        )
-      }
-    })
-
-    if (discountInputValue < 0) {
-      errors.push(
-        `El campo Descuento (%) debe contener un valor mayor o igual a cero`
-      )
-    }
-
-    return {
-      isInvalid: errors.length > 0,
-      error: {
-        message: errors,
-      },
-    }
-  }
-
-  const saveData = () => {
-    const saveData = getSaveData()
-
-    const { isInvalid, error } = validateSaveData(saveData)
-
-    if (isInvalid) return showErrors(error)
-
-    props.handleSaveData(saveData)
-  }
-
-  const handleSearchProject = stakeholder_id => name => {
-    if (name === '' || (!stakeholder_id && name !== null)) return
-
-    const params = {
-      stakeholder_id,
-      name: { $like: `%25${name || ''}%25` },
-    }
-
-    setLoading(true)
-
-    billingSrc
-      .getProjectsOptions(params)
-      .then(data => setProjectsOptionsList(data))
-      .catch(error => showErrors(error))
-      .finally(() => setLoading(false))
-  }
-
   return (
     <>
       <div>
@@ -626,7 +702,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
             <Divider className={'divider-custom-margins-users'} />
           </>
         )}
-        {/*Fields section*/}
+
         <Row gutter={16} className={'section-space-field'}>
           <Col xs={8} sm={8} md={8} lg={8}>
             <div className={'title-space-field'}>Selecciona Cliente</div>
@@ -781,8 +857,9 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
             </Select>
           </Col>
         </Row>
-        {/*End Fields section*/}
+
         <Divider className={'divider-custom-margins-users'} />
+
         <Row
           gutter={16}
           className={'section-space-list'}

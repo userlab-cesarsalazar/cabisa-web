@@ -19,15 +19,14 @@ import SaleProductsList from './saleProductsList'
 import { useSale, saleActions } from '../../context'
 import {
   showErrors,
-  validateSaleOrBillingProducts,
   formatPhone,
   numberFormat,
+  roundNumber,
 } from '../../../../utils'
 import {
   productsTypes,
   productsStatus,
   appConfig,
-  documentsServiceType,
   stakeholdersTypes,
   stakeholdersStatus,
 } from '../../../../commons/types'
@@ -36,6 +35,8 @@ import {
   editableListInitRow,
   getOnChangeProductsListCallback,
   getProductSubtotal,
+  getProductDiscount,
+  billingLogicFactory,
 } from '../../../billing/components/billingFields'
 
 const { getFormattedValue } = numberFormat()
@@ -53,13 +54,21 @@ const {
 const { TextArea } = Input
 const { Option } = Select
 
-function NewNoteView({ isAdmin }) {
+function NewNoteView({ canEditAndCreate }) {
   const history = useHistory()
   const [sale, setSale] = useState([])
   const [dataSourceTable, setDataSourceTable] = useState([])
   const [serviceDaysLength, setServiceDaysLength] = useState(null)
 
   const [{ error, loading, status, ...saleState }, saleDispatch] = useSale()
+
+  const { saveData } = billingLogicFactory({
+    productsData: dataSourceTable,
+    setData: setSale,
+    data: sale,
+    handleSaveData: saveData => createSale(saleDispatch, saveData),
+    isSaleValidation: true,
+  })
 
   const handleSearchStakeholder = useCallback(
     (stakeholder_name, additionalParams = {}) => {
@@ -97,15 +106,27 @@ function NewNoteView({ isAdmin }) {
   }, [saleDispatch])
 
   useEffect(
-    function updateSaleSubtotal() {
-      const subtotal_amount = dataSourceTable?.reduce(
-        (r, p) => r + getProductSubtotal(p),
-        0
-      )
+    function updateStatistics() {
+      setSale(prevState => {
+        const totals = dataSourceTable?.reduce((r, p) => {
+          const discount = (r.discount || 0) + getProductDiscount(p)
+          const subtotal = (r.subtotal || 0) + getProductSubtotal(p)
+          const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
+          const total = subtotal + total_tax
 
-      setSale(prevState => ({ ...prevState, subtotal_amount }))
+          return {
+            discount: roundNumber(discount) || 0,
+            subtotal: roundNumber(subtotal) || 0,
+            total_tax: roundNumber(total_tax) || 0,
+            total: roundNumber(total) || 0,
+            credit_days: prevState.credit_days ? prevState.credit_days : 0,
+          }
+        }, {})
+
+        return { ...prevState, ...totals }
+      })
     },
-    [dataSourceTable]
+    [setSale, dataSourceTable]
   )
 
   useEffect(() => {
@@ -190,102 +211,6 @@ function NewNoteView({ isAdmin }) {
     }
 
     fetchChildProductsOptions(saleDispatch, params)
-  }
-
-  const getSaveData = () => ({
-    stakeholder_id: sale.stakeholder_id,
-    project_id: sale.project_id,
-    start_date: sale.start_date,
-    end_date: sale.end_date,
-    dispatched_by: sale.dispatched_by,
-    received_by: sale.received_by,
-    comments: sale.comments,
-    related_external_document_id: null,
-    subtotal_amount: sale.subtotal_amount,
-    products: dataSourceTable.reduce((r, p) => {
-      const parentProduct = {
-        product_id: p.id,
-        product_quantity:
-          !p.child_id || isNaN(p.child_id) ? Number(p.quantity) : 1,
-        product_price: Number(p.parent_unit_price),
-        service_type: p.service_type,
-      }
-
-      const childProduct = {
-        product_id: p.child_id,
-        product_quantity: Number(p.quantity),
-        product_price: Number(p.child_unit_price),
-        parent_product_id: p.id,
-        service_type: p.service_type,
-      }
-
-      const products =
-        !p.id || isNaN(p.id) ? [childProduct] : [childProduct, parentProduct]
-
-      return [...(r || []), ...products]
-    }, []),
-  })
-
-  const validateSaveData = data => {
-    const errors = []
-    const requiredFields = [
-      { key: 'stakeholder_id', value: 'Empresa' },
-      { key: 'project_id', value: 'Proyecto' },
-      { key: 'start_date', value: 'Fecha Inicio' },
-      { key: 'end_date', value: 'Fecha Final' },
-      // { key: 'dispatched_by', value: 'Quien Entrega' },
-      // { key: 'received_by', value: 'Quien Recibe' },
-    ]
-    const requiredErrors = requiredFields.flatMap(field =>
-      !data[field.key] ? field.value : []
-    )
-
-    if (requiredErrors.length > 0) {
-      requiredErrors.forEach(k => {
-        errors.push(`El campo ${k} es obligatorio`)
-      })
-    }
-
-    const productsRequiredFields = ['product_quantity', 'product_price']
-    const productErrors = validateSaleOrBillingProducts(
-      data.products,
-      productsRequiredFields,
-      documentsServiceType.SERVICE
-    )
-
-    if (productErrors.required.length > 0) {
-      errors.push(
-        `Los campos Precio y Cantidad de los productos en posicion ${productErrors.required.join(
-          ', '
-        )} deben ser mayor a cero`
-      )
-    }
-
-    Object.keys(productErrors.duplicate).forEach(k => {
-      if (productErrors.duplicate[k]?.length > 1) {
-        errors.push(
-          `Los productos en posicion ${productErrors.duplicate[k].join(
-            ', '
-          )} no pueden estar duplicados`
-        )
-      }
-    })
-
-    return {
-      isInvalid: errors.length > 0,
-      error: {
-        message: errors,
-      },
-    }
-  }
-  const saveData = async () => {
-    const data = getSaveData()
-
-    const { isInvalid, error } = validateSaveData(data)
-
-    if (isInvalid) return showErrors(error)
-
-    await createSale(saleDispatch, data)
   }
 
   const getHandleChangeValue = (field, e) => {
@@ -487,7 +412,7 @@ function NewNoteView({ isAdmin }) {
               childProductsOptionsList={saleState.childProductsOptionsList}
               status={status}
               loading={loading}
-              isAdmin={isAdmin}
+              canEditAndCreate={canEditAndCreate}
               documentServiceTypesOptionsList={
                 saleState.documentServiceTypesOptionsList
               }
@@ -501,8 +426,24 @@ function NewNoteView({ isAdmin }) {
           <Col span={6} style={{ textAlign: 'right' }}>
             <div className={'title-space-field'}>
               <Statistic
+                title='Subtotal :'
+                value={getFormattedValue(sale.subtotal)}
+              />
+            </div>
+          </Col>
+          <Col span={6} style={{ textAlign: 'right' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Impuesto :'
+                value={getFormattedValue(sale.total_tax)}
+              />
+            </div>
+          </Col>
+          <Col span={6} style={{ textAlign: 'right' }}>
+            <div className={'title-space-field'}>
+              <Statistic
                 title='Total :'
-                value={getFormattedValue(sale.subtotal_amount)}
+                value={getFormattedValue(sale.total)}
               />
             </div>
           </Col>
