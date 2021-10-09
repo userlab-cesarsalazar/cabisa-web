@@ -17,9 +17,7 @@ function RepairsView(props) {
         message.success('Orden de Reparacion creado exitosamente')
         props.history.push('/repairs')
       })
-      .catch(error => {
-        showErrors(error)
-      })
+      .catch(error => showErrors(error))
       .finally(() => setLoading(false))
   }
 

@@ -27,7 +27,8 @@ const columns = [
     title: 'Total Pendiente',
     dataIndex: 'unpaid_credit_amount', // Field that is goint to be rendered
     key: 'unpaid_credit_amount',
-    render: text => (text ? <span>{text.toFixed(2)}</span> : null),
+    render: text =>
+      text || text === 0 ? <span>{text.toFixed(2)}</span> : null,
   },
   {
     title: 'Fecha de facturacion',

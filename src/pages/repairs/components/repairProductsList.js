@@ -97,20 +97,14 @@ function RepairProductsList({
               <CurrencyInput
                 className='product-list-input'
                 placeholder='Costo Producto (Q)'
-                value={row.parent_inventory_unit_value}
+                value={row.parent_unit_price}
                 onChange={value =>
-                  handleChangeDetail(
-                    'parent_inventory_unit_value',
-                    value,
-                    index
-                  )
+                  handleChangeDetail('parent_unit_price', value, index)
                 }
                 onFocus={() =>
-                  handleChangeDetail('parent_inventory_unit_value', '', index)
+                  handleChangeDetail('parent_unit_price', '', index)
                 }
-                onBlur={() =>
-                  handleBlurDetail('parent_inventory_unit_value', '', index)
-                }
+                onBlur={() => handleBlurDetail('parent_unit_price', '', index)}
                 disabled
               />
             </Col>

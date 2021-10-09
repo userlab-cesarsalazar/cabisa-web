@@ -143,7 +143,14 @@ function RepairsFields({ isEditing, editData, setLoading, loading, ...props }) {
     setLoading(true)
 
     RepairsSrc.getProductsOptions(params)
-      .then(data => setPartProductsOptionsList(data))
+      .then(data => {
+        const products = data.map(d => ({
+          ...d,
+          unit_price: d.inventory_unit_value,
+        }))
+
+        setPartProductsOptionsList(products)
+      })
       .catch(error => showErrors(error))
       .finally(() => setLoading(false))
   }
