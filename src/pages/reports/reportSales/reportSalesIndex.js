@@ -1,12 +1,45 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import moment from 'moment'
-import { message } from 'antd'
+import { message, Row, Col, Statistic, Divider } from 'antd'
 import GenericTable from '../../../components/genericTable'
 import ReportSalesFilters from './components/reportSalesFilters'
 import HeaderPage from '../../../components/HeaderPage'
 import Tag from '../../../components/Tag'
 import ReportsSrc from '../reportsSrc'
-import { showErrors, getDateRangeFilter } from '../../../utils'
+import { showErrors, getDateRangeFilter, numberFormat } from '../../../utils'
+
+const { getFormattedValue } = numberFormat()
+
+const getTotals = invoicesList =>
+  invoicesList.reduce(
+    (result, invoice) => {
+      const isTotallyPaid =
+        Number(invoice.paid_credit_amount) === Number(invoice.total_amount)
+      const paidInvoicesSalesCommissionTotal =
+        result.paidInvoicesSalesCommissionTotal +
+        (isTotallyPaid ? Number(invoice.sales_commission_amount) : 0)
+      const salesCommissionTotal =
+        result.salesCommissionTotal + Number(invoice.sales_commission_amount)
+
+      return {
+        paidInvoicesSalesCommissionTotal,
+        unpaidInvoicesSalesCommissionTotal:
+          salesCommissionTotal - paidInvoicesSalesCommissionTotal,
+        salesCommissionTotal,
+        paidInvoicesTotal:
+          result.paidInvoicesTotal +
+          (isTotallyPaid ? Number(invoice.total_amount) : 0),
+        invoicesTotal: result.invoicesTotal + Number(invoice.total_amount),
+      }
+    },
+    {
+      paidInvoicesSalesCommissionTotal: 0,
+      unpaidInvoicesSalesCommissionTotal: 0,
+      salesCommissionTotal: 0,
+      paidInvoicesTotal: 0,
+      invoicesTotal: 0,
+    }
+  )
 
 const columns = [
   {
@@ -60,6 +93,7 @@ function ReportSales() {
   const [filters, setFilters] = useState(initFilters.current)
   const [dataSource, setDataSource] = useState([])
   const [paymentMethodsOptionsList, setPaymentMethodsOptionsList] = useState([])
+  const [totals, setTotals] = useState({})
 
   const fetchSales = useCallback(() => {
     setLoading(true)
@@ -89,6 +123,10 @@ function ReportSales() {
       .finally(() => setLoading(false))
   }, [])
 
+  useEffect(() => {
+    setTotals(getTotals(dataSource))
+  }, [dataSource])
+
   const setSearchFilters = field => value =>
     setFilters(prevState => ({ ...prevState, [field]: value }))
 
@@ -101,6 +139,53 @@ function ReportSales() {
         paymentMethodsOptionsList={paymentMethodsOptionsList}
       />
       <GenericTable data={dataSource} loading={loading} columns={columns} />
+
+      <Divider className={'divider-custom-margins-users'} />
+
+      <Row gutter={16} style={{ textAlign: 'right' }} justify='end'>
+        <Col span={4} style={{ textAlign: 'right' }}>
+          <div className={'title-space-field'}>
+            <Statistic
+              title='Comision por facturar :'
+              value={getFormattedValue(
+                totals.unpaidInvoicesSalesCommissionTotal
+              )}
+            />
+          </div>
+        </Col>
+        <Col span={5} style={{ textAlign: 'right' }}>
+          <div className={'title-space-field'}>
+            <Statistic
+              title='Comision facturada :'
+              value={getFormattedValue(totals.paidInvoicesSalesCommissionTotal)}
+            />
+          </div>
+        </Col>
+        <Col span={5} style={{ textAlign: 'right' }}>
+          <div className={'title-space-field'}>
+            <Statistic
+              title='Comision total :'
+              value={getFormattedValue(totals.salesCommissionTotal)}
+            />
+          </div>
+        </Col>
+        <Col span={5} style={{ textAlign: 'right' }}>
+          <div className={'title-space-field'}>
+            <Statistic
+              title='Total vendido :'
+              value={getFormattedValue(totals.paidInvoicesTotal)}
+            />
+          </div>
+        </Col>
+        <Col span={5} style={{ textAlign: 'right' }}>
+          <div className={'title-space-field'}>
+            <Statistic
+              title='Total Facturado :'
+              value={getFormattedValue(totals.invoicesTotal)}
+            />
+          </div>
+        </Col>
+      </Row>
     </>
   )
 }

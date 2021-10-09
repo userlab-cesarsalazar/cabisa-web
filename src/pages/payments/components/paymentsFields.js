@@ -106,7 +106,7 @@ function PaymentsFields({ detailData, ...props }) {
   useEffect(() => {
     if (paymentsData?.length === 0) return
 
-    const totals = getPaymentsTotal(paymentsData, invoiceData.subtotal_amount)
+    const totals = getPaymentsTotal(paymentsData, invoiceData.total_amount)
 
     setTotalPayments(totals?.totalPayments)
     setTotalUnpaidCredit(totals?.totalUnpaidCredit)

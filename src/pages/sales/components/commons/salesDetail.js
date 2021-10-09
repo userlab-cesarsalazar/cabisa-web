@@ -54,7 +54,7 @@ const {
   setSaleState,
 } = saleActions
 
-function SalesDetail({ closable, visible, isAdmin }) {
+function SalesDetail({ closable, visible, isAdmin, canEditAndCreate }) {
   const [forbidEdition, setForbidEdition] = useState(false)
   const [sale, setSale] = useState([])
   const [dataSourceTable, setDataSourceTable] = useState([])
@@ -514,10 +514,10 @@ function SalesDetail({ closable, visible, isAdmin }) {
                 status={status}
                 loading={loading}
                 forbidEdition={forbidEdition}
-                isAdmin={isAdmin}
                 documentServiceTypesOptionsList={
                   saleState.documentServiceTypesOptionsList
                 }
+                canEditAndCreate={canEditAndCreate}
               />
             </Col>
           </Row>

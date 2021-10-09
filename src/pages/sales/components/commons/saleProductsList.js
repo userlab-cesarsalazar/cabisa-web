@@ -48,7 +48,7 @@ function SaleProductsList({
   childProductsOptionsList,
   status,
   loading,
-  isAdmin,
+  canEditAndCreate,
   forbidEdition,
   handleChange,
   documentServiceTypesOptionsList,
@@ -185,7 +185,7 @@ function SaleProductsList({
                   disabled={
                     row.service_type !== documentsServiceType.SERVICE ||
                     forbidEdition ||
-                    !isAdmin
+                    !canEditAndCreate
                   }
                 >
                   {productsOptionsList.length > 0 ? (
@@ -210,7 +210,7 @@ function SaleProductsList({
                     row.service_type !== documentsServiceType.SERVICE ||
                     !row.id ||
                     forbidEdition ||
-                    !isAdmin
+                    !canEditAndCreate
                   }
                   onChange={value =>
                     handleChangeDetail('parent_unit_price', value, index)
@@ -245,7 +245,7 @@ function SaleProductsList({
                     (!row.id &&
                       row.service_type === documentsServiceType.SERVICE) ||
                     forbidEdition ||
-                    !isAdmin
+                    !canEditAndCreate
                   }
                 >
                   {childProductsOptionsList?.length > 0 ? (
@@ -268,7 +268,7 @@ function SaleProductsList({
                   className='product-list-input'
                   placeholder={config?.childProductPrice?.label}
                   value={row.child_unit_price}
-                  disabled={!row.child_id || forbidEdition || !isAdmin}
+                  disabled={!row.child_id || forbidEdition || !canEditAndCreate}
                   onChange={value =>
                     handleChangeDetail('child_unit_price', value, index)
                   }
@@ -290,7 +290,7 @@ function SaleProductsList({
                   }
                   min={1}
                   type='tel'
-                  disabled={forbidEdition || !isAdmin || !row.child_id}
+                  disabled={forbidEdition || !canEditAndCreate || !row.child_id}
                 />
               </Col>
             )}

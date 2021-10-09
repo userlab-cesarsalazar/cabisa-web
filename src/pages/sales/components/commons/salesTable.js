@@ -192,7 +192,6 @@ function SalesTable(props) {
           </Select>
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} className='text-right'>
-          {/*{props.isAdmin && (*/}
           <Button
             className={
               can(actions.CREATE)
@@ -203,7 +202,6 @@ function SalesTable(props) {
           >
             {props.buttonTitle}
           </Button>
-          {/*)}*/}
         </Col>
       </Row>
       <Row>
