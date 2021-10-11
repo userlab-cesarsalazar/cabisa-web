@@ -15,14 +15,24 @@ import Tag from '../../../components/Tag'
 
 const { Option } = Select
 
+const getColConfig = forbidEdition => ({
+  paymentDate: 8,
+  paymentAmount: forbidEdition ? 8 : 7,
+  paymentMethod: forbidEdition ? 8 : 7,
+  deleteButton: forbidEdition ? 0 : 2,
+})
+
 function PaymentsList({
   dataSource,
+  forbidEdition,
   paymentMethodsOptionsList,
   handleChangePayments,
   handleAddPayments,
   handleRemovePayments,
   ...props
 }) {
+  const colConfig = getColConfig(forbidEdition)
+
   return (
     <List
       {...props}
@@ -32,22 +42,22 @@ function PaymentsList({
       dataSource={dataSource}
       header={
         <Row className='section-space-field'>
-          <Col sm={8}>
+          <Col sm={colConfig.paymentDate}>
             <b className='center-flex-div'>Fecha de Pago</b>
           </Col>
-          <Col sm={7}>
+          <Col sm={colConfig.paymentAmount}>
             <b className='center-flex-div'>Monto</b>
           </Col>
-          <Col sm={7}>
+          <Col sm={colConfig.paymentMethod}>
             <b className='center-flex-div'>Metodo de Pago</b>
           </Col>
-          <Col sm={2}></Col>
+          <Col sm={colConfig.deleteButton}></Col>
         </Row>
       }
       renderItem={(row, index) => (
         <List.Item>
           <Row gutter={16} className='list-item-padding w-100 list-item-row'>
-            <Col sm={8}>
+            <Col sm={colConfig.paymentDate}>
               <DatePicker
                 style={{ width: '100%', height: '40px', borderRadius: '8px' }}
                 placeholder='Fecha final'
@@ -56,9 +66,10 @@ function PaymentsList({
                 onChange={value =>
                   handleChangePayments('payment_date', value, index)
                 }
+                disabled={forbidEdition}
               />
             </Col>
-            <Col sm={7}>
+            <Col sm={colConfig.paymentAmount}>
               <Input
                 placeholder={'Monto del pago'}
                 size={'large'}
@@ -67,9 +78,10 @@ function PaymentsList({
                 onChange={e =>
                   handleChangePayments('payment_amount', e.target.value, index)
                 }
+                disabled={forbidEdition}
               />
             </Col>
-            <Col sm={7}>
+            <Col sm={colConfig.paymentMethod}>
               <Select
                 className={'single-select'}
                 placeholder={'Metodo de pago'}
@@ -80,6 +92,7 @@ function PaymentsList({
                   handleChangePayments('payment_method', value, index)
                 }
                 value={row.payment_method}
+                disabled={forbidEdition}
               >
                 {paymentMethodsOptionsList?.length > 0 ? (
                   paymentMethodsOptionsList.map(value => (
@@ -97,31 +110,35 @@ function PaymentsList({
                 )}
               </Select>
             </Col>
-            <Col sm={2}>
-              <Popconfirm
-                title={'¿Seguro de eliminar este pago?'}
-                onConfirm={() => handleRemovePayments(index)}
-              >
-                <span className='delete-btn'>
-                  <DeleteOutlined />
-                </span>
-              </Popconfirm>
+            <Col sm={colConfig.deleteButton}>
+              {!forbidEdition && (
+                <Popconfirm
+                  title={'¿Seguro de eliminar este pago?'}
+                  onConfirm={() => handleRemovePayments(index)}
+                >
+                  <span className='delete-btn'>
+                    <DeleteOutlined />
+                  </span>
+                </Popconfirm>
+              )}
             </Col>
           </Row>
         </List.Item>
       )}
       footer={
-        <Row gutter={16} className={'section-space-field'}>
-          <Col xs={24} sm={24} md={24} lg={24}>
-            <Button
-              type='dashed'
-              className={'shop-add-turn'}
-              onClick={handleAddPayments}
-            >
-              Agregar Pago
-            </Button>
-          </Col>
-        </Row>
+        !forbidEdition && (
+          <Row gutter={16} className={'section-space-field'}>
+            <Col xs={24} sm={24} md={24} lg={24}>
+              <Button
+                type='dashed'
+                className={'shop-add-turn'}
+                onClick={handleAddPayments}
+              >
+                Agregar Pago
+              </Button>
+            </Col>
+          </Row>
+        )
       }
     />
   )

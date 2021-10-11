@@ -16,6 +16,7 @@ import { useEditableList } from '../../../hooks'
 import { showErrors, formatPhone, numberFormat } from '../../../utils'
 import FooterButtons from '../../../components/FooterButtons'
 import { editableListInitRow } from '../../billing/components/billingFields'
+import { documentsStatus } from '../../../commons/types'
 
 const { Title } = Typography
 const { Option } = Select
@@ -418,6 +419,7 @@ function PaymentsFields({ detailData, ...props }) {
               handleChangePayments={handleChangePayments}
               handleAddPayments={handleAddPayments}
               handleRemovePayments={handleRemovePayments}
+              forbidEdition={invoiceData?.status === documentsStatus.CANCELLED}
             />
           </Col>
         </Row>

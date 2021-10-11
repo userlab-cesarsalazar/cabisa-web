@@ -82,14 +82,13 @@ function Payments() {
 
   return (
     <>
-      <HeaderPage title={'Facturación'} permissions={permissions.PAGOS} />
+      <HeaderPage title={'Pagos'} permissions={permissions.PAGOS} />
       <PaymentsTable
         dataSource={dataSource}
         handlerEditRow={handlerEditRow}
         handleFiltersChange={setSearchFilters}
         paymentMethodsOptionsList={paymentMethodsOptionsList}
         creditStatusOptionsList={creditStatusOptionsList}
-        serviceTypesOptionsList={[]}
         loading={loading}
       />
       <PaymentsDetail
@@ -100,9 +99,6 @@ function Payments() {
         detailData={detailData}
         loadData={loadData}
         paymentMethodsOptionsList={paymentMethodsOptionsList}
-        stakeholderTypesOptionsList={[]}
-        serviceTypesOptionsList={[]}
-        creditDaysOptionsList={[]}
       />
     </>
   )
