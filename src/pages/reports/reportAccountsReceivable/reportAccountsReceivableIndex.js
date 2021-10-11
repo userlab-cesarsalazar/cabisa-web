@@ -18,10 +18,17 @@ const columns = [
     render: text => <span>{text}</span>,
   },
   {
-    title: 'Monto',
-    dataIndex: 'subtotal_amount', // Field that is goint to be rendered
-    key: 'subtotal_amount',
-    render: text => <span>{text}</span>,
+    title: 'Monto a Pagar',
+    dataIndex: 'total_amount', // Field that is goint to be rendered
+    key: 'total_amount',
+    render: text => (text ? <span>{text.toFixed(2)}</span> : null),
+  },
+  {
+    title: 'Total Pendiente',
+    dataIndex: 'unpaid_credit_amount', // Field that is goint to be rendered
+    key: 'unpaid_credit_amount',
+    render: text =>
+      text || text === 0 ? <span>{text.toFixed(2)}</span> : null,
   },
   {
     title: 'Fecha de facturacion',

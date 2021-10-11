@@ -12,13 +12,16 @@ import {
   Switch,
   Divider,
   Statistic,
+  Input,
 } from 'antd'
+import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import CloseSquareOutlined from '@ant-design/icons/lib/icons/CloseSquareOutlined'
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 import Tag from '../../../../components/Tag'
 import { numberFormat, formatPhone } from '../../../../utils'
 
+const { Search } = Input
 const { Option } = Select
 
 function ReportClientTable(props) {
@@ -78,7 +81,7 @@ function ReportClientTable(props) {
   return (
     <>
       <Row gutter={16}>
-        <Col xs={6} sm={6} md={6} lg={6}>
+        <Col xs={5} sm={5} md={5} lg={5}>
           <DatePicker
             style={{ width: '100%', height: '40px', borderRadius: '8px' }}
             placeholder='Fecha de creacion'
@@ -86,7 +89,17 @@ function ReportClientTable(props) {
             onChange={props.handleFiltersChange('created_at')}
           />
         </Col>
-        <Col xs={6} sm={6} md={6} lg={6}>
+        <Col xs={5} sm={5} md={5} lg={5}>
+          <Search
+            size={'large'}
+            type='tel'
+            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
+            placeholder={'Buscar por nombre'}
+            className={'cabisa-table-search customSearch'}
+            onSearch={props.handleFiltersChange('name')}
+          />
+        </Col>
+        <Col xs={5} sm={5} md={5} lg={5}>
           <Select
             className={'single-select'}
             placeholder={'Tipo de cliente'}
@@ -106,7 +119,7 @@ function ReportClientTable(props) {
             ))}
           </Select>
         </Col>
-        <Col xs={6} sm={6} md={6} lg={6}>
+        <Col xs={4} sm={4} md={4} lg={4}>
           <Button
             style={{ height: '100%' }}
             onClick={props.handleFiltersChange('clearFilters')}
@@ -117,7 +130,7 @@ function ReportClientTable(props) {
             Eliminar filtros
           </Button>
         </Col>
-        <Col xs={6} sm={6} md={6} lg={6}>
+        <Col xs={5} sm={5} md={5} lg={5}>
           <div
             style={{
               height: '100%',

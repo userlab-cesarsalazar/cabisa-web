@@ -139,6 +139,7 @@ function SalesTable(props) {
           handlerEditRow={handlerEditRow}
           handlerApproveRow={handlerApproveRow}
           deleteAction='cancel'
+          editAction={!data.has_related_invoice ? 'edit' : 'show'}
         />
       ),
     },
@@ -192,7 +193,6 @@ function SalesTable(props) {
           </Select>
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} className='text-right'>
-          {/*{props.isAdmin && (*/}
           <Button
             className={
               can(actions.CREATE)
@@ -203,7 +203,6 @@ function SalesTable(props) {
           >
             {props.buttonTitle}
           </Button>
-          {/*)}*/}
         </Col>
       </Row>
       <Row>

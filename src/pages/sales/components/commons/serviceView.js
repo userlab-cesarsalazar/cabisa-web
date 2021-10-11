@@ -3,14 +3,11 @@ import { useHistory } from 'react-router-dom'
 
 import SalesTable from '../commons/salesTable'
 import SalesDetail from '../commons/salesDetail'
-import { validateRole } from '../../../../utils'
-import { permissions, roles } from '../../../../commons/types'
+import { permissions } from '../../../../commons/types'
 
-function ServiceView() {
+function ServiceView(props) {
   const [isDrawerVisible, setIsDrawerVisible] = useState(false)
   const history = useHistory()
-
-  const isAdmin = validateRole(roles.ADMIN)
 
   const showDrawer = () => setIsDrawerVisible(true)
 
@@ -26,13 +23,15 @@ function ServiceView() {
         newNote={NewNoteShipping}
         isDrawerVisible={isDrawerVisible}
         showDrawer={showDrawer}
-        isAdmin={isAdmin}
+        isAdmin={props.isAdmin}
+        canEditAndCreate={props.canEditAndCreate}
         history={history}
       />
       <SalesDetail
         closable={hideDrawer}
         visible={isDrawerVisible}
-        isAdmin={isAdmin}
+        isAdmin={props.isAdmin}
+        canEditAndCreate={props.canEditAndCreate}
       />
     </>
   )

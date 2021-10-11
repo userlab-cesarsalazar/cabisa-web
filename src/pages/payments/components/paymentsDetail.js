@@ -11,15 +11,14 @@ function PaymentsDetail(props) {
     setLoading(true)
 
     PaymentsSrc.crupdatePayment(data)
-      .then(a => {
-        console.log(a)
+      .then(() => {
         message.success('Pagos grabados exitosamente')
+        props.closable()
+        props.loadData()
       })
       .catch(error => showErrors(error))
       .finally(() => {
         setLoading(false)
-        props.closable()
-        props.loadData()
       })
   }
 

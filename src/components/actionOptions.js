@@ -17,7 +17,7 @@ const getEditAction = editAction => {
 
 function ActionOptions({
   deleteAction = 'delete', // delete | cancel
-  editAction = 'edit', // edit | show
+  editAction = 'edit', // edit | show | add_payment
   approveAction = 'invoice', // invoice | approve
   ...props
 }) {

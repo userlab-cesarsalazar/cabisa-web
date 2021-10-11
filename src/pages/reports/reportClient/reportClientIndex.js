@@ -28,6 +28,7 @@ function ReportClient() {
   if (!initFilters.current) {
     initFilters.current = {
       created_at: '',
+      name: '',
       stakeholder_type: '',
     }
   }
@@ -49,6 +50,7 @@ function ReportClient() {
       created_at: filters.created_at
         ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
         : '',
+      name: { $like: `%25${filters.name}%25` },
       stakeholder_type: filters.stakeholder_type,
     })
       .then(result => setClients(result))

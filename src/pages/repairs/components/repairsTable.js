@@ -42,7 +42,7 @@ const getColumns = ({
         data={data}
         permissionId={permissions.REPARACIONES}
         handlerEditRow={handlerEditRow}
-        editAction={data.status === documentsStatus.CANCELLED ? 'show' : 'edit'}
+        editAction={data.status !== documentsStatus.PENDING ? 'show' : 'edit'}
         showDeleteBtn={data.status !== documentsStatus.CANCELLED}
         deleteAction='cancel'
         handlerDeleteRow={handlerCancelRow}
