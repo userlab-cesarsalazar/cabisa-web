@@ -60,7 +60,7 @@ function PaymentsList({
             <Col sm={colConfig.paymentDate}>
               <DatePicker
                 style={{ width: '100%', height: '40px', borderRadius: '8px' }}
-                placeholder='Fecha final'
+                placeholder='Fecha de pago'
                 format='DD-MM-YYYY'
                 value={row.payment_date ? moment(row.payment_date) : ''}
                 onChange={value =>
