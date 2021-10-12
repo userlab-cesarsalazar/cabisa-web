@@ -62,7 +62,7 @@ const columns = [
     dataIndex: 'id', // Field that is goint to be rendered
     key: 'id',
     render: (_, row) => (
-      <span>{row.comments ? row.comments : row.description}</span>
+      <span>{row.description ? row.description : row.comments}</span>
     ),
   },
 ]
