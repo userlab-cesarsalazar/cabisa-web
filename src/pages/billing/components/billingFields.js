@@ -126,7 +126,10 @@ export const handleUpdateProductsData = ({
     id: parentProduct?.id ? Number(parentProduct.id) : row.id,
     code: parentProduct?.code ? parentProduct.code : row.code,
     child_id: childProduct?.id ? Number(childProduct.id) : row.child_id,
-    quantity: field === 'id' || field === 'child_id' ? 1 : row.quantity,
+    quantity:
+      row.quantity && (field !== 'id' || field !== 'child_id')
+        ? Number(String(row.quantity).replaceAll(',', ''))
+        : 1,
     tax_fee:
       unit_tax_amount && unit_price ? (unit_tax_amount / unit_price) * 100 : 0,
     unit_tax_amount,
