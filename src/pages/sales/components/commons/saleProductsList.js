@@ -285,8 +285,8 @@ function SaleProductsList({
                   placeholder={'Cantidad'}
                   size={'large'}
                   value={row.quantity}
-                  onChange={e =>
-                    handleChangeDetail('quantity', e.target.value, index)
+                  onChange={value =>
+                    handleChangeDetail('quantity', value, index)
                   }
                   fractionDigits={0}
                   type='tel'

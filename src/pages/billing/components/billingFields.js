@@ -38,7 +38,7 @@ const { Title } = Typography
 const { Option } = Select
 const { TextArea } = Input
 
-const { getValue, getFormattedValue } = numberFormat()
+const { getValue, getFormattedValue, groupSeparator } = numberFormat()
 
 export const getProductDiscount = product =>
   product.service_type === productsTypes.SERVICE
@@ -128,7 +128,7 @@ export const handleUpdateProductsData = ({
     child_id: childProduct?.id ? Number(childProduct.id) : row.child_id,
     quantity:
       row.quantity && (field !== 'id' || field !== 'child_id')
-        ? Number(String(row.quantity).replaceAll(',', ''))
+        ? Number(String(row.quantity).replaceAll(groupSeparator, ''))
         : 1,
     tax_fee:
       unit_tax_amount && unit_price ? (unit_tax_amount / unit_price) * 100 : 0,

@@ -189,6 +189,10 @@ export const numberFormat = ({
   const groupSeparator = currencyFormat === 'de-DE' ? '.' : ','
 
   return {
+    fractionSeparator,
+
+    groupSeparator,
+
     getFormattedValue: value => {
       if (!value || isNaN(Number(value))) return value
 
