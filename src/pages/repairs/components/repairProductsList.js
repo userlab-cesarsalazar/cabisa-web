@@ -105,10 +105,8 @@ function RepairProductsList({
                   handleChangeDetail('parent_unit_price', '', index)
                 }
                 onBlur={() => handleBlurDetail('parent_unit_price', '', index)}
-                disabled
               />
             </Col>
-
             <Col sm={4}>
               <Input
                 className='product-list-input'
