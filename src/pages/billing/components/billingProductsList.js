@@ -55,7 +55,7 @@ function BillingProductsList({
   ...props
 }) {
   const config = getColumnsConfig()
-  const showDeleteButton = !isEditing && !isInvoiceFromSale
+  const showDeleteButton = (!isEditing || isAdmin) && !isInvoiceFromSale
 
   return (
     <List
@@ -136,7 +136,7 @@ function BillingProductsList({
                     handleChangeDetail('service_type', value, index)
                   }
                   value={row.service_type}
-                  disabled={isEditing || isInvoiceFromSale}
+                  disabled={(isEditing && !isAdmin) || isInvoiceFromSale}
                 >
                   {serviceTypesOptionsList?.length > 0 ? (
                     serviceTypesOptionsList.map(value => (
@@ -182,7 +182,7 @@ function BillingProductsList({
                   optionFilterProp='children'
                   disabled={
                     row.service_type !== documentsServiceType.SERVICE ||
-                    isEditing ||
+                    (isEditing && !isAdmin) ||
                     isInvoiceFromSale
                   }
                 >
@@ -207,7 +207,7 @@ function BillingProductsList({
                   disabled={
                     row.service_type !== documentsServiceType.SERVICE ||
                     !row.id ||
-                    isEditing ||
+                    (isEditing && !isAdmin) ||
                     isInvoiceFromSale
                   }
                   onChange={value =>
@@ -242,7 +242,7 @@ function BillingProductsList({
                     !row.service_type ||
                     (!row.id &&
                       row.service_type === documentsServiceType.SERVICE) ||
-                    isEditing ||
+                    (isEditing && !isAdmin) ||
                     isInvoiceFromSale
                   }
                 >
@@ -266,7 +266,11 @@ function BillingProductsList({
                   className='product-list-input'
                   placeholder={config?.childProductPrice?.label}
                   value={row.child_unit_price}
-                  disabled={!row.child_id || isEditing || isInvoiceFromSale}
+                  disabled={
+                    !row.child_id ||
+                    (isEditing && !isAdmin) ||
+                    isInvoiceFromSale
+                  }
                   onChange={value =>
                     handleChangeDetail('child_unit_price', value, index)
                   }
@@ -289,7 +293,11 @@ function BillingProductsList({
                   }
                   type='tel'
                   fractionDigits={0}
-                  disabled={isEditing || isInvoiceFromSale || !row.child_id}
+                  disabled={
+                    (isEditing && !isAdmin) ||
+                    isInvoiceFromSale ||
+                    !row.child_id
+                  }
                 />
               </Col>
             )}
@@ -321,8 +329,7 @@ function BillingProductsList({
         </List.Item>
       )}
       footer={
-        !isEditing &&
-        !isInvoiceFromSale && (
+        showDeleteButton && (
           <Row gutter={16} className={'section-space-field'}>
             <Col xs={24} sm={24} md={24} lg={24}>
               <Button

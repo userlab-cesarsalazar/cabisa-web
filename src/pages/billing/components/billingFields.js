@@ -18,7 +18,6 @@ import {
   showErrors,
   roundNumber,
   getPercent,
-  validateSaleOrBillingProducts,
   formatPhone,
   numberFormat,
 } from '../../../utils'
@@ -71,9 +70,10 @@ export const handleUpdateProductsData = ({
   const parent_tax_fee = parentProduct?.tax_fee
     ? parentProduct.tax_fee
     : row.parent_tax_fee
-  const parent_unit_discount = parentBaseUnitPrice * getPercent(discountValue)
+  const parent_unit_discount =
+    Number(parentBaseUnitPrice) * getPercent(discountValue)
   const parent_unit_price = roundNumber(
-    parentBaseUnitPrice - parent_unit_discount
+    Number(parentBaseUnitPrice) - parent_unit_discount
   )
   const parent_unit_tax_amount =
     Number(parent_unit_price) * getPercent(parent_tax_fee)
@@ -89,8 +89,11 @@ export const handleUpdateProductsData = ({
   const child_tax_fee = childProduct?.tax_fee
     ? Number(childProduct.tax_fee)
     : Number(row.child_tax_fee)
-  const child_unit_discount = childBaseUnitPrice * getPercent(discountValue)
-  const child_unit_price = roundNumber(childBaseUnitPrice - child_unit_discount)
+  const child_unit_discount =
+    Number(childBaseUnitPrice) * getPercent(discountValue)
+  const child_unit_price = roundNumber(
+    Number(childBaseUnitPrice) - child_unit_discount
+  )
   const child_unit_tax_amount =
     Number(child_unit_price) * getPercent(child_tax_fee)
   const child_base_unit_price =
@@ -490,7 +493,56 @@ export const billingLogicFactory = ({
   }
 }
 
-function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
+const validateSaleOrBillingProducts = (
+  products,
+  productsRequiredFields,
+  serviceTypeService
+) => {
+  return products.reduce(
+    (result, p, i) => {
+      const newPosition =
+        p.service_type === serviceTypeService ? Math.ceil((i + 1) / 2) : i + 1
+      const positionsArray = [
+        ...(result.duplicate[p.product_id] || []),
+        newPosition,
+      ]
+      const newResult = {
+        ...result,
+        duplicate:
+          p.product_id && !p.parent_product_id
+            ? {
+                ...result.duplicate,
+                [p.product_id]: positionsArray,
+              }
+            : result.duplicate,
+      }
+
+      const hasRequiredError = productsRequiredFields.some(
+        k =>
+          (p.parent_product_id || p.parent_product_id === null) &&
+          (!p[k] || p[k] <= 0)
+      )
+
+      if (hasRequiredError) {
+        return {
+          ...newResult,
+          required: [...newResult.required, i + 1],
+        }
+      }
+
+      return newResult
+    },
+    { required: [], duplicate: {} }
+  )
+}
+
+function BillingFields({
+  setLoading,
+  editData,
+  isAdmin,
+  isInvoiceFromSale,
+  ...props
+}) {
   const [stakeholdersOptionsList, setStakeholdersOptionsList] = useState([])
   const [projectsOptionsList, setProjectsOptionsList] = useState([])
   const [productsOptionsList, setProductsOptionsList] = useState([])
@@ -547,8 +599,6 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
 
   useEffect(
     function updateStatistics() {
-      if (editData && !isInvoiceFromSale) return
-
       setData(prevDataState => {
         const totals = productsData?.reduce((r, p) => {
           const discount = (r.discount || 0) + getProductDiscount(p)
@@ -570,7 +620,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
         return { ...prevDataState, ...totals }
       })
     },
-    [setData, productsData, editData, isInvoiceFromSale]
+    [setData, productsData, isInvoiceFromSale]
   )
 
   useEffect(() => {
@@ -589,6 +639,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
       ...editData,
       stakeholder_phone: formatPhone(editData.stakeholder_phone),
       ...prevState,
+      credit_days: Number(editData.credit_days),
     }))
 
     setProductsData(prevState =>
@@ -841,7 +892,7 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
               getPopupContainer={trigger => trigger.parentNode}
               onChange={handleChange('payment_method')}
               value={data.payment_method}
-              disabled={props.edit}
+              disabled={props.edit && !isAdmin}
             >
               {props.paymentMethodsOptionsList?.length > 0 ? (
                 props.paymentMethodsOptionsList.map(value => (
@@ -879,43 +930,39 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
             lg={7}
             style={{ display: 'flex', justifyContent: 'flex-end' }}
           >
-            {!props.edit || data.credit_days ? (
-              <>
-                <div
-                  style={{
-                    marginRight: '15px',
-                    marginTop: '10px',
-                    minWidth: '120px',
-                  }}
-                  className={'title-space-field'}
-                >
-                  <b>Dias de credito:</b>
-                </div>
-                <Select
-                  className={'single-select'}
-                  placeholder={'Dias de credito'}
-                  size={'large'}
-                  style={{ width: '100%', height: '40px', maxWidth: '150px' }}
-                  getPopupContainer={trigger => trigger.parentNode}
-                  onChange={handleChange('credit_days')}
-                  value={data.credit_days}
-                  disabled={props.edit}
-                >
-                  {props.creditDaysOptionsList?.length > 0 ? (
-                    <>
-                      <Option value={0}>0</Option>
-                      {props.creditDaysOptionsList.map(value => (
-                        <Option key={value} value={value}>
-                          {value}
-                        </Option>
-                      ))}
-                    </>
-                  ) : (
-                    <Option value={data.credit_days}>{data.credit_days}</Option>
-                  )}
-                </Select>
-              </>
-            ) : null}
+            <div
+              style={{
+                marginRight: '15px',
+                marginTop: '10px',
+                minWidth: '120px',
+              }}
+              className={'title-space-field'}
+            >
+              <b>Dias de credito:</b>
+            </div>
+            <Select
+              className={'single-select'}
+              placeholder={'Dias de credito'}
+              size={'large'}
+              style={{ width: '100%', height: '40px', maxWidth: '150px' }}
+              getPopupContainer={trigger => trigger.parentNode}
+              onChange={handleChange('credit_days')}
+              value={data.credit_days}
+              disabled={props.edit}
+            >
+              {props.creditDaysOptionsList?.length > 0 ? (
+                <>
+                  <Option value={0}>0</Option>
+                  {props.creditDaysOptionsList.map(value => (
+                    <Option key={value} value={value}>
+                      {value}
+                    </Option>
+                  ))}
+                </>
+              ) : (
+                <Option value={data.credit_days}>{data.credit_days}</Option>
+              )}
+            </Select>
           </Col>
           <Col
             xs={6}
@@ -924,35 +971,31 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
             lg={7}
             style={{ display: 'flex', justifyContent: 'flex-end' }}
           >
-            {!props.edit || discountInputValue ? (
-              <>
-                <div
-                  style={{
-                    marginRight: '15px',
-                    marginTop: '10px',
-                    minWidth: '120px',
-                  }}
-                  className={'title-space-field'}
-                >
-                  <b>Descuento (%):</b>
-                </div>
-                <Input
-                  type='tel'
-                  placeholder={'Aplicar Descuento'}
-                  size={'large'}
-                  style={{
-                    height: '40px',
-                    width: '75%',
-                    minWidth: '100px',
-                    maxWidth: '150px',
-                  }}
-                  min={0}
-                  onChange={handleDiscountChange}
-                  value={discountInputValue}
-                  disabled={props.edit}
-                />
-              </>
-            ) : null}
+            <div
+              style={{
+                marginRight: '15px',
+                marginTop: '10px',
+                minWidth: '120px',
+              }}
+              className={'title-space-field'}
+            >
+              <b>Descuento (%):</b>
+            </div>
+            <Input
+              type='tel'
+              placeholder={'Aplicar Descuento'}
+              size={'large'}
+              style={{
+                height: '40px',
+                width: '75%',
+                minWidth: '100px',
+                maxWidth: '150px',
+              }}
+              min={0}
+              onChange={handleDiscountChange}
+              value={discountInputValue}
+              disabled={props.edit && !isAdmin}
+            />
           </Col>
         </Row>
 
@@ -971,20 +1014,19 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
           isInvoiceFromSale={isInvoiceFromSale}
           isEditing={props.edit}
           serviceTypesOptionsList={props.serviceTypesOptionsList}
+          isAdmin={isAdmin}
         />
 
         <Divider className={'divider-custom-margins-users'} />
 
         <Row gutter={16} style={{ textAlign: 'right' }} justify='end'>
           <Col span={6} style={{ textAlign: 'right' }}>
-            {!props.edit || data.discount ? (
-              <div className={'title-space-field'}>
-                <Statistic
-                  title='Descuento :'
-                  value={getFormattedValue(data.discount)}
-                />
-              </div>
-            ) : null}
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Descuento :'
+                value={getFormattedValue(data.discount)}
+              />
+            </div>
           </Col>
           <Col span={6} style={{ textAlign: 'right' }}>
             <div className={'title-space-field'}>
@@ -1024,15 +1066,16 @@ function BillingFields({ setLoading, editData, isInvoiceFromSale, ...props }) {
             rows={4}
             value={data.description}
             onChange={handleChange('description')}
-            disabled={props.edit}
+            disabled={props.edit && !isAdmin}
           />
         </Col>
       </Row>
 
-      {!props.edit && (
+      {(!props.edit || isAdmin) && (
         <FooterButtons
           saveData={saveData}
           edit={props.edit}
+          cancelButton={props.handleCancelButton}
           cancelLink={props.cancelLink}
           loading={props.loading}
         />
