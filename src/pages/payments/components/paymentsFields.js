@@ -37,11 +37,12 @@ const getPaymentsTotal = (payments, totalUnpaidCredit) =>
 const getSaveData = data => {
   const payments = data.payments?.map(p => ({
     payment_id: p?.payment_id,
-    payment_method: p?.payment_method,
-    payment_amount: Number(p?.payment_amount),
+    payment_method: p.payment_method,
+    payment_amount: p.payment_amount ? Number(p.payment_amount) : null,
     payment_date: p.payment_date
       ? new Date(p.payment_date).toISOString()
       : null,
+    related_external_document: p.related_external_document,
   }))
 
   return { document_id: data?.id, payments }
@@ -63,7 +64,7 @@ const validateSaveData = (data, totalUnpaidCredit) => {
   if (requiredErrors.length > 0) {
     requiredErrors.forEach(position => {
       errors.push(
-        `Debe llenar todos lo campos del pago en la posicion ${position}`
+        `Debe llenar los campos Fecha de Pago, Monto y Metodo de pago en la posicion ${position}`
       )
     })
   }
@@ -140,6 +141,7 @@ function PaymentsFields({ detailData, ...props }) {
       payment_date: '',
       payment_amount: '',
       payment_method: '',
+      related_external_document: '',
     },
   })
 

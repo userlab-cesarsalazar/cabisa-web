@@ -16,10 +16,11 @@ import Tag from '../../../components/Tag'
 const { Option } = Select
 
 const getColConfig = forbidEdition => ({
-  paymentDate: 8,
-  paymentAmount: forbidEdition ? 8 : 7,
-  paymentMethod: forbidEdition ? 8 : 7,
-  deleteButton: forbidEdition ? 0 : 2,
+  paymentDate: forbidEdition ? 6 : 5,
+  paymentAmount: 6,
+  paymentMethod: 6,
+  relatedExternalDocument: 6,
+  deleteButton: forbidEdition ? 0 : 1,
 })
 
 function PaymentsList({
@@ -50,6 +51,9 @@ function PaymentsList({
           </Col>
           <Col sm={colConfig.paymentMethod}>
             <b className='center-flex-div'>Metodo de Pago</b>
+          </Col>
+          <Col sm={colConfig.relatedExternalDocument}>
+            <b className='center-flex-div'>Nro de Documento</b>
           </Col>
           <Col sm={colConfig.deleteButton}></Col>
         </Row>
@@ -109,6 +113,22 @@ function PaymentsList({
                   </Option>
                 )}
               </Select>
+            </Col>
+            <Col sm={colConfig.relatedExternalDocument}>
+              <Input
+                size={'large'}
+                style={{ width: '100%' }}
+                placeholder={'Documento'}
+                value={row.related_external_document}
+                onChange={e =>
+                  handleChangePayments(
+                    'related_external_document',
+                    e.target.value,
+                    index
+                  )
+                }
+                disabled={forbidEdition}
+              />
             </Col>
             <Col sm={colConfig.deleteButton}>
               {!forbidEdition && (
