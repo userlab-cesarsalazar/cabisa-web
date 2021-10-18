@@ -149,8 +149,8 @@ function CurrencyInput({
   fractionDigits = 2,
   ...props
 }) {
-  // const { getFormattedValue, handleChange, handleBlur } = numberFormat({
-  const { getFormattedValue } = numberFormat({
+  const { getFormattedValue, handleChange, handleBlur } = numberFormat({
+    // const { getFormattedValue } = numberFormat({
     currencyFormat,
     fractionDigits,
   })
@@ -175,31 +175,31 @@ function CurrencyInput({
       throw new Error('The prop onChange must be a function')
 
     const rawValue = e?.target?.value || ''
-    // const formattedValue = handleChange(_inputValue, rawValue)
+    const formattedValue = handleChange(_inputValue, rawValue)
 
-    // props.onChange(formattedValue)
-    props.onChange(rawValue)
+    props.onChange(formattedValue)
+    // props.onChange(rawValue)
   }
 
-  // const _handleBlur = e => {
-  //   const rawValue = e?.target?.value || ''
+  const _handleBlur = e => {
+    const rawValue = e?.target?.value || ''
 
-  //   const formattedValue = handleBlur(rawValue)
-  //   typeof props.onChange === 'function' && props.onChange(formattedValue)
-  //   typeof props.onBlur === 'function' && props.onBlur(formattedValue)
-  // }
+    const formattedValue = handleBlur(rawValue)
+    typeof props.onChange === 'function' && props.onChange(formattedValue)
+    typeof props.onBlur === 'function' && props.onBlur(formattedValue)
+  }
 
   return (
-    // <Input
-    //   prefix={currencyPrefix ? <div>{currencySymbol}</div> : null}
-    //   suffix={currencySuffix ? <div>{currencySymbol}</div> : null}
-    //   {...props}
-    //   type='text'
-    //   value={_inputValue}
-    //   onChange={_handleChange}
-    //   onBlur={_handleBlur}
-    // />
-    <Input {...props} type='tel' value={props.value} onChange={_handleChange} />
+    <Input
+      prefix={currencyPrefix ? <div>{currencySymbol}</div> : null}
+      suffix={currencySuffix ? <div>{currencySymbol}</div> : null}
+      {...props}
+      type='text'
+      value={_inputValue}
+      onChange={_handleChange}
+      onBlur={_handleBlur}
+    />
+    // <Input {...props} type='tel' value={props.value} onChange={_handleChange} />
   )
 }
 

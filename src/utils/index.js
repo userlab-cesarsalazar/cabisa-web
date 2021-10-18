@@ -45,47 +45,6 @@ export const validatePermissions = permissionId => {
   return action => currentPermission && currentPermission[action]
 }
 
-export const validateSaleOrBillingProducts = (
-  products,
-  productsRequiredFields,
-  serviceTypeService
-) => {
-  return products.reduce(
-    (result, p, i) => {
-      const newPosition =
-        p.service_type === serviceTypeService ? Math.ceil((i + 1) / 2) : i + 1
-      const positionsArray = [
-        ...(result.duplicate[p.product_id] || []),
-        newPosition,
-      ]
-      const newResult = {
-        ...result,
-        duplicate:
-          p.product_id && !p.parent_product_id
-            ? {
-                ...result.duplicate,
-                [p.product_id]: positionsArray,
-              }
-            : result.duplicate,
-      }
-
-      const hasRequiredError = productsRequiredFields.some(
-        k => !p[k] || p[k] <= 0
-      )
-
-      if (hasRequiredError) {
-        return {
-          ...newResult,
-          required: [...newResult.required, i + 1],
-        }
-      }
-
-      return newResult
-    },
-    { required: [], duplicate: {} }
-  )
-}
-
 const getErrorData = error => {
   if (error?.response?.data?.error?.errors)
     return error.response.data.error.errors
@@ -189,6 +148,10 @@ export const numberFormat = ({
   const groupSeparator = currencyFormat === 'de-DE' ? '.' : ','
 
   return {
+    fractionSeparator,
+
+    groupSeparator,
+
     getFormattedValue: value => {
       if (!value || isNaN(Number(value))) return value
 
@@ -199,7 +162,8 @@ export const numberFormat = ({
     },
 
     getValue: formattedValue => {
-      if (typeof formattedValue === 'number') return formattedValue
+      if (!formattedValue || typeof formattedValue === 'number')
+        return formattedValue
 
       const result = String(formattedValue)
         .replace(toRegExp(groupSeparator), '')

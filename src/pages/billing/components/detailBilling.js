@@ -1,8 +1,24 @@
 import React from 'react'
-import { Card, Drawer } from 'antd'
+import { Card, Drawer, message } from 'antd'
 import BillingFields from './billingFields'
+import billingSrc from '../billingSrc'
+import { showErrors } from '../../../utils'
 
 function DetailBilling(props) {
+  const handleSaveData = saveData => {
+    props.setLoading(true)
+
+    billingSrc
+      .updateInvoice(saveData)
+      .then(_ => {
+        message.success('Factura actualizada exitosamente')
+        props.loadData()
+        props.closable()
+      })
+      .catch(error => showErrors(error))
+      .finally(() => props.setLoading(false))
+  }
+
   return (
     <Drawer
       placement='right'
@@ -16,12 +32,15 @@ function DetailBilling(props) {
         <BillingFields
           visible={props.visible}
           edit={true}
+          isAdmin={props.isAdmin}
           loading={props.loading}
           setLoading={props.setLoading}
           editData={props.editData}
           paymentMethodsOptionsList={props.paymentMethodsOptionsList}
           stakeholderTypesOptionsList={props.stakeholderTypesOptionsList}
-          cancelLink='/billing'
+          serviceTypesOptionsList={props.serviceTypesOptionsList}
+          handleSaveData={handleSaveData}
+          handleCancelButton={props.closable}
         />
       </Card>
     </Drawer>

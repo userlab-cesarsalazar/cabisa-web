@@ -5,11 +5,12 @@ import BillingTable from './components/BillingTable'
 import DetailBilling from './components/detailBilling'
 import billingSrc from './billingSrc'
 import { message } from 'antd'
-import { showErrors, roundNumber } from '../../utils'
+import { showErrors, roundNumber, validateRole } from '../../utils'
 import {
   stakeholdersTypes,
   permissions,
   documentsServiceType,
+  roles,
 } from '../../commons/types'
 
 export function getDetailData(data) {
@@ -20,18 +21,25 @@ export function getDetailData(data) {
       p => Number(p?.id) === Number(childProduct?.parent_product_id)
     )
 
-    const unitPrice = parentProduct?.product_price || parentProduct?.unit_price
-    const subtotal = parentProduct?.subtotal || unitPrice
+    const unitPrice =
+      parentProduct?.product_price || Number(parentProduct?.product_price) === 0
+        ? Number(parentProduct?.product_price)
+        : Number(parentProduct?.unit_price || 0)
+    const subtotal =
+      parentProduct?.subtotal || Number(parentProduct?.subtotal) === 0
+        ? Number(parentProduct?.subtotal)
+        : Number(unitPrice)
+    const parent_unit_discount = roundNumber(
+      parentProduct?.unit_discount_amount || 0
+    )
 
     return {
       id: parentProduct?.id || '',
       description: parentProduct?.description || '',
       parent_tax_fee: parentProduct?.tax_fee || 0,
       parent_unit_tax_amount: roundNumber(parentProduct?.unit_tax_amount || 0),
-      parent_unit_discount: roundNumber(
-        parentProduct?.unit_discount_amount || 0
-      ),
-      parent_base_unit_price: roundNumber(unitPrice),
+      parent_unit_discount,
+      parent_base_unit_price: roundNumber(unitPrice + parent_unit_discount),
       parent_unit_price: roundNumber(unitPrice),
       unit_tax_amount: roundNumber(
         parentProduct.unit_tax_amount + childProduct.unit_tax_amount
@@ -48,6 +56,7 @@ export function getDetailData(data) {
     const quantity = p?.quantity || p?.product_quantity || 0
     const subtotalFromProducts = unitPrice * quantity
     const subtotal = roundNumber(p?.subtotal || subtotalFromProducts)
+    const child_unit_discount = roundNumber(p?.unit_discount_amount || 0)
 
     return {
       ...p,
@@ -55,9 +64,11 @@ export function getDetailData(data) {
       child_description: p?.description || '',
       child_tax_fee: p?.tax_fee || '0',
       child_unit_tax_amount: roundNumber(p?.unit_tax_amount || 0),
-      child_unit_discount: roundNumber(p?.unit_discount_amount || 0),
-      child_base_unit_price: roundNumber(unitPrice),
+      child_unit_discount,
+      child_base_unit_price: roundNumber(unitPrice + child_unit_discount),
       child_unit_price: roundNumber(unitPrice),
+      unit_price: roundNumber(unitPrice),
+      unit_discount: child_unit_discount,
       unit_tax_amount: roundNumber(p.unit_tax_amount),
       quantity,
       subtotal,
@@ -104,6 +115,8 @@ function Billing(props) {
     }
   }
 
+  const isAdmin = validateRole(roles.ADMIN)
+
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
   const [dataSource, setDataSource] = useState(false)
@@ -115,7 +128,6 @@ function Billing(props) {
     setStakeholderTypesOptionsList,
   ] = useState([])
   const [serviceTypesOptionsList, setServiceTypesOptionsList] = useState([])
-  const [creditDaysOptionsList, setCreditDaysOptionsList] = useState([])
 
   useEffect(() => {
     setLoading(true)
@@ -134,7 +146,6 @@ function Billing(props) {
         setPaymentMethodsOptionsList(data[0])
         setStakeholderTypesOptionsList(stakeholdersTypesList)
         setServiceTypesOptionsList(data[2])
-        setCreditDaysOptionsList(data[3])
       })
       .catch(_ => message.error('Error al cargar listados'))
       .finally(() => setLoading(false))
@@ -208,9 +219,9 @@ function Billing(props) {
         showDetail={showDetail}
         handleFiltersChange={setSearchFilters}
         paymentMethodsOptionsList={paymentMethodsOptionsList}
-        serviceTypesOptionsList={serviceTypesOptionsList}
         handlerDeleteRow={handlerDeleteRow}
         loading={loading}
+        isAdmin={isAdmin}
       />
       <DetailBilling
         closable={closeDetail}
@@ -221,7 +232,8 @@ function Billing(props) {
         paymentMethodsOptionsList={paymentMethodsOptionsList}
         stakeholderTypesOptionsList={stakeholderTypesOptionsList}
         serviceTypesOptionsList={serviceTypesOptionsList}
-        creditDaysOptionsList={creditDaysOptionsList}
+        isAdmin={isAdmin}
+        loadData={loadData}
       />
     </>
   )

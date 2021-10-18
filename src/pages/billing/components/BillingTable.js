@@ -81,7 +81,7 @@ function BillingTable(props) {
           handlerDeleteRow={handlerDeleteRow}
           handlerEditRow={handlerEditRow}
           deleteAction='cancel'
-          editAction='show'
+          editAction={props.isAdmin ? 'edit' : 'show'}
         />
       ),
     },
@@ -89,7 +89,6 @@ function BillingTable(props) {
 
   return (
     <>
-      {/*FIELDS*/}
       <Row gutter={16}>
         <Col xs={4} sm={4} md={4} lg={4}>
           <Search

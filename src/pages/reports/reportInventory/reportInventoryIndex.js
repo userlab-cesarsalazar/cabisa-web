@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Modal, Button, Row, Col, DatePicker, message } from 'antd'
+import { Modal, Row, Col, DatePicker, message } from 'antd'
 import HeaderPage from '../../../components/HeaderPage'
 import ReportInventoryTable from './components/reportInventoryTable'
 
@@ -24,13 +24,10 @@ function ReportInventory() {
         visible={isModalVisible}
         closable={false}
         destroyOnClose
-        footer={
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button type='primary' size='large' onClick={handleGenerateReport}>
-              Generar reporte
-            </Button>
-          </div>
-        }
+        onOk={handleGenerateReport}
+        onCancel={() => setIsModalVisible(false)}
+        okText='Generar Reporte'
+        cancelText='Cancelar'
       >
         <Row gutter={16} className={'section-space-field'}>
           <Col xs={24}>

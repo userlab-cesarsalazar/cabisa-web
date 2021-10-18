@@ -55,16 +55,10 @@ function ProductFields(props) {
 
   const saveData = () => {
     const errors = []
-    const requiredValues = [
-      code,
-      serie,
-      description,
-      serviceCategory,
-      // taxId,
-    ]
+    const requiredValues = [code, description]
 
     if (requiredValues.some(v => !v))
-      errors.push('Todos los campos son obligatorios.')
+      errors.push('Los campos Codigo y Descripcion son obligatorios.')
 
     if (errors.length > 0) return errors.forEach(e => message.warning(e))
 

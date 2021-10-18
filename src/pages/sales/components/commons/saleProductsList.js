@@ -280,15 +280,15 @@ function SaleProductsList({
             )}
             {config?.quantity?.visible && (
               <Col sm={config?.quantity?.col}>
-                <Input
+                <CurrencyInput
                   className='product-list-input'
                   placeholder={'Cantidad'}
                   size={'large'}
                   value={row.quantity}
-                  onChange={e =>
-                    handleChangeDetail('quantity', e.target.value, index)
+                  onChange={value =>
+                    handleChangeDetail('quantity', value, index)
                   }
-                  min={1}
+                  fractionDigits={0}
                   type='tel'
                   disabled={forbidEdition || !canEditAndCreate || !row.child_id}
                 />

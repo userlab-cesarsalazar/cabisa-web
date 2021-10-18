@@ -4,8 +4,8 @@ import HeaderPage from '../../components/HeaderPage'
 import { message, Card } from 'antd'
 import BillingFields from './components/billingFields'
 import billingSrc from './billingSrc'
-import { showErrors } from '../../utils'
-import { stakeholdersTypes } from '../../commons/types'
+import { showErrors, validateRole } from '../../utils'
+import { stakeholdersTypes, roles } from '../../commons/types'
 
 function BillingView() {
   const history = useHistory()
@@ -17,6 +17,8 @@ function BillingView() {
   ] = useState([])
   const [serviceTypesOptionsList, setServiceTypesOptionsList] = useState([])
   const [creditDaysOptionsList, setCreditDaysOptionsList] = useState([])
+
+  const isAdmin = validateRole(roles.ADMIN)
 
   useEffect(() => {
     setLoading(true)
@@ -68,6 +70,7 @@ function BillingView() {
           serviceTypesOptionsList={serviceTypesOptionsList}
           creditDaysOptionsList={creditDaysOptionsList}
           cancelLink='/billing'
+          isAdmin={isAdmin}
         />
       </Card>
     </>
