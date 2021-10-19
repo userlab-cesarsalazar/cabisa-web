@@ -139,7 +139,7 @@ function ReportSales() {
       rol_id: { $in: '1,2' },
       is_active: 1,
     }
-    console.log(seller_name)
+
     setLoading(true)
 
     ReportsSrc.getSellersOptions(params)
