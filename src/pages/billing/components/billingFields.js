@@ -179,7 +179,7 @@ export const handleUpdateProductsData = ({
     quantity:
       row.quantity && (field !== 'id' || field !== 'child_id')
         ? Number(String(row.quantity).replaceAll(groupSeparator, ''))
-        : 1,
+        : 0,
     tax_fee:
       unit_tax_amount && unit_price ? (unit_tax_amount / unit_price) * 100 : 0,
     unit_tax_amount,
@@ -243,7 +243,7 @@ export const editableListInitRow = {
   code: '',
   child_id: '',
   child_description: '',
-  quantity: 0,
+  quantity: 1,
   unit_price: 0,
   base_unit_price: 0,
   unit_tax_amount: 0,
@@ -432,7 +432,7 @@ export const billingLogicFactory = ({
         unit_discount: p.child_unit_discount,
       })
 
-      setDiscountInputValue(e?.target?.value || 0)
+      setDiscountInputValue(e?.target?.value)
 
       setProductsData(prevState => {
         return prevState.map(p => {
