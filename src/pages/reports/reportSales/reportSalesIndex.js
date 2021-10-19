@@ -7,6 +7,7 @@ import HeaderPage from '../../../components/HeaderPage'
 import Tag from '../../../components/Tag'
 import ReportsSrc from '../reportsSrc'
 import { showErrors, getDateRangeFilter, numberFormat } from '../../../utils'
+import { stakeholdersStatus, stakeholdersTypes } from '../../../commons/types'
 
 const { getFormattedValue } = numberFormat()
 
@@ -84,8 +85,8 @@ function ReportSales() {
       end_date: '',
       payment_method: '',
       document_type: '',
-      seller_name: '',
-      stakeholder_name: '',
+      seller_id: null,
+      client_id: null,
     }
   }
 
@@ -93,6 +94,8 @@ function ReportSales() {
   const [filters, setFilters] = useState(initFilters.current)
   const [dataSource, setDataSource] = useState([])
   const [paymentMethodsOptionsList, setPaymentMethodsOptionsList] = useState([])
+  const [sellersOptionsList, setSellersOptionsList] = useState([])
+  const [stakeholdersOptionsList, setStakeholdersOptionsList] = useState([])
   const [totals, setTotals] = useState({})
 
   const fetchSales = useCallback(() => {
@@ -102,8 +105,8 @@ function ReportSales() {
       ...getDateRangeFilter(filters.dateRange),
       payment_method: filters.payment_method,
       document_type: filters.document_type,
-      seller_name: { $like: `%25${filters.seller_name}%25` },
-      stakeholder_name: { $like: `%25${filters.stakeholder_name}%25` },
+      seller_id: filters.seller_id,
+      client_id: filters.client_id,
     })
       .then(result => setDataSource(result))
       .catch(error => showErrors(error))
@@ -130,12 +133,47 @@ function ReportSales() {
   const setSearchFilters = field => value =>
     setFilters(prevState => ({ ...prevState, [field]: value }))
 
+  const handleSearchSeller = (seller_name = '') => {
+    const params = {
+      full_name: { $like: `%25${seller_name}%25` },
+      rol_id: { $in: '1,2' },
+      is_active: 1,
+    }
+    console.log(seller_name)
+    setLoading(true)
+
+    ReportsSrc.getSellersOptions(params)
+      .then(data => setSellersOptionsList(data))
+      .catch(_ => message.error('Error al cargar listado de vendedores'))
+      .finally(() => setLoading(false))
+  }
+
+  const handleSearchStakeholder = stakeholder_name => {
+    const params = {
+      name: { $like: `%25${stakeholder_name}%25` },
+      status: stakeholdersStatus.ACTIVE,
+      stakeholder_type: { $ne: stakeholdersTypes.PROVIDER },
+    }
+
+    setLoading(true)
+
+    ReportsSrc.getStakeholdersOptions(params)
+      .then(data => setStakeholdersOptionsList(data))
+      .catch(_ => message.error('Error al cargar listado de clientes'))
+      .finally(() => setLoading(false))
+  }
+
   return (
     <>
       <HeaderPage title={'Reporte - Ventas'} />
       <ReportSalesFilters
+        loading={loading}
         filters={filters}
         setSearchFilters={setSearchFilters}
+        handleSearchSeller={handleSearchSeller}
+        sellersOptionsList={sellersOptionsList}
+        handleSearchStakeholder={handleSearchStakeholder}
+        stakeholdersOptionsList={stakeholdersOptionsList}
         paymentMethodsOptionsList={paymentMethodsOptionsList}
       />
       <GenericTable data={dataSource} loading={loading} columns={columns} />

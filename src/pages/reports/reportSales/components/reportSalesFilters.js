@@ -1,10 +1,9 @@
 import React from 'react'
-import { Col, DatePicker, Input, Row, Select, Tag as AntTag } from 'antd'
-import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
+import debounce from 'lodash/debounce'
+import { Col, DatePicker, Row, Select, Tag as AntTag } from 'antd'
 import Tag from '../../../../components/Tag'
 
 const { RangePicker } = DatePicker
-const { Search } = Input
 const { Option } = Select
 
 function ReportSalesFilters(props) {
@@ -67,22 +66,48 @@ function ReportSalesFilters(props) {
 
       <Row gutter={16} className={'section-space-field'}>
         <Col xs={8} sm={8} md={8} lg={8}>
-          <Search
-            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Buscar por vendedor'
-            className={'cabisa-table-search customSearch'}
+          <Select
+            className={'single-select'}
+            placeholder={'Buscar por vendedor'}
             size={'large'}
-            onSearch={props.setSearchFilters('seller_name')}
-          />
+            style={{ width: '100%', height: '40px' }}
+            getPopupContainer={trigger => trigger.parentNode}
+            showSearch
+            allowClear
+            onSearch={debounce(props.handleSearchSeller, 400)}
+            value={props.filters.seller_id}
+            onChange={props.setSearchFilters('seller_id')}
+            loading={props.loading}
+            optionFilterProp='children'
+          >
+            {props.sellersOptionsList?.map(seller => (
+              <Option key={seller.id} value={seller.id}>
+                {seller.full_name}
+              </Option>
+            ))}
+          </Select>
         </Col>
         <Col xs={8} sm={8} md={8} lg={8}>
-          <Search
-            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Buscar por cliente'
-            className={'cabisa-table-search customSearch'}
+          <Select
+            className={'single-select'}
+            placeholder={'Buscar por cliente'}
             size={'large'}
-            onSearch={props.setSearchFilters('stakeholder_name')}
-          />
+            style={{ width: '100%', height: '40px' }}
+            getPopupContainer={trigger => trigger.parentNode}
+            allowClear
+            showSearch
+            onSearch={debounce(props.handleSearchStakeholder, 400)}
+            value={props.filters.client_id}
+            onChange={props.setSearchFilters('client_id')}
+            loading={props.loading}
+            optionFilterProp='children'
+          >
+            {props.stakeholdersOptionsList?.map(client => (
+              <Option key={client.id} value={client.id}>
+                {client.name}
+              </Option>
+            ))}
+          </Select>
         </Col>
       </Row>
     </>
