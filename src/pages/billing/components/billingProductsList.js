@@ -203,7 +203,7 @@ function BillingProductsList({
                 <CurrencyInput
                   className='product-list-input'
                   placeholder={config?.parentProductPrice?.label}
-                  value={row.parent_unit_price}
+                  value={row.parent_display_unit_price}
                   disabled={
                     row.service_type !== documentsServiceType.SERVICE ||
                     !row.id ||
@@ -265,12 +265,12 @@ function BillingProductsList({
                 <CurrencyInput
                   className='product-list-input'
                   placeholder={config?.childProductPrice?.label}
-                  value={row.child_unit_price}
                   disabled={
                     !row.child_id ||
                     (isEditing && !isAdmin) ||
                     isInvoiceFromSale
                   }
+                  value={row.child_display_unit_price}
                   onChange={value =>
                     handleChangeDetail('child_unit_price', value, index)
                   }
