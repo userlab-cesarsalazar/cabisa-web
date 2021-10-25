@@ -48,9 +48,9 @@ export const getProductDiscount = product =>
 export const getProductSubtotal = product => {
   const result =
     product.service_type === productsTypes.SERVICE
-      ? Number(product.parent_unit_price) +
-        Number(product.child_unit_price) * product.quantity
-      : Number(product.unit_price) * product.quantity
+      ? Number(product.parent_unit_price || 0) +
+        Number(product.child_unit_price || 0) * Number(product.quantity)
+      : Number(product.unit_price || 0) * Number(product.quantity)
 
   return roundNumber(result)
 }
@@ -62,6 +62,15 @@ export const handleUpdateProductsData = ({
   discountValue,
   field = '',
 }) => {
+  const getDisplayUnitPrice = displayFieldName => (product, row, unitPrice) => {
+    if (!product) return row[displayFieldName]
+    if (product?.unit_price === '' && row[displayFieldName] === 0) return 0
+    if (product?.unit_price || product?.unit_price === 0)
+      return product.unit_price
+
+    return unitPrice
+  }
+
   // parentProduct
   const parentBaseUnitPrice =
     parentProduct?.unit_price && field !== ''
@@ -73,14 +82,22 @@ export const handleUpdateProductsData = ({
   const parent_unit_discount =
     Number(parentBaseUnitPrice) * getPercent(discountValue)
   const parent_unit_price = roundNumber(
-    Number(parentBaseUnitPrice) - parent_unit_discount
+    Number(parentBaseUnitPrice) - Number(parent_unit_discount)
   )
   const parent_unit_tax_amount =
     Number(parent_unit_price) * getPercent(parent_tax_fee)
   const parent_base_unit_price =
     field === 'id' || field === 'child_id' || field === 'parent_unit_price'
-      ? Number(parent_unit_price) + parent_unit_discount
+      ? Number(parent_unit_price) + Number(parent_unit_discount)
       : row.parent_base_unit_price || Number(parent_unit_price)
+  const getParentDisplayUnitPrice = getDisplayUnitPrice(
+    'parent_display_unit_price'
+  )
+  const parent_display_unit_price = getParentDisplayUnitPrice(
+    parentProduct,
+    row,
+    parent_unit_price
+  )
   // childProduct
   const childBaseUnitPrice =
     childProduct?.unit_price && field !== ''
@@ -92,37 +109,67 @@ export const handleUpdateProductsData = ({
   const child_unit_discount =
     Number(childBaseUnitPrice) * getPercent(discountValue)
   const child_unit_price = roundNumber(
-    Number(childBaseUnitPrice) - child_unit_discount
+    Number(childBaseUnitPrice) - Number(child_unit_discount)
   )
   const child_unit_tax_amount =
     Number(child_unit_price) * getPercent(child_tax_fee)
   const child_base_unit_price =
     field === 'id' || field === 'child_id' || field === 'child_unit_price'
-      ? Number(child_unit_price) + child_unit_discount
+      ? Number(child_unit_price) + Number(child_unit_discount)
       : row.child_base_unit_price || Number(child_unit_price)
+  const getChlidDisplayUnitPrice = getDisplayUnitPrice(
+    'child_display_unit_price'
+  )
+  const child_display_unit_price = getChlidDisplayUnitPrice(
+    childProduct,
+    row,
+    child_unit_price
+  )
   // common fields
-  const unit_discount = roundNumber(child_unit_discount + parent_unit_discount)
-  const unit_price = roundNumber(child_unit_price + Number(parent_unit_price))
+  const unit_discount = roundNumber(
+    Number(child_unit_discount) + Number(parent_unit_discount)
+  )
+  const unit_price = roundNumber(
+    Number(child_unit_price) + Number(parent_unit_price)
+  )
   const unit_tax_amount = roundNumber(
-    child_unit_tax_amount + parent_unit_tax_amount
+    Number(child_unit_tax_amount) + Number(parent_unit_tax_amount)
   )
 
   const newRow = {
     ...row,
     // parentProduct
     parent_tax_fee,
-    parent_unit_price,
-    parent_unit_tax_amount,
-    parent_unit_discount,
-    parent_base_unit_price,
+    parent_unit_price: parent_display_unit_price
+      ? parent_unit_price
+      : parent_display_unit_price,
+    parent_unit_tax_amount: parent_display_unit_price
+      ? parent_unit_tax_amount
+      : parent_display_unit_price,
+    parent_unit_discount: parent_display_unit_price
+      ? parent_unit_discount
+      : parent_display_unit_price,
+    parent_base_unit_price: parent_display_unit_price
+      ? parent_base_unit_price
+      : parent_display_unit_price,
+    parent_display_unit_price,
     parent_inventory_unit_value:
       parentProduct?.inventory_unit_value || row?.parent_inventory_unit_value,
     // childProduct
     child_tax_fee,
-    child_unit_price,
-    child_unit_tax_amount,
-    child_unit_discount,
-    child_base_unit_price,
+    child_unit_price: child_display_unit_price
+      ? child_unit_price
+      : child_display_unit_price,
+    child_unit_tax_amount: child_display_unit_price
+      ? child_unit_tax_amount
+      : child_display_unit_price,
+    child_unit_discount: child_display_unit_price
+      ? child_unit_discount
+      : child_display_unit_price,
+    child_base_unit_price: child_display_unit_price
+      ? child_base_unit_price
+      : child_display_unit_price,
+    child_display_unit_price,
     child_inventory_unit_value:
       childProduct?.inventory_unit_value || row?.child_inventory_unit_value,
     // common fields
@@ -132,7 +179,7 @@ export const handleUpdateProductsData = ({
     quantity:
       row.quantity && (field !== 'id' || field !== 'child_id')
         ? Number(String(row.quantity).replaceAll(groupSeparator, ''))
-        : 1,
+        : 0,
     tax_fee:
       unit_tax_amount && unit_price ? (unit_tax_amount / unit_price) * 100 : 0,
     unit_tax_amount,
@@ -196,7 +243,7 @@ export const editableListInitRow = {
   code: '',
   child_id: '',
   child_description: '',
-  quantity: 0,
+  quantity: 1,
   unit_price: 0,
   base_unit_price: 0,
   unit_tax_amount: 0,
@@ -385,7 +432,7 @@ export const billingLogicFactory = ({
         unit_discount: p.child_unit_discount,
       })
 
-      setDiscountInputValue(e?.target?.value || 0)
+      setDiscountInputValue(e?.target?.value)
 
       setProductsData(prevState => {
         return prevState.map(p => {

@@ -6,6 +6,7 @@ const urlStakeholder = stage.stakeholderUrl
 const urlReport = stage.reportUrl
 const urlInvoice = stage.invoiceUrl
 const urlProduct = stage.productUrl
+const urlUser = stage.usersUrl
 
 const getSales = params => api.get(`${urlReport}/sales`, params)
 const getInventory = params => api.get(`${urlReport}/inventory`, params)
@@ -24,6 +25,9 @@ const getClientsAccountState = params =>
   })
 const getClientTypes = () => api.get(`${urlStakeholder}/types`)
 const getProductsCategories = () => api.get(`${urlProduct}-categories`)
+const getStakeholdersOptions = params =>
+  api.get(`${urlStakeholder}-options`, params)
+const getSellersOptions = params => api.get(`${urlUser}-options`, params)
 
 const ReportsSrc = {
   getSales,
@@ -35,6 +39,8 @@ const ReportsSrc = {
   getStakeholderTypes,
   getPaymentMethods,
   getProductsCategories,
+  getStakeholdersOptions,
+  getSellersOptions,
 }
 
 export default ReportsSrc

@@ -163,7 +163,7 @@ export const numberFormat = ({
 
     getValue: formattedValue => {
       if (!formattedValue || typeof formattedValue === 'number')
-        return formattedValue
+        return formattedValue || 0
 
       const result = String(formattedValue)
         .replace(toRegExp(groupSeparator), '')

@@ -185,7 +185,7 @@ function CurrencyInput({
     const rawValue = e?.target?.value || ''
 
     const formattedValue = handleBlur(rawValue)
-    typeof props.onChange === 'function' && props.onChange(formattedValue)
+    // typeof props.onChange === 'function' && props.onChange(formattedValue)
     typeof props.onBlur === 'function' && props.onBlur(formattedValue)
   }
 

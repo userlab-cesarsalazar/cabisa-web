@@ -41,6 +41,7 @@ export function getDetailData(data) {
       parent_unit_discount,
       parent_base_unit_price: roundNumber(unitPrice + parent_unit_discount),
       parent_unit_price: roundNumber(unitPrice),
+      parent_display_unit_price: roundNumber(unitPrice),
       unit_tax_amount: roundNumber(
         parentProduct.unit_tax_amount + childProduct.unit_tax_amount
       ),
@@ -67,6 +68,7 @@ export function getDetailData(data) {
       child_unit_discount,
       child_base_unit_price: roundNumber(unitPrice + child_unit_discount),
       child_unit_price: roundNumber(unitPrice),
+      child_display_unit_price: roundNumber(unitPrice),
       unit_price: roundNumber(unitPrice),
       unit_discount: child_unit_discount,
       unit_tax_amount: roundNumber(p.unit_tax_amount),
