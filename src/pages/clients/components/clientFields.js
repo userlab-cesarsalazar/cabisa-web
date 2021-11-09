@@ -23,12 +23,14 @@ import {
   validateRole,
   formatPhone,
   formatPhoneOnChange,
+  numberFormat,
 } from '../../../utils'
 import { stakeholdersTypes, roles } from '../../../commons/types'
 import ClientsSrc from '../clientsSrc'
 
 const { Title } = Typography
 const { Option } = Select
+const { getValue, getFormattedValue } = numberFormat()
 
 const getProjectColumns = ({
   handleRemoveProject,
@@ -153,7 +155,9 @@ function ClientFields({ edit, editData, ...props }) {
     setAddress(edit ? editData.address : '')
     setBusiness_man(edit ? editData.business_man : '')
     setPayments_man(edit ? editData.payments_man : '')
-    setCreditLimit(edit ? editData.credit_limit || null : null)
+    setCreditLimit(
+      edit ? getFormattedValue(getValue(editData.credit_limit)) || null : null
+    )
     setProjectsData(
       edit ? editData.projects : projectsData.length > 0 ? projectsData : []
     )
@@ -191,7 +195,7 @@ function ClientFields({ edit, editData, ...props }) {
       .join(''),
     address,
     business_man,
-    credit_limit: creditLimit || null,
+    credit_limit: getValue(creditLimit) || null,
     payments_man,
     projects: projectsData.map(p => ({
       id: p.id,
