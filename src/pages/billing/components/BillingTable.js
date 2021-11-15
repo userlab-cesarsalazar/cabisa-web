@@ -80,7 +80,7 @@ function BillingTable(props) {
           showDeleteBtn={data.status !== documentsStatus.CANCELLED}
           handlerDeleteRow={handlerDeleteRow}
           handlerEditRow={handlerEditRow}
-          deleteAction='cancel'
+          deleteAction='nullify'
           editAction={props.isAdmin ? 'edit' : 'show'}
         />
       ),
