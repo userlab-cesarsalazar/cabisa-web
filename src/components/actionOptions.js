@@ -92,7 +92,7 @@ function ActionOptions({
             >
               <Popconfirm
                 title={`¿Estas seguro de ${
-                  approveAction === 'invoice' ? 'Facturar' : 'Aprobar'
+                  approveAction === 'invoice' ? 'facturar' : 'aprobar'
                 } el elemento seleccionado?`}
                 onConfirm={() => handlerApproveRow(props.data)}
                 okText='Si'

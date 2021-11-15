@@ -12,6 +12,7 @@ import {
   Select,
   message,
   Statistic,
+  Button,
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import SaleProductsList from './saleProductsList'
@@ -295,8 +296,19 @@ function SalesDetail({ closable, visible, isAdmin, canEditAndCreate }) {
         destroyOnClose
       >
         <div>
-          <Title> {'Detalle Nota de servicio'} </Title>
+          <Row>
+            <Col xs={24} sm={24} md={16} lg={16}>
+              <Title> {'Detalle Nota de servicio'} </Title>
+            </Col>
+            <Col xs={24} sm={24} md={8} lg={8} style={{ textAlign: 'right' }}>
+              <Button className='title-cabisa new-button'>
+                Boleta No. {sale.id}
+              </Button>
+            </Col>
+          </Row>
+
           <Divider className={'divider-custom-margins-users'} />
+
           <Row gutter={16} className={'section-space-field'}>
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Empresa</div>
