@@ -12,14 +12,17 @@ import {
 } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 import Tag from '../../../components/Tag'
+import CurrencyInput from '../../../components/CurrencyInput'
 
+const { TextArea } = Input
 const { Option } = Select
 
 const getColConfig = forbidEdition => ({
-  paymentDate: forbidEdition ? 6 : 5,
-  paymentAmount: 6,
-  paymentMethod: 6,
-  relatedExternalDocument: 6,
+  paymentDate: forbidEdition ? 5 : 4,
+  paymentAmount: 3,
+  paymentMethod: 4,
+  relatedExternalDocument: 4,
+  description: 8,
   deleteButton: forbidEdition ? 0 : 1,
 })
 
@@ -55,6 +58,9 @@ function PaymentsList({
           <Col sm={colConfig.relatedExternalDocument}>
             <b className='center-flex-div'>Nro de Documento</b>
           </Col>
+          <Col sm={colConfig.description}>
+            <b className='center-flex-div'>Descripcion</b>
+          </Col>
           <Col sm={colConfig.deleteButton}></Col>
         </Row>
       }
@@ -74,13 +80,13 @@ function PaymentsList({
               />
             </Col>
             <Col sm={colConfig.paymentAmount}>
-              <Input
+              <CurrencyInput
                 placeholder={'Monto del pago'}
                 size={'large'}
                 style={{ height: '40px' }}
                 value={row.payment_amount}
-                onChange={e =>
-                  handleChangePayments('payment_amount', e.target.value, index)
+                onChange={value =>
+                  handleChangePayments('payment_amount', value, index)
                 }
                 disabled={forbidEdition}
               />
@@ -126,6 +132,17 @@ function PaymentsList({
                     e.target.value,
                     index
                   )
+                }
+                disabled={forbidEdition}
+              />
+            </Col>
+            <Col sm={colConfig.description}>
+              <TextArea
+                rows={2}
+                placeholder={'Descripcion'}
+                value={row.description}
+                onChange={e =>
+                  handleChangePayments('description', e.target.value, index)
                 }
                 disabled={forbidEdition}
               />
