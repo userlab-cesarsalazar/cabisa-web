@@ -5,12 +5,13 @@ import BillingTable from './components/BillingTable'
 import DetailBilling from './components/detailBilling'
 import billingSrc from './billingSrc'
 import { message } from 'antd'
-import { showErrors, roundNumber, validateRole } from '../../utils'
+import { getPercent, showErrors, roundNumber, validateRole } from '../../utils'
 import {
   stakeholdersTypes,
   permissions,
   documentsServiceType,
   roles,
+  documentsPaymentMethods,
 } from '../../commons/types'
 
 export function getDetailData(data) {
@@ -21,31 +22,33 @@ export function getDetailData(data) {
       p => Number(p?.id) === Number(childProduct?.parent_product_id)
     )
 
+    const baseUnitPrice =
+      parentProduct?.product_price || parentProduct?.unit_price || 0
+    const unitDiscountAmount = parentProduct?.unit_discount_amount || 0
+    const parentBaseUnitPrice =
+      (Number(baseUnitPrice) + unitDiscountAmount) *
+      (1 + getPercent(Number(parentProduct.tax_fee)))
     const unitPrice =
-      parentProduct?.product_price || Number(parentProduct?.product_price) === 0
-        ? Number(parentProduct?.product_price)
-        : Number(parentProduct?.unit_price || 0)
-    const subtotal =
-      parentProduct?.subtotal || Number(parentProduct?.subtotal) === 0
-        ? Number(parentProduct?.subtotal)
-        : Number(unitPrice)
-    const parent_unit_discount = roundNumber(
-      parentProduct?.unit_discount_amount || 0
-    )
+      Number(baseUnitPrice) + (parentProduct?.unit_tax_amount || 0)
+    // const unitPrice =
+    //   parentProduct?.product_price || Number(parentProduct?.product_price) === 0
+    //     ? Number(parentProduct.product_price)
+    //     : Number(parentProduct?.unit_price || 0)
 
     return {
       id: parentProduct?.id || '',
       description: parentProduct?.description || '',
       parent_tax_fee: parentProduct?.tax_fee || 0,
       parent_unit_tax_amount: roundNumber(parentProduct?.unit_tax_amount || 0),
-      parent_unit_discount,
-      parent_base_unit_price: roundNumber(unitPrice + parent_unit_discount),
+      parent_unit_discount: roundNumber(unitDiscountAmount),
+      parent_base_unit_price: roundNumber(parentBaseUnitPrice),
+      // parent_base_unit_price: roundNumber(unitPrice + parent_unit_discount),
       parent_unit_price: roundNumber(unitPrice),
       parent_display_unit_price: roundNumber(unitPrice),
       unit_tax_amount: roundNumber(
         parentProduct.unit_tax_amount + childProduct.unit_tax_amount
       ),
-      subtotal: roundNumber(childProduct?.subtotal + subtotal),
+      subtotal: roundNumber(Number(unitPrice) + childProduct.subtotal),
     }
   }
 
@@ -53,11 +56,15 @@ export function getDetailData(data) {
     if (p.service_type === documentsServiceType.SERVICE && !p.parent_product_id)
       return []
 
-    const unitPrice = p?.product_price || p?.unit_price || 0
+    const baseUnitPrice = p?.product_price || p?.unit_price || 0
+    const unitDiscountAmount = p?.unit_discount_amount || 0
+    const childBaseUnitPrice =
+      (Number(baseUnitPrice) + unitDiscountAmount) *
+      (1 + getPercent(Number(p.tax_fee)))
+    const unitPrice = Number(baseUnitPrice) + (p?.unit_tax_amount || 0)
+    // const unitPrice = p?.product_price || p?.unit_price || 0
     const quantity = p?.quantity || p?.product_quantity || 0
-    const subtotalFromProducts = unitPrice * quantity
-    const subtotal = roundNumber(p?.subtotal || subtotalFromProducts)
-    const child_unit_discount = roundNumber(p?.unit_discount_amount || 0)
+    const subtotal = unitPrice * quantity
 
     return {
       ...p,
@@ -65,17 +72,19 @@ export function getDetailData(data) {
       child_description: p?.description || '',
       child_tax_fee: p?.tax_fee || '0',
       child_unit_tax_amount: roundNumber(p?.unit_tax_amount || 0),
-      child_unit_discount,
-      child_base_unit_price: roundNumber(unitPrice + child_unit_discount),
+      child_unit_discount: roundNumber(unitDiscountAmount),
+      child_base_unit_price: roundNumber(childBaseUnitPrice),
+      // child_base_unit_price: roundNumber(unitPrice + child_unit_discount),
       child_unit_price: roundNumber(unitPrice),
       child_display_unit_price: roundNumber(unitPrice),
       unit_price: roundNumber(unitPrice),
-      unit_discount: child_unit_discount,
+      unit_discount: roundNumber(unitDiscountAmount),
       unit_tax_amount: roundNumber(p.unit_tax_amount),
       quantity,
-      subtotal,
+      subtotal: roundNumber(subtotal),
       id: '',
       description: '',
+      code: '',
       parent_tax_fee: 0,
       parent_unit_tax_amount: 0,
       parent_unit_discount: 0,
@@ -89,16 +98,13 @@ export function getDetailData(data) {
     }
   })
 
-  const totalFromProducts = products?.reduce((r, v) => r + v.subtotal, 0)
-  const total = roundNumber(data?.total || totalFromProducts)
-
   return {
     ...data,
     discount_percentage: roundNumber(data?.discount_percentage || 0),
     discount: roundNumber(data?.discount || 0),
     subtotal: roundNumber(data?.subtotal || 0),
     total_tax: roundNumber(data?.total_tax || 0),
-    total,
+    total: roundNumber(data?.total || 0),
     products,
   }
 }
@@ -132,22 +138,24 @@ function Billing(props) {
   const [serviceTypesOptionsList, setServiceTypesOptionsList] = useState([])
 
   useEffect(() => {
+    setPaymentMethodsOptionsList([
+      documentsPaymentMethods.CARD,
+      documentsPaymentMethods.CASH,
+    ])
+
     setLoading(true)
 
     Promise.all([
-      billingSrc.getPaymentMethods(),
       billingSrc.getStakeholderTypes(),
       billingSrc.getServiceTypes(),
-      billingSrc.getCreditDays(),
     ])
       .then(data => {
-        const stakeholdersTypesList = data[1].filter(
+        const stakeholdersTypesList = data[0].filter(
           s => s !== stakeholdersTypes.PROVIDER
         )
 
-        setPaymentMethodsOptionsList(data[0])
         setStakeholderTypesOptionsList(stakeholdersTypesList)
-        setServiceTypesOptionsList(data[2])
+        setServiceTypesOptionsList(data[1])
       })
       .catch(_ => message.error('Error al cargar listados'))
       .finally(() => setLoading(false))
