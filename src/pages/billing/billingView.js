@@ -5,7 +5,11 @@ import { message, Card } from 'antd'
 import BillingFields from './components/billingFields'
 import billingSrc from './billingSrc'
 import { showErrors, validateRole } from '../../utils'
-import { stakeholdersTypes, roles } from '../../commons/types'
+import {
+  stakeholdersTypes,
+  roles,
+  documentsPaymentMethods,
+} from '../../commons/types'
 
 function BillingView() {
   const history = useHistory()
@@ -21,23 +25,26 @@ function BillingView() {
   const isAdmin = validateRole(roles.ADMIN)
 
   useEffect(() => {
+    setPaymentMethodsOptionsList([
+      documentsPaymentMethods.CARD,
+      documentsPaymentMethods.CASH,
+    ])
+
     setLoading(true)
 
     Promise.all([
-      billingSrc.getPaymentMethods(),
       billingSrc.getStakeholderTypes(),
       billingSrc.getServiceTypes(),
       billingSrc.getCreditDays(),
     ])
       .then(data => {
-        const stakeholdersTypesList = data[1].filter(
+        const stakeholdersTypesList = data[0].filter(
           s => s !== stakeholdersTypes.PROVIDER
         )
 
-        setPaymentMethodsOptionsList(data[0])
         setStakeholderTypesOptionsList(stakeholdersTypesList)
-        setServiceTypesOptionsList(data[2])
-        setCreditDaysOptionsList(data[3])
+        setServiceTypesOptionsList(data[1])
+        setCreditDaysOptionsList(data[2])
       })
       .catch(_ => message.error('Error al cargar listados'))
       .finally(() => setLoading(false))
