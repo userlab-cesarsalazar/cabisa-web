@@ -15,8 +15,14 @@ const getEditAction = editAction => {
   if (editAction === 'add_payment') return 'Agregar Pago'
 }
 
+const getDeleteAction = deleteAction => {
+  if (deleteAction === 'delete') return 'Eliminar'
+  if (deleteAction === 'cancel') return 'Cancelar'
+  if (deleteAction === 'nullify') return 'Anular'
+}
+
 function ActionOptions({
-  deleteAction = 'delete', // delete | cancel
+  deleteAction = 'delete', // delete | cancel | nullify
   editAction = 'edit', // edit | show | add_payment
   approveAction = 'invoice', // invoice | approve
   ...props
@@ -62,14 +68,11 @@ function ActionOptions({
           )}
 
           {can(actions.DELETE) && props.showDeleteBtn && (
-            <Tooltip
-              title={deleteAction === 'delete' ? 'Eliminar' : 'Cancelar'}
-              color={'red'}
-            >
+            <Tooltip title={getDeleteAction(deleteAction)} color={'red'}>
               <Popconfirm
-                title={`¿Estas seguro de ${
-                  deleteAction === 'delete' ? 'borrar' : 'anular'
-                } el elemento seleccionado?`}
+                title={`¿Estas seguro de ${getDeleteAction(
+                  deleteAction
+                ).toLowerCase()} el elemento seleccionado?`}
                 onConfirm={() => handlerDeleteRow(props.data)}
                 okText='Si'
                 cancelText='No'
@@ -89,7 +92,7 @@ function ActionOptions({
             >
               <Popconfirm
                 title={`¿Estas seguro de ${
-                  approveAction === 'invoice' ? 'Facturar' : 'Aprobar'
+                  approveAction === 'invoice' ? 'facturar' : 'aprobar'
                 } el elemento seleccionado?`}
                 onConfirm={() => handlerApproveRow(props.data)}
                 okText='Si'

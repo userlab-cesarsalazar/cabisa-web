@@ -50,9 +50,55 @@ export const getProductSubtotal = product => {
     product.service_type === productsTypes.SERVICE
       ? Number(product.parent_unit_price || 0) +
         Number(product.child_unit_price || 0) * Number(product.quantity)
-      : Number(product.unit_price || 0) * Number(product.quantity)
+      : Number(product.unit_price) * Number(product.quantity)
 
   return roundNumber(result)
+}
+
+export const getStatisticFromProductWithTaxes = discountInputValue => product => {
+  // childProduct
+  const childTaxFix = product.child_tax_fee
+    ? getPercent(product.child_tax_fee)
+    : 0
+  const childPriceWithoutTax = product.child_unit_price
+    ? product.child_unit_price / (1 + childTaxFix)
+    : 0
+  const childBasePriceWithoutTax = product.child_base_unit_price
+    ? product.child_base_unit_price / (1 + childTaxFix)
+    : 0
+  const childDiscount =
+    childBasePriceWithoutTax * getPercent(discountInputValue)
+  const childTax = childPriceWithoutTax
+    ? product.child_unit_price - childPriceWithoutTax
+    : 0
+  // parentProduct
+  const parentTaxFix = product.parent_tax_fee
+    ? getPercent(product.parent_tax_fee)
+    : 0
+  const parentPriceWithoutTax = product.parent_unit_price
+    ? product.parent_unit_price / (1 + parentTaxFix)
+    : 0
+  const parentBasePriceWithoutTax = product.parent_base_unit_price
+    ? product.parent_base_unit_price / (1 + parentTaxFix)
+    : 0
+  const parentDiscount =
+    parentBasePriceWithoutTax * getPercent(discountInputValue)
+  const parentTax = parentPriceWithoutTax
+    ? product.parent_unit_price - parentPriceWithoutTax
+    : 0
+
+  const discountFromProductWithTaxes =
+    parentDiscount + childDiscount * Number(product.quantity)
+  const subtotalFromProductWithTaxes =
+    parentPriceWithoutTax + childPriceWithoutTax * Number(product.quantity)
+  const totalTaxFromProductWithTaxes =
+    parentTax + childTax * Number(product.quantity)
+
+  return {
+    discountFromProductWithTaxes,
+    subtotalFromProductWithTaxes,
+    totalTaxFromProductWithTaxes,
+  }
 }
 
 export const handleUpdateProductsData = ({
@@ -313,30 +359,64 @@ export const billingLogicFactory = ({
     total_amount: data.total,
     description: data.description,
     products: productsData.reduce((r, p) => {
+      // const parentProduct = {
+      //   product_id: p.id,
+      //   product_quantity:
+      //     !p.child_id || isNaN(p.child_id) ? Number(p.quantity) : 1,
+      //   product_price: Number(p.parent_unit_price),
+      //   product_discount_percentage: discountInputValue
+      //     ? Number(discountInputValue)
+      //     : null,
+      //   product_discount: p.parent_unit_discount
+      //     ? Number(p.parent_unit_discount)
+      //     : null,
+      //   service_type: p.service_type,
+      // }
+
+      // const childProduct = {
+      //   product_id: p.child_id,
+      //   product_quantity: Number(p.quantity),
+      //   product_price: Number(p.child_unit_price),
+      //   product_discount_percentage: discountInputValue
+      //     ? Number(discountInputValue)
+      //     : null,
+      //   product_discount: p.child_unit_discount
+      //     ? Number(p.child_unit_discount)
+      //     : null,
+      //   parent_product_id: p.id || null,
+      //   service_type: p.service_type,
+      // }
+
+      const parentPriceWithoutTax = p.parent_base_unit_price
+        ? p.parent_base_unit_price / (1 + getPercent(p.parent_tax_fee))
+        : 0
+      const parentProductDiscount =
+        parentPriceWithoutTax * getPercent(discountInputValue)
       const parentProduct = {
         product_id: p.id,
         product_quantity:
           !p.child_id || isNaN(p.child_id) ? Number(p.quantity) : 1,
-        product_price: Number(p.parent_unit_price),
+        product_price: parentPriceWithoutTax - parentProductDiscount,
         product_discount_percentage: discountInputValue
           ? Number(discountInputValue)
           : null,
-        product_discount: p.parent_unit_discount
-          ? Number(p.parent_unit_discount)
-          : null,
+        product_discount: parentProductDiscount || null,
         service_type: p.service_type,
       }
 
+      const childPriceWithoutTax = p.child_base_unit_price
+        ? p.child_base_unit_price / (1 + getPercent(p.child_tax_fee))
+        : 0
+      const childProductDiscount =
+        childPriceWithoutTax * getPercent(discountInputValue)
       const childProduct = {
         product_id: p.child_id,
         product_quantity: Number(p.quantity),
-        product_price: Number(p.child_unit_price),
+        product_price: childPriceWithoutTax - childProductDiscount,
         product_discount_percentage: discountInputValue
           ? Number(discountInputValue)
           : null,
-        product_discount: p.child_unit_discount
-          ? Number(p.child_unit_discount)
-          : null,
+        product_discount: childProductDiscount || null,
         parent_product_id: p.id || null,
         service_type: p.service_type,
       }
@@ -646,11 +726,25 @@ function BillingFields({
 
   useEffect(
     function updateStatistics() {
+      const getStatistics = getStatisticFromProductWithTaxes(discountInputValue)
+
       setData(prevDataState => {
         const totals = productsData?.reduce((r, p) => {
-          const discount = (r.discount || 0) + getProductDiscount(p)
-          const subtotal = (r.subtotal || 0) + getProductSubtotal(p)
-          const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
+          // Esta es la implementacion normal (calcula subtotal de cada producto SIN impuesto)
+          // const discount = (r.discount || 0) + getProductDiscount(p)
+          // const subtotal = (r.subtotal || 0) + getProductSubtotal(p)
+          // const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
+          // const total = subtotal + total_tax
+
+          // Esta es la implementacion que pidio el cliente (calcula subtotal de cada producto CON impuestos)
+          const {
+            discountFromProductWithTaxes,
+            subtotalFromProductWithTaxes,
+            totalTaxFromProductWithTaxes,
+          } = getStatistics(p)
+          const discount = (r.discount || 0) + discountFromProductWithTaxes
+          const subtotal = (r.subtotal || 0) + subtotalFromProductWithTaxes
+          const total_tax = (r.total_tax || 0) + totalTaxFromProductWithTaxes
           const total = subtotal + total_tax
 
           return {
@@ -667,7 +761,7 @@ function BillingFields({
         return { ...prevDataState, ...totals }
       })
     },
-    [setData, productsData, isInvoiceFromSale]
+    [setData, productsData, isInvoiceFromSale, discountInputValue]
   )
 
   useEffect(() => {

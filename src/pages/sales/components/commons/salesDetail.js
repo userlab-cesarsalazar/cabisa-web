@@ -12,6 +12,7 @@ import {
   Select,
   message,
   Statistic,
+  Button,
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import SaleProductsList from './saleProductsList'
@@ -33,8 +34,7 @@ import { documentsStatus } from '../../../../commons/types'
 import {
   editableListInitRow,
   getOnChangeProductsListCallback,
-  getProductSubtotal,
-  getProductDiscount,
+  getStatisticFromProductWithTaxes,
   billingLogicFactory,
 } from '../../../billing/components/billingFields'
 import { getDetailData } from '../../../billing/billingIndex'
@@ -89,11 +89,25 @@ function SalesDetail({ closable, visible, isAdmin, canEditAndCreate }) {
 
   useEffect(
     function updateStatistics() {
+      const getStatistics = getStatisticFromProductWithTaxes(0)
+
       setSale(prevState => {
         const totals = dataSourceTable?.reduce((r, p) => {
-          const discount = (r.discount || 0) + getProductDiscount(p)
-          const subtotal = (r.subtotal || 0) + getProductSubtotal(p)
-          const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
+          // Esta es la implementacion normal (calcula subtotal de cada producto SIN impuesto)
+          // const discount = (r.discount || 0) + getProductDiscount(p)
+          // const subtotal = (r.subtotal || 0) + getProductSubtotal(p)
+          // const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
+          // const total = subtotal + total_tax
+
+          // Esta es la implementacion que pidio el cliente (calcula subtotal de cada producto CON impuestos)
+          const {
+            discountFromProductWithTaxes,
+            subtotalFromProductWithTaxes,
+            totalTaxFromProductWithTaxes,
+          } = getStatistics(p)
+          const discount = (r.discount || 0) + discountFromProductWithTaxes
+          const subtotal = (r.subtotal || 0) + subtotalFromProductWithTaxes
+          const total_tax = (r.total_tax || 0) + totalTaxFromProductWithTaxes
           const total = subtotal + total_tax
 
           return {
@@ -295,8 +309,19 @@ function SalesDetail({ closable, visible, isAdmin, canEditAndCreate }) {
         destroyOnClose
       >
         <div>
-          <Title> {'Detalle Nota de servicio'} </Title>
+          <Row>
+            <Col xs={24} sm={24} md={16} lg={16}>
+              <Title> {'Detalle Nota de servicio'} </Title>
+            </Col>
+            <Col xs={24} sm={24} md={8} lg={8} style={{ textAlign: 'right' }}>
+              <Button className='title-cabisa new-button'>
+                Boleta No. {sale.id}
+              </Button>
+            </Col>
+          </Row>
+
           <Divider className={'divider-custom-margins-users'} />
+
           <Row gutter={16} className={'section-space-field'}>
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Empresa</div>

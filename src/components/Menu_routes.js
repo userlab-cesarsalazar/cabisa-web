@@ -147,7 +147,7 @@ const menu_routes = [
   },
   {
     id: 10,
-    name: 'Pagos',
+    name: 'Recibo de caja',
     key: 'payments',
     icon: 'inventory',
     route: '/payments',

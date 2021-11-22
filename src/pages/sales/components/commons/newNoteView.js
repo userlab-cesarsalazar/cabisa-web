@@ -34,8 +34,7 @@ import { useEditableList } from '../../../../hooks'
 import {
   editableListInitRow,
   getOnChangeProductsListCallback,
-  getProductSubtotal,
-  getProductDiscount,
+  getStatisticFromProductWithTaxes,
   billingLogicFactory,
 } from '../../../billing/components/billingFields'
 
@@ -107,11 +106,25 @@ function NewNoteView({ canEditAndCreate }) {
 
   useEffect(
     function updateStatistics() {
+      const getStatistics = getStatisticFromProductWithTaxes(0)
+
       setSale(prevState => {
         const totals = dataSourceTable?.reduce((r, p) => {
-          const discount = (r.discount || 0) + getProductDiscount(p)
-          const subtotal = (r.subtotal || 0) + getProductSubtotal(p)
-          const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
+          // Esta es la implementacion normal (calcula subtotal de cada producto SIN impuesto)
+          // const discount = (r.discount || 0) + getProductDiscount(p)
+          // const subtotal = (r.subtotal || 0) + getProductSubtotal(p)
+          // const total_tax = (r.total_tax || 0) + p.unit_tax_amount * p.quantity
+          // const total = subtotal + total_tax
+
+          // Esta es la implementacion que pidio el cliente (calcula subtotal de cada producto CON impuestos)
+          const {
+            discountFromProductWithTaxes,
+            subtotalFromProductWithTaxes,
+            totalTaxFromProductWithTaxes,
+          } = getStatistics(p)
+          const discount = (r.discount || 0) + discountFromProductWithTaxes
+          const subtotal = (r.subtotal || 0) + subtotalFromProductWithTaxes
+          const total_tax = (r.total_tax || 0) + totalTaxFromProductWithTaxes
           const total = subtotal + total_tax
 
           return {

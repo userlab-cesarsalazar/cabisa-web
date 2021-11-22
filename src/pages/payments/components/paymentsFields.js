@@ -8,12 +8,18 @@ import {
   Statistic,
   Typography,
   Collapse,
+  Button,
 } from 'antd'
 import PaymentsProductsList from './paymentsProductsList'
 import PaymentsList from './paymentsList'
 import Tag from '../../../components/Tag'
 import { useEditableList } from '../../../hooks'
-import { showErrors, formatPhone, numberFormat } from '../../../utils'
+import {
+  roundNumber,
+  showErrors,
+  formatPhone,
+  numberFormat,
+} from '../../../utils'
 import FooterButtons from '../../../components/FooterButtons'
 import { editableListInitRow } from '../../billing/components/billingFields'
 import { documentsStatus } from '../../../commons/types'
@@ -23,13 +29,17 @@ const { Option } = Select
 const { TextArea } = Input
 const { Panel } = Collapse
 
-const { getFormattedValue } = numberFormat()
+const { getFormattedValue, getValue } = numberFormat()
 
 const getPaymentsTotal = (payments, totalUnpaidCredit) =>
   payments?.reduce(
     (r, p) => ({
-      totalPayments: (r.totalPayments || 0) + Number(p.payment_amount),
-      totalUnpaidCredit: r.totalUnpaidCredit - Number(p.payment_amount),
+      totalPayments: roundNumber(
+        (r.totalPayments || 0) + getValue(p.payment_amount)
+      ),
+      totalUnpaidCredit: roundNumber(
+        r.totalUnpaidCredit - getValue(p.payment_amount)
+      ),
     }),
     { totalUnpaidCredit }
   )
@@ -38,11 +48,12 @@ const getSaveData = data => {
   const payments = data.payments?.map(p => ({
     payment_id: p?.payment_id,
     payment_method: p.payment_method,
-    payment_amount: p.payment_amount ? Number(p.payment_amount) : null,
+    payment_amount: p.payment_amount ? getValue(p.payment_amount) : null,
     payment_date: p.payment_date
       ? new Date(p.payment_date).toISOString()
       : null,
     related_external_document: p.related_external_document,
+    description: p.description,
   }))
 
   return { document_id: data?.id, payments }
@@ -142,6 +153,7 @@ function PaymentsFields({ detailData, ...props }) {
       payment_amount: '',
       payment_method: '',
       related_external_document: '',
+      description: '',
     },
   })
 
@@ -159,7 +171,20 @@ function PaymentsFields({ detailData, ...props }) {
     <>
       <Row>
         <Col xs={24} sm={24} md={12} lg={12}>
-          <Title>Pagos</Title>
+          <Title>Recibo de caja</Title>
+        </Col>
+        <Col xs={24} sm={24} md={12} lg={12} style={{ textAlign: 'right' }}>
+          {invoiceData?.related_internal_document_id ? (
+            <Button className='title-cabisa new-button'>
+              Boleta No. {invoiceData.related_internal_document_id}
+            </Button>
+          ) : null}
+          <Button
+            className='title-cabisa new-button'
+            style={{ marginLeft: '1em' }}
+          >
+            Serie No. {invoiceData?.id}
+          </Button>
         </Col>
       </Row>
 
@@ -450,12 +475,14 @@ function PaymentsFields({ detailData, ...props }) {
         </Row>
       </div>
 
-      <FooterButtons
-        saveData={saveData}
-        edit
-        cancelButton={props.cancelButton}
-        loading={props.loading}
-      />
+      {invoiceData?.status !== documentsStatus.CANCELLED ? (
+        <FooterButtons
+          saveData={saveData}
+          edit
+          cancelButton={props.cancelButton}
+          loading={props.loading}
+        />
+      ) : null}
     </>
   )
 }

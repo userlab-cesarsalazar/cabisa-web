@@ -138,7 +138,7 @@ function SalesTable(props) {
           handlerDeleteRow={handlerDeleteRow}
           handlerEditRow={handlerEditRow}
           handlerApproveRow={handlerApproveRow}
-          deleteAction='cancel'
+          deleteAction='nullify'
           editAction={!data.has_related_invoice ? 'edit' : 'show'}
         />
       ),

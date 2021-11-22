@@ -7,6 +7,7 @@ import saleSrc from '../../salesSrc'
 import BillingFields from '../../../billing/components/billingFields'
 import { showErrors } from '../../../../utils'
 import { getDetailData } from '../../../billing/billingIndex'
+import { documentsPaymentMethods } from '../../../../commons/types'
 
 function ServiceNoteBill() {
   const location = useLocation()
@@ -18,17 +19,17 @@ function ServiceNoteBill() {
   const [creditDaysOptionsList, setCreditDaysOptionsList] = useState([])
 
   useEffect(() => {
+    setPaymentMethodsOptionsList([
+      documentsPaymentMethods.CARD,
+      documentsPaymentMethods.CASH,
+    ])
+
     setLoading(true)
 
-    Promise.all([
-      billingSrc.getPaymentMethods(),
-      billingSrc.getServiceTypes(),
-      billingSrc.getCreditDays(),
-    ])
+    Promise.all([billingSrc.getServiceTypes(), billingSrc.getCreditDays()])
       .then(data => {
-        setPaymentMethodsOptionsList(data[0])
-        setServiceTypesOptionsList(data[1])
-        setCreditDaysOptionsList(data[2])
+        setServiceTypesOptionsList(data[0])
+        setCreditDaysOptionsList(data[1])
       })
       .catch(_ => message.error('Error al cargar listados'))
       .finally(() => setLoading(false))
