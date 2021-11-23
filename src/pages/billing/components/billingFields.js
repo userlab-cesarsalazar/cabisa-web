@@ -61,10 +61,11 @@ export const getStatisticFromProductWithTaxes = discountInputValue => product =>
     ? getPercent(product.child_tax_fee)
     : 0
   const childPriceWithoutTax = product.child_unit_price
-    ? product.child_unit_price / (1 + childTaxFix)
+    ? product.child_unit_price - product.child_unit_price * childTaxFix
     : 0
   const childBasePriceWithoutTax = product.child_base_unit_price
-    ? product.child_base_unit_price / (1 + childTaxFix)
+    ? product.child_base_unit_price -
+      product.child_base_unit_price * childTaxFix
     : 0
   const childDiscount =
     childBasePriceWithoutTax * getPercent(discountInputValue)
@@ -76,10 +77,11 @@ export const getStatisticFromProductWithTaxes = discountInputValue => product =>
     ? getPercent(product.parent_tax_fee)
     : 0
   const parentPriceWithoutTax = product.parent_unit_price
-    ? product.parent_unit_price / (1 + parentTaxFix)
+    ? product.parent_unit_price - product.parent_unit_price * parentTaxFix
     : 0
   const parentBasePriceWithoutTax = product.parent_base_unit_price
-    ? product.parent_base_unit_price / (1 + parentTaxFix)
+    ? product.parent_base_unit_price -
+      product.parent_base_unit_price * parentTaxFix
     : 0
   const parentDiscount =
     parentBasePriceWithoutTax * getPercent(discountInputValue)
@@ -388,7 +390,8 @@ export const billingLogicFactory = ({
       // }
 
       const parentPriceWithoutTax = p.parent_base_unit_price
-        ? p.parent_base_unit_price / (1 + getPercent(p.parent_tax_fee))
+        ? p.parent_base_unit_price -
+          p.parent_base_unit_price * getPercent(p.parent_tax_fee)
         : 0
       const parentProductDiscount =
         parentPriceWithoutTax * getPercent(discountInputValue)
@@ -405,7 +408,8 @@ export const billingLogicFactory = ({
       }
 
       const childPriceWithoutTax = p.child_base_unit_price
-        ? p.child_base_unit_price / (1 + getPercent(p.child_tax_fee))
+        ? p.child_base_unit_price -
+          p.child_base_unit_price * getPercent(p.child_tax_fee)
         : 0
       const childProductDiscount =
         childPriceWithoutTax * getPercent(discountInputValue)
