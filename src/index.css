@@ -1563,3 +1563,7 @@ input:-webkit-autofill:focus {
 .ant-select-dropdown {
   width: unset !important;
 }
+
+#login-form .ant-row.ant-form-item {
+  flex-direction: column;
+}
