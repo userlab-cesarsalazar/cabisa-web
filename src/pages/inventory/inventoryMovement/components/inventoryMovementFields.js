@@ -273,10 +273,10 @@ function InventoryMovementFields({ forbidEdition, editData, ...props }) {
         )}
         <Row gutter={16}>
           <Col xs={8} sm={8} md={8} lg={8}>
-            <div className={'title-space-field'}>Empresa</div>
+            <div className={'title-space-field'}>Proveedor</div>
             <Select
               className={'single-select'}
-              placeholder={'Empresa'}
+              placeholder={'Proveedor'}
               size={'large'}
               style={{ width: '100%', height: '40px' }}
               getPopupContainer={trigger => trigger.parentNode}
