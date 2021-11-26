@@ -15,7 +15,7 @@ import {
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import InventoryMovementProductsList from './inventoryMovementProductsList'
-import { showErrors, formatPhone } from '../../../../utils'
+import { showErrors, formatPhone, getPercent } from '../../../../utils'
 import {
   productsStatus,
   stakeholdersStatus,
@@ -56,7 +56,8 @@ function InventoryMovementFields({ forbidEdition, editData, ...props }) {
       description: p.description,
       id: p.id,
       quantity: p.product_quantity,
-      inventory_unit_value: p.product_price,
+      inventory_unit_value: Number(p.product_price) + Number(p.unit_tax_amount),
+      tax_fee: p.tax_fee,
     }))
 
     return { data, productsData }
@@ -94,6 +95,7 @@ function InventoryMovementFields({ forbidEdition, editData, ...props }) {
         id: product.id,
         code: product.code,
         inventory_unit_value: product.inventory_unit_value,
+        tax_fee: product.tax_fee,
         quantity: 1,
       }
 
@@ -113,6 +115,7 @@ function InventoryMovementFields({ forbidEdition, editData, ...props }) {
       description: '',
       quantity: 0,
       inventory_unit_value: 0,
+      tax_fee: '',
     },
     onChange: setProductData,
   })
@@ -145,7 +148,8 @@ function InventoryMovementFields({ forbidEdition, editData, ...props }) {
     products: productsData.map(p => ({
       product_id: p.id,
       product_quantity: p.quantity,
-      product_price: p.inventory_unit_value,
+      product_price:
+        p.inventory_unit_value - p.inventory_unit_value * getPercent(p.tax_fee),
     })),
   })
 
