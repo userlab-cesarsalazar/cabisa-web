@@ -102,7 +102,7 @@ export function getDetailData(data) {
       }),
     }
   })
-  console.log(products)
+
   return {
     ...data,
     discount_percentage: roundNumber(data?.discount_percentage || 0),
