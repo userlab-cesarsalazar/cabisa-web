@@ -26,10 +26,11 @@ export function getDetailData(data) {
       parentProduct?.product_price || parentProduct?.unit_price || 0
     const unitDiscountAmount = parentProduct?.unit_discount_amount || 0
     const parentBaseUnitPrice =
-      (Number(baseUnitPrice) + unitDiscountAmount) *
-      (1 + getPercent(Number(parentProduct.tax_fee)))
+      (Number(baseUnitPrice) + unitDiscountAmount) /
+      (1 - getPercent(Number(parentProduct.tax_fee)))
     const unitPrice =
-      Number(baseUnitPrice) + (parentProduct?.unit_tax_amount || 0)
+      Number(baseUnitPrice) / (1 - getPercent(Number(parentProduct.tax_fee)))
+    const parentUnitTaxAmount = roundNumber(unitPrice - baseUnitPrice)
     // const unitPrice =
     //   parentProduct?.product_price || Number(parentProduct?.product_price) === 0
     //     ? Number(parentProduct.product_price)
@@ -39,14 +40,15 @@ export function getDetailData(data) {
       id: parentProduct?.id || '',
       description: parentProduct?.description || '',
       parent_tax_fee: parentProduct?.tax_fee || 0,
-      parent_unit_tax_amount: roundNumber(parentProduct?.unit_tax_amount || 0),
+      // parent_unit_tax_amount: roundNumber(parentProduct?.unit_tax_amount || 0),
+      parent_unit_tax_amount: parentUnitTaxAmount,
       parent_unit_discount: roundNumber(unitDiscountAmount),
       parent_base_unit_price: roundNumber(parentBaseUnitPrice),
       // parent_base_unit_price: roundNumber(unitPrice + parent_unit_discount),
       parent_unit_price: roundNumber(unitPrice),
       parent_display_unit_price: roundNumber(unitPrice),
       unit_tax_amount: roundNumber(
-        parentProduct.unit_tax_amount + childProduct.unit_tax_amount
+        parentUnitTaxAmount + childProduct.unit_tax_amount
       ),
       subtotal: roundNumber(Number(unitPrice) + childProduct.subtotal),
     }
@@ -59,19 +61,22 @@ export function getDetailData(data) {
     const baseUnitPrice = p?.product_price || p?.unit_price || 0
     const unitDiscountAmount = p?.unit_discount_amount || 0
     const childBaseUnitPrice =
-      (Number(baseUnitPrice) + unitDiscountAmount) *
-      (1 + getPercent(Number(p.tax_fee)))
-    const unitPrice = Number(baseUnitPrice) + (p?.unit_tax_amount || 0)
+      (Number(baseUnitPrice) + unitDiscountAmount) /
+      (1 - getPercent(Number(p.tax_fee)))
+    const unitPrice =
+      Number(baseUnitPrice) / (1 - getPercent(Number(p.tax_fee)))
     // const unitPrice = p?.product_price || p?.unit_price || 0
     const quantity = p?.quantity || p?.product_quantity || 0
     const subtotal = unitPrice * quantity
+    const unitTaxAmount = roundNumber(unitPrice - baseUnitPrice)
 
     return {
       ...p,
       child_id: p?.id || '',
       child_description: p?.description || '',
       child_tax_fee: p?.tax_fee || '0',
-      child_unit_tax_amount: roundNumber(p?.unit_tax_amount || 0),
+      // child_unit_tax_amount: roundNumber(p?.unit_tax_amount || 0),
+      child_unit_tax_amount: unitTaxAmount,
       child_unit_discount: roundNumber(unitDiscountAmount),
       child_base_unit_price: roundNumber(childBaseUnitPrice),
       // child_base_unit_price: roundNumber(unitPrice + child_unit_discount),
@@ -79,7 +84,7 @@ export function getDetailData(data) {
       child_display_unit_price: roundNumber(unitPrice),
       unit_price: roundNumber(unitPrice),
       unit_discount: roundNumber(unitDiscountAmount),
-      unit_tax_amount: roundNumber(p.unit_tax_amount),
+      unit_tax_amount: unitTaxAmount,
       quantity,
       subtotal: roundNumber(subtotal),
       id: '',
