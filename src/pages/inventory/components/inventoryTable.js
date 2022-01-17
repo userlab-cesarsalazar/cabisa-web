@@ -64,7 +64,8 @@ function InventoryTable(props) {
           </Select>
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} style={{ textAlign: 'right' }}>
-          {can(actions.CREATE) && props.isAdmin && (
+          {can(actions.CREATE) && (
+            
             <Button
               className='title-cabisa new-button'
               onClick={props.showDraweTbl}
