@@ -15,7 +15,7 @@ import {
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import InventoryMovementProductsList from './inventoryMovementProductsList'
-import { showErrors, formatPhone, getPercent } from '../../../../utils'
+import { showErrors, formatPhone } from '../../../../utils'
 import {
   productsStatus,
   stakeholdersStatus,

@@ -35,13 +35,11 @@ export const validateRole = rolId => {
   return currentSessionRoleId <= rolId
 }
 
-export const validatePermissions = permissionId => {
-  const currentSessionPermissions = Cache.getItem('currentSession')
-    .userPermissions
+export const validatePermissions = permissionId => {  
+  const currentSessionPermissions = Cache.getItem('currentSession').userPermissions  
   const currentPermission = currentSessionPermissions.find(
     p => Number(p.id) === Number(permissionId)
-  )
-
+  )    
   return action => currentPermission && currentPermission[action]
 }
 
