@@ -15,7 +15,7 @@ import {
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
 import InventoryMovementProductsList from './inventoryMovementProductsList'
-import { showErrors, formatPhone, getPercent } from '../../../../utils'
+import { showErrors, formatPhone } from '../../../../utils'
 import {
   productsStatus,
   stakeholdersStatus,
@@ -148,8 +148,8 @@ function InventoryMovementFields({ forbidEdition, editData, ...props }) {
     products: productsData.map(p => ({
       product_id: p.id,
       product_quantity: p.quantity,
-      product_price:
-        p.inventory_unit_value - p.inventory_unit_value * getPercent(p.tax_fee),
+      product_price:        
+        p.inventory_unit_value,
     })),
   })
 

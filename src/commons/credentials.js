@@ -23,15 +23,44 @@ const develop = {
     'https://kqanan1fy6.execute-api.us-east-1.amazonaws.com/dev/payments',
 }
 
+const production = {
+  inventoryMovementUrl:
+    'https://u1bf8sdlpl.execute-api.us-east-1.amazonaws.com/prod/inventory-movements',
+  invoiceUrl:
+    'https://uj4q9nrnz9.execute-api.us-east-1.amazonaws.com/prod/invoices',
+  productUrl:
+    'https://9ht6rmmxbb.execute-api.us-east-1.amazonaws.com/prod/products',
+  projectUrl:
+    'https://mb2awyvv0h.execute-api.us-east-1.amazonaws.com/prod/projects',
+  purchaseUrl:
+    'https://f204t59ap7.execute-api.us-east-1.amazonaws.com/prod/purchases',
+  saleUrl: 
+    'https://ptti3zm1y5.execute-api.us-east-1.amazonaws.com/prod/sales',
+  serviceUrl:
+    'https://adqyzj2wn8.execute-api.us-east-1.amazonaws.com/prod/services',
+  stakeholderUrl:
+    'https://97bujz55j5.execute-api.us-east-1.amazonaws.com/prod/stakeholders',
+  usersUrl: 
+    'https://aelcxzmxn8.execute-api.us-east-1.amazonaws.com/prod/users',
+  repairsUrl:
+    'https://dpznpcmbf9.execute-api.us-east-1.amazonaws.com/prod/repairs',
+  reportUrl:
+    'https://m0d4cx91pb.execute-api.us-east-1.amazonaws.com/prod/reports',
+  paymentsUrl:
+    'https://x03gt0xo95.execute-api.us-east-1.amazonaws.com/prod/payments',
+}
+
 const enviroment = env => {
   switch (env) {
     case 'develop':
       return develop
+    case 'production':
+      return production
     default:
       return null
   }
 }
 
 module.exports = {
-  stage: enviroment('develop'),
+  stage: enviroment('production'),
 }
