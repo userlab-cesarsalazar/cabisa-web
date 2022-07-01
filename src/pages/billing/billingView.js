@@ -51,16 +51,18 @@ function BillingView() {
   }, [])
 
   const handleSaveData = saveData => {
-    setLoading(true)
+    console.log("CREANDO FACTURA MOTHERFUCKER")
+    console.log(saveData)
+    //setLoading(true)
 
-    billingSrc
-      .createInvoice(saveData)
-      .then(_ => {
-        message.success('Factura creada exitosamente')
-        history.push('/billing')
-      })
-      .catch(error => showErrors(error))
-      .finally(() => setLoading(false))
+    // billingSrc
+    //   .createInvoice(saveData)
+    //   .then(_ => {
+    //     message.success('Factura creada exitosamente')
+    //     history.push('/billing')
+    //   })
+    //   .catch(error => showErrors(error))
+    //   .finally(() => setLoading(false))
   }
 
   return (
