@@ -5,6 +5,7 @@ import { message, Card } from 'antd'
 import BillingFields from './components/billingFields'
 import billingSrc from './billingSrc'
 import { showErrors, validateRole } from '../../utils'
+import { Cache } from 'aws-amplify'
 import {
   stakeholdersTypes,
   roles,
@@ -53,7 +54,7 @@ function BillingView() {
   const handleSaveData = saveData => {
            
    let billData =  createBillStructure(saveData)
-   console.log("bill data>> ",billData)
+   console.log("bill data>> ",JSON.stringify(billData))
 
     //setLoading(true)
     // billingSrc
@@ -67,13 +68,14 @@ function BillingView() {
   }
 
   const createBillStructure = dataBill => {
+    const UserName = Cache.getItem('currentSession')
     const { client_data: client, description: observations, products, ...rest } = dataBill;
     let items = [];
     items = products.map(product => {
-       const price = (product.service_user_price || product.product_user_price).toFixed(2);
+       const price = (product.service_user_price || product.product_user_price)
        const description = product.product_description || product.service_description
-       const discount = ((product.product_discount_percentage/100) * price).toFixed(2)
-       const quantity = product.product_quantity.toFixed(2)
+       const discount = ((product.product_discount_percentage/100) * price)
+       const quantity = product.product_quantity
        return { description, price,discount,quantity}
     })
     
@@ -81,7 +83,8 @@ function BillingView() {
        client,
        "invoice":{
           items,      
-          observations
+          observations,
+          created_by: UserName ? UserName.userName : 'system'
        }
     }
     return newStructure
