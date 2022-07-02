@@ -51,10 +51,11 @@ function BillingView() {
   }, [])
 
   const handleSaveData = saveData => {
-    console.log("CREANDO FACTURA MOTHERFUCKER")
-    console.log(saveData)
-    //setLoading(true)
+           
+   let billData =  createBillStructure(saveData)
+   console.log("bill data>> ",billData)
 
+    //setLoading(true)
     // billingSrc
     //   .createInvoice(saveData)
     //   .then(_ => {
@@ -63,6 +64,27 @@ function BillingView() {
     //   })
     //   .catch(error => showErrors(error))
     //   .finally(() => setLoading(false))
+  }
+
+  const createBillStructure = dataBill => {
+    const { client_data: client, description: observations, products, ...rest } = dataBill;
+    let items = [];
+    items = products.map(product => {
+       const price = (product.service_user_price || product.product_user_price).toFixed(2);
+       const description = product.product_description || product.service_description
+       const discount = ((product.product_discount_percentage/100) * price).toFixed(2)
+       const quantity = product.product_quantity.toFixed(2)
+       return { description, price,discount,quantity}
+    })
+    
+    let newStructure = {
+       client,
+       "invoice":{
+          items,      
+          observations
+       }
+    }
+    return newStructure
   }
 
   return (

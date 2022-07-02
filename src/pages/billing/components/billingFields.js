@@ -349,8 +349,6 @@ export const billingLogicFactory = ({
   }
 
   const getSaveData = () => {
-  console.log("data >>> ",data)
-  console.log("productsData >>> ",productsData)
     return  {
     client_data:{
       id:data.stakeholder_id,
@@ -375,8 +373,7 @@ export const billingLogicFactory = ({
     total_tax_amount: data.total_tax,
     total_amount: data.total,
     description: data.description,
-    products: productsData.reduce((r, p) => {
-      console.log("product fuck ",p)      
+    products: productsData.reduce((r, p) => {          
       // const parentProduct = {
       //   product_id: p.id,
       //   product_quantity:
