@@ -7,27 +7,49 @@ import {
   Row,
   Select,
   Table,
+  Divider,
+  Tooltip,
+  Button,
+  Popconfirm,
   Tag as AntTag,
 } from 'antd'
+import {
+  DeleteOutlined,
+  FileSearchOutlined  
+} from '@ant-design/icons'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import ActionOptions from '../../../components/actionOptions'
+//import ActionOptions from '../../../components/actionOptions'
 import Tag from '../../../components/Tag'
 import moment from 'moment'
-import { permissions, documentsStatus } from '../../../commons/types'
+//import { permissions, documentsStatus } from '../../../commons/types'
 
 const { Search } = Input
 const { Option } = Select
 
 function BillingTable(props) {
-  const handlerEditRow = data => props.showDetail(data)
+  //const handlerEditRow = data => props.showDetail(data)
 
   const handlerDeleteRow = data => props.handlerDeleteRow(data)
 
-  const columns = [
+  const handlerShowDocument = data => props.handlerShowDocument(data)
+
+  const columns = [    
     {
-      title: 'Serie',
-      dataIndex: 'id', // Field that is goint to be rendered
-      key: 'id',
+      title: 'serie',
+      dataIndex: 'serie', // Field that is goint to be rendered
+      key: 'serie',
+      render: text => <span>{text}</span>,
+    },
+    {
+      title: 'Nro. documento',
+      dataIndex: 'document_number', // Field that is goint to be rendered
+      key: 'document_number',
+      render: text => <span>{text}</span>,
+    },
+    {
+      title: 'UUID',
+      dataIndex: 'uuid', // Field that is goint to be rendered
+      key: 'uuid',
       render: text => <span>{text}</span>,
     },
     {
@@ -73,7 +95,8 @@ function BillingTable(props) {
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
       render: (_, data) => (
-        <ActionOptions
+        <>
+        {/* <ActionOptions
           editPermissions={false}
           data={data}
           permissionId={permissions.FACTURACION}
@@ -82,7 +105,28 @@ function BillingTable(props) {
           handlerEditRow={handlerEditRow}
           deleteAction='nullify'
           editAction={props.isAdmin ? 'edit' : 'show'}
-        />
+        /> */}
+        <Tooltip title={'Ver documento'}>
+              <Button
+                icon={<FileSearchOutlined />}
+                onClick={() => handlerShowDocument(data)}
+              />
+            </Tooltip>
+        <Divider type={'vertical'} />
+        <Tooltip title={'Anular'}>
+        <Popconfirm
+                title={`¿Estas seguro de anular la factura?`}
+                onConfirm={() => handlerDeleteRow(data)}
+                okText='Si'
+                cancelText='No'
+              >
+              <Button
+                danger
+                icon={<DeleteOutlined />}                
+              />
+        </Popconfirm>
+            </Tooltip>
+        </>
       ),
     },
   ]
@@ -155,7 +199,7 @@ function BillingTable(props) {
             <Row>
               <Col xs={24} sm={24} md={24} lg={24}>
                 <Table
-                  scroll={{ y: 320 }}
+                  scroll={{ y: 820 }}
                   className={'CustomTableClass'}
                   dataSource={props.dataSource}
                   columns={columns}

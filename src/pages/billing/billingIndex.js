@@ -4,7 +4,7 @@ import HeaderPage from '../../components/HeaderPage'
 import BillingTable from './components/BillingTable'
 import DetailBilling from './components/detailBilling'
 import billingSrc from './billingSrc'
-import { message } from 'antd'
+import { message,Modal,Row,Col,Input } from 'antd'
 import { getPercent, showErrors, roundNumber, validateRole } from '../../utils'
 import {
   stakeholdersTypes,
@@ -13,6 +13,9 @@ import {
   roles,
   documentsPaymentMethods,
 } from '../../commons/types'
+import { Cache } from 'aws-amplify'
+
+const { TextArea } = Input;
 
 export function getDetailData(data) {
   const getParentProduct = (products, childProduct) => {
@@ -115,6 +118,7 @@ export function getDetailData(data) {
 }
 
 function Billing(props) {
+  
   const initFilters = useRef()
 
   if (!initFilters.current) {
@@ -141,6 +145,13 @@ function Billing(props) {
     setStakeholderTypesOptionsList,
   ] = useState([])
   const [serviceTypesOptionsList, setServiceTypesOptionsList] = useState([])
+  const [showModal,setShowModal] = useState(false)
+  const [showModalCancel,setShowModalCancel] = useState(false)
+  const [invoiceBase64,setInvoiceBase64] = useState(null)
+  const [cancelDescription,setCancelDescription] = useState('')
+  const [dataCancelInvoice,setDataCancelInvoice] = useState(null)
+  const [rowData,setRowData] = useState([])
+  
 
   useEffect(() => {
     setPaymentMethodsOptionsList([
@@ -188,22 +199,75 @@ function Billing(props) {
     loadData()
   }, [loadData])
 
-  const handlerDeleteRow = row => {
-    setLoading(true)
-
-    billingSrc
-      .cancelInvoice({ document_id: row.id })
-      .then(_ => {
-        if (JSON.stringify(filters) === JSON.stringify(initFilters.current)) {
-          loadData()
-        } else {
-          setFilters(initFilters.current)
+  const handlerDeleteRow = async row => {
+    
+    try {
+      if(showModalCancel){
+        if(cancelDescription.length === 0){
+          return message.warning('La anulacion del documento debe llevar una descripcion.')
         }
+        const UserName = Cache.getItem('currentSession')         
+        setLoading(true)
+        setShowModalCancel(false)
+        
+        let _dataCancel = dataCancelInvoice
+        _dataCancel.description = cancelDescription
+        _dataCancel.created_by = UserName ? UserName.userName : 'system'
+  
+        let infileDoc = await billingSrc.cancelInvoiceFel(_dataCancel)
+        let infileMessage = infileDoc.message  
+  
+        if(infileMessage === 'SUCCESSFUL'){        
+          billingSrc
+            .cancelInvoice({ document_id: rowData.id })
+            .then(_ => {
+              if (JSON.stringify(filters) === JSON.stringify(initFilters.current)) {
+                loadData()
+              } else {
+                setFilters(initFilters.current)
+              }
+  
+              message.success('Factura anulada exitosamente')
+            })
+            .catch(error => showErrors(error))
+            .finally(() => setLoading(false))
+        }else{
+          setLoading(false)
+          message.error(infileMessage)
+        }
+        
+      }else{
+        setLoading(true)
+        const {stakeholder_nit,uuid } = row    
+        let infileDoc = await billingSrc.getInvoiceFel(row.document_number)
+        
+        let data = {
+          nit:stakeholder_nit,
+          uuid,
+          certificateDate: infileDoc.xml_certificado.fecha_certificacion
+        }
+        setCancelDescription('')
+        setRowData(row)
+        setDataCancelInvoice(data)      
+        setShowModalCancel(true)
+        setLoading(false)
+      }
+    } catch (error) {
+      console.log(error)
+      message.error('Ocurrio un problema al procesar su peticion, contacte al administrador')
+    }
+    
+  }
 
-        message.success('Factura anulada exitosamente')
-      })
-      .catch(error => showErrors(error))
-      .finally(() => setLoading(false))
+  const handlerShowDocument = async row => {
+    console.log("show document")
+    console.log(row.document_number)
+    setLoading(true)
+    let infileDoc = await billingSrc.getInvoiceFel(row.document_number)
+    setLoading(false)
+    console.log("document",infileDoc)
+    setInvoiceBase64(infileDoc.response_pdf)
+    setShowModal(true)
   }
 
   const setSearchFilters = field => value =>
@@ -235,6 +299,7 @@ function Billing(props) {
         handleFiltersChange={setSearchFilters}
         paymentMethodsOptionsList={paymentMethodsOptionsList}
         handlerDeleteRow={handlerDeleteRow}
+        handlerShowDocument={handlerShowDocument}
         loading={loading}
         isAdmin={isAdmin}
       />
@@ -250,6 +315,55 @@ function Billing(props) {
         isAdmin={isAdmin}
         loadData={loadData}
       />
+       <Modal
+          closable={false}
+          width={'min-content'}
+          visible={showModal}
+          footer={false}
+          onCancel={() => {
+            setInvoiceBase64(null);
+            setShowModal(false)
+          }
+          }
+        >
+          {invoiceBase64 && (
+            <Row gutter={24}>
+              <Col span={24}>
+                <div style={{ width: '21cm', height: '29.7cm' }}>
+                  <embed src={`data:application/pdf;base64,${invoiceBase64}`} type="application/pdf" width="100%" height="100%"></embed>
+                </div>
+              </Col>
+            </Row>
+          )}
+        </Modal>
+
+        <Modal
+          closable={false}          
+          visible={showModalCancel}          
+          onOk={()=>{           
+            setShowModalCancel(false)
+            handlerDeleteRow()
+           }
+          }
+          onCancel={()=>{
+            setShowModalCancel(false)
+            setCancelDescription('')
+            setRowData([])
+            setDataCancelInvoice(null)
+          }
+        }
+        >          
+        
+            <Row gutter={24}>
+              <Col span={24}>
+              <TextArea rows={4}
+              value={cancelDescription} 
+              placeholder='Descripcion de la anulacion'
+              onChange={value=>setCancelDescription(value.target.value)}
+              />
+              </Col>
+            </Row>          
+        </Modal>
     </>
   )
 }

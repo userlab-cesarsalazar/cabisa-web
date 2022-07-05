@@ -51,25 +51,39 @@ function BillingView() {
       .finally(() => setLoading(false))
   }, [])
 
-  const handleSaveData = saveData => {
-           
-   let billData =  createBillStructure(saveData)
-   console.log("bill data>> ",JSON.stringify(billData))
+  const handleSaveData = async saveData => {           
+   let billData =  createBillStructure(saveData)  
+   setLoading(true)
+  //get infile document
+  let infileDoc = await billingSrc.createInvoiceFel(billData)
 
-    //setLoading(true)
-    // billingSrc
-    //   .createInvoice(saveData)
-    //   .then(_ => {
-    //     message.success('Factura creada exitosamente')
-    //     history.push('/billing')
-    //   })
-    //   .catch(error => showErrors(error))
-    //   .finally(() => setLoading(false))
+  let infileMessage = infileDoc.message  
+    if(infileMessage === 'SUCCESSFUL'){      
+      const _serie = infileDoc.data.serie
+      const _document_number = infileDoc.data.numero
+      const _uuid = infileDoc.data.uuid
+      saveData.serie = _serie
+      saveData.document_number = _document_number
+      saveData.uuid = _uuid
+    billingSrc
+      .createInvoice(saveData)
+      .then(_ => {
+        message.success('Factura creada exitosamente')
+        history.push('/billing')
+      })
+      .catch(error => showErrors(error))
+      .finally(() => setLoading(false))
+
+    }else{      
+      setLoading(false)
+      message.error(infileMessage)
+    }
+   
   }
 
   const createBillStructure = dataBill => {
     const UserName = Cache.getItem('currentSession')
-    const { client_data: client, description: observations, products, ...rest } = dataBill;
+    const { client_data: client, description: observations, products } = dataBill;
     let items = [];
     items = products.map(product => {
        const price = (product.service_user_price || product.product_user_price)
