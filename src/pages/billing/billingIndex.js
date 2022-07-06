@@ -4,7 +4,7 @@ import HeaderPage from '../../components/HeaderPage'
 import BillingTable from './components/BillingTable'
 import DetailBilling from './components/detailBilling'
 import billingSrc from './billingSrc'
-import { message,Modal,Row,Col,Input } from 'antd'
+import { message,Modal,Row,Col,Input,Spin } from 'antd'
 import { getPercent, showErrors, roundNumber, validateRole } from '../../utils'
 import {
   stakeholdersTypes,
@@ -135,6 +135,7 @@ function Billing(props) {
   const isAdmin = validateRole(roles.ADMIN)
 
   const [loading, setLoading] = useState(false)
+  const [loadingBill, setLoadingBill] = useState(false)
   const [visible, setVisible] = useState(false)
   const [dataSource, setDataSource] = useState(false)
   const [detailInvoiceData, setDetailInvoiceData] = useState(false)
@@ -264,9 +265,12 @@ function Billing(props) {
     console.log(row.document_number)
     setLoading(true)
     let infileDoc = await billingSrc.getInvoiceFel(row.document_number)
-    setLoading(false)
-    console.log("document",infileDoc)
-    setInvoiceBase64(infileDoc.response_pdf)
+    setLoading(false)    
+    let uuid_ = infileDoc.xml_certificado.uuid
+    let urlPdf = `https://docs.google.com/gview?url=https://report.feel.com.gt/ingfacereport/ingfacereport_documento?uuid=${uuid_}&embedded=true`
+    console.log('document',urlPdf)
+    setInvoiceBase64(urlPdf)
+    setLoadingBill(true)
     setShowModal(true)
   }
 
@@ -284,6 +288,10 @@ function Billing(props) {
   }
 
   const closeDetail = () => setVisible(false)
+
+  const hideSpinner = () =>{
+    setLoadingBill(false)
+  }
 
   return (
     <>
@@ -321,20 +329,29 @@ function Billing(props) {
           visible={showModal}
           footer={false}
           onCancel={() => {
-            setInvoiceBase64(null);
+            setInvoiceBase64('_blank');
             setShowModal(false)
           }
           }
-        >
+        >   
+        <Spin spinning={loadingBill}>
           {invoiceBase64 && (
             <Row gutter={24}>
               <Col span={24}>
-                <div style={{ width: '21cm', height: '29.7cm' }}>
-                  <embed src={`data:application/pdf;base64,${invoiceBase64}`} type="application/pdf" width="100%" height="100%"></embed>
+                <div style={{ width: '21cm', height: '29.7cm' }}>                  
+                  <iframe
+                  onLoad={hideSpinner}
+                  title="calculator"
+                  frameBorder="0"
+                  scrolling="no"
+                  style={{ width: '100%', minHeight: '960px', height: '100%', borderColor: 'white' }}
+                  src={invoiceBase64}
+          />
                 </div>
               </Col>
             </Row>
           )}
+          </Spin>       
         </Modal>
 
         <Modal

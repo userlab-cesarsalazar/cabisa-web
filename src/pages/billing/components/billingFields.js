@@ -235,11 +235,9 @@ export const handleUpdateProductsData = ({
     unit_discount,
     base_unit_price: child_base_unit_price + parent_base_unit_price,
     description_product : childProduct?.description || row?.description_product,
-    description_service : parentProduct?.description || row?.description_service
+    description_service : parentProduct?.description || row?.description_service 
   }
-
   
-
   const subtotal = getProductSubtotal(newRow)  
   return { ...newRow, subtotal }
 }
@@ -352,7 +350,7 @@ export const billingLogicFactory = ({
     return  {
     client_data:{
       id:data.stakeholder_id,
-      name:data.client_name,
+      name: data.client_name ? data.client_name : data.stakeholder_name,      
       address:data.stakeholder_address,
       email:data.stakeholder_email,
       nit:data.stakeholder_nit,
@@ -373,7 +371,7 @@ export const billingLogicFactory = ({
     total_tax_amount: data.total_tax,
     total_amount: data.total,
     description: data.description,
-    products: productsData.reduce((r, p) => {          
+    products: productsData.reduce((r, p) => {              
       // const parentProduct = {
       //   product_id: p.id,
       //   product_quantity:
@@ -418,7 +416,7 @@ export const billingLogicFactory = ({
           : null,
         product_discount: parentProductDiscount || null,
         service_type: p.service_type,
-        service_description: p.description_service,
+        service_description: p.description_service ||p.description,
         service_user_price: p.parent_base_unit_price
       }
 
@@ -428,7 +426,8 @@ export const billingLogicFactory = ({
         : 0
       const childProductDiscount =
         childPriceWithoutTax * getPercent(discountInputValue)
-      const childProduct = {
+      
+        const childProduct = {
         product_id: p.child_id,
         product_quantity: Number(p.quantity),
         product_price: childPriceWithoutTax - childProductDiscount,
@@ -438,7 +437,7 @@ export const billingLogicFactory = ({
         product_discount: childProductDiscount || null,
         parent_product_id: p.id || null,
         service_type: p.service_type,
-        product_description: p.description_product,
+        product_description: p.description_product || p.child_description,
         product_user_price: p.child_base_unit_price               
       }
 

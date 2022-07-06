@@ -52,7 +52,7 @@ function BillingView() {
   }, [])
 
   const handleSaveData = async saveData => {           
-   let billData =  createBillStructure(saveData)  
+   let billData =  createBillStructure(saveData)     
    setLoading(true)
   //get infile document
   let infileDoc = await billingSrc.createInvoiceFel(billData)
@@ -87,9 +87,9 @@ function BillingView() {
     let items = [];
     items = products.map(product => {
        const price = (product.service_user_price || product.product_user_price)
-       const description = product.product_description || product.service_description
-       const discount = ((product.product_discount_percentage/100) * price)
+       const description = product.product_description || product.service_description       
        const quantity = product.product_quantity
+       const discount = ((product.product_discount_percentage/100) * price) * quantity
        return { description, price,discount,quantity}
     })
     
