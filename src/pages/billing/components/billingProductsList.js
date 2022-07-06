@@ -177,7 +177,7 @@ function BillingProductsList({
                   showSearch
                   onSearch={debounce(handleSearchProduct(index), 400)}
                   value={row.id}
-                  onChange={value => handleChangeDetail('id', value, index)}
+                  onChange={value => handleChangeDetail('id', value, index)}                  
                   loading={loading}
                   optionFilterProp='children'
                   disabled={
