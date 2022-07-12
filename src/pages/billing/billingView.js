@@ -53,12 +53,19 @@ function BillingView() {
 
   const handleSaveData = async saveData => {           
    let billData =  createBillStructure(saveData)     
-   setLoading(true)
-  //get infile document
-  let infileDoc = await billingSrc.createInvoiceFel(billData)
+   
+   console.log("DATA TO DB >> ", saveData) 
+   console.log("DATA TO INFILE >> ",billData)
+    
+   //EMPIEZA AQUI
 
+   /*
+   setLoading(true)  
+   //create infile DOC
+  let infileDoc = await billingSrc.createInvoiceFel(billData)
   let infileMessage = infileDoc.message  
     if(infileMessage === 'SUCCESSFUL'){      
+      //create info in DB
       const _serie = infileDoc.data.serie
       const _document_number = infileDoc.data.numero
       const _uuid = infileDoc.data.uuid
@@ -78,7 +85,7 @@ function BillingView() {
       setLoading(false)
       message.error(infileMessage)
     }
-   
+   */
   }
 
   const createBillStructure = dataBill => {

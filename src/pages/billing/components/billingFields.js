@@ -372,33 +372,6 @@ export const billingLogicFactory = ({
     total_amount: data.total,
     description: data.description,
     products: productsData.reduce((r, p) => {              
-      // const parentProduct = {
-      //   product_id: p.id,
-      //   product_quantity:
-      //     !p.child_id || isNaN(p.child_id) ? Number(p.quantity) : 1,
-      //   product_price: Number(p.parent_unit_price),
-      //   product_discount_percentage: discountInputValue
-      //     ? Number(discountInputValue)
-      //     : null,
-      //   product_discount: p.parent_unit_discount
-      //     ? Number(p.parent_unit_discount)
-      //     : null,
-      //   service_type: p.service_type,
-      // }
-
-      // const childProduct = {
-      //   product_id: p.child_id,
-      //   product_quantity: Number(p.quantity),
-      //   product_price: Number(p.child_unit_price),
-      //   product_discount_percentage: discountInputValue
-      //     ? Number(discountInputValue)
-      //     : null,
-      //   product_discount: p.child_unit_discount
-      //     ? Number(p.child_unit_discount)
-      //     : null,
-      //   parent_product_id: p.id || null,
-      //   service_type: p.service_type,
-      // }
 
       const parentPriceWithoutTax = p.parent_base_unit_price
         ? p.parent_base_unit_price -
