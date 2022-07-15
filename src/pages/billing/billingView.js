@@ -51,15 +51,21 @@ function BillingView() {
       .finally(() => setLoading(false))
   }, [])
 
-  const handleSaveData = async saveData => {           
-   let billData =  createBillStructure(saveData)     
-   
-   console.log("DATA TO DB >> ", saveData) 
-   console.log("DATA TO INFILE >> ",billData)
-    
-   //EMPIEZA AQUI
+  const handleSaveData = async saveData => {
+    let products = saveData.products
+    saveData.products = products.filter(
+      product =>
+        product.parent_product_id === null ||
+        product.parent_product_id === undefined
+    )
+    let billData = createBillStructure(saveData)
 
-   /*
+    console.log('DATA TO DB >> ', saveData)
+    console.log('DATA TO INFILE >> ', billData)
+
+    //EMPIEZA AQUI
+
+    /*
    setLoading(true)  
    //create infile DOC
   let infileDoc = await billingSrc.createInvoiceFel(billData)
@@ -90,23 +96,29 @@ function BillingView() {
 
   const createBillStructure = dataBill => {
     const UserName = Cache.getItem('currentSession')
-    const { client_data: client, description: observations, products } = dataBill;
-    let items = [];
+    const {
+      client_data: client,
+      description: observations,
+      products,
+    } = dataBill
+    let items = []
     items = products.map(product => {
-       const price = (product.service_user_price || product.product_user_price)
-       const description = product.product_description || product.service_description       
-       const quantity = product.product_quantity
-       const discount = ((product.product_discount_percentage/100) * price) * quantity
-       return { description, price,discount,quantity}
+      const price = product.service_user_price || product.product_user_price
+      const description =
+        product.product_description || product.service_description
+      const quantity = product.product_quantity
+      const discount =
+        (product.product_discount_percentage / 100) * price * quantity
+      return { description, price, discount, quantity }
     })
-    
+
     let newStructure = {
-       client,
-       "invoice":{
-          items,      
-          observations,
-          created_by: UserName ? UserName.userName : 'system'
-       }
+      client,
+      invoice: {
+        items,
+        observations,
+        created_by: UserName ? UserName.userName : 'system',
+      },
     }
     return newStructure
   }

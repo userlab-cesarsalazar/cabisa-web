@@ -18,8 +18,8 @@ const config = {
     PENDING: { color: 'grey', text: 'Pendiente' },
   },
   documentsPaymentMethods: {
-    CARD: { color: 'geekblue', text: 'Tarjeta debito/credito' },
-    CASH: { color: 'green', text: 'Efectivo' },
+    CARD: { color: 'geekblue', text: 'Crédito' },
+    CASH: { color: 'green', text: 'Pago de contado' },
     CHECK: { color: '#f50', text: 'Cheque' },
     DEPOSIT: { color: 'grey', text: 'Deposito' },
     TRANSFER: { color: 'cyan', text: 'Transferencia' },

@@ -48,8 +48,9 @@ export const getProductDiscount = product =>
 export const getProductSubtotal = product => {
   const result =
     product.service_type === productsTypes.SERVICE
-      ? Number(product.parent_unit_price || 0) +
-        Number(product.child_unit_price || 0) * Number(product.quantity)
+      ? (Number(product.parent_unit_price || 0) +
+          Number(product.child_unit_price || 0)) *
+        Number(product.quantity)
       : Number(product.unit_price) * Number(product.quantity)
 
   return roundNumber(result)
@@ -91,8 +92,11 @@ export const getStatisticFromProductWithTaxes = discountInputValue => product =>
 
   const discountFromProductWithTaxes =
     parentDiscount + childDiscount * Number(product.quantity)
+
+  // Parent price now is multiplied by product quantity.
   const subtotalFromProductWithTaxes =
-    parentPriceWithoutTax + childPriceWithoutTax * Number(product.quantity)
+    parentPriceWithoutTax * Number(product.quantity) +
+    childPriceWithoutTax * Number(product.quantity)
   const totalTaxFromProductWithTaxes =
     parentTax + childTax * Number(product.quantity)
 
@@ -118,7 +122,7 @@ export const handleUpdateProductsData = ({
 
     return unitPrice
   }
-    
+
   // parentProduct
   const parentBaseUnitPrice =
     parentProduct?.unit_price && field !== ''
@@ -234,11 +238,11 @@ export const handleUpdateProductsData = ({
     unit_price,
     unit_discount,
     base_unit_price: child_base_unit_price + parent_base_unit_price,
-    description_product : childProduct?.description || row?.description_product,
-    description_service : parentProduct?.description || row?.description_service 
+    description_product: childProduct?.description || row?.description_product,
+    description_service: parentProduct?.description || row?.description_service,
   }
-  
-  const subtotal = getProductSubtotal(newRow)  
+
+  const subtotal = getProductSubtotal(newRow)
   return { ...newRow, subtotal }
 }
 
@@ -247,7 +251,6 @@ export const getOnChangeProductsListCallback = ({
   childProductsOptionsList,
   discountValue,
 }) => (field, value, rowIndex) => {
-  
   const getParentProduct = (field, value) => {
     const product = productsOptionsList.find(
       o => field === 'id' && Number(o.id) === Number(value)
@@ -278,7 +281,7 @@ export const getOnChangeProductsListCallback = ({
       discountValue,
       field,
     })
-    
+
     return prevState.map((prevRow, index) =>
       index === rowIndex ? updatedRow : prevRow
     )
@@ -345,83 +348,86 @@ export const billingLogicFactory = ({
       .catch(error => showErrors(error))
       .finally(() => setLoading(false))
   }
-
   const getSaveData = () => {
-    return  {
-    client_data:{
-      id:data.stakeholder_id,
-      name: data.client_name ? data.client_name : data.stakeholder_name,      
-      address:data.stakeholder_address,
-      email:data.stakeholder_email,
-      nit:data.stakeholder_nit,
-      phone:data.stakeholder_phone         
-    },     
-    document_id: data.id,
-    stakeholder_id: data.stakeholder_id,
-    project_id: data.project_id,
-    start_date: data.start_date,
-    end_date: data.end_date,
-    payment_method: data.payment_method,
-    credit_days: data.credit_days,
-    dispatched_by: data.dispatched_by,
-    received_by: data.received_by,
-    comments: data.comments,
-    subtotal_amount: data.subtotal,
-    total_discount_amount: data.discount,
-    total_tax_amount: data.total_tax,
-    total_amount: data.total,
-    description: data.description,
-    products: productsData.reduce((r, p) => {              
+    return {
+      client_data: {
+        id: data.stakeholder_id,
+        name: data.client_name ? data.client_name : data.stakeholder_name,
+        address: data.stakeholder_address,
+        email: data.stakeholder_email,
+        nit: data.stakeholder_nit,
+        phone: data.stakeholder_phone,
+      },
+      document_id: data.id,
+      stakeholder_id: data.stakeholder_id,
+      project_id: data.project_id,
+      start_date: data.start_date,
+      end_date: data.end_date,
+      payment_method: data.payment_method,
+      credit_days: data.credit_days,
+      dispatched_by: data.dispatched_by,
+      received_by: data.received_by,
+      comments: data.comments,
+      subtotal_amount: data.subtotal,
+      total_discount_amount: data.discount,
+      total_tax_amount: data.total_tax,
+      total_amount: data.total,
+      description: data.description,
+      products: productsData.reduce((r, p) => {
+        const parentPriceWithoutTax = p.parent_base_unit_price
+          ? p.parent_base_unit_price -
+            p.parent_base_unit_price * getPercent(p.parent_tax_fee)
+          : 0
+        const parentProductDiscount =
+          parentPriceWithoutTax * getPercent(discountInputValue)
+        const parentProduct = {
+          product_id: p.id,
+          product_quantity:
+            !p.child_id || isNaN(p.child_id) ? Number(p.quantity) : 1,
+          product_price: parentPriceWithoutTax - parentProductDiscount,
+          product_discount_percentage: discountInputValue
+            ? Number(discountInputValue)
+            : null,
+          product_discount: parentProductDiscount || null,
+          service_type: p.service_type,
+          // Concat comments to service_description
+          service_description:
+            `${p.description_service}${p.comments ? '- ' + p.comments : ''}` ||
+            p.description,
+          service_user_price: p.parent_base_unit_price,
+        }
 
-      const parentPriceWithoutTax = p.parent_base_unit_price
-        ? p.parent_base_unit_price -
-          p.parent_base_unit_price * getPercent(p.parent_tax_fee)
-        : 0
-      const parentProductDiscount =
-        parentPriceWithoutTax * getPercent(discountInputValue)
-      const parentProduct = {
-        product_id: p.id,
-        product_quantity:
-          !p.child_id || isNaN(p.child_id) ? Number(p.quantity) : 1,
-        product_price: parentPriceWithoutTax - parentProductDiscount,
-        product_discount_percentage: discountInputValue
-          ? Number(discountInputValue)
-          : null,
-        product_discount: parentProductDiscount || null,
-        service_type: p.service_type,
-        service_description: p.description_service ||p.description,
-        service_user_price: p.parent_base_unit_price
-      }
+        const childPriceWithoutTax = p.child_base_unit_price
+          ? p.child_base_unit_price -
+            p.child_base_unit_price * getPercent(p.child_tax_fee)
+          : 0
+        const childProductDiscount =
+          childPriceWithoutTax * getPercent(discountInputValue)
 
-      const childPriceWithoutTax = p.child_base_unit_price
-        ? p.child_base_unit_price -
-          p.child_base_unit_price * getPercent(p.child_tax_fee)
-        : 0
-      const childProductDiscount =
-        childPriceWithoutTax * getPercent(discountInputValue)
-      
         const childProduct = {
-        product_id: p.child_id,
-        product_quantity: Number(p.quantity),
-        product_price: childPriceWithoutTax - childProductDiscount,
-        product_discount_percentage: discountInputValue
-          ? Number(discountInputValue)
-          : null,
-        product_discount: childProductDiscount || null,
-        parent_product_id: p.id || null,
-        service_type: p.service_type,
-        product_description: p.description_product || p.child_description,
-        product_user_price: p.child_base_unit_price               
-      }
+          product_id: p.child_id,
+          product_quantity: Number(p.quantity),
+          product_price: childPriceWithoutTax - childProductDiscount,
+          product_discount_percentage: discountInputValue
+            ? Number(discountInputValue)
+            : null,
+          product_discount: childProductDiscount || null,
+          parent_product_id: p.id || null,
+          service_type: p.service_type,
+          // Concat comments to product_description
+          product_description:
+            `${p.description_product}${p.comments ? '- ' + p.comments : ''}` ||
+            p.child_description,
+          product_user_price: p.child_base_unit_price,
+        }
 
-      const products =
-        !p.id || isNaN(p.id) ? [childProduct] : [childProduct, parentProduct]
+        const products =
+          !p.id || isNaN(p.id) ? [childProduct] : [childProduct, parentProduct]
 
-      return [...(r || []), ...products]
-    }, []),
-  }    
+        return [...(r || []), ...products]
+      }, []),
+    }
   }
-  
 
   const validateSaveData = data => {
     const errors = []
@@ -456,13 +462,14 @@ export const billingLogicFactory = ({
       documentsServiceType.SERVICE
     )
 
-    if (productErrors.required.length > 0) {
+    // Service without product associated validation
+    /* if (productErrors.required.length > 0) {
       errors.push(
         `Los campos Precio y Cantidad de los productos en posicion ${productErrors.required.join(
           ', '
         )} deben ser mayor a cero`
       )
-    }
+    } */
 
     Object.keys(productErrors.duplicate).forEach(k => {
       if (productErrors.duplicate[k]?.length > 1) {
@@ -531,7 +538,7 @@ export const billingLogicFactory = ({
       if (product_description === '') return
       if (!productsData[rowIndex].service_type)
         return message.warning('Debe seleccionar el Tipo de servicio')
-      
+
       const params = {
         status: productsStatus.ACTIVE,
         stock: { $gt: 0 },
@@ -548,7 +555,7 @@ export const billingLogicFactory = ({
         .finally(() => setLoading(false))
     },
 
-    handleSearchChildProduct: rowIndex => product_description => {      
+    handleSearchChildProduct: rowIndex => product_description => {
       if (isInvoiceFromSale) return
       if (product_description === '') return
       if (!productsData[rowIndex].service_type)
@@ -579,12 +586,12 @@ export const billingLogicFactory = ({
         const stakeholder = stakeholdersOptionsList.find(
           option => option.id === value
         )
-          
+
         return setData(prevState => ({
           ...prevState,
           project_id: null,
           stakeholder_id: stakeholder.id,
-          client_name:stakeholder.name,
+          client_name: stakeholder.name,
           stakeholder_name: stakeholder.stakeholder_name,
           stakeholder_type: stakeholder.stakeholder_type,
           stakeholder_nit: stakeholder.nit,
