@@ -419,6 +419,7 @@ export const billingLogicFactory = ({
             `${p.description_product}${p.comments ? '- ' + p.comments : ''}` ||
             p.child_description,
           product_user_price: p.child_base_unit_price,
+          product_comments: p.comments,
         }
 
         const products =

@@ -10,9 +10,9 @@ const { Option } = Select
 
 const getColumnsConfig = () => {
   return {
-    serviceType: { col: 3, visible: true, label: 'Tipo de Servicio' },
-    code: { col: 4, visible: true, label: 'Codigo' },
-    parentProduct: {
+    serviceType: { col: 6, visible: true, label: 'Tipo de Servicio' },
+    code: { col: 4, visible: false, label: 'Codigo' },
+    /* parentProduct: {
       col: 4,
       visible: true,
       label: 'Servicio',
@@ -31,9 +31,12 @@ const getColumnsConfig = () => {
       col: 2,
       visible: true,
       label: 'Precio Producto (Q)',
-    },
-    quantity: { col: 2, visible: true, label: 'Cantidad' },
-    subtotal: { col: 3, visible: true, label: 'Subtotal (Q)' },
+    }, */
+    serviceProduct: { col: 6, visible: true, label: 'Servicio/Producto' },
+    price: { col: 4, visible: true, label: 'Precio' },
+    quantity: { col: 4, visible: true, label: 'Cantidad' },
+    subtotal: { col: 4, visible: true, label: 'Subtotal (Q)' },
+    comments: { col: 6, visible: false, label: 'Comentarios' },
   }
 }
 
@@ -80,7 +83,17 @@ function SaleProductsList({
               <b className='center-flex-div'>{config?.code?.label}</b>
             </Col>
           )}
-          {config?.parentProduct?.visible && (
+          {config?.serviceProduct?.visible && (
+            <Col sm={config?.serviceProduct?.col}>
+              <b className='center-flex-div'>{config?.serviceProduct?.label}</b>
+            </Col>
+          )}
+          {config?.price?.visible && (
+            <Col sm={config?.price?.col}>
+              <b className='center-flex-div'>{config?.price?.label}</b>
+            </Col>
+          )}
+          {/* {config?.parentProduct?.visible && (
             <Col sm={config?.parentProduct?.col}>
               <b className='center-flex-div'>{config?.parentProduct?.label}</b>
             </Col>
@@ -103,7 +116,7 @@ function SaleProductsList({
                 {config?.childProductPrice?.label}
               </b>
             </Col>
-          )}
+          )} */}
           {config?.quantity?.visible && (
             <Col sm={config?.quantity?.col}>
               <b className='center-flex-div'>{config?.quantity?.label}</b>
@@ -112,6 +125,11 @@ function SaleProductsList({
           {config?.subtotal?.visible && (
             <Col sm={config?.subtotal?.col}>
               <b className='center-flex-div'>{config?.subtotal?.label}</b>
+            </Col>
+          )}
+          {config?.comments?.visible && (
+            <Col sm={config?.comments?.col}>
+              <b className='center-flex-div'>{config?.comments?.label}</b>
             </Col>
           )}
         </Row>
@@ -166,118 +184,128 @@ function SaleProductsList({
                 />
               </Col>
             )}
-            {config?.parentProduct?.visible && (
-              <Col sm={config?.parentProduct?.col}>
-                <Select
-                  className={'single-select'}
-                  placeholder={config?.parentProduct?.label}
-                  size={'large'}
-                  style={{ width: '100%', height: '40px' }}
-                  getPopupContainer={trigger => trigger.parentNode}
-                  showSearch
-                  onSearch={debounce(handleSearchProduct(index), 400)}
-                  value={row.id}
-                  onChange={value => handleChangeDetail('id', value, index)}
-                  loading={
-                    status === 'LOADING' && loading === 'fetchProductsOptions'
-                  }
-                  optionFilterProp='children'
-                  disabled={
-                    row.service_type !== documentsServiceType.SERVICE ||
-                    forbidEdition ||
-                    !canEditAndCreate
-                  }
-                >
-                  {productsOptionsList.length > 0 ? (
-                    productsOptionsList?.map(value => (
-                      <Option key={value.id} value={value.id}>
-                        {value.description}
+            {config?.serviceProduct?.visible &&
+              row.service_type === documentsServiceType.SERVICE && (
+                <Col sm={config?.serviceProduct?.col}>
+                  <Select
+                    className={'single-select'}
+                    placeholder={config?.serviceProduct?.label}
+                    size={'large'}
+                    style={{ width: '100%', height: '40px' }}
+                    getPopupContainer={trigger => trigger.parentNode}
+                    showSearch
+                    onSearch={debounce(handleSearchProduct(index), 400)}
+                    value={row.id}
+                    onChange={value => handleChangeDetail('id', value, index)}
+                    loading={
+                      status === 'LOADING' && loading === 'fetchProductsOptions'
+                    }
+                    optionFilterProp='children'
+                    disabled={
+                      row.service_type !== documentsServiceType.SERVICE ||
+                      forbidEdition ||
+                      !canEditAndCreate
+                    }
+                  >
+                    {productsOptionsList.length > 0 ? (
+                      productsOptionsList?.map(value => (
+                        <Option key={value.id} value={value.id}>
+                          {value.description}
+                        </Option>
+                      ))
+                    ) : (
+                      <Option value={row.id}>{row.description}</Option>
+                    )}
+                  </Select>
+                </Col>
+              )}
+            {config?.price?.visible &&
+              row.service_type === documentsServiceType.SERVICE && (
+                <Col sm={config?.price?.col}>
+                  <CurrencyInput
+                    className='product-list-input'
+                    placeholder={config?.price?.label}
+                    value={row.parent_display_unit_price}
+                    disabled={
+                      row.service_type !== documentsServiceType.SERVICE ||
+                      !row.id ||
+                      forbidEdition ||
+                      !canEditAndCreate
+                    }
+                    onChange={value =>
+                      handleChangeDetail('parent_unit_price', value, index)
+                    }
+                    onFocus={() =>
+                      handleChangeDetail('parent_unit_price', '', index)
+                    }
+                  />
+                </Col>
+              )}
+            {config?.serviceProduct?.visible &&
+              (row.service_type === documentsServiceType.EQUIPMENT ||
+                row.service_type === documentsServiceType.PART ||
+                !row.service_type) && (
+                <Col sm={config?.serviceProduct?.col}>
+                  <Select
+                    className={'single-select'}
+                    placeholder={config?.serviceProduct?.label}
+                    size={'large'}
+                    style={{ width: '100%', height: '40px' }}
+                    getPopupContainer={trigger => trigger.parentNode}
+                    showSearch
+                    onSearch={debounce(handleSearchChildProduct(index), 400)}
+                    value={row.child_id}
+                    onChange={value =>
+                      handleChangeDetail('child_id', value, index)
+                    }
+                    optionFilterProp='children'
+                    loading={
+                      status === 'LOADING' &&
+                      loading === 'fetchChildProductsOptions'
+                    }
+                    disabled={
+                      !row.service_type ||
+                      (!row.id &&
+                        row.service_type === documentsServiceType.SERVICE) ||
+                      forbidEdition ||
+                      !canEditAndCreate
+                    }
+                  >
+                    {childProductsOptionsList?.length > 0 ? (
+                      childProductsOptionsList.map(value => (
+                        <Option key={value.id} value={value.id}>
+                          {value.description}
+                        </Option>
+                      ))
+                    ) : (
+                      <Option value={row.child_id}>
+                        {row.child_description}
                       </Option>
-                    ))
-                  ) : (
-                    <Option value={row.id}>{row.description}</Option>
-                  )}
-                </Select>
-              </Col>
-            )}
-            {config?.parentProductPrice?.visible && (
-              <Col sm={config?.parentProductPrice?.col}>
-                <CurrencyInput
-                  className='product-list-input'
-                  placeholder={config?.parentProductPrice?.label}
-                  value={row.parent_display_unit_price}
-                  disabled={
-                    row.service_type !== documentsServiceType.SERVICE ||
-                    !row.id ||
-                    forbidEdition ||
-                    !canEditAndCreate
-                  }
-                  onChange={value =>
-                    handleChangeDetail('parent_unit_price', value, index)
-                  }
-                  onFocus={() =>
-                    handleChangeDetail('parent_unit_price', '', index)
-                  }
-                />
-              </Col>
-            )}
-            {config?.childProduct?.visible && (
-              <Col sm={config?.childProduct?.col}>
-                <Select
-                  className={'single-select'}
-                  placeholder={config?.childProduct?.label}
-                  size={'large'}
-                  style={{ width: '100%', height: '40px' }}
-                  getPopupContainer={trigger => trigger.parentNode}
-                  showSearch
-                  onSearch={debounce(handleSearchChildProduct(index), 400)}
-                  value={row.child_id}
-                  onChange={value =>
-                    handleChangeDetail('child_id', value, index)
-                  }
-                  optionFilterProp='children'
-                  loading={
-                    status === 'LOADING' &&
-                    loading === 'fetchChildProductsOptions'
-                  }
-                  disabled={
-                    !row.service_type ||
-                    (!row.id &&
-                      row.service_type === documentsServiceType.SERVICE) ||
-                    forbidEdition ||
-                    !canEditAndCreate
-                  }
-                >
-                  {childProductsOptionsList?.length > 0 ? (
-                    childProductsOptionsList.map(value => (
-                      <Option key={value.id} value={value.id}>
-                        {value.description}
-                      </Option>
-                    ))
-                  ) : (
-                    <Option value={row.child_id}>
-                      {row.child_description}
-                    </Option>
-                  )}
-                </Select>
-              </Col>
-            )}
-            {config?.childProductPrice?.visible && (
-              <Col sm={config?.childProductPrice?.col}>
-                <CurrencyInput
-                  className='product-list-input'
-                  placeholder={config?.childProductPrice?.label}
-                  value={row.child_display_unit_price}
-                  disabled={!row.child_id || forbidEdition || !canEditAndCreate}
-                  onChange={value =>
-                    handleChangeDetail('child_unit_price', value, index)
-                  }
-                  onFocus={() =>
-                    handleChangeDetail('child_unit_price', '', index)
-                  }
-                />
-              </Col>
-            )}
+                    )}
+                  </Select>
+                </Col>
+              )}
+            {config?.price?.visible &&
+              (row.service_type === documentsServiceType.EQUIPMENT ||
+                row.service_type === documentsServiceType.PART ||
+                !row.service_type) && (
+                <Col sm={config?.price?.col}>
+                  <CurrencyInput
+                    className='product-list-input'
+                    placeholder={config?.price?.label}
+                    value={row.child_display_unit_price}
+                    disabled={
+                      !row.child_id || forbidEdition || !canEditAndCreate
+                    }
+                    onChange={value =>
+                      handleChangeDetail('child_unit_price', value, index)
+                    }
+                    onFocus={() =>
+                      handleChangeDetail('child_unit_price', '', index)
+                    }
+                  />
+                </Col>
+              )}
             {config?.quantity?.visible && (
               <Col sm={config?.quantity?.col}>
                 <CurrencyInput
@@ -290,7 +318,11 @@ function SaleProductsList({
                   }
                   fractionDigits={0}
                   type='tel'
-                  disabled={forbidEdition || !canEditAndCreate || !row.child_id}
+                  disabled={
+                    forbidEdition ||
+                    !canEditAndCreate ||
+                    (!row.id && !row.child_id)
+                  }
                 />
               </Col>
             )}
@@ -305,6 +337,18 @@ function SaleProductsList({
                     handleChangeDetail('subtotal', value, index)
                   }
                   onFocus={() => handleChangeDetail('subtotal', '', index)}
+                />
+              </Col>
+            )}
+            {config?.comments?.visible && (
+              <Col sm={config?.comments?.col}>
+                <Input
+                  className='product-list-input'
+                  value={row.comments}
+                  onChange={e =>
+                    handleChangeDetail('comments', e.target.value, index)
+                  }
+                  disabled={!row.service_type || (!row.id && !row.child_id)}
                 />
               </Col>
             )}
