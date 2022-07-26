@@ -59,13 +59,7 @@ function BillingView() {
         product.parent_product_id === undefined
     )
     let billData = createBillStructure(saveData)
-
-    console.log('DATA TO DB >> ', saveData)
-    console.log('DATA TO INFILE >> ', billData)
-
-    //EMPIEZA AQUI
-
-    /*
+        
    setLoading(true)  
    //create infile DOC
   let infileDoc = await billingSrc.createInvoiceFel(billData)
@@ -91,7 +85,7 @@ function BillingView() {
       setLoading(false)
       message.error(infileMessage)
     }
-   */
+   
   }
 
   const createBillStructure = dataBill => {

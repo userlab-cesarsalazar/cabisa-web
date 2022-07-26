@@ -15,7 +15,7 @@ import {
   Button,
 } from 'antd'
 import FooterButtons from '../../../../components/FooterButtons'
-import SaleProductsList from './saleProductsList'
+import SaleProductsListTwo from './saleProductListTwo'
 import {
   productsStatus,
   stakeholdersStatus,
@@ -150,8 +150,7 @@ function SalesDetail({ closable, visible, isAdmin, canEditAndCreate }) {
   }
 
   useEffect(() => {
-    const { products: newDataSourceTable } = getDetailData(currentSale)
-
+    const { products: newDataSourceTable } = getDetailData(currentSale)    
     setDataSourceTable(newDataSourceTable)
     setForbidEdition(currentSale.status !== documentsStatus.PENDING)
     setSale({
@@ -453,7 +452,7 @@ function SalesDetail({ closable, visible, isAdmin, canEditAndCreate }) {
           <h2>Detalle Entrega:</h2>
           <Row gutter={16} className={'section-space-field'}>
             <Col xs={24} sm={24} md={24} lg={24}>
-              <SaleProductsList
+              <SaleProductsListTwo
                 dataSource={dataSourceTable}
                 handleAddDetail={handleAddDetail}
                 handleChangeDetail={handleChangeDetail}

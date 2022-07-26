@@ -4,7 +4,7 @@ import { Spin, message, Card } from 'antd'
 import HeaderPage from '../../../../components/HeaderPage'
 import billingSrc from '../../../billing/billingSrc'
 import saleSrc from '../../salesSrc'
-import BillingFields from '../../../billing/components/billingFields'
+import BillingFieldsTwo from '../../../billing/components/billingFieldsTwo'
 import { showErrors } from '../../../../utils'
 import { getDetailData } from '../../../billing/billingIndex'
 import { documentsPaymentMethods } from '../../../../commons/types'
@@ -36,23 +36,23 @@ function ServiceNoteBill() {
       .finally(() => setLoading(false))
   }, [location])
 
-  const handleSaveData = async saveData => {
-    let billData =  createBillStructure(saveData)      
+  const handleSaveData = async saveData => {   
+  let billData =  createBillStructure(saveData)            
    setLoading(true)
-  //get infile document
+  
   let infileDoc = await billingSrc.createInvoiceFel(billData)
-
+    
   let infileMessage = infileDoc.message  
-    if(infileMessage === 'SUCCESSFUL'){      
+    
+  if(infileMessage === 'SUCCESSFUL'){      
       const _serie = infileDoc.data.serie
       const _document_number = infileDoc.data.numero
       const _uuid = infileDoc.data.uuid
       saveData.serie = _serie
       saveData.document_number = _document_number
-      saveData.uuid = _uuid
-    
+      saveData.uuid = _uuid    
       setLoading(true)
-
+    
     saleSrc
       .approveSale(saveData)
       .then(_ => {
@@ -96,7 +96,7 @@ function ServiceNoteBill() {
     <Spin spinning={loading}>
       <HeaderPage titleButton={''} title={'Nueva Factura'} bill={true} />
       <Card className={'card-border-radius margin-top-15'}>
-        <BillingFields
+        <BillingFieldsTwo
           isInvoiceFromSale
           edit={false}
           loading={loading}

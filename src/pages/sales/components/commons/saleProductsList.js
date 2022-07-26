@@ -12,26 +12,28 @@ const getColumnsConfig = () => {
   return {
     serviceType: { col: 6, visible: true, label: 'Tipo de Servicio' },
     code: { col: 4, visible: false, label: 'Codigo' },
-    /* parentProduct: {
-      col: 4,
-      visible: true,
-      label: 'Servicio',
-    },
-    parentProductPrice: {
-      col: 2,
-      visible: true,
-      label: 'Precio Servicio (Q)',
-    },
-    childProduct: {
-      col: 4,
-      visible: true,
-      label: 'Producto',
-    },
-    childProductPrice: {
-      col: 2,
-      visible: true,
-      label: 'Precio Producto (Q)',
-    }, */
+     
+    // parentProduct: {
+    //   col: 4,
+    //   visible: true,
+    //   label: 'Servicio',
+    // },
+    // parentProductPrice: {
+    //   col: 2,
+    //   visible: true,
+    //   label: 'Precio Servicio (Q)',
+    // },
+    // childProduct: {
+    //   col: 4,
+    //   visible: true,
+    //   label: 'Producto',
+    // },
+    // childProductPrice: {
+    //   col: 2,
+    //   visible: true,
+    //   label: 'Precio Producto (Q)',
+    // },
+
     serviceProduct: { col: 6, visible: true, label: 'Servicio/Producto' },
     price: { col: 4, visible: true, label: 'Precio' },
     quantity: { col: 4, visible: true, label: 'Cantidad' },
@@ -93,6 +95,7 @@ function SaleProductsList({
               <b className='center-flex-div'>{config?.price?.label}</b>
             </Col>
           )}
+          
           {/* {config?.parentProduct?.visible && (
             <Col sm={config?.parentProduct?.col}>
               <b className='center-flex-div'>{config?.parentProduct?.label}</b>
@@ -117,6 +120,7 @@ function SaleProductsList({
               </b>
             </Col>
           )} */}
+
           {config?.quantity?.visible && (
             <Col sm={config?.quantity?.col}>
               <b className='center-flex-div'>{config?.quantity?.label}</b>
@@ -134,7 +138,7 @@ function SaleProductsList({
           )}
         </Row>
       }
-      renderItem={(row, index) => (
+      renderItem={(row, index) => (        
         <List.Item>
           <Row
             gutter={16}
@@ -185,7 +189,7 @@ function SaleProductsList({
               </Col>
             )}
             {config?.serviceProduct?.visible &&
-              row.service_type === documentsServiceType.SERVICE && (
+              row.service_type === documentsServiceType.SERVICE && (                
                 <Col sm={config?.serviceProduct?.col}>
                   <Select
                     className={'single-select'}
@@ -195,7 +199,7 @@ function SaleProductsList({
                     getPopupContainer={trigger => trigger.parentNode}
                     showSearch
                     onSearch={debounce(handleSearchProduct(index), 400)}
-                    value={row.id}
+                    value={productsOptionsList.length > 0 ? row.id : row.child_id}
                     onChange={value => handleChangeDetail('id', value, index)}
                     loading={
                       status === 'LOADING' && loading === 'fetchProductsOptions'
@@ -208,14 +212,15 @@ function SaleProductsList({
                     }
                   >
                     {productsOptionsList.length > 0 ? (
-                      productsOptionsList?.map(value => (
+                      productsOptionsList?.map(value =>                         
                         <Option key={value.id} value={value.id}>
                           {value.description}
                         </Option>
-                      ))
-                    ) : (
-                      <Option value={row.id}>{row.description}</Option>
-                    )}
+                       )
+                    ) : (                      
+                      <Option value={row.child_id}>{row.child_description}</Option>
+                    )                    
+                    }
                   </Select>
                 </Col>
               )}
@@ -230,7 +235,7 @@ function SaleProductsList({
                       row.service_type !== documentsServiceType.SERVICE ||
                       !row.id ||
                       forbidEdition ||
-                      !canEditAndCreate
+                      !canEditAndCreate 
                     }
                     onChange={value =>
                       handleChangeDetail('parent_unit_price', value, index)
@@ -364,7 +369,8 @@ function SaleProductsList({
             )}
           </Row>
         </List.Item>
-      )}
+      )            
+    }
       footer={
         !forbidEdition && (
           <Row gutter={16} className={'section-space-field'}>

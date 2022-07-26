@@ -109,6 +109,12 @@ const saleActions = {
   },
 
   createSale: async (dispatch, data) => {
+    let products = data.products
+    data.products = products.filter(
+      product =>
+        product.parent_product_id === null ||
+        product.parent_product_id === undefined
+    )
     dispatch({ type: 'CREATE_SALE START' })
     try {
       const createdSaleId = await salesSrc.createSale(data)
@@ -119,6 +125,13 @@ const saleActions = {
   },
 
   updateSale: async (dispatch, data) => {
+    let products = data.products
+    data.products = products.filter(
+      product =>
+        product.parent_product_id === null ||
+        product.parent_product_id === undefined
+    )
+    
     dispatch({ type: 'UPDATE_SALE START' })
     try {
       const updatedSaleId = await salesSrc.updateSale(data)

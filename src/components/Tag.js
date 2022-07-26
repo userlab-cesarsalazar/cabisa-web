@@ -3,7 +3,7 @@ import { Tag as AntTag } from 'antd'
 
 const config = {
   creditStatus: {
-    UNPAID: { color: 'cyan', text: 'Pago Pendiete' },
+    UNPAID: { color: 'cyan', text: 'Pago Pendiente' },
     PAID: { color: '#87d068', text: 'Pagado' },
     DEFAULT: { color: '#f50', text: 'En Mora' },
   },
