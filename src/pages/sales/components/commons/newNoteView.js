@@ -160,6 +160,7 @@ function NewNoteView({ canEditAndCreate }) {
     if (status === 'SUCCESS' && loading === 'createSale') {
       message.success('Nota de Servicio creada exitosamente')
       history.push('/sales')
+      window.location.reload(false);
     }
   }, [error, status, loading, saleDispatch, history])
 

@@ -40,7 +40,7 @@ const getColumnsConfig = () => {
   }
 }
 
-function BillingProductsList({
+function BillingProductsListTwo({
   dataSource,
   handleAddDetail,
   handleChangeDetail,
@@ -223,21 +223,20 @@ function BillingProductsList({
                   <CurrencyInput
                     className='product-list-input'
                     placeholder={config?.price?.label}
-                    value={row.parent_display_unit_price}
+                    value={row.child_display_unit_price}
                     disabled={
-                      row.service_type !== documentsServiceType.SERVICE ||
-                      !row.id ||
+                      !row.child_id ||
                       (isEditing && !isAdmin) ||
                       isInvoiceFromSale
                     }
                     onChange={value =>
-                      handleChangeDetail('parent_unit_price', value, index)
+                      handleChangeDetail('child_unit_price', value, index)
                     }
                     onFocus={() =>
-                      handleChangeDetail('parent_unit_price', '', index)
+                      handleChangeDetail('child_unit_price', '', index)
                     }
                     onBlur={() =>
-                      handleBlurDetail('parent_unit_price', '', index)
+                      handleBlurDetail('child_unit_price', '', index)
                     }
                   />
                 </Col>
@@ -387,4 +386,4 @@ function BillingProductsList({
   )
 }
 
-export default BillingProductsList
+export default BillingProductsListTwo

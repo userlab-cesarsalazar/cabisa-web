@@ -3,7 +3,7 @@ import { Tag as AntTag } from 'antd'
 
 const config = {
   creditStatus: {
-    UNPAID: { color: 'cyan', text: 'Pago Pendiete' },
+    UNPAID: { color: 'cyan', text: 'Pago Pendiente' },
     PAID: { color: '#87d068', text: 'Pagado' },
     DEFAULT: { color: '#f50', text: 'En Mora' },
   },
@@ -18,8 +18,8 @@ const config = {
     PENDING: { color: 'grey', text: 'Pendiente' },
   },
   documentsPaymentMethods: {
-    CARD: { color: 'geekblue', text: 'Tarjeta debito/credito' },
-    CASH: { color: 'green', text: 'Efectivo' },
+    CARD: { color: 'geekblue', text: 'Crédito' },
+    CASH: { color: 'green', text: 'Pago de contado' },
     CHECK: { color: '#f50', text: 'Cheque' },
     DEPOSIT: { color: 'grey', text: 'Deposito' },
     TRANSFER: { color: 'cyan', text: 'Transferencia' },

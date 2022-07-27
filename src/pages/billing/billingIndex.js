@@ -9,7 +9,7 @@ import { getPercent, showErrors, roundNumber, validateRole } from '../../utils'
 import {
   stakeholdersTypes,
   permissions,
-  documentsServiceType,
+  //documentsServiceType,
   roles,
   documentsPaymentMethods,
 } from '../../commons/types'
@@ -18,9 +18,8 @@ import { Cache } from 'aws-amplify'
 const { TextArea } = Input;
 
 export function getDetailData(data) {
-  const getParentProduct = (products, childProduct) => {
-    if (!childProduct.parent_product_id) return {}
-
+  const getParentProduct = (products, childProduct) => {    
+    if (!childProduct.parent_product_id) return {}    
     const parentProduct = products.find(
       p => Number(p?.id) === Number(childProduct?.parent_product_id)
     )
@@ -58,8 +57,9 @@ export function getDetailData(data) {
   }
 
   const products = data?.products?.flatMap(p => {
-    if (p.service_type === documentsServiceType.SERVICE && !p.parent_product_id)
-      return []
+    
+    // if (p.service_type === documentsServiceType.SERVICE && !p.parent_product_id)
+    //   return []
 
     const baseUnitPrice = p?.product_price || p?.unit_price || 0
     const unitDiscountAmount = p?.unit_discount_amount || 0

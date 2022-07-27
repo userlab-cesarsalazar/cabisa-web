@@ -11,7 +11,7 @@ import {
   Statistic,
   Typography,
 } from 'antd'
-import BillingProductsList from './billingProductsList'
+import BillingProductsListTwo from './BillingProductsListTwo'
 import Tag from '../../../components/Tag'
 import { useEditableList } from '../../../hooks'
 import {
@@ -666,7 +666,7 @@ const validateSaleOrBillingProducts = (
   )
 }
 
-function BillingFields({
+function BillingFieldsTwo({
   setLoading,
   editData,
   isAdmin,
@@ -1145,7 +1145,7 @@ function BillingFields({
 
         <Divider className={'divider-custom-margins-users'} />
 
-        <BillingProductsList
+        <BillingProductsListTwo
           dataSource={productsData}
           handleAddDetail={handleAddDetail}
           handleChangeDetail={handleChangeDetail}
@@ -1227,4 +1227,4 @@ function BillingFields({
     </>
   )
 }
-export default BillingFields
+export default BillingFieldsTwo
