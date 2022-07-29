@@ -10,9 +10,9 @@ const { Option } = Select
 
 const getColumnsConfig = () => {
   return {
-    serviceType: { col: 6, visible: true, label: 'Tipo de Servicio' },
+    serviceType: { col: 3, visible: true, label: 'Tipo de Servicio' },
     code: { col: 4, visible: false, label: 'Codigo' },
-     
+
     // parentProduct: {
     //   col: 4,
     //   visible: true,
@@ -34,9 +34,9 @@ const getColumnsConfig = () => {
     //   label: 'Precio Producto (Q)',
     // },
 
-    serviceProduct: { col: 6, visible: true, label: 'Servicio/Producto' },
-    price: { col: 4, visible: true, label: 'Precio' },
-    quantity: { col: 4, visible: true, label: 'Cantidad' },
+    serviceProduct: { col: 11, visible: true, label: 'Servicio/Producto' },
+    price: { col: 3, visible: true, label: 'Precio' },
+    quantity: { col: 3, visible: true, label: 'Cantidad' },
     subtotal: { col: 4, visible: true, label: 'Subtotal (Q)' },
     comments: { col: 6, visible: false, label: 'Comentarios' },
   }
@@ -95,7 +95,7 @@ function SaleProductsListTwo({
               <b className='center-flex-div'>{config?.price?.label}</b>
             </Col>
           )}
-          
+
           {/* {config?.parentProduct?.visible && (
             <Col sm={config?.parentProduct?.col}>
               <b className='center-flex-div'>{config?.parentProduct?.label}</b>
@@ -138,7 +138,7 @@ function SaleProductsListTwo({
           )}
         </Row>
       }
-      renderItem={(row, index) => (        
+      renderItem={(row, index) => (
         <List.Item>
           <Row
             gutter={16}
@@ -189,7 +189,7 @@ function SaleProductsListTwo({
               </Col>
             )}
             {config?.serviceProduct?.visible &&
-              row.service_type === documentsServiceType.SERVICE && (                
+              row.service_type === documentsServiceType.SERVICE && (
                 <Col sm={config?.serviceProduct?.col}>
                   <Select
                     className={'single-select'}
@@ -199,7 +199,9 @@ function SaleProductsListTwo({
                     getPopupContainer={trigger => trigger.parentNode}
                     showSearch
                     onSearch={debounce(handleSearchProduct(index), 400)}
-                    value={productsOptionsList.length > 0 ? row.id : row.child_id}
+                    value={
+                      productsOptionsList.length > 0 ? row.id : row.child_id
+                    }
                     onChange={value => handleChangeDetail('id', value, index)}
                     loading={
                       status === 'LOADING' && loading === 'fetchProductsOptions'
@@ -212,15 +214,16 @@ function SaleProductsListTwo({
                     }
                   >
                     {productsOptionsList.length > 0 ? (
-                      productsOptionsList?.map(value =>                         
+                      productsOptionsList?.map(value => (
                         <Option key={value.id} value={value.id}>
                           {value.description}
                         </Option>
-                       )
-                    ) : (                      
-                      <Option value={row.child_id}>{row.child_description}</Option>
-                    )                    
-                    }
+                      ))
+                    ) : (
+                      <Option value={row.child_id}>
+                        {row.child_description}
+                      </Option>
+                    )}
                   </Select>
                 </Col>
               )}
@@ -232,8 +235,8 @@ function SaleProductsListTwo({
                     placeholder={config?.price?.label}
                     value={row.child_display_unit_price}
                     disabled={
-                        !row.child_id || forbidEdition || !canEditAndCreate
-                      }
+                      !row.child_id || forbidEdition || !canEditAndCreate
+                    }
                     onChange={value =>
                       handleChangeDetail('child_unit_price', value, index)
                     }
@@ -366,8 +369,7 @@ function SaleProductsListTwo({
             )}
           </Row>
         </List.Item>
-      )            
-    }
+      )}
       footer={
         !forbidEdition && (
           <Row gutter={16} className={'section-space-field'}>
