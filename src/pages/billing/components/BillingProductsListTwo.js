@@ -10,7 +10,7 @@ const { Option } = Select
 
 const getColumnsConfig = () => {
   return {
-    serviceType: { col: 4, visible: true, label: 'Tipo de Servicio' },
+    serviceType: { col: 3, visible: true, label: 'Tipo de Servicio' },
     code: { col: 4, visible: false, label: 'Codigo' },
     /*parentProduct: {
       col: 4,
@@ -32,11 +32,11 @@ const getColumnsConfig = () => {
       visible: true,
       label: 'Precio Producto (Q)',
     }, */
-    serviceProduct: { col: 4, visible: true, label: 'Servicio/Producto' },
+    serviceProduct: { col: 9, visible: true, label: 'Servicio/Producto' },
     price: { col: 2, visible: true, label: 'Precio' },
-    quantity: { col: 4, visible: true, label: 'Cantidad' },
-    subtotal: { col: 4, visible: true, label: 'Subtotal (Q)' },
-    comments: { col: 6, visible: true, label: 'Comentarios' },
+    quantity: { col: 2, visible: true, label: 'Cantidad' },
+    subtotal: { col: 3, visible: true, label: 'Subtotal (Q)' },
+    comments: { col: 5, visible: true, label: 'Comentarios' },
   }
 }
 
@@ -195,7 +195,9 @@ function BillingProductsListTwo({
                     getPopupContainer={trigger => trigger.parentNode}
                     showSearch
                     onSearch={debounce(handleSearchProduct(index), 400)}
-                    value={productsOptionsList.length > 0 ? row.id : row.child_id}
+                    value={
+                      productsOptionsList.length > 0 ? row.id : row.child_id
+                    }
                     onChange={value => handleChangeDetail('id', value, index)}
                     loading={loading}
                     optionFilterProp='children'
@@ -212,7 +214,9 @@ function BillingProductsListTwo({
                         </Option>
                       ))
                     ) : (
-                      <Option value={row.child_id}>{row.child_description}</Option>
+                      <Option value={row.child_id}>
+                        {row.child_description}
+                      </Option>
                     )}
                   </Select>
                 </Col>
