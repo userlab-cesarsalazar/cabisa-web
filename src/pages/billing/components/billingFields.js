@@ -226,7 +226,7 @@ export const handleUpdateProductsData = ({
       childProduct?.inventory_unit_value || row?.child_inventory_unit_value,
     // common fields
     id: parentProduct?.id ? Number(parentProduct.id) : row.id,
-    code: parentProduct?.code ? parentProduct.code : row.code,
+    code: parentProduct?.code ? parentProduct.code : childProduct?.code ? childProduct.code : row.code,//parentProduct?.code ? parentProduct.code : row.code,
     child_id: childProduct?.id ? Number(childProduct.id) : row.child_id,
     quantity:
       row.quantity && (field !== 'id' || field !== 'child_id')
@@ -395,6 +395,7 @@ export const billingLogicFactory = ({
             `${p.description_service}${p.comments ? '- ' + p.comments : ''}` ||
             p.description,
           service_user_price: p.parent_base_unit_price,
+          code_product: p?.code
         }
 
         const childPriceWithoutTax = p.child_base_unit_price
@@ -423,6 +424,7 @@ export const billingLogicFactory = ({
                 }`,
           product_user_price: p.child_base_unit_price,
           product_comments: p.comments,
+          code_product: p?.code
         }
 
         const products =

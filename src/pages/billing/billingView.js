@@ -59,7 +59,7 @@ function BillingView() {
         product.parent_product_id === undefined
     )
     let billData = createBillStructure(saveData)
-        
+    
    setLoading(true)  
    //create infile DOC
   let infileDoc = await billingSrc.createInvoiceFel(billData)
@@ -101,9 +101,9 @@ function BillingView() {
       const description =
         product.product_description || product.service_description
       const quantity = product.product_quantity
-      const discount =
-        (product.product_discount_percentage / 100) * price * quantity
-      return { description, price, discount, quantity }
+      const discount = (product.product_discount_percentage / 100) * price * quantity
+      const code = product.code_product
+      return { description, price, discount, quantity, code }
     })
 
     let newStructure = {
