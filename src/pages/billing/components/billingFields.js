@@ -25,7 +25,7 @@ import billingSrc from '../billingSrc'
 import FooterButtons from '../../../components/FooterButtons'
 import {
   appConfig,
-  documentsServiceType,
+  // documentsServiceType,
   productsTypes,
   productsStatus,
   documentsStatus,
@@ -373,7 +373,7 @@ export const billingLogicFactory = ({
       total_tax_amount: data.total_tax,
       total_amount: data.total,
       description: data.description,
-      products: productsData.reduce((r, p) => {        
+      products: productsData.reduce((r, p) => {
         const parentPriceWithoutTax = p.parent_base_unit_price
           ? p.parent_base_unit_price -
             p.parent_base_unit_price * getPercent(p.parent_tax_fee)
@@ -416,7 +416,11 @@ export const billingLogicFactory = ({
           service_type: p.service_type,
           // Concat comments to product_description
           product_description:
-          p.child_description.length > 0 ? `${p.child_description}${p.comments ? '- ' + p.comments : ''}` : `${p.description_product}${p.comments ? '- ' + p.comments : ''}`,            
+            p.child_description.length > 0
+              ? `${p.child_description}${p.comments ? '- ' + p.comments : ''}`
+              : `${p.description_product}${
+                  p.comments ? '- ' + p.comments : ''
+                }`,
           product_user_price: p.child_base_unit_price,
           product_comments: p.comments,
         }
@@ -454,7 +458,8 @@ export const billingLogicFactory = ({
         errors.push(`El campo ${k} es obligatorio`)
       })
     }
-    const productsRequiredFields = ['product_quantity', 'product_price']
+
+    /* const productsRequiredFields = ['product_quantity', 'product_price']
 
     const productErrors = validateSaleOrBillingProducts(
       data.products,
@@ -463,14 +468,15 @@ export const billingLogicFactory = ({
     )
 
     // Service without product associated validation
-    /* if (productErrors.required.length > 0) {
+    if (productErrors.required.length > 0) {
       errors.push(
         `Los campos Precio y Cantidad de los productos en posicion ${productErrors.required.join(
           ', '
         )} deben ser mayor a cero`
       )
-    } */
+    }
 
+    // Validation that prevents adding repeated products to the invoice detail
     Object.keys(productErrors.duplicate).forEach(k => {
       if (productErrors.duplicate[k]?.length > 1) {
         errors.push(
@@ -479,7 +485,7 @@ export const billingLogicFactory = ({
           )} no pueden estar duplicados`
         )
       }
-    })
+    }) */
 
     if (!isSaleValidation && discountInputValue < 0) {
       errors.push(
@@ -623,7 +629,8 @@ export const billingLogicFactory = ({
   }
 }
 
-const validateSaleOrBillingProducts = (
+// This function is used to collect errors through validations.
+/* const validateSaleOrBillingProducts = (
   products,
   productsRequiredFields,
   serviceTypeService
@@ -664,7 +671,7 @@ const validateSaleOrBillingProducts = (
     },
     { required: [], duplicate: {} }
   )
-}
+} */
 
 function BillingFields({
   setLoading,
