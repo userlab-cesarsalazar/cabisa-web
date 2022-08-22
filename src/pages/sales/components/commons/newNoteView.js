@@ -93,7 +93,10 @@ function NewNoteView({ canEditAndCreate }) {
     const params = {
       status: productsStatus.ACTIVE,
       stock: { $gt: 0 },
+      open_parenthesis: 'description',
+      close_parenthesis: 'nit',
       description: { $like: `%25${product_description || ''}%25` },
+      nit: { $or: true, $like: `%25${product_description}%25` },        
       product_type: productsTypes.SERVICE,
     }
 
@@ -220,7 +223,10 @@ function NewNoteView({ canEditAndCreate }) {
     const params = {
       status: productsStatus.ACTIVE,
       stock: { $gt: 0 },
+      open_parenthesis: 'description',
+      close_parenthesis: 'nit',
       description: { $like: `%25${product_description}%25` },
+      nit: { $or: true, $like: `%25${product_description}%25` },        
       product_type: productsTypes.PRODUCT,
     }
 

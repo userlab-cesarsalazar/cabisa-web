@@ -11,7 +11,7 @@ const { Option } = Select
 const getColumnsConfig = () => {
   return {
     serviceType: { col: 3, visible: true, label: 'Tipo de Servicio' },
-    code: { col: 4, visible: false, label: 'Codigo' },
+    code: { col: 3, visible: true, label: 'Codigo' },
 
     // parentProduct: {
     //   col: 4,
@@ -34,7 +34,7 @@ const getColumnsConfig = () => {
     //   label: 'Precio Producto (Q)',
     // },
 
-    serviceProduct: { col: 11, visible: true, label: 'Servicio/Producto' },
+    serviceProduct: { col: 8, visible: true, label: 'Servicio/Producto' },
     price: { col: 3, visible: true, label: 'Precio' },
     quantity: { col: 3, visible: true, label: 'Cantidad' },
     subtotal: { col: 4, visible: true, label: 'Subtotal (Q)' },
@@ -192,6 +192,7 @@ function SaleProductsListTwo({
               row.service_type === documentsServiceType.SERVICE && (
                 <Col sm={config?.serviceProduct?.col}>
                   <Select
+                    dropdownClassName={'dropdown-custom-products'}
                     className={'single-select'}
                     placeholder={config?.serviceProduct?.label}
                     size={'large'}
@@ -216,12 +217,12 @@ function SaleProductsListTwo({
                     {productsOptionsList.length > 0 ? (
                       productsOptionsList?.map(value => (
                         <Option key={value.id} value={value.id}>
-                          {value.description}
+                          {value.code} - {value.description}
                         </Option>
                       ))
                     ) : (
                       <Option value={row.child_id}>
-                        {row.child_description}
+                        {row.code} - {row.child_description}                 
                       </Option>
                     )}
                   </Select>
@@ -252,6 +253,7 @@ function SaleProductsListTwo({
                 !row.service_type) && (
                 <Col sm={config?.serviceProduct?.col}>
                   <Select
+                    dropdownClassName={'dropdown-custom-products'}
                     className={'single-select'}
                     placeholder={config?.serviceProduct?.label}
                     size={'large'}
@@ -279,12 +281,12 @@ function SaleProductsListTwo({
                     {childProductsOptionsList?.length > 0 ? (
                       childProductsOptionsList.map(value => (
                         <Option key={value.id} value={value.id}>
-                          {value.description}
+                          {value.code} - {value.description}
                         </Option>
                       ))
                     ) : (
                       <Option value={row.child_id}>
-                        {row.child_description}
+                        {row.code} - {row.child_description}                        
                       </Option>
                     )}
                   </Select>

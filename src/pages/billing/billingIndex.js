@@ -72,7 +72,7 @@ export function getDetailData(data) {
     const quantity = p?.quantity || p?.product_quantity || 0
     const subtotal = unitPrice * quantity
     const unitTaxAmount = roundNumber(unitPrice - baseUnitPrice)
-
+    //ledr - comment code
     return {
       ...p,
       child_id: p?.id || '',
@@ -92,7 +92,7 @@ export function getDetailData(data) {
       subtotal: roundNumber(subtotal),
       id: '',
       description: '',
-      code: '',
+      // code: '',
       parent_tax_fee: 0,
       parent_unit_tax_amount: 0,
       parent_unit_discount: 0,
@@ -124,6 +124,7 @@ function Billing(props) {
   if (!initFilters.current) {
     initFilters.current = {
       id: '',
+      document_number: '',
       nit: '',
       created_at: '',
       serviceTypes: '',
@@ -184,6 +185,7 @@ function Billing(props) {
     billingSrc
       .getInvoices({
         id: { $like: `%25${filters.id}%25` }, // Nro de Serie
+        document_number: { $like: `%25${filters.document_number}%25` }, // Nro de Serie
         nit: { $like: `%25${filters.nit}%25` },
         created_at: filters.created_at
           ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
@@ -268,10 +270,13 @@ function Billing(props) {
     setLoading(false)    
     let uuid_ = infileDoc.xml_certificado.uuid
     let urlPdf = `https://docs.google.com/gview?url=https://report.feel.com.gt/ingfacereport/ingfacereport_documento?uuid=${uuid_}&embedded=true`
-    console.log('document',urlPdf)
+    console.log('document',urlPdf)    
     setInvoiceBase64(urlPdf)
     setLoadingBill(true)
     setShowModal(true)
+    //open bill new tab
+    // let urlDocument = `https://report.feel.com.gt/ingfacereport/ingfacereport_documento?uuid=${uuid_}`
+    // window.open(urlDocument, '_blank').focus();
   }
 
   const setSearchFilters = field => value =>
