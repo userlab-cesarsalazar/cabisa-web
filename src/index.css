@@ -1568,14 +1568,11 @@ input:-webkit-autofill:focus {
   flex-direction: column;
 }
 
-
-
 .dropdown-custom{    
   width: auto !important;  
 }
 
 .dropdown-custom-products{    
   width: auto !important;  
-  min-width: 300px !important;
-  background-color: red;
+  min-width: 300px !important;  
 }
