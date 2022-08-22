@@ -1567,3 +1567,15 @@ input:-webkit-autofill:focus {
 #login-form .ant-row.ant-form-item {
   flex-direction: column;
 }
+
+
+
+.dropdown-custom{    
+  width: auto !important;  
+}
+
+.dropdown-custom-products{    
+  width: auto !important;  
+  min-width: 300px !important;
+  background-color: red;
+}
