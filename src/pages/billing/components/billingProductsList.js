@@ -11,7 +11,7 @@ const { Option } = Select
 const getColumnsConfig = () => {
   return {
     serviceType: { col: 3, visible: true, label: 'Tipo de Servicio' },
-    code: { col: 4, visible: false, label: 'Codigo' },
+    code: { col: 3, visible: true, label: 'Codigo' },
     /*parentProduct: {
       col: 4,
       visible: true,
@@ -32,7 +32,7 @@ const getColumnsConfig = () => {
       visible: true,
       label: 'Precio Producto (Q)',
     }, */
-    serviceProduct: { col: 9, visible: true, label: 'Servicio/Producto' },
+    serviceProduct: { col: 6, visible: true, label: 'Servicio/Producto' },
     price: { col: 2, visible: true, label: 'Precio' },
     quantity: { col: 2, visible: true, label: 'Cantidad' },
     subtotal: { col: 3, visible: true, label: 'Subtotal (Q)' },
@@ -144,7 +144,7 @@ function BillingProductsList({
           >
             {config?.serviceType?.visible && (
               <Col sm={config?.serviceType?.col}>
-                <Select
+                <Select                  
                   className={'single-select'}
                   placeholder={'Elegir tipo servicio'}
                   size={'large'}
@@ -188,6 +188,7 @@ function BillingProductsList({
               row.service_type === documentsServiceType.SERVICE && (
                 <Col sm={config?.serviceProduct?.col}>
                   <Select
+                    dropdownClassName={'dropdown-custom'}
                     className={'single-select'}
                     placeholder={config?.serviceProduct?.label}
                     size={'large'}
@@ -211,10 +212,9 @@ function BillingProductsList({
                       productsOptionsList?.map(value => (
                         <Option
                           key={value.id}
-                          value={value.id}
-                          style={{ width: '600px' }}
+                          value={value.id}                          
                         >
-                          {value.description}
+                         {value.code} - {value.description}
                         </Option>
                       ))
                     ) : (
@@ -256,6 +256,7 @@ function BillingProductsList({
                 !row.service_type) && (
                 <Col sm={config?.serviceProduct?.col}>
                   <Select
+                    dropdownClassName={'dropdown-custom-products'}
                     className={'single-select'}
                     placeholder={config?.serviceProduct?.label}
                     size={'large'}
@@ -281,10 +282,9 @@ function BillingProductsList({
                       childProductsOptionsList.map(value => (
                         <Option
                           key={value.id}
-                          value={value.id}
-                          style={{ width: '600px' }}
+                          value={value.id}                          
                         >
-                          {value.description}
+                          {value.code} - {value.description}
                         </Option>
                       ))
                     ) : (
