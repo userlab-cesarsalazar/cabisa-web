@@ -15,7 +15,7 @@ import {
 } from 'antd'
 import {
   DeleteOutlined,
-  FileSearchOutlined  
+  FileSearchOutlined, PrinterOutlined  
 } from '@ant-design/icons'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 //import ActionOptions from '../../../components/actionOptions'
@@ -33,13 +33,9 @@ function BillingTable(props) {
 
   const handlerShowDocument = data => props.handlerShowDocument(data)
 
-  const columns = [    
-    {
-      title: 'serie',
-      dataIndex: 'serie', // Field that is goint to be rendered
-      key: 'serie',
-      render: text => <span>{text}</span>,
-    },
+  const handlerPrintDocument = data => props.handlerPrintDocument(data)
+
+  const columns = [      
     {
       title: 'Nro. documento',
       dataIndex: 'document_number', // Field that is goint to be rendered
@@ -88,24 +84,23 @@ function BillingTable(props) {
       title: 'Status',
       dataIndex: 'status', // Field that is goint to be rendered
       key: 'status',
+      width: 100,
       render: text => <Tag type='documentStatus' value={text} />,
     },
     {
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
+      width: 175,
       render: (_, data) => (
-        <>
-        {/* <ActionOptions
-          editPermissions={false}
-          data={data}
-          permissionId={permissions.FACTURACION}
-          showDeleteBtn={data.status !== documentsStatus.CANCELLED}
-          handlerDeleteRow={handlerDeleteRow}
-          handlerEditRow={handlerEditRow}
-          deleteAction='nullify'
-          editAction={props.isAdmin ? 'edit' : 'show'}
-        /> */}
+        <>        
+        <Tooltip title={'Imprimir documento'}>
+              <Button
+                icon={<PrinterOutlined />}
+                onClick={() => handlerPrintDocument(data)}
+              />
+            </Tooltip>
+        <Divider type={'vertical'} />
         <Tooltip title={'Ver documento'}>
               <Button
                 icon={<FileSearchOutlined />}

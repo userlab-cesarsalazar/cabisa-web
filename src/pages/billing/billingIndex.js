@@ -262,6 +262,15 @@ function Billing(props) {
     
   }
 
+  const handlerPrintDocument = async row => {  
+    setLoading(true)
+    let infileDoc = await billingSrc.getInvoiceFel(row.document_number)
+    let uuid_ = infileDoc.xml_certificado.uuid
+    setLoading(false)    
+    let urlDocument = `https://report.feel.com.gt/ingfacereport/ingfacereport_documento?uuid=${uuid_}`
+    window.open(urlDocument, '_blank').focus();
+  }
+
   const handlerShowDocument = async row => {
     console.log("show document")
     console.log(row.document_number)
@@ -313,6 +322,7 @@ function Billing(props) {
         paymentMethodsOptionsList={paymentMethodsOptionsList}
         handlerDeleteRow={handlerDeleteRow}
         handlerShowDocument={handlerShowDocument}
+        handlerPrintDocument={handlerPrintDocument}
         loading={loading}
         isAdmin={isAdmin}
       />
