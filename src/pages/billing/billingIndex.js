@@ -4,20 +4,22 @@ import HeaderPage from '../../components/HeaderPage'
 import BillingTable from './components/BillingTable'
 import DetailBilling from './components/detailBilling'
 import billingSrc from './billingSrc'
-import { message } from 'antd'
+import { message,Modal,Row,Col,Input,Spin } from 'antd'
 import { getPercent, showErrors, roundNumber, validateRole } from '../../utils'
 import {
   stakeholdersTypes,
   permissions,
-  documentsServiceType,
+  //documentsServiceType,
   roles,
   documentsPaymentMethods,
 } from '../../commons/types'
+import { Cache } from 'aws-amplify'
+
+const { TextArea } = Input;
 
 export function getDetailData(data) {
-  const getParentProduct = (products, childProduct) => {
-    if (!childProduct.parent_product_id) return {}
-
+  const getParentProduct = (products, childProduct) => {    
+    if (!childProduct.parent_product_id) return {}    
     const parentProduct = products.find(
       p => Number(p?.id) === Number(childProduct?.parent_product_id)
     )
@@ -55,8 +57,9 @@ export function getDetailData(data) {
   }
 
   const products = data?.products?.flatMap(p => {
-    if (p.service_type === documentsServiceType.SERVICE && !p.parent_product_id)
-      return []
+    
+    // if (p.service_type === documentsServiceType.SERVICE && !p.parent_product_id)
+    //   return []
 
     const baseUnitPrice = p?.product_price || p?.unit_price || 0
     const unitDiscountAmount = p?.unit_discount_amount || 0
@@ -69,7 +72,7 @@ export function getDetailData(data) {
     const quantity = p?.quantity || p?.product_quantity || 0
     const subtotal = unitPrice * quantity
     const unitTaxAmount = roundNumber(unitPrice - baseUnitPrice)
-
+    //ledr - comment code
     return {
       ...p,
       child_id: p?.id || '',
@@ -89,7 +92,7 @@ export function getDetailData(data) {
       subtotal: roundNumber(subtotal),
       id: '',
       description: '',
-      code: '',
+      // code: '',
       parent_tax_fee: 0,
       parent_unit_tax_amount: 0,
       parent_unit_discount: 0,
@@ -115,11 +118,13 @@ export function getDetailData(data) {
 }
 
 function Billing(props) {
+  
   const initFilters = useRef()
 
   if (!initFilters.current) {
     initFilters.current = {
       id: '',
+      document_number: '',
       nit: '',
       created_at: '',
       serviceTypes: '',
@@ -131,6 +136,7 @@ function Billing(props) {
   const isAdmin = validateRole(roles.ADMIN)
 
   const [loading, setLoading] = useState(false)
+  const [loadingBill, setLoadingBill] = useState(false)
   const [visible, setVisible] = useState(false)
   const [dataSource, setDataSource] = useState(false)
   const [detailInvoiceData, setDetailInvoiceData] = useState(false)
@@ -141,6 +147,13 @@ function Billing(props) {
     setStakeholderTypesOptionsList,
   ] = useState([])
   const [serviceTypesOptionsList, setServiceTypesOptionsList] = useState([])
+  const [showModal,setShowModal] = useState(false)
+  const [showModalCancel,setShowModalCancel] = useState(false)
+  const [invoiceBase64,setInvoiceBase64] = useState(null)
+  const [cancelDescription,setCancelDescription] = useState('')
+  const [dataCancelInvoice,setDataCancelInvoice] = useState(null)
+  const [rowData,setRowData] = useState([])
+  
 
   useEffect(() => {
     setPaymentMethodsOptionsList([
@@ -172,6 +185,7 @@ function Billing(props) {
     billingSrc
       .getInvoices({
         id: { $like: `%25${filters.id}%25` }, // Nro de Serie
+        document_number: { $like: `%25${filters.document_number}%25` }, // Nro de Serie
         nit: { $like: `%25${filters.nit}%25` },
         created_at: filters.created_at
           ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
@@ -188,22 +202,90 @@ function Billing(props) {
     loadData()
   }, [loadData])
 
-  const handlerDeleteRow = row => {
-    setLoading(true)
-
-    billingSrc
-      .cancelInvoice({ document_id: row.id })
-      .then(_ => {
-        if (JSON.stringify(filters) === JSON.stringify(initFilters.current)) {
-          loadData()
-        } else {
-          setFilters(initFilters.current)
+  const handlerDeleteRow = async row => {
+    
+    try {
+      if(showModalCancel){
+        if(cancelDescription.length === 0){
+          return message.warning('La anulacion del documento debe llevar una descripcion.')
         }
+        const UserName = Cache.getItem('currentSession')         
+        setLoading(true)
+        setShowModalCancel(false)
+        
+        let _dataCancel = dataCancelInvoice
+        _dataCancel.description = cancelDescription
+        _dataCancel.created_by = UserName ? UserName.userName : 'system'
+  
+        let infileDoc = await billingSrc.cancelInvoiceFel(_dataCancel)
+        let infileMessage = infileDoc.message  
+  
+        if(infileMessage === 'SUCCESSFUL'){        
+          billingSrc
+            .cancelInvoice({ document_id: rowData.id })
+            .then(_ => {
+              if (JSON.stringify(filters) === JSON.stringify(initFilters.current)) {
+                loadData()
+              } else {
+                setFilters(initFilters.current)
+              }
+  
+              message.success('Factura anulada exitosamente')
+            })
+            .catch(error => showErrors(error))
+            .finally(() => setLoading(false))
+        }else{
+          setLoading(false)
+          message.error(infileMessage)
+        }
+        
+      }else{
+        setLoading(true)
+        const {stakeholder_nit,uuid } = row    
+        let infileDoc = await billingSrc.getInvoiceFel(row.document_number)
+        
+        let data = {
+          nit:stakeholder_nit,
+          uuid,
+          certificateDate: infileDoc.xml_certificado.fecha_certificacion
+        }
+        setCancelDescription('')
+        setRowData(row)
+        setDataCancelInvoice(data)      
+        setShowModalCancel(true)
+        setLoading(false)
+      }
+    } catch (error) {
+      console.log(error)
+      message.error('Ocurrio un problema al procesar su peticion, contacte al administrador')
+    }
+    
+  }
 
-        message.success('Factura anulada exitosamente')
-      })
-      .catch(error => showErrors(error))
-      .finally(() => setLoading(false))
+  const handlerPrintDocument = async row => {  
+    setLoading(true)
+    let infileDoc = await billingSrc.getInvoiceFel(row.document_number)
+    let uuid_ = infileDoc.xml_certificado.uuid
+    setLoading(false)    
+    let urlDocument = `https://report.feel.com.gt/ingfacereport/ingfacereport_documento?uuid=${uuid_}`
+    window.open(urlDocument, '_blank').focus();
+  }
+
+  const handlerShowDocument = async row => {
+    console.log("show document")
+    console.log(row.document_number)
+    setLoading(true)
+    let infileDoc = await billingSrc.getInvoiceFel(row.document_number)
+    setLoading(false)    
+    let uuid_ = infileDoc.xml_certificado.uuid
+    let urlPdf = `https://docs.google.com/gview?url=https://report.feel.com.gt/ingfacereport/ingfacereport_documento?uuid=${uuid_}&embedded=true`
+    console.log('document',urlPdf)    
+    setInvoiceBase64(urlPdf)
+    setLoadingBill(true)
+    setShowModal(true)
+    //open bill new tab
+    // let urlDocument = `https://report.feel.com.gt/ingfacereport/ingfacereport_documento?uuid=${uuid_}`
+    // window.open(urlDocument, '_blank').focus();
   }
 
   const setSearchFilters = field => value =>
@@ -221,6 +303,10 @@ function Billing(props) {
 
   const closeDetail = () => setVisible(false)
 
+  const hideSpinner = () =>{
+    setLoadingBill(false)
+  }
+
   return (
     <>
       <HeaderPage
@@ -235,6 +321,8 @@ function Billing(props) {
         handleFiltersChange={setSearchFilters}
         paymentMethodsOptionsList={paymentMethodsOptionsList}
         handlerDeleteRow={handlerDeleteRow}
+        handlerShowDocument={handlerShowDocument}
+        handlerPrintDocument={handlerPrintDocument}
         loading={loading}
         isAdmin={isAdmin}
       />
@@ -250,6 +338,64 @@ function Billing(props) {
         isAdmin={isAdmin}
         loadData={loadData}
       />
+       <Modal
+          closable={false}
+          width={'min-content'}
+          visible={showModal}
+          footer={false}
+          onCancel={() => {
+            setInvoiceBase64('_blank');
+            setShowModal(false)
+          }
+          }
+        >   
+        <Spin spinning={loadingBill}>
+          {invoiceBase64 && (
+            <Row gutter={24}>
+              <Col span={24}>
+                <div style={{ width: '21cm', height: '29.7cm' }}>                  
+                  <iframe
+                  onLoad={hideSpinner}
+                  title="calculator"
+                  frameBorder="0"
+                  scrolling="no"
+                  style={{ width: '100%', minHeight: '960px', height: '100%', borderColor: 'white' }}
+                  src={invoiceBase64}
+          />
+                </div>
+              </Col>
+            </Row>
+          )}
+          </Spin>       
+        </Modal>
+
+        <Modal
+          closable={false}          
+          visible={showModalCancel}          
+          onOk={()=>{           
+            setShowModalCancel(false)
+            handlerDeleteRow()
+           }
+          }
+          onCancel={()=>{
+            setShowModalCancel(false)
+            setCancelDescription('')
+            setRowData([])
+            setDataCancelInvoice(null)
+          }
+        }
+        >          
+        
+            <Row gutter={24}>
+              <Col span={24}>
+              <TextArea rows={4}
+              value={cancelDescription} 
+              placeholder='Descripcion de la anulacion'
+              onChange={value=>setCancelDescription(value.target.value)}
+              />
+              </Col>
+            </Row>          
+        </Modal>
     </>
   )
 }

@@ -2,9 +2,9 @@ import React from 'react'
 import debounce from 'lodash/debounce'
 import { List, Col, Input, Row, Button, Select, Popconfirm } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
-import CurrencyInput from '../../../components/CurrencyInput'
-import Tag from '../../../components/Tag'
-import { documentsServiceType } from '../../../commons/types'
+import CurrencyInput from '../../../../components/CurrencyInput'
+import Tag from '../../../../components/Tag'
+import { documentsServiceType } from '../../../../commons/types'
 
 const { Option } = Select
 
@@ -12,53 +12,55 @@ const getColumnsConfig = () => {
   return {
     serviceType: { col: 3, visible: true, label: 'Tipo de Servicio' },
     code: { col: 3, visible: true, label: 'Codigo' },
-    /*parentProduct: {
-      col: 4,
-      visible: true,
-      label: 'Servicio',
-    },
-    parentProductPrice: {
-      col: 2,
-      visible: true,
-      label: 'Precio Servicio (Q)',
-    },
-    childProduct: {
-      col: 4,
-      visible: true,
-      label: 'Producto',
-    },
-    childProductPrice: {
-      col: 2,
-      visible: true,
-      label: 'Precio Producto (Q)',
-    }, */
-    serviceProduct: { col: 6, visible: true, label: 'Servicio/Producto' },
-    price: { col: 2, visible: true, label: 'Precio' },
-    quantity: { col: 2, visible: true, label: 'Cantidad' },
-    subtotal: { col: 3, visible: true, label: 'Subtotal (Q)' },
-    comments: { col: 5, visible: true, label: 'Comentarios' },
+
+    // parentProduct: {
+    //   col: 4,
+    //   visible: true,
+    //   label: 'Servicio',
+    // },
+    // parentProductPrice: {
+    //   col: 2,
+    //   visible: true,
+    //   label: 'Precio Servicio (Q)',
+    // },
+    // childProduct: {
+    //   col: 4,
+    //   visible: true,
+    //   label: 'Producto',
+    // },
+    // childProductPrice: {
+    //   col: 2,
+    //   visible: true,
+    //   label: 'Precio Producto (Q)',
+    // },
+
+    serviceProduct: { col: 8, visible: true, label: 'Servicio/Producto' },
+    price: { col: 3, visible: true, label: 'Precio' },
+    quantity: { col: 3, visible: true, label: 'Cantidad' },
+    subtotal: { col: 4, visible: true, label: 'Subtotal (Q)' },
+    comments: { col: 6, visible: false, label: 'Comentarios' },
   }
 }
 
-function BillingProductsList({
+function SaleProductsListTwo({
   dataSource,
   handleAddDetail,
   handleChangeDetail,
   handleRemoveDetail,
-  handleBlurDetail,
   handleSearchProduct,
   productsOptionsList,
   handleSearchChildProduct,
   childProductsOptionsList,
-  isInvoiceFromSale,
+  status,
   loading,
-  isEditing,
-  isAdmin,
-  serviceTypesOptionsList,
+  canEditAndCreate,
+  forbidEdition,
+  handleChange,
+  documentServiceTypesOptionsList,
   ...props
 }) {
   const config = getColumnsConfig()
-  const showDeleteButton = (!isEditing || isAdmin) && !isInvoiceFromSale
+  const showDeleteButton = !forbidEdition
 
   return (
     <List
@@ -93,6 +95,7 @@ function BillingProductsList({
               <b className='center-flex-div'>{config?.price?.label}</b>
             </Col>
           )}
+
           {/* {config?.parentProduct?.visible && (
             <Col sm={config?.parentProduct?.col}>
               <b className='center-flex-div'>{config?.parentProduct?.label}</b>
@@ -117,6 +120,7 @@ function BillingProductsList({
               </b>
             </Col>
           )} */}
+
           {config?.quantity?.visible && (
             <Col sm={config?.quantity?.col}>
               <b className='center-flex-div'>{config?.quantity?.label}</b>
@@ -144,20 +148,20 @@ function BillingProductsList({
           >
             {config?.serviceType?.visible && (
               <Col sm={config?.serviceType?.col}>
-                <Select                  
+                <Select
                   className={'single-select'}
                   placeholder={'Elegir tipo servicio'}
                   size={'large'}
                   style={{ width: '100%', height: '40px' }}
                   getPopupContainer={trigger => trigger.parentNode}
-                  onChange={value => {
+                  onChange={value =>
                     handleChangeDetail('service_type', value, index)
-                  }}
+                  }
                   value={row.service_type}
-                  disabled={(isEditing && !isAdmin) || isInvoiceFromSale}
+                  disabled={forbidEdition}
                 >
-                  {serviceTypesOptionsList?.length > 0 ? (
-                    serviceTypesOptionsList.map(value => (
+                  {documentServiceTypesOptionsList?.length > 0 ? (
+                    documentServiceTypesOptionsList.map(value => (
                       <Option key={value} value={value}>
                         <Tag type='documentsServiceType' value={value} />
                       </Option>
@@ -188,7 +192,7 @@ function BillingProductsList({
               row.service_type === documentsServiceType.SERVICE && (
                 <Col sm={config?.serviceProduct?.col}>
                   <Select
-                    dropdownClassName={'dropdown-custom'}
+                    dropdownClassName={'dropdown-custom-products'}
                     className={'single-select'}
                     placeholder={config?.serviceProduct?.label}
                     size={'large'}
@@ -200,26 +204,25 @@ function BillingProductsList({
                       productsOptionsList.length > 0 ? row.id : row.child_id
                     }
                     onChange={value => handleChangeDetail('id', value, index)}
-                    loading={loading}
+                    loading={
+                      status === 'LOADING' && loading === 'fetchProductsOptions'
+                    }
                     optionFilterProp='children'
                     disabled={
                       row.service_type !== documentsServiceType.SERVICE ||
-                      (isEditing && !isAdmin) ||
-                      isInvoiceFromSale
+                      forbidEdition ||
+                      !canEditAndCreate
                     }
                   >
                     {productsOptionsList.length > 0 ? (
                       productsOptionsList?.map(value => (
-                        <Option
-                          key={value.id}
-                          value={value.id}                          
-                        >
-                         {value.code} - {value.description}
+                        <Option key={value.id} value={value.id}>
+                          {value.code} - {value.description}
                         </Option>
                       ))
                     ) : (
                       <Option value={row.child_id}>
-                        {row.child_description}
+                        {row.code} - {row.child_description}                 
                       </Option>
                     )}
                   </Select>
@@ -231,21 +234,15 @@ function BillingProductsList({
                   <CurrencyInput
                     className='product-list-input'
                     placeholder={config?.price?.label}
-                    value={row.parent_display_unit_price}
+                    value={row.child_display_unit_price}
                     disabled={
-                      row.service_type !== documentsServiceType.SERVICE ||
-                      !row.id ||
-                      (isEditing && !isAdmin) ||
-                      isInvoiceFromSale
+                      !row.child_id || forbidEdition || !canEditAndCreate
                     }
                     onChange={value =>
-                      handleChangeDetail('parent_unit_price', value, index)
+                      handleChangeDetail('child_unit_price', value, index)
                     }
                     onFocus={() =>
-                      handleChangeDetail('parent_unit_price', '', index)
-                    }
-                    onBlur={() =>
-                      handleBlurDetail('parent_unit_price', '', index)
+                      handleChangeDetail('child_unit_price', '', index)
                     }
                   />
                 </Col>
@@ -269,27 +266,27 @@ function BillingProductsList({
                       handleChangeDetail('child_id', value, index)
                     }
                     optionFilterProp='children'
-                    loading={loading}
+                    loading={
+                      status === 'LOADING' &&
+                      loading === 'fetchChildProductsOptions'
+                    }
                     disabled={
                       !row.service_type ||
                       (!row.id &&
                         row.service_type === documentsServiceType.SERVICE) ||
-                      (isEditing && !isAdmin) ||
-                      isInvoiceFromSale
+                      forbidEdition ||
+                      !canEditAndCreate
                     }
                   >
                     {childProductsOptionsList?.length > 0 ? (
                       childProductsOptionsList.map(value => (
-                        <Option
-                          key={value.id}
-                          value={value.id}                          
-                        >
+                        <Option key={value.id} value={value.id}>
                           {value.code} - {value.description}
                         </Option>
                       ))
                     ) : (
                       <Option value={row.child_id}>
-                        {row.child_description}
+                        {row.code} - {row.child_description}                        
                       </Option>
                     )}
                   </Select>
@@ -303,20 +300,15 @@ function BillingProductsList({
                   <CurrencyInput
                     className='product-list-input'
                     placeholder={config?.price?.label}
-                    disabled={
-                      !row.child_id ||
-                      (isEditing && !isAdmin) ||
-                      isInvoiceFromSale
-                    }
                     value={row.child_display_unit_price}
+                    disabled={
+                      !row.child_id || forbidEdition || !canEditAndCreate
+                    }
                     onChange={value =>
                       handleChangeDetail('child_unit_price', value, index)
                     }
                     onFocus={() =>
                       handleChangeDetail('child_unit_price', '', index)
-                    }
-                    onBlur={_ =>
-                      handleBlurDetail('child_unit_price', '', index)
                     }
                   />
                 </Col>
@@ -331,11 +323,11 @@ function BillingProductsList({
                   onChange={value =>
                     handleChangeDetail('quantity', value, index)
                   }
-                  type='tel'
                   fractionDigits={0}
+                  type='tel'
                   disabled={
-                    (isEditing && !isAdmin) ||
-                    isInvoiceFromSale ||
+                    forbidEdition ||
+                    !canEditAndCreate ||
                     (!row.id && !row.child_id)
                   }
                 />
@@ -381,7 +373,7 @@ function BillingProductsList({
         </List.Item>
       )}
       footer={
-        showDeleteButton && (
+        !forbidEdition && (
           <Row gutter={16} className={'section-space-field'}>
             <Col xs={24} sm={24} md={24} lg={24}>
               <Button
@@ -399,4 +391,4 @@ function BillingProductsList({
   )
 }
 
-export default BillingProductsList
+export default SaleProductsListTwo
