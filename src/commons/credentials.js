@@ -21,6 +21,8 @@ const develop = {
     'https://ueuvc1n3sg.execute-api.us-east-1.amazonaws.com/dev/reports',
   paymentsUrl:
     'https://kqanan1fy6.execute-api.us-east-1.amazonaws.com/dev/payments',
+  invoiceFelUrl  :
+    'https://0ec3y7nkgk.execute-api.us-east-1.amazonaws.com/dev/invoicefel'
 }
 
 const production = {
@@ -48,6 +50,8 @@ const production = {
     'https://m0d4cx91pb.execute-api.us-east-1.amazonaws.com/prod/reports',
   paymentsUrl:
     'https://x03gt0xo95.execute-api.us-east-1.amazonaws.com/prod/payments',
+  invoiceFelUrl  :
+    'https://j9lig5lwvl.execute-api.us-east-1.amazonaws.com/prod/invoicefel'
 }
 
 const enviroment = env => {
