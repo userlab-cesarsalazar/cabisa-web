@@ -243,7 +243,7 @@ export const handleUpdateProductsData = ({
   }
 
   const subtotal = getProductSubtotal(newRow)
-  console.log("verga",newRow)
+  
   return { ...newRow, subtotal }
 }
 
