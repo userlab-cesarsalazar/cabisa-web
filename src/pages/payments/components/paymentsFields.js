@@ -176,15 +176,19 @@ function PaymentsFields({ detailData, ...props }) {
         <Col xs={24} sm={24} md={12} lg={12} style={{ textAlign: 'right' }}>
           {invoiceData?.related_internal_document_id ? (
             <Button className='title-cabisa new-button'>
-              Boleta No. {invoiceData.related_internal_document_id}
+              Recibo No. {invoiceData.related_internal_document_id}
             </Button>
-          ) : null}
-          <Button
+          ) : <span>No disponible</span>}
+          {invoiceData?.document_number ? (
+            <Button
             className='title-cabisa new-button'
             style={{ marginLeft: '1em' }}
           >
-            Serie No. {invoiceData?.id}
+            <span>No. Doc - {invoiceData?.document_number}</span>
           </Button>
+          ):<span>No disponible</span>}
+          
+
         </Col>
       </Row>
 
@@ -404,14 +408,14 @@ function PaymentsFields({ detailData, ...props }) {
                 />
               </div>
             </Col>
-            <Col span={6} style={{ textAlign: 'right' }}>
-              <div className={'title-space-field'}>
+            {/* <Col span={6} style={{ textAlign: 'right' }}>
+              <div className={'hide-component title-space-field'}>
                 <Statistic
                   title='Impuesto :'
                   value={getFormattedValue(invoiceData?.total_tax_amount)}
                 />
               </div>
-            </Col>
+            </Col> */}
             <Col span={6} style={{ textAlign: 'right' }}>
               <div className={'title-space-field'}>
                 <Statistic
