@@ -13,7 +13,10 @@ function Payments() {
 
   if (!initFilters.current) {
     initFilters.current = {
+      related_internal_document_id:'',
+      document_number:'',
       id: '',
+      name: '',
       nit: '',
       created_at: '',
       paymentMethods: '',
@@ -48,9 +51,12 @@ function Payments() {
   const loadData = useCallback(() => {
     setLoading(true)
 
-    PaymentsSrc.getPayments({
+    PaymentsSrc.getPayments({      
+      related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro de nota de servicio
+      document_number: { $like: `%25${filters.document_number}%25` }, // Nro de factura
       id: { $like: `%25${filters.id}%25` }, // Nro de Serie
-      nit: { $like: `%25${filters.nit}%25` },
+      name: { $like: `%25${filters.name}%25` }, // nombre cliente
+      nit: { $like: `%25${filters.nit}%25` }, // nombre cliente
       created_at: filters.created_at
         ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
         : '',

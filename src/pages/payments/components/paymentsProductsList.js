@@ -11,26 +11,16 @@ const { Option } = Select
 const getColumnsConfig = () => {
   return {
     serviceType: { col: 3, visible: true, label: 'Tipo de Servicio' },
-    code: { col: 4, visible: true, label: 'Codigo' },
-    parentProduct: {
-      col: 4,
-      visible: true,
-      label: 'Servicio',
-    },
-    parentProductPrice: {
-      col: 2,
-      visible: true,
-      label: 'Precio Servicio (Q)',
-    },
+    code: { col: 4, visible: true, label: 'Codigo' },    
     childProduct: {
-      col: 4,
+      col: 10,
       visible: true,
-      label: 'Producto',
+      label: 'Servicio/Producto',
     },
     childProductPrice: {
       col: 2,
       visible: true,
-      label: 'Precio Producto (Q)',
+      label: 'Precio',
     },
     quantity: { col: 2, visible: true, label: 'Cantidad' },
     subtotal: { col: 3, visible: true, label: 'Subtotal (Q)' },

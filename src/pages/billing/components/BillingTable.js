@@ -37,7 +37,13 @@ function BillingTable(props) {
 
   const columns = [      
     {
-      title: 'Nro. documento',
+      title: '# Nota serv.',
+      dataIndex: 'related_internal_document_id', // Field that is goint to be rendered
+      key: 'related_internal_document_id',
+      render: text => <span>{text}</span>,
+    },
+    {
+      title: '# Documento',
       dataIndex: 'document_number', // Field that is goint to be rendered
       key: 'document_number',
       render: text => <span>{text}</span>,
@@ -129,10 +135,19 @@ function BillingTable(props) {
   return (
     <>
       <Row gutter={16}>
+      <Col xs={4} sm={4} md={4} lg={4}>
+          <Search
+            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
+            placeholder='# Nota serv.'
+            className={'cabisa-table-search customSearch'}
+            size={'large'}
+            onSearch={props.handleFiltersChange('related_internal_document_id')}
+          />
+        </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
           <Search
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='No. Documento'
+            placeholder='# Documento'
             className={'cabisa-table-search customSearch'}
             size={'large'}
             onSearch={props.handleFiltersChange('document_number')}

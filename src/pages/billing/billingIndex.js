@@ -125,6 +125,7 @@ function Billing(props) {
     initFilters.current = {
       id: '',
       document_number: '',
+      related_internal_document_id: '',
       nit: '',
       created_at: '',
       serviceTypes: '',
@@ -184,6 +185,7 @@ function Billing(props) {
 
     billingSrc
       .getInvoices({
+        related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro nota de servicio
         id: { $like: `%25${filters.id}%25` }, // Nro de Serie
         document_number: { $like: `%25${filters.document_number}%25` }, // Nro de Serie
         nit: { $like: `%25${filters.nit}%25` },
