@@ -407,15 +407,7 @@ function PaymentsFields({ detailData, ...props }) {
                   value={getFormattedValue(invoiceData?.subtotal_amount)}
                 />
               </div>
-            </Col>
-            {/* <Col span={6} style={{ textAlign: 'right' }}>
-              <div className={'hide-component title-space-field'}>
-                <Statistic
-                  title='Impuesto :'
-                  value={getFormattedValue(invoiceData?.total_tax_amount)}
-                />
-              </div>
-            </Col> */}
+            </Col>            
             <Col span={6} style={{ textAlign: 'right' }}>
               <div className={'title-space-field'}>
                 <Statistic
