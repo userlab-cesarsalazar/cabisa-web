@@ -182,19 +182,23 @@ function Billing(props) {
 
   const loadData = useCallback(() => {
     setLoading(true)
+    let filterParams = {
+      related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro nota de servicio
+      id: { $like: `%25${filters.id}%25` }, // Nro de Serie      
+      nit: { $like: `%25${filters.nit}%25` },
+      created_at: filters.created_at
+        ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
+        : '',
+      payment_method: filters.paymentMethods,
+      total_amount: { $like: `%25${filters.totalInvoice}%25` },
+    }
+
+    if(filters.document_number !== ""){
+      filterParams.document_number = { $like: `%25${filters.document_number}%25` } // Nro de Serie
+    }
 
     billingSrc
-      .getInvoices({
-        related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro nota de servicio
-        id: { $like: `%25${filters.id}%25` }, // Nro de Serie
-        document_number: { $like: `%25${filters.document_number}%25` }, // Nro de Serie
-        nit: { $like: `%25${filters.nit}%25` },
-        created_at: filters.created_at
-          ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
-          : '',
-        payment_method: filters.paymentMethods,
-        total_amount: { $like: `%25${filters.totalInvoice}%25` },
-      })
+      .getInvoices(filterParams)
       .then(data => setDataSource(data))
       .catch(_ => message.error('Error al cargar facturas'))
       .finally(() => setLoading(false))

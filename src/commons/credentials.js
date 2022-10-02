@@ -66,5 +66,5 @@ const enviroment = env => {
 }
 
 module.exports = {
-  stage: enviroment('production'),
+  stage: enviroment('develop'),
 }

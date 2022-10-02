@@ -51,9 +51,8 @@ function Payments() {
   const loadData = useCallback(() => {
     setLoading(true)
 
-    PaymentsSrc.getPayments({      
-      related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro de nota de servicio
-      document_number: { $like: `%25${filters.document_number}%25` }, // Nro de factura
+    let filterParams = {      
+      related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro de nota de servicio      
       id: { $like: `%25${filters.id}%25` }, // Nro de Serie
       name: { $like: `%25${filters.name}%25` }, // nombre cliente
       nit: { $like: `%25${filters.nit}%25` }, // nombre cliente
@@ -63,7 +62,13 @@ function Payments() {
       payment_method: filters.paymentMethods,
       total_amount: { $like: `%25${filters.totalInvoice}%25` },
       credit_status: filters.creditStatus,
-    })
+    }
+
+    if(filters.document_number !== ""){
+      filterParams.document_number = { $like: `%25${filters.document_number}%25` } // Nro de Serie
+    }
+
+    PaymentsSrc.getPayments(filterParams)
       .then(data => setDataSource(data))
       .catch(_ => message.error('Error al cargar facturas'))
       .finally(() => setLoading(false))
