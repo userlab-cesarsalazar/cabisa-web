@@ -225,7 +225,7 @@ function Billing(props) {
     <>
       <HeaderPage
         titleButton={'Factura Nueva'}
-        title={'Facturación'}
+        title={'Facturación Old'}
         showDrawer={newBill}
         permissions={permissions.FACTURACION}
       />
