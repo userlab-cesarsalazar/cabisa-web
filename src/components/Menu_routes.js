@@ -44,6 +44,10 @@ import ReportSales from '../pages/reports/reportSales/reportSalesIndex'
 import Billing from '../pages/billing/billingIndex'
 import BillingView from '../pages/billing/billingView'
 
+//billingOld
+import BillingOld from '../pages/billingOld/billingIndexOld'
+import BillingViewOld from '../pages/billingOld/billingViewOld'
+
 //payments
 import Payments from '../pages/payments/paymentsIndex'
 
@@ -144,7 +148,7 @@ const menu_routes = [
     routeGroup: [
       /^(\/billing)|(\/billing\/)|(\/billingView)|(\/billingView\/)|(\/billingView\/[a-zA-z0-9]*)/i,
     ],
-  },
+  },  
   {
     id: 10,
     name: 'Recibo de caja',
@@ -165,6 +169,17 @@ const menu_routes = [
       /^(\/reportInventory)|(\/reportAccountsReceivable)|(\/reportAccountClient)|(\/reportEquipmentService)|(\/reportMachineHistory)|(\/reportMonthlyBill)|(\/reportShipping)|(\/reportSales)|(\/reportCommissions)|(\/reportCostSellingEquipment)/i,
     ],
     sub_menu: submenu_sections,
+  },
+  {
+    id: 11,
+    name: 'Facturacion Old',
+    key: 'FactOld',
+    icon: 'inventory',
+    route: '/FactOld',
+    profilePermissions: [9],
+    routeGroup: [
+      /^(\/FactOld)|(\/FactOld\/)|(\/FactViewOld)|(\/FactViewOld\/)|(\/FactViewOld\/[a-zA-z0-9]*)/i,
+    ],
   },
 ]
 
@@ -333,6 +348,16 @@ const menu_sub_routes = [
     id: 0,
     route: '/welcome',
     component: welcomePage,
+  },
+  {
+    id: 11,
+    route: '/FactOld',
+    component: BillingOld,
+  },
+  {
+    id: 11,
+    route: '/FactViewOld',
+    component: BillingViewOld,
   },
 ]
 export { menu_routes, menu_sub_routes }
