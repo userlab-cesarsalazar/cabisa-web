@@ -184,6 +184,7 @@ function Billing(props) {
     setLoading(true)
     let filterParams = {
       related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro nota de servicio
+      document_number : { $like: `%25${filters.document_number}%25` }, // Nro de Serie
       id: { $like: `%25${filters.id}%25` }, // Nro de Serie      
       nit: { $like: `%25${filters.nit}%25` },
       created_at: filters.created_at
@@ -191,10 +192,6 @@ function Billing(props) {
         : '',
       payment_method: filters.paymentMethods,
       total_amount: { $like: `%25${filters.totalInvoice}%25` },
-    }
-
-    if(filters.document_number !== ""){
-      filterParams.document_number = { $like: `%25${filters.document_number}%25` } // Nro de Serie
     }
 
     billingSrc
@@ -317,7 +314,7 @@ function Billing(props) {
     <>
       <HeaderPage
         titleButton={'Factura Nueva'}
-        title={'Facturación'}
+        title={'Facturación Electronica'}
         showDrawer={newBill}
         permissions={permissions.FACTURACION}
       />

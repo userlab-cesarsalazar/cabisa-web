@@ -40,7 +40,7 @@ const getColumnsConfig = () => {
   }
 }
 
-function BillingProductsList({
+function BillingProductsListTwo({
   dataSource,
   handleAddDetail,
   handleChangeDetail,
@@ -144,7 +144,7 @@ function BillingProductsList({
           >
             {config?.serviceType?.visible && (
               <Col sm={config?.serviceType?.col}>
-                <Select                  
+                <Select
                   className={'single-select'}
                   placeholder={'Elegir tipo servicio'}
                   size={'large'}
@@ -210,16 +210,13 @@ function BillingProductsList({
                   >
                     {productsOptionsList.length > 0 ? (
                       productsOptionsList?.map(value => (
-                        <Option
-                          key={value.id}
-                          value={value.id}                          
-                        >
-                         {value.code} - {value.description}
+                        <Option key={value.id} value={value.id}>
+                          {value.code} - {value.description}
                         </Option>
                       ))
                     ) : (
                       <Option value={row.child_id}>
-                        {row.child_description}
+                        {row.code} - {row.child_description}                        
                       </Option>
                     )}
                   </Select>
@@ -231,21 +228,20 @@ function BillingProductsList({
                   <CurrencyInput
                     className='product-list-input'
                     placeholder={config?.price?.label}
-                    value={row.parent_display_unit_price}
+                    value={row.child_display_unit_price}
                     disabled={
-                      row.service_type !== documentsServiceType.SERVICE ||
-                      !row.id ||
+                      !row.child_id ||
                       (isEditing && !isAdmin) ||
                       isInvoiceFromSale
                     }
                     onChange={value =>
-                      handleChangeDetail('parent_unit_price', value, index)
+                      handleChangeDetail('child_unit_price', value, index)
                     }
                     onFocus={() =>
-                      handleChangeDetail('parent_unit_price', '', index)
+                      handleChangeDetail('child_unit_price', '', index)
                     }
                     onBlur={() =>
-                      handleBlurDetail('parent_unit_price', '', index)
+                      handleBlurDetail('child_unit_price', '', index)
                     }
                   />
                 </Col>
@@ -256,7 +252,7 @@ function BillingProductsList({
                 !row.service_type) && (
                 <Col sm={config?.serviceProduct?.col}>
                   <Select
-                    dropdownClassName={'dropdown-custom-products'}
+                    dropdownClassName={'dropdown-custom'}
                     className={'single-select'}
                     placeholder={config?.serviceProduct?.label}
                     size={'large'}
@@ -280,16 +276,13 @@ function BillingProductsList({
                   >
                     {childProductsOptionsList?.length > 0 ? (
                       childProductsOptionsList.map(value => (
-                        <Option
-                          key={value.id}
-                          value={value.id}                          
-                        >
+                        <Option key={value.id} value={value.id}>
                           {value.code} - {value.description}
                         </Option>
                       ))
                     ) : (
                       <Option value={row.child_id}>
-                        {row.child_description}
+                        {row.code} - {row.child_description}
                       </Option>
                     )}
                   </Select>
@@ -399,4 +392,4 @@ function BillingProductsList({
   )
 }
 
-export default BillingProductsList
+export default BillingProductsListTwo

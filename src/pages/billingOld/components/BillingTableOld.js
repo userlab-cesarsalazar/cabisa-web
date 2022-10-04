@@ -7,8 +7,16 @@ import {
   Row,
   Select,
   Table,
+  Divider,
+  Tooltip,
+  Button,
+  Popconfirm,
   Tag as AntTag,
 } from 'antd'
+import {
+  DeleteOutlined,
+  FileSearchOutlined, PrinterOutlined  
+} from '@ant-design/icons'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../components/actionOptions'
 import Tag from '../../../components/Tag'
@@ -19,17 +27,22 @@ const { Search } = Input
 const { Option } = Select
 
 function BillingTable(props) {
+  
   const handlerEditRow = data => props.showDetail(data)
 
-  const handlerDeleteRow = data => props.handlerDeleteRow(data)
+  const handlerDeleteRowOld = data => props.handlerDeleteRowOld(data)
 
-  const columns = [
+  const handlerShowDocument = data => props.handlerShowDocument(data)
+
+  const handlerPrintDocument = data => props.handlerPrintDocument(data)
+
+  const columns = [          
     {
-      title: 'Serie',
+      title: '# Documento',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
       render: text => <span>{text}</span>,
-    },
+    },    
     {
       title: 'Cliente',
       dataIndex: 'client', // Field that is goint to be rendered
@@ -66,8 +79,9 @@ function BillingTable(props) {
       title: 'Status',
       dataIndex: 'status', // Field that is goint to be rendered
       key: 'status',
+      width: 100,
       render: text => <Tag type='documentStatus' value={text} />,
-    },
+    },   
     {
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
@@ -78,10 +92,11 @@ function BillingTable(props) {
           data={data}
           permissionId={permissions.FACTURACION}
           showDeleteBtn={data.status !== documentsStatus.CANCELLED}
-          handlerDeleteRow={handlerDeleteRow}
+          handlerDeleteRow={handlerDeleteRowOld}
           handlerEditRow={handlerEditRow}
           deleteAction='nullify'
-          editAction={props.isAdmin ? 'edit' : 'show'}
+          //editAction={props.isAdmin ? 'edit' : 'show'}
+          editAction={'show'}
         />
       ),
     },
@@ -89,11 +104,11 @@ function BillingTable(props) {
 
   return (
     <>
-      <Row gutter={16}>
+      <Row gutter={16}>      
         <Col xs={4} sm={4} md={4} lg={4}>
           <Search
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='No. serie'
+            placeholder='# Documento'
             className={'cabisa-table-search customSearch'}
             size={'large'}
             onSearch={props.handleFiltersChange('id')}
@@ -155,7 +170,7 @@ function BillingTable(props) {
             <Row>
               <Col xs={24} sm={24} md={24} lg={24}>
                 <Table
-                  scroll={{ y: 320 }}
+                  scroll={{ y: 820 }}
                   className={'CustomTableClass'}
                   dataSource={props.dataSource}
                   columns={columns}

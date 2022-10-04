@@ -6,8 +6,7 @@ import { showErrors } from '../../../utils'
 
 function DetailBilling(props) {
   const handleSaveData = saveData => {
-    props.setLoading(true)
-
+    props.setLoading(true)        
     billingSrc
       .updateInvoice(saveData)
       .then(_ => {

@@ -11,7 +11,7 @@ import {
   Statistic,
   Typography,
 } from 'antd'
-import BillingProductsList from './billingProductsListOld'
+import BillingProductsListTwo from './BillingProductsListTwoOld'
 import Tag from '../../../components/Tag'
 import { useEditableList } from '../../../hooks'
 import {
@@ -243,6 +243,7 @@ export const handleUpdateProductsData = ({
   }
 
   const subtotal = getProductSubtotal(newRow)
+  
   return { ...newRow, subtotal }
 }
 
@@ -552,7 +553,7 @@ export const billingLogicFactory = ({
         stock: { $gt: 0 },
         open_parenthesis: 'description',
         close_parenthesis: 'nit',
-        description: { $like: `%25${product_description}%25` },        
+        description: { $like: `%25${product_description}%25` },
         nit: { $or: true, $like: `%25${product_description}%25` },        
         product_type: productsTypes.SERVICE,
       }
@@ -681,7 +682,7 @@ export const billingLogicFactory = ({
   )
 } */
 
-function BillingFields({
+function BillingFieldsTwo({
   setLoading,
   editData,
   isAdmin,
@@ -1160,7 +1161,7 @@ function BillingFields({
 
         <Divider className={'divider-custom-margins-users'} />
 
-        <BillingProductsList
+        <BillingProductsListTwo
           dataSource={productsData}
           handleAddDetail={handleAddDetail}
           handleChangeDetail={handleChangeDetail}
@@ -1242,4 +1243,4 @@ function BillingFields({
     </>
   )
 }
-export default BillingFields
+export default BillingFieldsTwo

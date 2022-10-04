@@ -18,17 +18,17 @@ import {
   FileSearchOutlined, PrinterOutlined  
 } from '@ant-design/icons'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import ActionOptions from '../../../components/actionOptions'
+//import ActionOptions from '../../../components/actionOptions'
 import Tag from '../../../components/Tag'
 import moment from 'moment'
-import { permissions, documentsStatus } from '../../../commons/types'
+//import { permissions, documentsStatus } from '../../../commons/types'
 
 const { Search } = Input
 const { Option } = Select
 
 function BillingTable(props) {
   
-  const handlerEditRow = data => props.showDetail(data)
+  //const handlerEditRow = data => props.showDetail(data)
 
   const handlerDeleteRow = data => props.handlerDeleteRow(data)
 
@@ -130,24 +130,7 @@ function BillingTable(props) {
             </Tooltip>
         </>
       ),
-    },
-    {
-      title: '',
-      dataIndex: 'id', // Field that is goint to be rendered
-      key: 'id',
-      render: (_, data) => (
-        <ActionOptions
-          editPermissions={false}
-          data={data}
-          permissionId={permissions.FACTURACION}
-          showDeleteBtn={data.status !== documentsStatus.CANCELLED}
-          handlerDeleteRow={handlerDeleteRow}
-          handlerEditRow={handlerEditRow}
-          deleteAction='nullify'
-          editAction={props.isAdmin ? 'edit' : 'show'}
-        />
-      ),
-    },
+    }    
   ]
 
   return (

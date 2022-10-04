@@ -62,31 +62,17 @@ function BillingView() {
     
    setLoading(true)  
    //create infile DOC
-  // let infileDoc = await billingSrc.createInvoiceFel(billData)
-  // let infileMessage = infileDoc.message  
-  //   if(infileMessage === 'SUCCESSFUL'){      
-  //     //create info in DB
-  //     const _serie = infileDoc.data.serie
-  //     const _document_number = infileDoc.data.numero
-  //     const _uuid = infileDoc.data.uuid
-  //     saveData.serie = _serie
-  //     saveData.document_number = _document_number
-  //     saveData.uuid = _uuid
-  //   billingSrc
-  //     .createInvoice(saveData)
-  //     .then(_ => {
-  //       message.success('Factura creada exitosamente')
-  //       history.push('/billing')
-  //     })
-  //     .catch(error => showErrors(error))
-  //     .finally(() => setLoading(false))
-
-  //   }else{      
-  //     setLoading(false)
-  //     message.error(infileMessage)
-  //   }
-
-  billingSrc
+  let infileDoc = await billingSrc.createInvoiceFel(billData)
+  let infileMessage = infileDoc.message  
+    if(infileMessage === 'SUCCESSFUL'){      
+      //create info in DB
+      const _serie = infileDoc.data.serie
+      const _document_number = infileDoc.data.numero
+      const _uuid = infileDoc.data.uuid
+      saveData.serie = _serie
+      saveData.document_number = _document_number
+      saveData.uuid = _uuid
+    billingSrc
       .createInvoice(saveData)
       .then(_ => {
         message.success('Factura creada exitosamente')
@@ -94,7 +80,11 @@ function BillingView() {
       })
       .catch(error => showErrors(error))
       .finally(() => setLoading(false))
-   
+
+    }else{      
+      setLoading(false)
+      message.error(infileMessage)
+    }   
   }
 
   const createBillStructure = dataBill => {
