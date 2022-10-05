@@ -115,7 +115,7 @@ function BillingTable(props) {
         <Col xs={4} sm={4} md={4} lg={4}>          
           <Search            
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Descripcion'
+            placeholder='Descripcion Fact'
             className={'cabisa-table-search customSearch'}
             size={'large'}
             onSearch={props.handleFiltersChange('description')}
