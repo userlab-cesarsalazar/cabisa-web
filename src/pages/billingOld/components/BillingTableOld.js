@@ -113,7 +113,7 @@ function BillingTable(props) {
           />
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>          
-          <Search            
+          <Search                     
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
             placeholder='Descripcion'
             className={'cabisa-table-search customSearch'}
