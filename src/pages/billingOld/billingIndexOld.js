@@ -126,6 +126,7 @@ function Billing(props) {
       id: '',
       document_number: '',
       name:'',
+      description:'',
       related_internal_document_id: '',
       nit: '',
       created_at: '',
@@ -184,6 +185,7 @@ function Billing(props) {
       related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro nota de servicio
       id: { $like: `%25${filters.id}%25` }, // Nro de Serie   
       name: { $like: `%25${filters.name}%25` }, // nombre cliente   
+      description: { $like: `%25${filters.description}%25` }, // description
       nit: { $like: `%25${filters.nit}%25` },
       created_at: filters.created_at
         ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }

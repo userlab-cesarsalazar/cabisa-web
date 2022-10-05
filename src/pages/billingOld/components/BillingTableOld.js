@@ -112,6 +112,15 @@ function BillingTable(props) {
             onSearch={props.handleFiltersChange('name')}
           />
         </Col>
+        <Col xs={4} sm={4} md={4} lg={4}>          
+          <Search            
+            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
+            placeholder='Descripcion'
+            className={'cabisa-table-search customSearch'}
+            size={'large'}
+            onSearch={props.handleFiltersChange('description')}
+          />
+        </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
           <DatePicker
             style={{ width: '100%', height: '40px', borderRadius: '8px' }}
