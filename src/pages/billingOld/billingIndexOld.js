@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react'
 import moment from 'moment'
 import HeaderPage from '../../components/HeaderPage'
-import BillingTable from './components/BillingTable'
-import DetailBilling from './components/detailBilling'
-import billingSrc from './billingSrc'
+import BillingTable from './components/BillingTableOld'
+import DetailBilling from './components/detailBillingOld'
+import billingSrc from './billingSrcOld'
 import { message,Modal,Row,Col,Input,Spin } from 'antd'
 import { getPercent, showErrors, roundNumber, validateRole } from '../../utils'
 import {
@@ -13,7 +13,7 @@ import {
   roles,
   documentsPaymentMethods,
 } from '../../commons/types'
-import { Cache } from 'aws-amplify'
+
 
 const { TextArea } = Input;
 
@@ -153,10 +153,7 @@ function Billing(props) {
   const [showModalCancel,setShowModalCancel] = useState(false)
   const [invoiceBase64,setInvoiceBase64] = useState(null)
   const [cancelDescription,setCancelDescription] = useState('')
-  const [dataCancelInvoice,setDataCancelInvoice] = useState(null)
-  const [rowData,setRowData] = useState([])
   
-
   useEffect(() => {
     setPaymentMethodsOptionsList([
       documentsPaymentMethods.CARD,
@@ -183,21 +180,22 @@ function Billing(props) {
 
   const loadData = useCallback(() => {
     setLoading(true)
+    let filterParams = {
+      related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro nota de servicio
+      id: { $like: `%25${filters.id}%25` }, // Nro de Serie   
+      name: { $like: `%25${filters.name}%25` }, // nombre cliente   
+      nit: { $like: `%25${filters.nit}%25` },
+      created_at: filters.created_at
+        ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
+        : '',
+      payment_method: filters.paymentMethods,
+      total_amount: { $like: `%25${filters.totalInvoice}%25` },
+    }
 
+  
     billingSrc
-      .getInvoices({
-        related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro nota de servicio
-        id: { $like: `%25${filters.id}%25` }, // Nro de Serie
-        name: { $like: `%25${filters.name}%25` }, // nombre cliente
-        document_number: { $like: `%25${filters.document_number}%25` }, // Nro de Serie
-        nit: { $like: `%25${filters.nit}%25` },
-        created_at: filters.created_at
-          ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
-          : '',
-        payment_method: filters.paymentMethods,
-        total_amount: { $like: `%25${filters.totalInvoice}%25` },
-      })
-      .then(data => setDataSource(data))
+      .getInvoices(filterParams)
+      .then(data =>setDataSource(data.filter(item => item.document_number === null)))
       .catch(_ => message.error('Error al cargar facturas'))
       .finally(() => setLoading(false))
   }, [filters])
@@ -206,27 +204,11 @@ function Billing(props) {
     loadData()
   }, [loadData])
 
-  const handlerDeleteRow = async row => {
-    
-    try {
-      if(showModalCancel){
-        if(cancelDescription.length === 0){
-          return message.warning('La anulacion del documento debe llevar una descripcion.')
-        }
-        const UserName = Cache.getItem('currentSession')         
-        setLoading(true)
-        setShowModalCancel(false)
-        
-        let _dataCancel = dataCancelInvoice
-        _dataCancel.description = cancelDescription
-        _dataCancel.created_by = UserName ? UserName.userName : 'system'
-  
-        let infileDoc = await billingSrc.cancelInvoiceFel(_dataCancel)
-        let infileMessage = infileDoc.message  
-  
-        if(infileMessage === 'SUCCESSFUL'){        
-          billingSrc
-            .cancelInvoice({ document_id: rowData.id })
+  const handlerDeleteRowOld = async row => {    
+    try {     
+      setLoading(true)      
+      billingSrc
+            .cancelInvoice({ document_id: row.id })
             .then(_ => {
               if (JSON.stringify(filters) === JSON.stringify(initFilters.current)) {
                 loadData()
@@ -238,27 +220,6 @@ function Billing(props) {
             })
             .catch(error => showErrors(error))
             .finally(() => setLoading(false))
-        }else{
-          setLoading(false)
-          message.error(infileMessage)
-        }
-        
-      }else{
-        setLoading(true)
-        const {stakeholder_nit,uuid } = row    
-        let infileDoc = await billingSrc.getInvoiceFel(row.document_number)
-        
-        let data = {
-          nit:stakeholder_nit,
-          uuid,
-          certificateDate: infileDoc.xml_certificado.fecha_certificacion
-        }
-        setCancelDescription('')
-        setRowData(row)
-        setDataCancelInvoice(data)      
-        setShowModalCancel(true)
-        setLoading(false)
-      }
     } catch (error) {
       console.log(error)
       message.error('Ocurrio un problema al procesar su peticion, contacte al administrador')
@@ -295,7 +256,7 @@ function Billing(props) {
   const setSearchFilters = field => value =>
     setFilters(prevState => ({ ...prevState, [field]: value }))
 
-  const newBill = () => props.history.push('/billingView')
+  const newBill = () => props.history.push('/FactViewOld')
 
   const showDetail = data => {
     const detailInvoiceData = getDetailData(data)
@@ -314,8 +275,8 @@ function Billing(props) {
   return (
     <>
       <HeaderPage
-        titleButton={'Factura Nueva'}
-        title={'Facturación'}
+        titleButton={'Factura Manual Nueva'}
+        title={'Facturación Sistema'}
         showDrawer={newBill}
         permissions={permissions.FACTURACION}
       />
@@ -324,7 +285,7 @@ function Billing(props) {
         showDetail={showDetail}
         handleFiltersChange={setSearchFilters}
         paymentMethodsOptionsList={paymentMethodsOptionsList}
-        handlerDeleteRow={handlerDeleteRow}
+        handlerDeleteRowOld={handlerDeleteRowOld}
         handlerShowDocument={handlerShowDocument}
         handlerPrintDocument={handlerPrintDocument}
         loading={loading}
@@ -378,14 +339,12 @@ function Billing(props) {
           visible={showModalCancel}          
           onOk={()=>{           
             setShowModalCancel(false)
-            handlerDeleteRow()
+            handlerDeleteRowOld()
            }
           }
           onCancel={()=>{
             setShowModalCancel(false)
-            setCancelDescription('')
-            setRowData([])
-            setDataCancelInvoice(null)
+            setCancelDescription('')               
           }
         }
         >          

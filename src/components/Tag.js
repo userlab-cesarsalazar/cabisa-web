@@ -19,7 +19,7 @@ const config = {
   },
   documentsPaymentMethods: {
     CARD: { color: 'geekblue', text: 'Crédito' },
-    CASH: { color: 'green', text: 'Pago de contado' },
+    CASH: { color: 'green', text: 'Pago en efectivo' },
     CHECK: { color: '#f50', text: 'Cheque' },
     DEPOSIT: { color: 'grey', text: 'Deposito' },
     TRANSFER: { color: 'cyan', text: 'Transferencia' },
