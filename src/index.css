@@ -682,7 +682,7 @@ input:-webkit-autofill:focus {
 }
 
 .cabisa-table-search {
-  width: 75%;
+  width: 100% !important;
   height: 40px;
 }
 
