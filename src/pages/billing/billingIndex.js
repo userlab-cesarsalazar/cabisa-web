@@ -125,6 +125,7 @@ function Billing(props) {
     initFilters.current = {
       id: '',
       document_number: '',
+      name:'',
       related_internal_document_id: '',
       nit: '',
       created_at: '',
@@ -182,20 +183,20 @@ function Billing(props) {
 
   const loadData = useCallback(() => {
     setLoading(true)
-    let filterParams = {
-      related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro nota de servicio
-      document_number : { $like: `%25${filters.document_number}%25` }, // Nro de Serie
-      id: { $like: `%25${filters.id}%25` }, // Nro de Serie      
-      nit: { $like: `%25${filters.nit}%25` },
-      created_at: filters.created_at
-        ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
-        : '',
-      payment_method: filters.paymentMethods,
-      total_amount: { $like: `%25${filters.totalInvoice}%25` },
-    }
 
     billingSrc
-      .getInvoices(filterParams)
+      .getInvoices({
+        related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro nota de servicio
+        id: { $like: `%25${filters.id}%25` }, // Nro de Serie
+        name: { $like: `%25${filters.name}%25` }, // nombre cliente
+        document_number: { $like: `%25${filters.document_number}%25` }, // Nro de Serie
+        nit: { $like: `%25${filters.nit}%25` },
+        created_at: filters.created_at
+          ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
+          : '',
+        payment_method: filters.paymentMethods,
+        total_amount: { $like: `%25${filters.totalInvoice}%25` },
+      })
       .then(data => setDataSource(data))
       .catch(_ => message.error('Error al cargar facturas'))
       .finally(() => setLoading(false))
@@ -314,7 +315,7 @@ function Billing(props) {
     <>
       <HeaderPage
         titleButton={'Factura Nueva'}
-        title={'Facturación Electronica'}
+        title={'Facturación'}
         showDrawer={newBill}
         permissions={permissions.FACTURACION}
       />

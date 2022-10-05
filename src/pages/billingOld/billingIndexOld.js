@@ -13,7 +13,7 @@ import {
   roles,
   documentsPaymentMethods,
 } from '../../commons/types'
-import { Cache } from 'aws-amplify'
+
 
 const { TextArea } = Input;
 
@@ -125,6 +125,7 @@ function Billing(props) {
     initFilters.current = {
       id: '',
       document_number: '',
+      name:'',
       related_internal_document_id: '',
       nit: '',
       created_at: '',
@@ -152,10 +153,7 @@ function Billing(props) {
   const [showModalCancel,setShowModalCancel] = useState(false)
   const [invoiceBase64,setInvoiceBase64] = useState(null)
   const [cancelDescription,setCancelDescription] = useState('')
-  const [dataCancelInvoice,setDataCancelInvoice] = useState(null)
-  const [rowData,setRowData] = useState([])
   
-
   useEffect(() => {
     setPaymentMethodsOptionsList([
       documentsPaymentMethods.CARD,
@@ -184,7 +182,8 @@ function Billing(props) {
     setLoading(true)
     let filterParams = {
       related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro nota de servicio
-      id: { $like: `%25${filters.id}%25` }, // Nro de Serie      
+      id: { $like: `%25${filters.id}%25` }, // Nro de Serie   
+      name: { $like: `%25${filters.name}%25` }, // nombre cliente   
       nit: { $like: `%25${filters.nit}%25` },
       created_at: filters.created_at
         ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
@@ -205,62 +204,9 @@ function Billing(props) {
     loadData()
   }, [loadData])
 
-  const handlerDeleteRowOld = async row => {
-    console.log("DELTE MANUAL")
-    console.log(row)
-    try {
-      // if(showModalCancel){
-      //   if(cancelDescription.length === 0){
-      //     return message.warning('La anulacion del documento debe llevar una descripcion.')
-      //   }
-      //   const UserName = Cache.getItem('currentSession')         
-      //   setLoading(true)
-      //   setShowModalCancel(false)
-        
-      //   let _dataCancel = dataCancelInvoice
-      //   _dataCancel.description = cancelDescription
-      //   _dataCancel.created_by = UserName ? UserName.userName : 'system'
-  
-      //   let infileDoc = await billingSrc.cancelInvoiceFel(_dataCancel)
-      //   let infileMessage = 'SUCCESSFUL'//infileDoc.message  
-      //   console.log("ANULADO MANUAL")
-      //   if(infileMessage === 'SUCCESSFUL'){        
-      //     billingSrc
-      //       .cancelInvoice({ document_id: rowData.id })
-      //       .then(_ => {
-      //         if (JSON.stringify(filters) === JSON.stringify(initFilters.current)) {
-      //           loadData()
-      //         } else {
-      //           setFilters(initFilters.current)
-      //         }
-  
-      //         message.success('Factura anulada exitosamente')
-      //       })
-      //       .catch(error => showErrors(error))
-      //       .finally(() => setLoading(false))
-      //   }else{
-      //     setLoading(false)
-      //     message.error(infileMessage)
-      //   }
-        
-      // }else{
-      //   setLoading(true)
-      //   const {stakeholder_nit,uuid } = row    
-      //   let infileDoc = await billingSrc.getInvoiceFel(row.document_number)
-        
-      //   let data = {
-      //     nit:stakeholder_nit,
-      //     uuid,
-      //     certificateDate: infileDoc.xml_certificado.fecha_certificacion
-      //   }
-      //   setCancelDescription('')
-      //   setRowData(row)
-      //   setDataCancelInvoice(data)      
-      //   setShowModalCancel(true)
-      //   setLoading(false)
-      // }
-      setLoading(true)
-      console.log("Document ID >> ",rowData)
+  const handlerDeleteRowOld = async row => {    
+    try {     
+      setLoading(true)      
       billingSrc
             .cancelInvoice({ document_id: row.id })
             .then(_ => {
@@ -398,9 +344,7 @@ function Billing(props) {
           }
           onCancel={()=>{
             setShowModalCancel(false)
-            setCancelDescription('')
-            setRowData([])
-            setDataCancelInvoice(null)
+            setCancelDescription('')               
           }
         }
         >          

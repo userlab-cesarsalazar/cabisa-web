@@ -186,7 +186,10 @@ function PaymentsFields({ detailData, ...props }) {
           >
             <span>No. Doc - {invoiceData?.document_number}</span>
           </Button>
-          ):<span>No disponible</span>}
+          ):<Button className='title-cabisa new-button'
+          style={{ marginLeft: '1em' }}>
+          Fact Sistema
+        </Button>}
           
 
         </Col>
@@ -196,17 +199,7 @@ function PaymentsFields({ detailData, ...props }) {
 
       <Collapse>
         <Panel header='Factura' key='1'>
-          <Row gutter={16} className={'section-space-field'}>
-            <Col xs={8} sm={8} md={8} lg={8}>
-              <div className={'title-space-field'}>Serie</div>
-              <Input
-                placeholder={'Serie'}
-                size={'large'}
-                style={{ height: '40px' }}
-                value={invoiceData?.id}
-                disabled
-              />
-            </Col>
+          <Row gutter={16} className={'section-space-field'}>            
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Estado de Credito</div>
               <Select

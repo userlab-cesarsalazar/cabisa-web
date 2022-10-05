@@ -6,17 +6,10 @@ import {
   Input,
   Row,
   Select,
-  Table,
-  Divider,
-  Tooltip,
-  Button,
-  Popconfirm,
+  Table,  
   Tag as AntTag,
 } from 'antd'
-import {
-  DeleteOutlined,
-  FileSearchOutlined, PrinterOutlined  
-} from '@ant-design/icons'
+
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../components/actionOptions'
 import Tag from '../../../components/Tag'
@@ -32,15 +25,11 @@ function BillingTable(props) {
 
   const handlerDeleteRowOld = data => props.handlerDeleteRowOld(data)
 
-  const handlerShowDocument = data => props.handlerShowDocument(data)
-
-  const handlerPrintDocument = data => props.handlerPrintDocument(data)
-
   const columns = [          
     {
       title: '# Documento',
-      dataIndex: 'id', // Field that is goint to be rendered
-      key: 'id',
+      dataIndex: 'related_internal_document_id', // Field that is goint to be rendered
+      key: 'related_internal_document_id',
       render: text => <span>{text}</span>,
     },    
     {
@@ -111,17 +100,16 @@ function BillingTable(props) {
             placeholder='# Documento'
             className={'cabisa-table-search customSearch'}
             size={'large'}
-            onSearch={props.handleFiltersChange('id')}
+            onSearch={props.handleFiltersChange('related_internal_document_id')}
           />
         </Col>
-        <Col xs={4} sm={4} md={4} lg={4}>
-          <Search
-            type='tel'
+        <Col xs={4} sm={4} md={4} lg={4}>          
+          <Search            
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Nit'
+            placeholder='Nombre Cliente'
             className={'cabisa-table-search customSearch'}
             size={'large'}
-            onSearch={props.handleFiltersChange('nit')}
+            onSearch={props.handleFiltersChange('name')}
           />
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>

@@ -32,11 +32,11 @@ const getColumnsConfig = () => {
       visible: true,
       label: 'Precio Producto (Q)',
     }, */
-    serviceProduct: { col: 6, visible: true, label: 'Servicio/Producto' },
+    serviceProduct: { col: 10, visible: true, label: 'Servicio/Producto' },
     price: { col: 2, visible: true, label: 'Precio' },
     quantity: { col: 2, visible: true, label: 'Cantidad' },
     subtotal: { col: 3, visible: true, label: 'Subtotal (Q)' },
-    comments: { col: 5, visible: true, label: 'Comentarios' },
+    comments: { col: 5, visible: false, label: 'Comentarios' },
   }
 }
 

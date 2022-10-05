@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, Drawer, message } from 'antd'
-import BillingFields from './billingFieldsOld'
+import BillingFields from './billingFieldsTwoOld'
 import billingSrc from '../billingSrcOld'
 import { showErrors } from '../../../utils'
 

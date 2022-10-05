@@ -15,7 +15,8 @@ const createInvoice = data => api.post(urlInvoice, data)
 const updateInvoice = data => api.put(urlInvoice, data)
 const cancelInvoice = data => api.put(`${urlInvoice}/cancel`, data)
 //fel
-const createInvoiceFel = data => api.post(`${urlInvoiceFel}/create`, data)
+//const createInvoiceFel = data => api.post(`${urlInvoiceFel}/create`, data)
+const createInvoiceFel = data => api.post(`${urlInvoiceFel}/createFactCam`, data)
 const getInvoiceFel = id => api.get(`${urlInvoiceFel}/getDocument?id=${id}`)
 const cancelInvoiceFel = data => api.post(`${urlInvoiceFel}/cancelDocument`, data)
 

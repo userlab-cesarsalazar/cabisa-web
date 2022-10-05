@@ -887,7 +887,7 @@ function BillingFieldsTwo({
                 style={{ textAlign: 'right' }}
               >
                 <Button className='title-cabisa new-button'>
-                  Serie No. {data.id}
+                  Serie No. {data.related_internal_document_id}
                 </Button>
               </Col>
             </Row>

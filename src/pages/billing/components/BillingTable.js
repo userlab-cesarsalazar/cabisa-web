@@ -154,14 +154,13 @@ function BillingTable(props) {
             onSearch={props.handleFiltersChange('document_number')}
           />
         </Col>
-        <Col xs={4} sm={4} md={4} lg={4}>
-          <Search
-            type='tel'
+        <Col xs={4} sm={4} md={4} lg={4}>          
+          <Search            
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Nit'
+            placeholder='Nombre Cliente'
             className={'cabisa-table-search customSearch'}
             size={'large'}
-            onSearch={props.handleFiltersChange('nit')}
+            onSearch={props.handleFiltersChange('name')}
           />
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>

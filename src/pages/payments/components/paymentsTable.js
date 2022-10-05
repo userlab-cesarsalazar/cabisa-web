@@ -32,7 +32,7 @@ function PaymentsTable(props) {
       title: '# Documento',
       dataIndex: 'document_number', // Field that is goint to be rendered
       key: 'document_number',
-      render: text => <span>{text}</span>,
+      render: text => text ? <span>{text}</span> : <span>{'Factura del sistema'}</span>,
     },
     {
       title: 'Fecha',
