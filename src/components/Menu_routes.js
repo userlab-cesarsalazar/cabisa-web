@@ -150,6 +150,17 @@ const menu_routes = [
     ],
   },  
   {
+    id: 11,
+    name: 'Fact. Sistema',
+    key: 'FactOld',
+    icon: 'inventory',
+    route: '/FactOld',
+    profilePermissions: [9],
+    routeGroup: [
+      /^(\/FactOld)|(\/FactOld\/)|(\/FactViewOld)|(\/FactViewOld\/)|(\/FactViewOld\/[a-zA-z0-9]*)/i,
+    ],
+  },
+  {
     id: 10,
     name: 'Recibo de caja',
     key: 'payments',
@@ -169,18 +180,7 @@ const menu_routes = [
       /^(\/reportInventory)|(\/reportAccountsReceivable)|(\/reportAccountClient)|(\/reportEquipmentService)|(\/reportMachineHistory)|(\/reportMonthlyBill)|(\/reportShipping)|(\/reportSales)|(\/reportCommissions)|(\/reportCostSellingEquipment)/i,
     ],
     sub_menu: submenu_sections,
-  },
-  {
-    id: 11,
-    name: 'Facturacion Old',
-    key: 'FactOld',
-    icon: 'inventory',
-    route: '/FactOld',
-    profilePermissions: [9],
-    routeGroup: [
-      /^(\/FactOld)|(\/FactOld\/)|(\/FactViewOld)|(\/FactViewOld\/)|(\/FactViewOld\/[a-zA-z0-9]*)/i,
-    ],
-  },
+  }  
 ]
 
 const menu_sub_routes = [
