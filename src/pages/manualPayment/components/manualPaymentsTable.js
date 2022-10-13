@@ -13,7 +13,7 @@ import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../components/actionOptions'
 import Tag from '../../../components/Tag'
 import moment from 'moment'
-import { permissions, documentsStatus } from '../../../commons/types'
+import { permissions } from '../../../commons/types'
 
 const { Search } = Input
 const { Option } = Select

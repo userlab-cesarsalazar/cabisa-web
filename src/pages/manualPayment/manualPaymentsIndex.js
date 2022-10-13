@@ -5,7 +5,7 @@ import PaymentsTable from './components/manualPaymentsTable'
 import PaymentsDetail from './components/manualPaymentsDetail'
 import PaymentsSrc from './manualPaymentsSrc'
 import PaymentsCreate from './components/manualPaymentsCreate'
-import { message,Modal } from 'antd'
+import { message } from 'antd'
 import { permissions } from '../../commons/types'
 import { getDetailData } from '../billing/billingIndex'
 

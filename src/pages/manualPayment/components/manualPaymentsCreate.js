@@ -1,29 +1,22 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import debounce from 'lodash/debounce'
-import moment from 'moment'
 import PaymentsSrc from '../manualPaymentsSrc'
 import billingSrc from '../../billing/billingSrc'
-import { Button,
-    Col,
-    Divider,
+import {Col,    
     Input,
     message,
     Row,
     Select,
-    Statistic,
-    Typography,Modal,Spin } from 'antd'
+    Modal,Spin } from 'antd'
     import Tag from '../../../components/Tag'
-import { ConsoleLogger } from '@aws-amplify/core'
-    const { Title } = Typography
+
+    
 const { Option } = Select
-const { TextArea } = Input
+
 
 function PaymentsCreate(props) {
 
   const [loading, setLoading] = useState(false)
-  const [visible, setVisible] = useState(false)  
-  const [showModal,setShowModal] = useState(false)
-
   const [stakeholdersOptionsList, setStakeholdersOptionsList] = useState([])
   const [projectsOptionsList, setProjectsOptionsList] = useState([])
   const [data, setData] = useState({})

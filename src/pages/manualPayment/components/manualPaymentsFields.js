@@ -8,7 +8,6 @@ import {
   Statistic,
   Typography,
   Collapse,
-  Button,
 } from 'antd'
 
 import PaymentsList from './manualPaymentsList'
@@ -21,7 +20,6 @@ import {
   numberFormat,
 } from '../../../utils'
 import FooterButtons from '../../../components/FooterButtons'
-import { editableListInitRow } from '../../billing/components/billingFields'
 import { documentsStatus } from '../../../commons/types'
 
 const { Title } = Typography
@@ -100,7 +98,7 @@ function PaymentsFields({ detailData, ...props }) {
   const [totalPayments, setTotalPayments] = useState(0)
   const [totalUnpaidCredit, setTotalUnpaidCredit] = useState([])
   const [invoiceData, setInvoiceData] = useState({})
-  const [productsData, setProductsData] = useState([])
+  
 
   useEffect(() => {
     if (!detailData) return
@@ -113,9 +111,7 @@ function PaymentsFields({ detailData, ...props }) {
       ...prevState,
     }))
 
-    setProductsData(prevState =>
-      prevState?.length > 1 ? prevState : detailData.products
-    )
+    
   }, [detailData])
 
   useEffect(() => {
@@ -129,8 +125,7 @@ function PaymentsFields({ detailData, ...props }) {
 
   useEffect(function cleanUp() {
     return () => {
-      setInvoiceData({})
-      setProductsData([])
+      setInvoiceData({})      
       setPaymentsData([])
       setTotalPayments(0)
     }
