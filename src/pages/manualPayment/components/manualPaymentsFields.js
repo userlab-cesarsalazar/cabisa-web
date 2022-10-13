@@ -10,7 +10,7 @@ import {
   Collapse,
   Button,
 } from 'antd'
-import PaymentsProductsList from './manualPaymentsProductsList'
+
 import PaymentsList from './manualPaymentsList'
 import Tag from '../../../components/Tag'
 import { useEditableList } from '../../../hooks'
@@ -26,7 +26,6 @@ import { documentsStatus } from '../../../commons/types'
 
 const { Title } = Typography
 const { Option } = Select
-const { TextArea } = Input
 const { Panel } = Collapse
 
 const { getFormattedValue, getValue } = numberFormat()
@@ -45,18 +44,21 @@ const getPaymentsTotal = (payments, totalUnpaidCredit) =>
   )
 
 const getSaveData = data => {
-  const payments = data.payments?.map(p => ({
+  const payments = data.payments?.map(p => {
+    console.log(p.payment_id," fecha>> ",p.payment_date)
+    return ({
     payment_id: p?.payment_id,
     payment_method: p.payment_method,
     payment_amount: p.payment_amount ? getValue(p.payment_amount) : null,
-    payment_date: p.payment_date
-      ? new Date(p.payment_date).toISOString()
-      : null,
+    payment_date: p.payment_date ? new Date(p.payment_date).toISOString(): null,    
     related_external_document: p.related_external_document,
     description: p.description,
-  }))
+  })}
+  )
 
-  return { document_id: data?.id, payments }
+
+  console.log("GET SAVE DATA >> ",payments)
+  return { document_id: data?.id, payments, total_amount:data?.total_amount }
 }
 
 const validateSaveData = (data, totalUnpaidCredit) => {
@@ -104,7 +106,7 @@ function PaymentsFields({ detailData, ...props }) {
     if (!detailData) return
 
     setPaymentsData(detailData?.payments || [])
-
+      
     setInvoiceData(prevState => ({
       ...detailData,
       stakeholder_phone: formatPhone(detailData.stakeholder_phone),
@@ -135,15 +137,21 @@ function PaymentsFields({ detailData, ...props }) {
   }, [])
 
   useEditableList({
-    state: productsData,
-    setState: setProductsData,
-    initRow: editableListInitRow,
+    state: paymentsData,
+    setState: setPaymentsData,
+    initRow: {
+      payment_date: '',
+      payment_amount: '',
+      payment_method: '',
+      related_external_document: '',
+      description: '',
+    },
   })
 
   const {
-    handleChange: handleChangePayments,
-    handleAdd: handleAddPayments,
-    handleRemove: handleRemovePayments,
+    handleChange: handleChangeManualPayments,
+    handleAdd: handleAddManualPayments,
+    handleRemove: handleRemoveManualPayments,
   } = useEditableList({
     state: paymentsData,
     setState: setPaymentsData,
@@ -158,12 +166,10 @@ function PaymentsFields({ detailData, ...props }) {
   })
 
   const saveData = () => {
-    const saveData = getSaveData({ ...invoiceData, payments: paymentsData })
-
+    console.log("paymentsData >>",paymentsData)
+    const saveData = getSaveData({ ...invoiceData, payments: paymentsData })    
     const { isInvalid, error } = validateSaveData(saveData, totalUnpaidCredit)
-
     if (isInvalid) return showErrors(error)
-
     props.handleSaveData(saveData)
   }
 
@@ -172,33 +178,13 @@ function PaymentsFields({ detailData, ...props }) {
       <Row>
         <Col xs={24} sm={24} md={12} lg={12}>
           <Title>Recibo de caja</Title>
-        </Col>
-        <Col xs={24} sm={24} md={12} lg={12} style={{ textAlign: 'right' }}>
-          {invoiceData?.related_internal_document_id ? (
-            <Button className='title-cabisa new-button'>
-              Recibo No. {invoiceData.related_internal_document_id}
-            </Button>
-          ) : <span>No disponible</span>}
-          {invoiceData?.document_number ? (
-            <Button
-            className='title-cabisa new-button'
-            style={{ marginLeft: '1em' }}
-          >
-            <span>No. Doc - {invoiceData?.document_number}</span>
-          </Button>
-          ):<Button className='title-cabisa new-button'
-          style={{ marginLeft: '1em' }}>
-          Fact Sistema
-        </Button>}
-          
-
-        </Col>
+        </Col>        
       </Row>
 
       <Divider className={'divider-custom-margins-users'} />
 
       <Collapse>
-        <Panel header='Factura' key='1'>
+        <Panel header='Informacion' key='1'>
           <Row gutter={16} className={'section-space-field'}>            
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>Estado de Credito</div>
@@ -284,8 +270,7 @@ function PaymentsFields({ detailData, ...props }) {
               </Select>
             </Col>
           </Row>
-        </Panel>
-        <Panel header='Detalle Factura' key='2'>
+        
           <Row gutter={16} className={'section-space-field'}>
             <Col xs={8} sm={8} md={8} lg={8}>
               <div className={'title-space-field'}>NIT</div>
@@ -364,22 +349,6 @@ function PaymentsFields({ detailData, ...props }) {
 
           <Divider className={'divider-custom-margins-users'} />
 
-          <PaymentsProductsList
-            dataSource={invoiceData?.products}
-            handleAddDetail={() => () => {}}
-            handleChangeDetail={() => () => {}}
-            handleRemoveDetail={() => () => {}}
-            handleBlurDetail={() => () => {}}
-            handleSearchProduct={() => () => {}}
-            handleSearchChildProduct={() => () => {}}
-            productsOptionsList={[]}
-            childProductsOptionsList={[]}
-            serviceTypesOptionsList={[]}
-            isInvoiceFromSale={true}
-          />
-
-          <Divider className={'divider-custom-margins-users'} />
-
           <Row gutter={16} style={{ textAlign: 'right' }} justify='end'>
             <Col span={6} style={{ textAlign: 'right' }}>
               {invoiceData?.total_discount_amount ? (
@@ -392,16 +361,8 @@ function PaymentsFields({ detailData, ...props }) {
                   />
                 </div>
               ) : null}
-            </Col>
-            <Col span={6} style={{ textAlign: 'right' }}>
-              <div className={'title-space-field'}>
-                <Statistic
-                  title='Subtotal :'
-                  value={getFormattedValue(invoiceData?.subtotal_amount)}
-                />
-              </div>
             </Col>            
-            <Col span={6} style={{ textAlign: 'right' }}>
+            <Col span={12} style={{ textAlign: 'right' }}>
               <div className={'title-space-field'}>
                 <Statistic
                   title='Total :'
@@ -412,15 +373,7 @@ function PaymentsFields({ detailData, ...props }) {
           </Row>
 
           <Divider className={'divider-custom-margins-users'} />
-
-          <Row gutter={16} className={'section-space-field'}>
-            <Col xs={24} sm={24} md={24} lg={24}>
-              <div className={'title-space-field'}>
-                <b>Descripcion</b>
-              </div>
-              <TextArea rows={4} value={invoiceData?.description} disabled />
-            </Col>
-          </Row>
+         
         </Panel>
       </Collapse>
 
@@ -432,9 +385,9 @@ function PaymentsFields({ detailData, ...props }) {
             <PaymentsList
               dataSource={paymentsData}
               paymentMethodsOptionsList={props.paymentMethodsOptionsList}
-              handleChangePayments={handleChangePayments}
-              handleAddPayments={handleAddPayments}
-              handleRemovePayments={handleRemovePayments}
+              handleChangeManualPayments={handleChangeManualPayments}
+              handleAddManualPayments={handleAddManualPayments}
+              handleRemoveManualPayments={handleRemoveManualPayments}
               forbidEdition={invoiceData?.status === documentsStatus.CANCELLED}
             />
           </Col>

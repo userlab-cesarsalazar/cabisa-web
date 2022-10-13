@@ -26,13 +26,13 @@ const getColConfig = forbidEdition => ({
   deleteButton: forbidEdition ? 0 : 1,
 })
 
-function PaymentsList({
+function manualPaymentsList({
   dataSource,
   forbidEdition,
   paymentMethodsOptionsList,
-  handleChangePayments,
-  handleAddPayments,
-  handleRemovePayments,
+  handleChangeManualPayments,
+  handleAddManualPayments,
+  handleRemoveManualPayments,
   ...props
 }) {
   const colConfig = getColConfig(forbidEdition)
@@ -68,14 +68,12 @@ function PaymentsList({
         <List.Item>
           <Row gutter={16} className='list-item-padding w-100 list-item-row'>
             <Col sm={colConfig.paymentDate}>
-              <DatePicker
+            <DatePicker
                 style={{ width: '100%', height: '40px', borderRadius: '8px' }}
                 placeholder='Fecha de pago'
                 format='DD-MM-YYYY'
                 value={row.payment_date ? moment(row.payment_date) : ''}
-                onChange={value =>
-                  handleChangePayments('payment_date', value, index)
-                }
+                onChange={value => handleChangeManualPayments('payment_date', value, index)}                
                 disabled={forbidEdition}
               />
             </Col>
@@ -86,7 +84,7 @@ function PaymentsList({
                 style={{ height: '40px' }}
                 value={row.payment_amount}
                 onChange={value =>
-                  handleChangePayments('payment_amount', value, index)
+                  handleChangeManualPayments('payment_amount', value, index)
                 }
                 disabled={forbidEdition}
               />
@@ -99,7 +97,7 @@ function PaymentsList({
                 style={{ width: '100%', height: '40px' }}
                 getPopupContainer={trigger => trigger.parentNode}
                 onChange={value =>
-                  handleChangePayments('payment_method', value, index)
+                  handleChangeManualPayments('payment_method', value, index)
                 }
                 value={row.payment_method}
                 disabled={forbidEdition}
@@ -127,7 +125,7 @@ function PaymentsList({
                 placeholder={'Documento'}
                 value={row.related_external_document}
                 onChange={e =>
-                  handleChangePayments(
+                  handleChangeManualPayments(
                     'related_external_document',
                     e.target.value,
                     index
@@ -142,7 +140,7 @@ function PaymentsList({
                 placeholder={'Descripcion'}
                 value={row.description}
                 onChange={e =>
-                  handleChangePayments('description', e.target.value, index)
+                  handleChangeManualPayments('description', e.target.value, index)
                 }
                 disabled={forbidEdition}
               />
@@ -151,7 +149,7 @@ function PaymentsList({
               {!forbidEdition && (
                 <Popconfirm
                   title={'¿Seguro de eliminar este pago?'}
-                  onConfirm={() => handleRemovePayments(index)}
+                  onConfirm={() => handleRemoveManualPayments(index)}
                 >
                   <span className='delete-btn'>
                     <DeleteOutlined />
@@ -169,7 +167,7 @@ function PaymentsList({
               <Button
                 type='dashed'
                 className={'shop-add-turn'}
-                onClick={handleAddPayments}
+                onClick={handleAddManualPayments}
               >
                 Agregar Pago
               </Button>
@@ -181,4 +179,4 @@ function PaymentsList({
   )
 }
 
-export default PaymentsList
+export default manualPaymentsList

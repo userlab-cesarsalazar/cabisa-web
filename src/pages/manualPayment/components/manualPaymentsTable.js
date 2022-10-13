@@ -20,18 +20,13 @@ const { Option } = Select
 
 function PaymentsTable(props) {
   const handlerEditRow = data => props.handlerEditRow(data)
+  const handlerDeleteRow = data =>{props.handlerDeleteRow(data)}
 
-  const columns = [
+  const columns = [    
     {
-      title: '# Nota serv.',
-      dataIndex: 'related_internal_document_id', // Field that is goint to be rendered
-      key: 'related_internal_document_id',
-      render: text => <span>{text}</span>,
-    },
-    {
-      title: '# Documento',
-      dataIndex: 'document_number', // Field that is goint to be rendered
-      key: 'document_number',
+      title: '# Recibo',
+      dataIndex: 'id', // Field that is goint to be rendered
+      key: 'id',
       render: text => text ? <span>{text}</span> : <span>{'Factura del sistema'}</span>,
     },
     {
@@ -59,17 +54,11 @@ function PaymentsTable(props) {
       dataIndex: 'total_amount', // Field that is goint to be rendered
       key: 'total_amount',
       render: text => (text ? <span>{text.toFixed(2)}</span> : null),
-    },
-    {
-      title: 'Metodo de pago',
-      dataIndex: 'payment_method', // Field that is goint to be rendered
-      key: 'payment_method',
-      render: text => <Tag type='documentsPaymentMethods' value={text} />,
-    },
+    },    
     {
       title: 'Estado de Credito',
-      dataIndex: 'credit_status', // Field that is goint to be rendered
-      key: 'credit_status',
+      dataIndex: 'status', // Field that is goint to be rendered
+      key: 'status',
       render: text => <Tag type='creditStatus' value={text} />,
     },
     {
@@ -82,8 +71,11 @@ function PaymentsTable(props) {
           data={data}
           permissionId={permissions.PAGOS}
           handlerEditRow={handlerEditRow}
+          handlerDeleteRow={handlerDeleteRow}
+          showDeleteBtn={true}
+          deleteAction='nullify'
           editAction={
-            data.status === documentsStatus.CANCELLED ? 'show' : 'add_payment'
+            'add_payment'
           }
         />
       ),
@@ -92,23 +84,14 @@ function PaymentsTable(props) {
 
   return (
     <>
-      <Row gutter={16}>
-      <Col xs={4} sm={4} md={4} lg={4}>
-          <Search
-            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='# Nota serv.'
-            className={'cabisa-table-search customSearch'}
-            size={'large'}
-            onSearch={props.handleFiltersChange('related_internal_document_id')}
-          />
-        </Col>
+      <Row gutter={16}>      
         <Col xs={4} sm={4} md={4} lg={4}>
           <Search
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
             placeholder='# Documento'
             className={'cabisa-table-search customSearch'}
             size={'large'}
-            onSearch={props.handleFiltersChange('document_number')}
+            onSearch={props.handleFiltersChange('id')}
           />
         </Col>      
         <Col xs={4} sm={4} md={4} lg={4}>
@@ -127,26 +110,6 @@ function PaymentsTable(props) {
             format='DD-MM-YYYY'
             onChange={props.handleFiltersChange('created_at')}
           />
-        </Col>
-        <Col xs={4} sm={4} md={4} lg={4}>
-          <Select
-            className={'single-select'}
-            placeholder={'Metodo de pago'}
-            size={'large'}
-            style={{ width: '100%', height: '40px' }}
-            getPopupContainer={trigger => trigger.parentNode}
-            onChange={props.handleFiltersChange('paymentMethods')}
-            defaultValue=''
-          >
-            <Option value={''}>
-              <AntTag color='gray'>Todo</AntTag>
-            </Option>
-            {props.paymentMethodsOptionsList?.map(value => (
-              <Option key={value} value={value}>
-                <Tag type='documentsPaymentMethods' value={value} />
-              </Option>
-            ))}
-          </Select>
         </Col>        
         <Col xs={4} sm={4} md={4} lg={4}>
           <Select
@@ -155,7 +118,7 @@ function PaymentsTable(props) {
             size={'large'}
             style={{ width: '100%', height: '40px' }}
             getPopupContainer={trigger => trigger.parentNode}
-            onChange={props.handleFiltersChange('creditStatus')}
+            onChange={props.handleFiltersChange('status')}
             defaultValue=''
           >
             <Option value={''}>
@@ -163,7 +126,7 @@ function PaymentsTable(props) {
             </Option>
             {props.creditStatusOptionsList?.map(value => (
               <Option key={value} value={value}>
-                <Tag type='creditStatus' value={value} />
+                <Tag type='creditStatusManual' value={value} />
               </Option>
             ))}
           </Select>
