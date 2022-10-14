@@ -21,8 +21,10 @@ const develop = {
     'https://ueuvc1n3sg.execute-api.us-east-1.amazonaws.com/dev/reports',
   paymentsUrl:
     'https://kqanan1fy6.execute-api.us-east-1.amazonaws.com/dev/payments',
-  invoiceFelUrl  :
-    'https://0ec3y7nkgk.execute-api.us-east-1.amazonaws.com/dev/invoicefel'
+  invoiceFelUrl:
+    'https://0ec3y7nkgk.execute-api.us-east-1.amazonaws.com/dev/invoicefel',
+  manualPaymentsUrl:
+    'https://5kbd6me70g.execute-api.us-east-1.amazonaws.com/dev/manualpayments'
 }
 
 const production = {

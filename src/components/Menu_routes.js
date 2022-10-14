@@ -50,6 +50,7 @@ import BillingViewOld from '../pages/billingOld/billingViewOld'
 
 //payments
 import Payments from '../pages/payments/paymentsIndex'
+import manualPayments from '../pages/manualPayment/manualPaymentsIndex'
 
 import genericPage from '../pages/genericPage'
 
@@ -168,6 +169,15 @@ const menu_routes = [
     route: '/payments',
     profilePermissions: [10],
     routeGroup: [/^(\/payments)|(\/payments\/)/i],
+  },
+  {
+    id: 12,
+    name: 'Recibos',
+    key: 'manualPayments',
+    icon: 'inventory',
+    route: '/manualPayments',
+    profilePermissions: [10],
+    routeGroup: [/^(\/manualPayments)|(\/manualPayments\/)/i],
   },
   {
     id: 3,
@@ -358,6 +368,11 @@ const menu_sub_routes = [
     id: 11,
     route: '/FactViewOld',
     component: BillingViewOld,
+  },
+  {
+    id: 12,
+    route: '/manualPayments',
+    component: manualPayments,
   },
 ]
 export { menu_routes, menu_sub_routes }
