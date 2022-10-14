@@ -24,7 +24,7 @@ const develop = {
   invoiceFelUrl:
     'https://0ec3y7nkgk.execute-api.us-east-1.amazonaws.com/dev/invoicefel',
   manualPaymentsUrl:
-    'http://localhost:3000/dev/manualpayments'
+    'https://5kbd6me70g.execute-api.us-east-1.amazonaws.com/dev/manualpayments'
 }
 
 const production = {

@@ -69,7 +69,7 @@ function Payments() {
     }
 
     PaymentsSrc.getPayments(filterParams)
-      .then(data => setDataSource(data))
+      .then(data => setDataSource(data.filter(item => item.status !== 'CANCELLED')))
       .catch(_ => message.error('Error al cargar facturas'))
       .finally(() => setLoading(false))
   }, [filters])
