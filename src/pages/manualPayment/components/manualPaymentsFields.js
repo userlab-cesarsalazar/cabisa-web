@@ -8,8 +8,12 @@ import {
   Statistic,
   Typography,
   Collapse,
+  Button,
+  message
 } from 'antd'
 
+import { styleReceipt } from '../../receiptTemp/styleReceipt'
+import { receiptTemplate } from '../../receiptTemp/receiptTemplate'
 import PaymentsList from './manualPaymentsList'
 import Tag from '../../../components/Tag'
 import { useEditableList } from '../../../hooks'
@@ -21,6 +25,8 @@ import {
 } from '../../../utils'
 import FooterButtons from '../../../components/FooterButtons'
 import { documentsStatus } from '../../../commons/types'
+import moment from 'moment'
+import logoCabisa from '../../../assets/cabisa-logo.png'
 
 const { Title } = Typography
 const { Option } = Select
@@ -52,10 +58,7 @@ const getSaveData = data => {
     related_external_document: p.related_external_document,
     description: p.description,
   })}
-  )
-
-
-  console.log("GET SAVE DATA >> ",payments)
+  )  
   return { document_id: data?.id, payments, total_amount:data?.total_amount }
 }
 
@@ -168,12 +171,67 @@ function PaymentsFields({ detailData, ...props }) {
     props.handleSaveData(saveData)
   }
 
+  const printDocument = () => {        
+    let ticketItems = ''    
+    let styleSheet = styleReceipt.replace("@@cabisaLogo",logoCabisa)
+    let ticket = receiptTemplate.replace('@@nombre', invoiceData.stakeholder_name)
+    ticket = ticket.replace('@@styleFile', styleSheet)
+    ticket = ticket.replace('@@numero_recibo', invoiceData.id)
+    ticket = ticket.replace('@@direccion', invoiceData.stakeholder_address)
+    ticket = ticket.replace('@@email', invoiceData.stakeholder_email)
+    ticket = ticket.replace('@@telefono', invoiceData.stakeholder_phone)
+    ticket = ticket.replace('@@proyecto', invoiceData.project_name)
+    ticket = ticket.replace('@@total_pagado', parseFloat(totalPayments).toFixed(2))
+    ticket = ticket.replace('@@total_pendiente', parseFloat(totalUnpaidCredit).toFixed(2))
+
+    if(invoiceData.payments.length > 0){      
+      invoiceData.payments.forEach(items =>{      
+        ticketItems += ` <tr class="service">
+                        <td class="tableitem"><p class="itemtext">&nbsp;&nbsp;${moment(items.payment_date).format("DD-MM-YYYY")}</p></td>
+                        <td class="tableitem"><p class="itemtext">Q.${parseFloat(items.payment_amount).toFixed(2)}</p></td>
+                        <td class="tableitem"><p class="itemtext">${paymentMethod(items.payment_method)}</p></td>
+                        <td class="tableitem"><p class="itemtext">${items.related_external_document ? items.related_external_document : ''}</p></td>
+                        <td class="tableitem"><p class="itemtext">${items.description ? items.description : ''}</p></td>
+                      </tr> `
+      })      
+    let mywindow = window.open('', 'PRINT', 'height=850,width=850')
+    ticket = ticket.replace('@@itemList', ticketItems)
+    mywindow.document.write(ticket)
+    mywindow.document.close()
+    mywindow.focus()
+    }else{
+      message.warning("No existen movimientos en este recibo")
+    }
+  }
+  
+  const paymentMethod = id => {
+    switch (id) {
+      case "CARD":
+        return "Crédito"        
+      case "CASH":
+        return "Pago en efectivo"        
+      case "CHECK":
+        return "Cheque"        
+      case "DEPOSIT":
+        return "Deposito"        
+      case "TRANSFER":
+        return "Transferencia"            
+      default:
+        return "Ninguno"
+    }
+  }
+
   return (
     <>
       <Row>
         <Col xs={24} sm={24} md={12} lg={12}>
           <Title>Recibo de caja</Title>
         </Col>        
+        <Col xs={24} sm={24} md={12} lg={12} style={{ textAlign: 'right' }}>          
+            <Button onClick={printDocument} className='title-cabisa new-button'>
+              <span>Imprimir recibo</span>
+            </Button>          
+        </Col>
       </Row>
 
       <Divider className={'divider-custom-margins-users'} />

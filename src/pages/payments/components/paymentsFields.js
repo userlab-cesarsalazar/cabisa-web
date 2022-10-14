@@ -8,8 +8,12 @@ import {
   Statistic,
   Typography,
   Collapse,
-  Button,
+  Button,message
 } from 'antd'
+import moment from 'moment'
+import logoCabisa from '../../../assets/cabisa-logo.png'
+import { styleReceipt } from '../../receiptTemp/styleReceipt'
+import { receiptTemplate } from '../../receiptTemp/receiptTemplate'
 import PaymentsProductsList from './paymentsProductsList'
 import PaymentsList from './paymentsList'
 import Tag from '../../../components/Tag'
@@ -167,6 +171,56 @@ function PaymentsFields({ detailData, ...props }) {
     props.handleSaveData(saveData)
   }
 
+  const printDocument = () => {        
+    let ticketItems = ''    
+    let styleSheet = styleReceipt.replace("@@cabisaLogo",logoCabisa)
+    let ticket = receiptTemplate.replace('@@nombre', invoiceData.stakeholder_name)
+    ticket = ticket.replace('@@styleFile', styleSheet)
+    ticket = ticket.replace('@@numero_recibo', invoiceData.related_internal_document_id)
+    ticket = ticket.replace('@@direccion', invoiceData.stakeholder_address)
+    ticket = ticket.replace('@@email', invoiceData.stakeholder_email)
+    ticket = ticket.replace('@@telefono', invoiceData.stakeholder_phone)
+    ticket = ticket.replace('@@proyecto', invoiceData.project_name)
+    ticket = ticket.replace('@@total_pagado', parseFloat(totalPayments).toFixed(2))
+    ticket = ticket.replace('@@total_pendiente', parseFloat(totalUnpaidCredit).toFixed(2))
+
+    if(invoiceData.payments.length > 0){      
+      invoiceData.payments.forEach(items =>{      
+        ticketItems += ` <tr class="service">
+                        <td class="tableitem"><p class="itemtext">&nbsp;&nbsp;${moment(items.payment_date).format("DD-MM-YYYY")}</p></td>
+                        <td class="tableitem"><p class="itemtext">Q.${parseFloat(items.payment_amount).toFixed(2)}</p></td>
+                        <td class="tableitem"><p class="itemtext">${paymentMethod(items.payment_method)}</p></td>
+                        <td class="tableitem"><p class="itemtext">${items.related_external_document ? items.related_external_document : ''}</p></td>
+                        <td class="tableitem"><p class="itemtext">${items.description ? items.description : ''}</p></td>
+                      </tr> `
+      })      
+    let mywindow = window.open('', 'PRINT', 'height=850,width=850')
+    ticket = ticket.replace('@@itemList', ticketItems)
+    mywindow.document.write(ticket)
+    mywindow.document.close()
+    mywindow.focus()
+    }else{
+      message.warning("No existen movimientos en este recibo")
+    }
+  }
+  
+  const paymentMethod = id => {
+    switch (id) {
+      case "CARD":
+        return "Crédito"        
+      case "CASH":
+        return "Pago en efectivo"        
+      case "CHECK":
+        return "Cheque"        
+      case "DEPOSIT":
+        return "Deposito"        
+      case "TRANSFER":
+        return "Transferencia"            
+      default:
+        return "Ninguno"
+    }
+  }
+
   return (
     <>
       <Row>
@@ -175,23 +229,27 @@ function PaymentsFields({ detailData, ...props }) {
         </Col>
         <Col xs={24} sm={24} md={12} lg={12} style={{ textAlign: 'right' }}>
           {invoiceData?.related_internal_document_id ? (
-            <Button className='title-cabisa new-button'>
+            <Button className='title-cabisa new-button' style={{ marginTop:'0.5em' }}>
               Recibo No. {invoiceData.related_internal_document_id}
             </Button>
           ) : <span>No disponible</span>}
           {invoiceData?.document_number ? (
             <Button
             className='title-cabisa new-button'
-            style={{ marginLeft: '1em' }}
+            style={{ marginLeft: '1em',marginTop:'0.5em' }}
           >
             <span>No. Doc - {invoiceData?.document_number}</span>
           </Button>
           ):<Button className='title-cabisa new-button'
-          style={{ marginLeft: '1em' }}>
+          style={{ marginLeft: '1em',marginTop:'0.5em'}}>
           Fact Sistema
         </Button>}
-          
 
+        <Button onClick={printDocument} 
+                className='title-cabisa new-button'
+                style={{ marginLeft: '1em',marginTop:'0.5em' }}>
+              <span>Imprimir recibo</span>
+            </Button> 
         </Col>
       </Row>
 
