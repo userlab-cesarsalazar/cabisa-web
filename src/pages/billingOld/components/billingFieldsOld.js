@@ -10,6 +10,7 @@ import {
   Select,
   Statistic,
   Typography,
+  DatePicker
 } from 'antd'
 import BillingProductsList from './billingProductsListOld'
 import Tag from '../../../components/Tag'
@@ -21,6 +22,7 @@ import {
   formatPhone,
   numberFormat,
 } from '../../../utils'
+import moment from 'moment'
 import billingSrc from '../billingSrcOld'
 import FooterButtons from '../../../components/FooterButtons'
 import {
@@ -361,6 +363,7 @@ export const billingLogicFactory = ({
       document_id: data.id,
       stakeholder_id: data.stakeholder_id,
       project_id: data.project_id,
+      created_at: data.created_at,
       start_date: data.start_date,
       end_date: data.end_date,
       payment_method: data.payment_method,
@@ -441,6 +444,7 @@ export const billingLogicFactory = ({
       { key: 'stakeholder_id', value: 'Empresa' },
       { key: 'payment_method', value: 'Metodo de pago' },
       { key: 'project_id', value: 'Proyecto' },
+      { key: 'created_at', value: 'Fecha Factura' },
     ]
     const saleRequiredFields = [
       { key: 'stakeholder_id', value: 'Empresa' },
@@ -612,6 +616,7 @@ export const billingLogicFactory = ({
           stakeholder_email: stakeholder.email,
           stakeholder_phone: formatPhone(stakeholder.phone),
           stakeholder_address: stakeholder.address,
+          created_at:null
         }))
       }
 
@@ -1068,6 +1073,16 @@ function BillingFields({
                 </Option>
               )}
             </Select>
+          </Col>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <div className={'title-space-field'}>Fecha Facturacion</div>
+            <DatePicker
+                style={{ width: '100%', height: '40px', borderRadius: '8px' }}
+                placeholder='Fecha de facturacion'
+                format='DD-MM-YYYY'
+                value={data.created_at ? moment(data.created_at) : ''}
+                onChange={handleChange('created_at')}                                
+              />
           </Col>
         </Row>
 

@@ -32,6 +32,7 @@ import {
   stakeholdersStatus,
   stakeholdersTypes,
 } from '../../../commons/types'
+import moment from 'moment'
 
 const { Title } = Typography
 const { Option } = Select
@@ -361,6 +362,7 @@ export const billingLogicFactory = ({
       document_id: data.id,
       stakeholder_id: data.stakeholder_id,
       project_id: data.project_id,
+      created_at: data.created_at,
       start_date: data.start_date,
       end_date: data.end_date,
       payment_method: data.payment_method,
@@ -612,6 +614,7 @@ export const billingLogicFactory = ({
           stakeholder_email: stakeholder.email,
           stakeholder_phone: formatPhone(stakeholder.phone),
           stakeholder_address: stakeholder.address,
+          created_at: new Date().toISOString()
         }))
       }
 

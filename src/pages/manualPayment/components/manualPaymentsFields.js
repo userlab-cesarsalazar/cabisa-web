@@ -48,8 +48,7 @@ const getPaymentsTotal = (payments, totalUnpaidCredit) =>
   )
 
 const getSaveData = data => {
-  const payments = data.payments?.map(p => {
-    console.log(p.payment_id," fecha>> ",p.payment_date)
+  const payments = data.payments?.map(p => {    
     return ({
     payment_id: p?.payment_id,
     payment_method: p.payment_method,
