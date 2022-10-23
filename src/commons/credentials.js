@@ -53,7 +53,9 @@ const production = {
   paymentsUrl:
     'https://x03gt0xo95.execute-api.us-east-1.amazonaws.com/prod/payments',
   invoiceFelUrl  :
-    'https://j9lig5lwvl.execute-api.us-east-1.amazonaws.com/prod/invoicefel'
+    'https://j9lig5lwvl.execute-api.us-east-1.amazonaws.com/prod/invoicefel',
+  manualPaymentsUrl:
+    'https://jt7d866tn7.execute-api.us-east-1.amazonaws.com/prod/manualpayments'
 }
 
 const enviroment = env => {
@@ -68,5 +70,5 @@ const enviroment = env => {
 }
 
 module.exports = {
-  stage: enviroment('develop'),
+  stage: enviroment('production'),
 }
