@@ -7,6 +7,10 @@ const config = {
     PAID: { color: '#87d068', text: 'Pagado' },
     DEFAULT: { color: '#f50', text: 'En Mora' },
   },
+  creditStatusManual: {
+    UNPAID: { color: 'cyan', text: 'Pago Pendiente' },
+    PAID: { color: '#87d068', text: 'Pagado' },    
+  },
   documentsServiceType: {
     PART: { color: 'geekblue', text: 'Repuesto' },
     EQUIPMENT: { color: 'green', text: 'Equipo' },

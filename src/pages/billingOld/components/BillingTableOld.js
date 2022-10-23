@@ -6,9 +6,10 @@ import {
   Input,
   Row,
   Select,
-  Table,
+  Table,  
   Tag as AntTag,
 } from 'antd'
+
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../components/actionOptions'
 import Tag from '../../../components/Tag'
@@ -18,30 +19,19 @@ import { permissions, documentsStatus } from '../../../commons/types'
 const { Search } = Input
 const { Option } = Select
 
-function PaymentsTable(props) {
-  const handlerEditRow = data => props.handlerEditRow(data)
+function BillingTable(props) {
+  
+  const handlerEditRow = data => props.showDetail(data)
 
-  const columns = [
+  const handlerDeleteRowOld = data => props.handlerDeleteRowOld(data)
+
+  const columns = [          
     {
-      title: '# Nota serv.',
+      title: '# Documento',
       dataIndex: 'related_internal_document_id', // Field that is goint to be rendered
       key: 'related_internal_document_id',
       render: text => <span>{text}</span>,
-    },
-    {
-      title: '# Documento',
-      dataIndex: 'document_number', // Field that is goint to be rendered
-      key: 'document_number',
-      render: text => text ? <span>{text}</span> : <span>{'Factura del sistema'}</span>,
-    },
-    {
-      title: 'Fecha',
-      dataIndex: 'created_at', // Field that is goint to be rendered
-      key: 'created_at ',
-      render: text => (
-        <span>{text ? moment(text).format('DD-MM-YYYY') : ''}</span>
-      ),
-    },
+    },    
     {
       title: 'Cliente',
       dataIndex: 'client', // Field that is goint to be rendered
@@ -55,10 +45,18 @@ function PaymentsTable(props) {
       ),
     },
     {
-      title: 'Monto',
-      dataIndex: 'total_amount', // Field that is goint to be rendered
-      key: 'total_amount',
-      render: text => (text ? <span>{text.toFixed(2)}</span> : null),
+      title: 'Fecha de facturacion',
+      dataIndex: 'created_at', // Field that is goint to be rendered
+      key: 'created_at ',
+      render: text => (
+        <span>{text ? moment(text).format('DD-MM-YYYY') : ''}</span>
+      ),
+    },
+    {
+      title: 'Total',
+      dataIndex: 'total', // Field that is goint to be rendered
+      key: 'total ',
+      render: text => <span>{text.toFixed(2)}</span>,
     },
     {
       title: 'Metodo de pago',
@@ -67,11 +65,12 @@ function PaymentsTable(props) {
       render: text => <Tag type='documentsPaymentMethods' value={text} />,
     },
     {
-      title: 'Estado de Credito',
-      dataIndex: 'credit_status', // Field that is goint to be rendered
-      key: 'credit_status',
-      render: text => <Tag type='creditStatus' value={text} />,
-    },
+      title: 'Status',
+      dataIndex: 'status', // Field that is goint to be rendered
+      key: 'status',
+      width: 100,
+      render: text => <Tag type='documentStatus' value={text} />,
+    },   
     {
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
@@ -80,11 +79,13 @@ function PaymentsTable(props) {
         <ActionOptions
           editPermissions={false}
           data={data}
-          permissionId={permissions.PAGOS}
+          permissionId={permissions.FACTURACION}
+          showDeleteBtn={data.status !== documentsStatus.CANCELLED}
+          handlerDeleteRow={handlerDeleteRowOld}
           handlerEditRow={handlerEditRow}
-          editAction={
-            data.status === documentsStatus.CANCELLED ? 'show' : 'add_payment'
-          }
+          deleteAction='nullify'
+          //editAction={props.isAdmin ? 'edit' : 'show'}
+          editAction={'show'}
         />
       ),
     },
@@ -92,32 +93,32 @@ function PaymentsTable(props) {
 
   return (
     <>
-      <Row gutter={16}>
-      <Col xs={4} sm={4} md={4} lg={4}>
-          <Search
-            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='# Nota serv.'
-            className={'cabisa-table-search customSearch'}
-            size={'large'}
-            onSearch={props.handleFiltersChange('related_internal_document_id')}
-          />
-        </Col>
+      <Row gutter={16}>      
         <Col xs={4} sm={4} md={4} lg={4}>
           <Search
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
             placeholder='# Documento'
             className={'cabisa-table-search customSearch'}
             size={'large'}
-            onSearch={props.handleFiltersChange('document_number')}
+            onSearch={props.handleFiltersChange('related_internal_document_id')}
           />
-        </Col>      
-        <Col xs={4} sm={4} md={4} lg={4}>
+        </Col>
+        <Col xs={4} sm={4} md={4} lg={4}>          
           <Search            
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
             placeholder='Nombre Cliente'
             className={'cabisa-table-search customSearch'}
             size={'large'}
             onSearch={props.handleFiltersChange('name')}
+          />
+        </Col>
+        <Col xs={4} sm={4} md={4} lg={4}>          
+          <Search                     
+            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
+            placeholder='Descripcion'
+            className={'cabisa-table-search customSearch'}
+            size={'large'}
+            onSearch={props.handleFiltersChange('description')}
           />
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
@@ -147,36 +148,26 @@ function PaymentsTable(props) {
               </Option>
             ))}
           </Select>
-        </Col>        
+        </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
-          <Select
-            className={'single-select'}
-            placeholder={'Estado de Credito'}
+          <Search
+            type='tel'
+            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
+            placeholder='Total'
+            className={'cabisa-table-search customSearch'}
+            onSearch={props.handleFiltersChange('totalInvoice')}
             size={'large'}
-            style={{ width: '100%', height: '40px' }}
-            getPopupContainer={trigger => trigger.parentNode}
-            onChange={props.handleFiltersChange('creditStatus')}
-            defaultValue=''
-          >
-            <Option value={''}>
-              <AntTag color='gray'>Todo</AntTag>
-            </Option>
-            {props.creditStatusOptionsList?.map(value => (
-              <Option key={value} value={value}>
-                <Tag type='creditStatus' value={value} />
-              </Option>
-            ))}
-          </Select>
+          />
         </Col>
       </Row>
-
+      {/*TABLE*/}
       <Row>
         <Col xs={24} sm={24} md={24} lg={24}>
           <Card className={'card-border-radius margin-top-15'}>
             <Row>
               <Col xs={24} sm={24} md={24} lg={24}>
                 <Table
-                  scroll={{ y: 320 }}
+                  scroll={{ y: 820 }}
                   className={'CustomTableClass'}
                   dataSource={props.dataSource}
                   columns={columns}
@@ -193,4 +184,4 @@ function PaymentsTable(props) {
   )
 }
 
-export default PaymentsTable
+export default BillingTable

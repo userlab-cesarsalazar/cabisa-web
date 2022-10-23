@@ -10,8 +10,10 @@ import {
   Select,
   Statistic,
   Typography,
+  DatePicker
 } from 'antd'
-import BillingProductsList from './billingProductsList'
+import moment from 'moment'
+import BillingProductsListTwo from './BillingProductsListTwoOld'
 import Tag from '../../../components/Tag'
 import { useEditableList } from '../../../hooks'
 import {
@@ -21,7 +23,7 @@ import {
   formatPhone,
   numberFormat,
 } from '../../../utils'
-import billingSrc from '../billingSrc'
+import billingSrc from '../billingSrcOld'
 import FooterButtons from '../../../components/FooterButtons'
 import {
   appConfig,
@@ -32,7 +34,6 @@ import {
   stakeholdersStatus,
   stakeholdersTypes,
 } from '../../../commons/types'
-import moment from 'moment'
 
 const { Title } = Typography
 const { Option } = Select
@@ -244,6 +245,7 @@ export const handleUpdateProductsData = ({
   }
 
   const subtotal = getProductSubtotal(newRow)
+  
   return { ...newRow, subtotal }
 }
 
@@ -443,6 +445,7 @@ export const billingLogicFactory = ({
       { key: 'stakeholder_id', value: 'Empresa' },
       { key: 'payment_method', value: 'Metodo de pago' },
       { key: 'project_id', value: 'Proyecto' },
+      { key: 'created_at', value: 'Fecha Factura' },
     ]
     const saleRequiredFields = [
       { key: 'stakeholder_id', value: 'Empresa' },
@@ -554,7 +557,7 @@ export const billingLogicFactory = ({
         stock: { $gt: 0 },
         open_parenthesis: 'description',
         close_parenthesis: 'nit',
-        description: { $like: `%25${product_description}%25` },        
+        description: { $like: `%25${product_description}%25` },
         nit: { $or: true, $like: `%25${product_description}%25` },        
         product_type: productsTypes.SERVICE,
       }
@@ -614,7 +617,7 @@ export const billingLogicFactory = ({
           stakeholder_email: stakeholder.email,
           stakeholder_phone: formatPhone(stakeholder.phone),
           stakeholder_address: stakeholder.address,
-          created_at: new Date().toISOString()
+          created_at:null
         }))
       }
 
@@ -684,7 +687,7 @@ export const billingLogicFactory = ({
   )
 } */
 
-function BillingFields({
+function BillingFieldsTwo({
   setLoading,
   editData,
   isAdmin,
@@ -889,7 +892,7 @@ function BillingFields({
                 style={{ textAlign: 'right' }}
               >
                 <Button className='title-cabisa new-button'>
-                  Serie No. {data.id}
+                  Serie No. {data.related_internal_document_id}
                 </Button>
               </Col>
             </Row>
@@ -1072,6 +1075,16 @@ function BillingFields({
               )}
             </Select>
           </Col>
+          <Col xs={8} sm={8} md={8} lg={8}>
+            <div className={'title-space-field'}>Fecha Facturacion</div>
+            <DatePicker
+                style={{ width: '100%', height: '40px', borderRadius: '8px' }}
+                placeholder='Fecha de facturacion'
+                format='DD-MM-YYYY'
+                value={data.created_at ? moment(data.created_at) : ''}
+                onChange={handleChange('created_at')}                                
+              />
+          </Col>
         </Row>
 
         <Divider className={'divider-custom-margins-users'} />
@@ -1163,7 +1176,7 @@ function BillingFields({
 
         <Divider className={'divider-custom-margins-users'} />
 
-        <BillingProductsList
+        <BillingProductsListTwo
           dataSource={productsData}
           handleAddDetail={handleAddDetail}
           handleChangeDetail={handleChangeDetail}
@@ -1245,4 +1258,4 @@ function BillingFields({
     </>
   )
 }
-export default BillingFields
+export default BillingFieldsTwo
