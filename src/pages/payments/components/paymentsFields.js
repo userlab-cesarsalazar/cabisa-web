@@ -183,7 +183,8 @@ function PaymentsFields({ detailData, ...props }) {
     ticket = ticket.replace('@@proyecto', invoiceData.project_name)
     ticket = ticket.replace('@@total_pagado', parseFloat(totalPayments).toFixed(2))
     ticket = ticket.replace('@@total_pendiente', parseFloat(totalUnpaidCredit).toFixed(2))
-
+    ticket = ticket.replace('@@numero_factura', (invoiceData?.document_number ? invoiceData?.document_number : invoiceData?.description))
+    
     if(invoiceData.payments.length > 0){      
       invoiceData.payments.forEach(items =>{      
         ticketItems += ` <tr class="service">
@@ -195,7 +196,7 @@ function PaymentsFields({ detailData, ...props }) {
                       </tr> `
       })      
     let mywindow = window.open('', 'PRINT', 'height=850,width=850')
-    ticket = ticket.replace('@@itemList', ticketItems)
+    ticket = ticket.replace('@@itemList', ticketItems)    
     mywindow.document.write(ticket)
     mywindow.document.close()
     mywindow.focus()

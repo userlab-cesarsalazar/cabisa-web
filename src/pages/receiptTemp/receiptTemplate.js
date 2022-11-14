@@ -24,6 +24,7 @@ export const receiptTemplate = `<!DOCTYPE html>
 <!-- partial:index.partial.html -->
 <div id="invoice-POS">    
 <h2 style="text-align: right;">No. 00@@numero_recibo</h2>
+<h2 style="text-align: left;">Fact No. @@numero_factura</h2>
     <center id="top">
       <div class="logo"></div>
       <div class="info"> 
