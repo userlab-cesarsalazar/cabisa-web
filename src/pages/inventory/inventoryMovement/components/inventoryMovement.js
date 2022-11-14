@@ -12,6 +12,7 @@ import { permissions, documentsStatus, roles } from '../../../../commons/types'
 
 const getColumns = ({ DeleteRow, EditRow, isAdmin }) => [
   {
+    width: 120,
     title: 'Fecha',
     dataIndex: 'start_date', // Field that is goint to be rendered
     key: 'start_date',
@@ -19,22 +20,26 @@ const getColumns = ({ DeleteRow, EditRow, isAdmin }) => [
       text ? <span>{moment(text).format('DD-MM-YYYY')}</span> : '',
   },
   {
+    width: 120,
     title: 'Nro Documento',
     dataIndex: 'related_external_document_id',
     key: 'related_external_document_id',
   },
   {
+    width: 350,
     title: 'Proveedor',
     dataIndex: 'stakeholder_name',
     key: 'stakeholder_name',
   },
   {
+    width: 120,
     title: 'Status',
     dataIndex: 'status', // Field that is goint to be rendered
     key: 'status',
     render: text => <Tag type='documentStatus' value={text} />,
   },
   {
+    width: 200,
     title: '',
     dataIndex: 'id', // Field that is goint to be rendered
     key: 'id',
