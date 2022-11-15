@@ -13,42 +13,42 @@ const { Search } = Input
 function ClientTable(props) {
   const columns = [
     {
+      width:300,
       title: 'Nombre o Razón social',
       dataIndex: 'name', // Field that is goint to be rendered
       key: 'name',
       render: text => <span>{text}</span>,
     },
     {
+      width:120,
       title: 'Tipo',
       dataIndex: 'stakeholder_type', // Field that is goint to be rendered
       key: 'stakeholder_type',
       render: text => <Tag type='stakeholderTypes' value={text} />,
     },
     {
+      width:110,
       title: 'NIT',
       dataIndex: 'nit', // Field that is goint to be rendered
       key: 'nit',
       render: text => <span>{text}</span>,
     },
     {
+      width:220,
       title: 'Email',
       dataIndex: 'email', // Field that is goint to be rendered
       key: 'email',
       render: text => <span>{text}</span>,
     },
     {
+      width:120,
       title: 'Telefono',
       dataIndex: 'phone', // Field that is goint to be rendered
       key: 'phone',
       render: text => (text ? formatPhone(text) : null),
-    },
+    },    
     {
-      title: 'Direccion',
-      dataIndex: 'address', // Field that is goint to be rendered
-      key: 'address',
-      render: text => <span>{text}</span>,
-    },
-    {
+      width:120,
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
@@ -102,13 +102,17 @@ function ClientTable(props) {
                     expandedRowRender: record => (
                       <div className={'text-left'}>
                         <p>
+                          <b>Direccion: </b>{' '}
+                          {record.address !== null ? record.address : ''}{' '}
+                        </p>
+                        <p>
                           <b>Encargado Compras: </b>{' '}
                           {record.sales !== null ? record.business_man : ''}{' '}
                         </p>
                         <p>
                           <b>Encargado Pagos: </b>{' '}
                           {record.shops !== null ? record.payments_man : ''}{' '}
-                        </p>
+                        </p>                        
                       </div>
                     ),
                     expandIcon: ({ expanded, onExpand, record }) =>

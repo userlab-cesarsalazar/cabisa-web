@@ -12,36 +12,42 @@ const { Search } = Input
 function SupplierTable(props) {
   const columns = [
     {
+      width:300,
       title: 'Nombre o Razón social',
       dataIndex: 'name', // Field that is goint to be rendered
       key: 'name',
       render: text => <span>{text}</span>,
     },
     {
+      width:120,
       title: 'NIT',
       dataIndex: 'nit', // Field that is goint to be rendered
       key: 'nit',
       render: text => <span>{text}</span>,
     },
     {
+      width:220,
       title: 'Email',
       dataIndex: 'email', // Field that is goint to be rendered
       key: 'email',
       render: text => <span>{text}</span>,
     },
     {
+      width:120,
       title: 'Telefono',
       dataIndex: 'phone', // Field that is goint to be rendered
       key: 'phone',
       render: text => (text ? formatPhone(text) : null),
     },
     {
+      width:300,
       title: 'Direccion',
       dataIndex: 'address', // Field that is goint to be rendered
       key: 'address',
       render: text => <span>{text}</span>,
     },
     {
+      width:120,
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',

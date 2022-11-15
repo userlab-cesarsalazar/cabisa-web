@@ -93,12 +93,14 @@ function SalesTable(props) {
 
   const columns = [
     {
+      width:120,
       title: 'No. de boleta',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
       render: text => <span>{text}</span>,
     },
     {
+      width:120,
       title: 'Fecha',
       dataIndex: 'start_date', // Field that is goint to be rendered
       key: 'start_date',
@@ -107,24 +109,28 @@ function SalesTable(props) {
       ),
     },
     {
+      width:300,
       title: 'Empresa',
       dataIndex: 'stakeholder_name', // Field that is goint to be rendered
       key: 'stakeholder_name',
       render: text => <span>{text}</span>,
     },
     {
+      width:300,
       title: 'Proyecto',
       dataIndex: 'project_name', // Field that is goint to be rendered
       key: 'project_name',
       render: text => <span>{text}</span>,
     },
     {
+      width:100,
       title: 'Status',
       dataIndex: 'status', // Field that is goint to be rendered
       key: 'status',
       render: text => <Tag type='documentStatus' value={text} />,
     },
     {
+      width:200,
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',

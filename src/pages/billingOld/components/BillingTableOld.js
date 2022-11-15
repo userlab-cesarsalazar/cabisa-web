@@ -27,12 +27,14 @@ function BillingTable(props) {
 
   const columns = [          
     {
+      width:125,
       title: '# Documento',
       dataIndex: 'related_internal_document_id', // Field that is goint to be rendered
       key: 'related_internal_document_id',
       render: text => <span>{text}</span>,
     },    
     {
+      width:300,
       title: 'Cliente',
       dataIndex: 'client', // Field that is goint to be rendered
       key: 'client ',
@@ -45,6 +47,7 @@ function BillingTable(props) {
       ),
     },
     {
+      width:180,
       title: 'Fecha de facturacion',
       dataIndex: 'created_at', // Field that is goint to be rendered
       key: 'created_at ',
@@ -53,18 +56,20 @@ function BillingTable(props) {
       ),
     },
     {
+      width:120,
       title: 'Total',
       dataIndex: 'total', // Field that is goint to be rendered
       key: 'total ',
       render: text => <span>{text.toFixed(2)}</span>,
     },
     {
+      width:120,
       title: 'Metodo de pago',
       dataIndex: 'payment_method', // Field that is goint to be rendered
       key: 'payment_method',
       render: text => <Tag type='documentsPaymentMethods' value={text} />,
     },
-    {
+    {      
       title: 'Status',
       dataIndex: 'status', // Field that is goint to be rendered
       key: 'status',
@@ -72,6 +77,7 @@ function BillingTable(props) {
       render: text => <Tag type='documentStatus' value={text} />,
     },   
     {
+      width:120,
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
