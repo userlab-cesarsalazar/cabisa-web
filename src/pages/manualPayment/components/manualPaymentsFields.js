@@ -162,8 +162,7 @@ function PaymentsFields({ detailData, ...props }) {
     },
   })
 
-  const saveData = () => {
-    console.log("paymentsData >>",paymentsData)
+  const saveData = () => {    
     const saveData = getSaveData({ ...invoiceData, payments: paymentsData })    
     const { isInvalid, error } = validateSaveData(saveData, totalUnpaidCredit)
     if (isInvalid) return showErrors(error)
