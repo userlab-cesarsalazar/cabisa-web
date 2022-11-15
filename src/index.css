@@ -446,7 +446,7 @@ body {
 .ant-calendar-range-picker-input {
   border-radius: 8px !important;
   font-size: 14px;
-  border: solid 1px lightgrey;
+  /* border: solid 1px lightgrey; */
 }
 
 .ant-input[disabled] {
