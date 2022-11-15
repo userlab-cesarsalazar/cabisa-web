@@ -1314,14 +1314,12 @@ input:-webkit-autofill:focus {
   color: var(--cabisa-green);
   font-weight: bold;
 }
-
 /*#reset-pass-drawer .ant-drawer-body {*/
 /*  display: flex;*/
 /*  flex-direction: column;*/
 /*  justify-content: space-between;*/
 /*  padding-right: 10em;*/
 /*}*/
-
 #edit-permissions-table .ant-table-content {
   overflow: hidden;
 }
