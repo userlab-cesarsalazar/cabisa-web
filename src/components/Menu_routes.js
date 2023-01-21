@@ -39,7 +39,9 @@ import ReportInventory from '../pages/reports/reportInventory/reportInventoryInd
 import ReportClient from '../pages/reports/reportClient/reportClientIndex'
 import ReportAccountsReceivable from '../pages/reports/reportAccountsReceivable/reportAccountsReceivableIndex'
 import ReportSales from '../pages/reports/reportSales/reportSalesIndex'
-
+/*new reports*/
+import ReportDocuments from '../pages/reports/reportDocuments/reportDocumentsIndex'
+import ReportCashReceipts from '../pages/reports/reportCashReceipts/reportCashReceiptsIndex'
 //billing
 import Billing from '../pages/billing/billingIndex'
 import BillingView from '../pages/billing/billingView'
@@ -187,7 +189,7 @@ const menu_routes = [
     route: '/reports',
     profilePermissions: [53],
     routeGroup: [
-      /^(\/reportInventory)|(\/reportAccountsReceivable)|(\/reportAccountClient)|(\/reportEquipmentService)|(\/reportMachineHistory)|(\/reportMonthlyBill)|(\/reportShipping)|(\/reportSales)|(\/reportCommissions)|(\/reportCostSellingEquipment)/i,
+      /^(\/reportInventory)|(\/reportAccountsReceivable)|(\/reportAccountClient)|(\/reportEquipmentService)|(\/reportCasReceipts)|(\/reportMonthlyBill)|(\/reportShipping)|(\/reportSales)|(\/reportCommissions)|(\/reportCostSellingEquipment)/i,
     ],
     sub_menu: submenu_sections,
   }  
@@ -332,7 +334,12 @@ const menu_sub_routes = [
   {
     id: 3,
     route: '/reportMonthlyBill',
-    component: genericPage,
+    component: ReportDocuments,
+  },
+  {
+    id: 3,
+    route: '/reportCasReceipts',
+    component: ReportCashReceipts,
   },
   {
     id: 3,

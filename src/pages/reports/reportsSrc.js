@@ -29,6 +29,10 @@ const getStakeholdersOptions = params =>
   api.get(`${urlStakeholder}-options`, params)
 const getSellersOptions = params => api.get(`${urlUser}-options`, params)
 
+const getDocumentReport = params => api.get(`${urlReport}/getDocumentReport`, { ...params })
+const getCashReceipts = params => api.get(`${urlReport}/getCashReceipts`, { ...params })
+const exportReport = params => api.get(`${urlReport}/exportReport`, { ...params })
+
 const ReportsSrc = {
   getSales,
   getInventory,
@@ -41,6 +45,9 @@ const ReportsSrc = {
   getProductsCategories,
   getStakeholdersOptions,
   getSellersOptions,
+  getDocumentReport,
+  exportReport,
+  getCashReceipts
 }
 
 export default ReportsSrc
