@@ -186,8 +186,23 @@ function ReportDocumentTable(props) {
               <Statistic
                 title='Cantidad de facturas:'                
                 value ={props.dataSource.length}
-              />
-              
+              />              
+            </div>            
+          </Col>
+          <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Facturas Aprobadas:'                
+                value ={props.dataSource.filter(item => item.status === "APPROVED").length}
+              />              
+            </div>            
+          </Col>   
+          <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Facturas Anuladas:'                
+                value ={props.dataSource.filter(item => item.status === "CANCELLED").length}
+              />              
             </div>            
           </Col>          
         </Row>

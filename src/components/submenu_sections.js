@@ -55,7 +55,7 @@ const submenu_sections = [
     route: '/reportMonthlyBill',
     component: (
       <>
-        <h1>Factura mensual</h1>
+        <h1>Factura</h1>
       </>
     ),
   },
@@ -65,7 +65,17 @@ const submenu_sections = [
     route: '/reportCasReceipts',
     component: (
       <>
-        <h1>Factura mensual</h1>
+        <h1>Recibos</h1>
+      </>
+    ),
+  },
+  {
+    name: 'Recibos',
+    key: 'reportManualCasReceipts',
+    route: '/reportManualCasReceipts',
+    component: (
+      <>
+        <h1>Recibo manual</h1>
       </>
     ),
   },

@@ -31,6 +31,7 @@ const getSellersOptions = params => api.get(`${urlUser}-options`, params)
 
 const getDocumentReport = params => api.get(`${urlReport}/getDocumentReport`, { ...params })
 const getCashReceipts = params => api.get(`${urlReport}/getCashReceipts`, { ...params })
+const getManualCashReceipts = params => api.get(`${urlReport}/getCashManualReceipts`, { ...params })
 const exportReport = params => api.get(`${urlReport}/exportReport`, { ...params })
 
 const ReportsSrc = {
@@ -47,7 +48,8 @@ const ReportsSrc = {
   getSellersOptions,
   getDocumentReport,
   exportReport,
-  getCashReceipts
+  getCashReceipts,
+  getManualCashReceipts
 }
 
 export default ReportsSrc

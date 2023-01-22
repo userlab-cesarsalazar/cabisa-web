@@ -8,6 +8,7 @@ import {
   Select,
   Table,  
   Statistic,
+  Collapse,
   Tag as AntTag,
 } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
@@ -15,7 +16,7 @@ import Tag from '../../../../components/Tag'
 import moment from 'moment'
 import {numberFormat} from '../../../../utils'
 
-
+const { Panel } = Collapse;
 const { Search } = Input
 const { Option } = Select
 const { RangePicker } = DatePicker
@@ -185,7 +186,7 @@ function ReportCashReceiptsTable(props) {
                   className={'CustomTableClass'}
                   dataSource={props.dataSource}
                   columns={columns}
-                  pagination={{ pageSize: 5 }}
+                  pagination={{ pageSize: 4 }}
                   loading={props.loading}
                   rowKey='id'                  
                 />
@@ -194,12 +195,13 @@ function ReportCashReceiptsTable(props) {
           </Card>
         </Col>
       </Row>
+
       <div style={{margin:"25px"}}/>
-      <Row gutter={16} style={{ textAlign: 'left' }} justify='start'>
+      <Row gutter={16} style={{ textAlign: 'left' }} justify='start'>                                    
           <Col span={6} style={{ textAlign: 'left' }}>
             <div className={'title-space-field'}>
               <Statistic
-                title='Total:'
+                title='Total Facturado:'
                 value={`Q ${getFormattedValue(props.dataSource.reduce( ( sum, item  ) =>  sum + item.total_amount,0))}`}
               />
               
@@ -216,12 +218,86 @@ function ReportCashReceiptsTable(props) {
           <Col span={6} style={{ textAlign: 'left' }}>
             <div className={'title-space-field'}>
               <Statistic
-                title='Cantidad de Recibos de caja:'
+                title='Cantidad de Facturas:'
                 value ={props.dataSource.length}
               />              
             </div>            
-          </Col>
+          </Col>                    
         </Row>
+
+      {/*DETAILS*/}
+      <div style={{margin:"25px"}}/>
+      <Collapse>
+      <Panel header="Detalle Facturacion eletronica" key="1">
+      <div style={{margin:"25px"}}/>
+      <Row gutter={16} style={{ textAlign: 'left' }} justify='start'>                                    
+          <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Total Facturado:'
+                value={`Q ${getFormattedValue(props.dataSource.filter(item=>item.document_number !== null).reduce( ( sum, item  ) =>  sum + item.total_amount,0))}`}
+              />
+              
+            </div>            
+          </Col>  
+          <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Total pagado:'
+                value={`Q ${getFormattedValue(props.dataSource.filter(item=>item.document_number !== null).reduce( ( sum, item  ) =>  sum + item.due,0))}`}
+              />              
+            </div>            
+          </Col>
+          <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Cantidad Facturas:'
+                value ={props.dataSource.filter(item=>item.document_number !== null).length}
+              />              
+            </div>            
+          </Col>                    
+        </Row>
+      </Panel>
+
+      <Panel header="Detalle Facturacion del sistema" key="2">
+      <div style={{margin:"25px"}}/>
+      <Row gutter={16} style={{ textAlign: 'left' }} justify='start'>                              
+      
+      
+          <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Total Facturado:'
+                value={`Q ${getFormattedValue(props.dataSource.filter(item=>item.document_number === null).reduce( ( sum, item  ) =>  sum + item.total_amount,0))}`}
+              />
+              
+            </div>            
+          </Col>  
+          <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Total pagado:'
+                value={`Q ${getFormattedValue(props.dataSource.filter(item=>item.document_number === null).reduce( ( sum, item  ) =>  sum + item.due,0))}`}
+              />              
+            </div>            
+          </Col>
+          <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Cantidad Facturas:'
+                value ={props.dataSource.filter(item=>item.document_number === null).length}
+              />              
+            </div>            
+          </Col>                    
+        </Row>
+      </Panel>
+      
+      </Collapse>
+     
+
+
+       
+       
     </>
   )
 }
