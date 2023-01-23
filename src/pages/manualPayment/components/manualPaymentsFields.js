@@ -162,8 +162,7 @@ function PaymentsFields({ detailData, ...props }) {
     },
   })
 
-  const saveData = () => {
-    console.log("paymentsData >>",paymentsData)
+  const saveData = () => {    
     const saveData = getSaveData({ ...invoiceData, payments: paymentsData })    
     const { isInvalid, error } = validateSaveData(saveData, totalUnpaidCredit)
     if (isInvalid) return showErrors(error)
@@ -182,7 +181,8 @@ function PaymentsFields({ detailData, ...props }) {
     ticket = ticket.replace('@@proyecto', invoiceData.project_name)
     ticket = ticket.replace('@@total_pagado', parseFloat(totalPayments).toFixed(2))
     ticket = ticket.replace('@@total_pendiente', parseFloat(totalUnpaidCredit).toFixed(2))
-
+    ticket = ticket.replace('Fact No. @@numero_factura', "")
+    
     if(invoiceData.payments.length > 0){      
       invoiceData.payments.forEach(items =>{      
         ticketItems += ` <tr class="service">

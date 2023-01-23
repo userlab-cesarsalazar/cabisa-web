@@ -23,18 +23,21 @@ function PaymentsTable(props) {
 
   const columns = [
     {
+      width:120,
       title: '# Nota serv.',
       dataIndex: 'related_internal_document_id', // Field that is goint to be rendered
       key: 'related_internal_document_id',
       render: text => <span>{text}</span>,
     },
     {
+      width:125,
       title: '# Documento',
       dataIndex: 'document_number', // Field that is goint to be rendered
       key: 'document_number',
       render: text => text ? <span>{text}</span> : <span>{'Factura del sistema'}</span>,
     },
     {
+      width: 115,
       title: 'Fecha',
       dataIndex: 'created_at', // Field that is goint to be rendered
       key: 'created_at ',
@@ -43,6 +46,7 @@ function PaymentsTable(props) {
       ),
     },
     {
+      width: 300,
       title: 'Cliente',
       dataIndex: 'client', // Field that is goint to be rendered
       key: 'client ',
@@ -55,24 +59,28 @@ function PaymentsTable(props) {
       ),
     },
     {
+      width: 120,
       title: 'Monto',
       dataIndex: 'total_amount', // Field that is goint to be rendered
       key: 'total_amount',
       render: text => (text ? <span>{text.toFixed(2)}</span> : null),
     },
     {
+      width: 120,
       title: 'Metodo de pago',
       dataIndex: 'payment_method', // Field that is goint to be rendered
       key: 'payment_method',
       render: text => <Tag type='documentsPaymentMethods' value={text} />,
     },
     {
+      width: 120,
       title: 'Estado de Credito',
       dataIndex: 'credit_status', // Field that is goint to be rendered
       key: 'credit_status',
       render: text => <Tag type='creditStatus' value={text} />,
     },
     {
+      width: 100,
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',

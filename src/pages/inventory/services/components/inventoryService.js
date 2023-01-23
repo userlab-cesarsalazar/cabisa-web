@@ -15,15 +15,17 @@ function InventoryService(props) {
   const [isVisible, setIsVisible] = useState(false)
 
   const columns = [
-    { title: 'Codigo', dataIndex: 'code', key: 'code' },
-    { title: 'Descripcion', dataIndex: 'description', key: 'description' },
+    { width:250,title: 'Codigo', dataIndex: 'code', key: 'code' },
+    { width:420,title: 'Descripcion', dataIndex: 'description', key: 'description' },
     {
+      width:100,
       title: 'Estado',
       dataIndex: 'status', // Field that is goint to be rendered
       key: 'status',
       render: text => <Tag type='productStatus' value={text} />,
     },
     {
+      width:100,
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',

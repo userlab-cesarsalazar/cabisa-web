@@ -83,8 +83,7 @@ function Payments() {
     setVisible(true)
   }
 
-  const handlerDeleteRow = data => {
-    console.log("ELIMINAR TU COLA ",data.id)
+  const handlerDeleteRow = data => {    
     setLoading(true)
     PaymentsSrc.removeManualPayment({id:data.id}).then(_=>{
       message.success("Recibo eliminado")
@@ -97,8 +96,7 @@ function Payments() {
 
   const closeDetail = () => setVisible(false)
   
-  const showDrawerAction = () => {
-    console.log("Mostrar drawer")
+  const showDrawerAction = () => {    
     setShowModal(true)
   }
 

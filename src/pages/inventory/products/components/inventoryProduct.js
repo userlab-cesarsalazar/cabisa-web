@@ -15,36 +15,42 @@ function InventoryProduct(props) {
 
   const columns = [
     {
+      width:120,
       title: 'Codigo',
       dataIndex: 'code', // Field that is goint to be rendered
       key: 'code',
       render: text => <span>{text}</span>,
     },
     {
+      width:120,
       title: '# Serie',
       dataIndex: 'serial_number', // Field that is goint to be rendered
       key: 'serial_number',
       render: text => <span>{text}</span>,
     },
     {
+      width:350,
       title: 'Descripcion',
       dataIndex: 'description', // Field that is goint to be rendered
       key: 'description',
       render: text => <span>{text}</span>,
     },
     {
+      width:120,
       title: 'Categoria',
       dataIndex: 'product_category', // Field that is goint to be rendered
       key: 'product_category',
       render: text => <Tag type='productCategories' value={text} />,
     },
     {
+      width:120,
       title: 'Estado',
       dataIndex: 'status', // Field that is goint to be rendered
       key: 'status',
       render: text => <Tag type='productStatus' value={text} />,
     },
     {
+      width:120,
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',

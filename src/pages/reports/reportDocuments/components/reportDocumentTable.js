@@ -2,35 +2,39 @@ import React from 'react'
 import {
   Card,
   Col,
-  DatePicker,
+  DatePicker,  
   Input,
   Row,
   Select,
   Table,  
+  Statistic,
   Tag as AntTag,
 } from 'antd'
-
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import ActionOptions from '../../../components/actionOptions'
-import Tag from '../../../components/Tag'
+import Tag from '../../../../components/Tag'
 import moment from 'moment'
-import { permissions, documentsStatus } from '../../../commons/types'
+import {numberFormat,sortColumnString} from '../../../../utils'
 
 const { Search } = Input
 const { Option } = Select
+const { RangePicker } = DatePicker
+const { getFormattedValue } = numberFormat()
 
-function BillingTable(props) {
-  
-  const handlerEditRow = data => props.showDetail(data)
-
-  const handlerDeleteRowOld = data => props.handlerDeleteRowOld(data)
-
-  const columns = [          
+function ReportDocumentTable(props) {
+    
+  const columns = [      
+    {
+      width:120,
+      title: '# Nota serv.',
+      dataIndex: 'related_internal_document_id', // Field that is goint to be rendered
+      key: 'related_internal_document_id',
+      render: text => <span>{text}</span>,
+    },
     {
       width:125,
       title: '# Documento',
-      dataIndex: 'related_internal_document_id', // Field that is goint to be rendered
-      key: 'related_internal_document_id',
+      dataIndex: 'document_number', // Field that is goint to be rendered
+      key: 'document_number',
       render: text => <span>{text}</span>,
     },    
     {
@@ -47,7 +51,7 @@ function BillingTable(props) {
       ),
     },
     {
-      width:180,
+      width:120,
       title: 'Fecha de facturacion',
       dataIndex: 'created_at', // Field that is goint to be rendered
       key: 'created_at ',
@@ -60,7 +64,7 @@ function BillingTable(props) {
       title: 'Total',
       dataIndex: 'total', // Field that is goint to be rendered
       key: 'total ',
-      render: text => <span>{text.toFixed(2)}</span>,
+      render: text => <span>{ `Q ${getFormattedValue(text.toFixed(2))}` }</span>,      
     },
     {
       width:120,
@@ -69,44 +73,34 @@ function BillingTable(props) {
       key: 'payment_method',
       render: text => <Tag type='documentsPaymentMethods' value={text} />,
     },
-    {      
+    {
       title: 'Status',
       dataIndex: 'status', // Field that is goint to be rendered
       key: 'status',
       width: 100,
       render: text => <Tag type='documentStatus' value={text} />,
-    },   
-    {
-      width:120,
-      title: '',
-      dataIndex: 'id', // Field that is goint to be rendered
-      key: 'id',
-      render: (_, data) => (
-        <ActionOptions
-          editPermissions={false}
-          data={data}
-          permissionId={permissions.FACTURACION}
-          showDeleteBtn={data.status !== documentsStatus.CANCELLED}
-          handlerDeleteRow={handlerDeleteRowOld}
-          handlerEditRow={handlerEditRow}
-          deleteAction='nullify'
-          //editAction={props.isAdmin ? 'edit' : 'show'}
-          editAction={'show'}
-        />
-      ),
-    },
+    }
   ]
-
+  
   return (
     <>
-      <Row gutter={16}>      
+      <Row gutter={16}>
+      <Col xs={4} sm={4} md={4} lg={4}>
+          <Search
+            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
+            placeholder='# Nota serv.'
+            className={'cabisa-table-search customSearch'}
+            size={'large'}
+            onSearch={props.handleFiltersChange('related_internal_document_id')}
+          />
+        </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
           <Search
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
             placeholder='# Documento'
             className={'cabisa-table-search customSearch'}
             size={'large'}
-            onSearch={props.handleFiltersChange('related_internal_document_id')}
+            onSearch={props.handleFiltersChange('document_number')}
           />
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>          
@@ -118,22 +112,12 @@ function BillingTable(props) {
             onSearch={props.handleFiltersChange('name')}
           />
         </Col>
-        <Col xs={4} sm={4} md={4} lg={4}>          
-          <Search                     
-            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
-            placeholder='Descripcion'
-            className={'cabisa-table-search customSearch'}
-            size={'large'}
-            onSearch={props.handleFiltersChange('description')}
-          />
-        </Col>
-        <Col xs={4} sm={4} md={4} lg={4}>
-          <DatePicker
-            style={{ width: '100%', height: '40px', borderRadius: '8px' }}
-            placeholder='Fecha de facturacion'
-            format='DD-MM-YYYY'
-            onChange={props.handleFiltersChange('created_at')}
-          />
+        <Col xs={4} sm={4} md={4} lg={4}>                    
+          <RangePicker
+              style={{ width: '100%', height: '40px', borderRadius: '6px' }}
+              format='DD-MM-YYYY'                          
+              onChange={props.handleFiltersChange('created_at')}
+            />
         </Col>
         <Col xs={4} sm={4} md={4} lg={4}>
           <Select
@@ -186,8 +170,52 @@ function BillingTable(props) {
           </Card>
         </Col>
       </Row>
+      <div style={{margin:"25px"}}/>
+      <Row gutter={16} style={{ textAlign: 'left' }} justify='start'>
+          <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Total facturado:'
+                value={`Q ${getFormattedValue(props.dataSource.filter(item => item.status === "APPROVED").reduce( ( sum, item  ) =>  sum + item.total,0))}`}
+              />
+              
+            </div>            
+          </Col>
+          <Col span={4} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Facturas Aprobadas:'                
+                value ={props.dataSource.filter(item => item.status === "APPROVED").length}
+              />              
+            </div>            
+          </Col>
+          <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Total anulado:'
+                value={`Q ${getFormattedValue(props.dataSource.filter(item => item.status === "CANCELLED").reduce( ( sum, item  ) =>  sum + item.total,0))}`}
+              />              
+            </div>            
+          </Col>               
+          <Col span={4} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Facturas Anuladas:'                
+                value ={props.dataSource.filter(item => item.status === "CANCELLED").length}
+              />              
+            </div>            
+          </Col>          
+          <Col span={4} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Cantidad total de facturas:'                
+                value ={props.dataSource.length}
+              />              
+            </div>            
+          </Col>              
+        </Row>
     </>
   )
 }
 
-export default BillingTable
+export default ReportDocumentTable

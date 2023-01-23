@@ -24,12 +24,14 @@ function PaymentsTable(props) {
 
   const columns = [    
     {
+      width: 110,
       title: '# Recibo',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
       render: text => text ? <span>{text}</span> : <span>{'Factura del sistema'}</span>,
     },
     {
+      width: 120,
       title: 'Fecha',
       dataIndex: 'created_at', // Field that is goint to be rendered
       key: 'created_at ',
@@ -38,6 +40,7 @@ function PaymentsTable(props) {
       ),
     },
     {
+      width: 350,
       title: 'Cliente',
       dataIndex: 'client', // Field that is goint to be rendered
       key: 'client ',
@@ -50,18 +53,21 @@ function PaymentsTable(props) {
       ),
     },
     {
+      width: 150,
       title: 'Monto',
       dataIndex: 'total_amount', // Field that is goint to be rendered
       key: 'total_amount',
       render: text => (text ? <span>{text.toFixed(2)}</span> : null),
     },    
     {
+      width: 150,
       title: 'Estado de Credito',
       dataIndex: 'status', // Field that is goint to be rendered
       key: 'status',
       render: text => <Tag type='creditStatus' value={text} />,
     },
     {
+      width:150,
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
