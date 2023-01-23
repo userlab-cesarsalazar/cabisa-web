@@ -143,7 +143,7 @@ function ReportManulaCashReceiptsTable(props) {
                   className={'CustomTableClass'}
                   dataSource={props.dataSource}
                   columns={columns}
-                  pagination={{ pageSize: 4 }}
+                  pagination={{ pageSize: 5 }}
                   loading={props.loading}
                   rowKey='id'                  
                 />

@@ -13,7 +13,7 @@ import {
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import Tag from '../../../../components/Tag'
 import moment from 'moment'
-import {numberFormat} from '../../../../utils'
+import {numberFormat,sortColumnString} from '../../../../utils'
 
 const { Search } = Input
 const { Option } = Select
@@ -175,29 +175,29 @@ function ReportDocumentTable(props) {
           <Col span={6} style={{ textAlign: 'left' }}>
             <div className={'title-space-field'}>
               <Statistic
-                title='Total:'
-                value={`Q ${getFormattedValue(props.dataSource.reduce( ( sum, item  ) =>  sum + item.total,0))}`}
+                title='Total facturado:'
+                value={`Q ${getFormattedValue(props.dataSource.filter(item => item.status === "APPROVED").reduce( ( sum, item  ) =>  sum + item.total,0))}`}
               />
               
             </div>            
-          </Col>  
-          <Col span={6} style={{ textAlign: 'left' }}>
-            <div className={'title-space-field'}>
-              <Statistic
-                title='Cantidad de facturas:'                
-                value ={props.dataSource.length}
-              />              
-            </div>            
           </Col>
-          <Col span={6} style={{ textAlign: 'left' }}>
+          <Col span={4} style={{ textAlign: 'left' }}>
             <div className={'title-space-field'}>
               <Statistic
                 title='Facturas Aprobadas:'                
                 value ={props.dataSource.filter(item => item.status === "APPROVED").length}
               />              
             </div>            
-          </Col>   
+          </Col>
           <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Total anulado:'
+                value={`Q ${getFormattedValue(props.dataSource.filter(item => item.status === "CANCELLED").reduce( ( sum, item  ) =>  sum + item.total,0))}`}
+              />              
+            </div>            
+          </Col>               
+          <Col span={4} style={{ textAlign: 'left' }}>
             <div className={'title-space-field'}>
               <Statistic
                 title='Facturas Anuladas:'                
@@ -205,6 +205,14 @@ function ReportDocumentTable(props) {
               />              
             </div>            
           </Col>          
+          <Col span={4} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Cantidad total de facturas:'                
+                value ={props.dataSource.length}
+              />              
+            </div>            
+          </Col>              
         </Row>
     </>
   )

@@ -19,16 +19,16 @@ const submenu_sections = [
   //     </>
   //   ),
   // },
-  // {
-  //   name: 'Estado Cta. Clientes',
-  //   key: 'reportAccountClient',
-  //   route: '/reportAccountClient',
-  //   component: (
-  //     <>
-  //       <h1>Estado cuenta clientes</h1>
-  //     </>
-  //   ),
-  // },
+  {
+    name: 'Estado Cta. Clientes',
+    key: 'reportAccountClient',
+    route: '/reportAccountClient',
+    component: (
+      <>
+        <h1>Estado cuenta clientes</h1>
+      </>
+    ),
+  },
   // {
   //   name: 'Cuentas por cobrar',
   //   key: 'reportAccountsReceivable',

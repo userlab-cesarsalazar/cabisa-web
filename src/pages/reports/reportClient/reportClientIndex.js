@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import moment from 'moment'
-import { Spin } from 'antd'
+import { Spin, message } from 'antd'
 import HeaderPage from '../../../components/HeaderPage'
 import ReportClientTable from './components/reportClientTable'
 import ReportsSrc from '../reportsSrc'
 import { showErrors } from '../../../utils'
 import { stakeholdersTypes } from '../../../commons/types'
+import { permissions } from '../../../commons/types'
 
 const getTotals = clientsList =>
   clientsList.reduce(
@@ -86,16 +87,65 @@ function ReportClient() {
 
   const handleSwitchChange = isChecked => setIsSwitchChecked(isChecked)
 
+  const exportDataAction = () => {
+    setLoading(true)    
+    let params = {
+      created_at: filters.created_at
+      ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
+      : '',
+      name: { $like: `%25${filters.name}%25` },
+            
+      stakeholder_type: filters.stakeholder_type
+      ? filters.stakeholder_type
+      : { $ne: stakeholdersTypes.PROVIDER },
+      status: 'ACTIVE',
+
+      reportType:"clientReport"
+    }
+   
+    ReportsSrc
+      .exportReport(params)
+      .then(data => {        
+        message.success('Reporte creado')
+        exportExcel(data.reportExcel)
+      })
+      .catch(_ => message.error('Error al cargar reporte facturas'))
+      .finally(() => setLoading(false))
+
+  }
+
+  const exportExcel = (base64Excel) =>{
+    try{      
+      let uri = 'data:application/octet-stream;base64,'+base64Excel;
+      let link = document.createElement('a');
+      link.setAttribute("download", `Reporte-Recibos-Caja.xls`);
+      link.setAttribute("href", uri);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(document.body.lastChild);                    
+    }catch (e) {
+      console.log('ERROR ON EXPORT MANIFEST',e)            
+      message.warning('Error al exportar el manifiesto')
+    }finally{
+        setLoading(false)
+    }
+  }
+
   return (
     <Spin spinning={loading}>
-      <HeaderPage titleButton={''} title={'Reporte - Clientes'} />
-      <ReportClientTable
+      <HeaderPage
+        titleButton={'Exportar'} 
+        title={'Reporte - Clientes'} 
+        permissions={permissions.REPORTES}
+        showDrawer={exportDataAction}
+      />
+      <ReportClientTable      
         dataSource={clients}
         stakeholderTypesOptionsList={stakeholderTypesOptionsList}
         handleFiltersChange={setSearchFilters}
         handleSwitchChange={handleSwitchChange}
         isSwitchChecked={isSwitchChecked}
-        totals={totals}
+        totals={totals}        
       />
     </Spin>
   )
