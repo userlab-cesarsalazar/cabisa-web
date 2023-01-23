@@ -116,7 +116,7 @@ function ReportClient() {
     try{      
       let uri = 'data:application/octet-stream;base64,'+base64Excel;
       let link = document.createElement('a');
-      link.setAttribute("download", `Reporte-Recibos-Caja.xls`);
+      link.setAttribute("download", `Reporte-Clientes-Caja.xls`);
       link.setAttribute("href", uri);
       document.body.appendChild(link);
       link.click();

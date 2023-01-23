@@ -20,7 +20,7 @@ const submenu_sections = [
   //   ),
   // },
   {
-    name: 'Estado Cta. Clientes',
+    name: 'Clientes',
     key: 'reportAccountClient',
     route: '/reportAccountClient',
     component: (
