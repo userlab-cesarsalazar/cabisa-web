@@ -46,7 +46,6 @@ function ReportClient() {
 
   const fetchClients = useCallback(() => {
     setLoading(true)
-
     ReportsSrc.getClientsAccountState({
       created_at: filters.created_at
         ? { $like: `${moment(filters.created_at).format('YYYY-MM-DD')}%25` }
@@ -65,7 +64,6 @@ function ReportClient() {
         const stakeholdersTypesList = data.filter(
           s => s !== stakeholdersTypes.PROVIDER
         )
-
         setStakeholderTypesOptionsList(stakeholdersTypesList)
       })
       .catch(error => showErrors(error))
@@ -73,7 +71,7 @@ function ReportClient() {
 
   useEffect(() => {
     if (stakeholderTypesOptionsList.length === 0) fetchClientTypes()
-    else fetchClients()
+    fetchClients()
   }, [fetchClients, stakeholderTypesOptionsList])
 
   useEffect(() => {

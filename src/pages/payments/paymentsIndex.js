@@ -93,7 +93,7 @@ function Payments() {
 
   return (
     <>
-      <HeaderPage title={'Recibo de cajax'} permissions={permissions.PAGOS} />
+      <HeaderPage title={'Recibo de caja'} permissions={permissions.PAGOS} />
       <PaymentsTable
         dataSource={dataSource}
         handlerEditRow={handlerEditRow}
