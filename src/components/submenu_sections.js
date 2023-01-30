@@ -9,18 +9,18 @@ const submenu_sections = [
   //     </>
   //   ),
   // },
-  // {
-  //   name: 'Inventario',
-  //   key: 'reportInventory',
-  //   route: '/reportInventory',
-  //   component: (
-  //     <>
-  //       <h1>Inventario</h1>
-  //     </>
-  //   ),
-  // },
   {
-    name: 'Clientes',
+    name: 'Inventario',
+    key: 'reportInventory',
+    route: '/reportInventory',
+    component: (
+      <>
+        <h1>Inventario</h1>
+      </>
+    ),
+  },
+  {
+    name: 'Cta. Clientes',
     key: 'reportAccountClient',
     route: '/reportAccountClient',
     component: (
@@ -89,16 +89,16 @@ const submenu_sections = [
   //     </>
   //   ),
   // },
-  // {
-  //   name: 'Ventas',
-  //   key: 'reportSales',
-  //   route: '/reportSales',
-  //   component: (
-  //     <>
-  //       <h1>Ventas por vendedor y rango</h1>
-  //     </>
-  //   ),
-  // },
+  {
+    name: 'Ordenes de servicio',
+    key: 'reportSales',
+    route: '/reportSales',
+    component: (
+      <>
+        <h1>Ventas por vendedor y rango</h1>
+      </>
+    ),
+  },
   // {
   //   name: 'Comisiones',
   //   key: 'reportCommissions',

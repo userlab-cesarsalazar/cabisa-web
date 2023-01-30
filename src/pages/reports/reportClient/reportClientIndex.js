@@ -116,7 +116,7 @@ function ReportClient() {
     try{      
       let uri = 'data:application/octet-stream;base64,'+base64Excel;
       let link = document.createElement('a');
-      link.setAttribute("download", `Reporte-Clientes-Caja.xls`);
+      link.setAttribute("download", `Reporte-Cuenta-Clientes.xls`);
       link.setAttribute("href", uri);
       document.body.appendChild(link);
       link.click();
@@ -133,7 +133,7 @@ function ReportClient() {
     <Spin spinning={loading}>
       <HeaderPage
         titleButton={'Exportar'} 
-        title={'Reporte - Clientes'} 
+        title={'Reporte - Estado de cuenta clientes'} 
         permissions={permissions.REPORTES}
         showDrawer={exportDataAction}
       />

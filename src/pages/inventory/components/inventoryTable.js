@@ -19,6 +19,8 @@ const { Option } = Select
 
 function InventoryTable(props) {
   const getFilteredData = data => props.handlerTextSearch(data)
+  
+  const getFilteredDataCode = data => props.handlerTextSearchCode(data)
 
   const filterCategory = data => props.handlerCategorySearch(data)
 
@@ -37,11 +39,23 @@ function InventoryTable(props) {
             onSearch={getFilteredData}
           />
         </Col>
+        
+        <Col xs={4} sm={4} md={4} lg={4}>
+          <Search
+            prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
+            placeholder='Busca por codigo'
+            className={'cabisa-table-search customSearch'}
+            style={{ width: '100%', height: '40px' }}
+            size={'large'}
+            onSearch={getFilteredDataCode}
+          />
+        </Col>
+
         <Col
-          xs={8}
-          sm={8}
-          md={8}
-          lg={8}
+          xs={4}
+          sm={4}
+          md={4}
+          lg={4}
           className={props.warehouse ? 'stash-component' : ''}
         >
           <Select

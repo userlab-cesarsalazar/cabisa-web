@@ -25,8 +25,7 @@ function ReportManualCashReceipts(props) {
   }
 
     const [dataSource, setDataSource] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [isAdmin, setIsAdmin] = useState(true)
+    const [loading, setLoading] = useState(true)    
     const [filters, setFilters] = useState(initFilters.current)
     const [paymentMethodsOptionsList, setPaymentMethodsOptionsList] = useState([])
     const [creditStatusOptionsList, setCreditStatusOptionsList] = useState([])
@@ -144,7 +143,7 @@ function ReportManualCashReceipts(props) {
         paymentMethodsOptionsList={paymentMethodsOptionsList}        
         creditStatusOptionsList={creditStatusOptionsList}
         loading={loading}
-        isAdmin={isAdmin}
+        isAdmin={true}
       />
             
     </>
