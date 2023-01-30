@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import { Modal, Row, Col, DatePicker, message } from 'antd'
 import HeaderPage from '../../../components/HeaderPage'
 import ReportInventoryTable from './components/reportInventoryTable'
+import { permissions } from '../../../commons/types'
 
 const { RangePicker } = DatePicker
 
 function ReportInventory() {
-  const [isModalVisible, setIsModalVisible] = useState(true)
+  const [isModalVisible, setIsModalVisible] = useState(false)
   const [modalDateRange, setModalDateRange] = useState(null)
+  const [exportReport, setExportReport] = useState(false)
 
   const handleGenerateReport = () => {
     if (!modalDateRange)
@@ -40,10 +42,18 @@ function ReportInventory() {
         </Row>
       </Modal>
 
-      <HeaderPage titleButton={''} title={'Reporte - Inventario'} />
+      <HeaderPage
+      titleButton={'Exportar'} 
+      title={'Reporte - Inventario'}
+      permissions={permissions.REPORTES}
+      showDrawer={()=>setExportReport(!exportReport)}      
+       />
+      
       <ReportInventoryTable
         modalDateRange={modalDateRange}
         isModalVisible={isModalVisible}
+        exportData={exportReport}
+        exportDataResponse={()=>setExportReport(false)}        
       />
     </>
   )

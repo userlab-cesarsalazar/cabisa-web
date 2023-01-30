@@ -13,7 +13,7 @@ import {
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import Tag from '../../../../components/Tag'
 import moment from 'moment'
-import {numberFormat,sortColumnString} from '../../../../utils'
+import {numberFormat} from '../../../../utils'
 
 const { Search } = Input
 const { Option } = Select

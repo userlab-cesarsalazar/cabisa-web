@@ -133,7 +133,7 @@ function ReportClient() {
     <Spin spinning={loading}>
       <HeaderPage
         titleButton={'Exportar'} 
-        title={'Reporte - Clientes'} 
+        title={'Reporte - Estado de cuenta clientes'} 
         permissions={permissions.REPORTES}
         showDrawer={exportDataAction}
       />

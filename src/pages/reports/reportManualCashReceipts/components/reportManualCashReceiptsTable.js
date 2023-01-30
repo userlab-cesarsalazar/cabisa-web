@@ -7,8 +7,7 @@ import {
   Row,
   Select,
   Table,  
-  Statistic,
-  Collapse,
+  Statistic,  
   Tag as AntTag,
 } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
@@ -16,7 +15,7 @@ import Tag from '../../../../components/Tag'
 import moment from 'moment'
 import {numberFormat} from '../../../../utils'
 
-const { Panel } = Collapse;
+
 const { Search } = Input
 const { Option } = Select
 const { RangePicker } = DatePicker

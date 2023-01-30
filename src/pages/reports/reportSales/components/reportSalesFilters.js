@@ -10,14 +10,36 @@ function ReportSalesFilters(props) {
   return (
     <>
       <Row gutter={16} className={'section-space-field'}>
-        <Col xs={8} sm={8} md={8} lg={8}>
+      <Col xs={6} sm={6} md={6} lg={6}>
+          <Select
+            className={'single-select'}
+            placeholder={'Buscar por cliente'}
+            size={'large'}
+            style={{ width: '100%', height: '40px' }}
+            getPopupContainer={trigger => trigger.parentNode}
+            allowClear
+            showSearch
+            onSearch={debounce(props.handleSearchStakeholder, 400)}
+            value={props.filters.client_id}
+            onChange={props.setSearchFilters('client_id')}
+            loading={props.loading}
+            optionFilterProp='children'
+          >
+            {props.stakeholdersOptionsList?.map(client => (
+              <Option key={client.id} value={client.id}>
+                {client.name}
+              </Option>
+            ))}
+          </Select>
+        </Col>
+        <Col xs={6} sm={6} md={6} lg={6}>
           <RangePicker
             style={{ width: '100%', height: '40px', borderRadius: '8px' }}
             format='DD-MM-YYYY'
             onChange={props.setSearchFilters('dateRange')}
           />
         </Col>
-        <Col xs={8} sm={8} md={8} lg={8}>
+        <Col xs={6} sm={6} md={6} lg={6}>
           <Select
             className={'single-select'}
             placeholder={'Seleccione Metodo de Pago'}
@@ -39,7 +61,7 @@ function ReportSalesFilters(props) {
             ))}
           </Select>
         </Col>
-        <Col xs={8} sm={8} md={8} lg={8}>
+        <Col xs={6} sm={6} md={6} lg={6}>
           <Select
             className={'single-select'}
             placeholder={'Seleccione estado'}
@@ -53,18 +75,18 @@ function ReportSalesFilters(props) {
           >
             <Option value={''}>
               <AntTag color='gray'>Todo</AntTag>
-            </Option>
-            <Option value={'INVOICE'}>
-              <AntTag color='#187fce'>Factura</AntTag>
-            </Option>
-            <Option value={'PRE_INVOICE'}>
+            </Option>            
+            <Option value={'SELL_INVOICE'}>
+              <AntTag color='#187fce'>Factura Manual</AntTag>
+            </Option>            
+            <Option value={'RENT_INVOICE'}>
               <AntTag color='#87d067'>Nota de Servicio</AntTag>
             </Option>
           </Select>
-        </Col>
+        </Col>        
       </Row>
 
-      <Row gutter={16} className={'section-space-field'}>
+      {/* <Row gutter={16} className={'section-space-field'}>
         <Col xs={8} sm={8} md={8} lg={8}>
           <Select
             className={'single-select'}
@@ -109,7 +131,7 @@ function ReportSalesFilters(props) {
             ))}
           </Select>
         </Col>
-      </Row>
+      </Row> */}
     </>
   )
 }

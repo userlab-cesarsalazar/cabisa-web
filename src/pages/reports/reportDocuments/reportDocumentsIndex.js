@@ -26,8 +26,7 @@ function ReportDocuments(props) {
   }
 
     const [dataSource, setDataSource] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [isAdmin, setIsAdmin] = useState(true)
+    const [loading, setLoading] = useState(true)    
     const [filters, setFilters] = useState(initFilters.current)
     const [paymentMethodsOptionsList, setPaymentMethodsOptionsList] = useState([])
 
@@ -137,7 +136,7 @@ function ReportDocuments(props) {
         handleFiltersChange={setSearchFilters}
         paymentMethodsOptionsList={paymentMethodsOptionsList}        
         loading={loading}
-        isAdmin={isAdmin}
+        isAdmin={true}
       />
             
     </>
