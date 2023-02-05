@@ -27,6 +27,7 @@ import fetchSalesReducer from './fetchSalesReducer'
 import fetchSalesStatusReducer from './fetchSalesStatusReducer'
 import setReducer from './setReducer'
 import updateSaleReducer from './updateSaleReducer'
+import fetchServiceOrdersReducer from './fetchServiceOrdersReducer'
 
 const slices = {
   approveSaleReducer,
@@ -40,13 +41,15 @@ const slices = {
   fetchStakeholdersOptionsReducer,
   fetchDocumentServiceTypeOptionsReducer,
   fetchSalesReducer,
+  fetchServiceOrdersReducer,
   fetchSalesStatusReducer,
   setReducer,
-  updateSaleReducer,
+  updateSaleReducer,  
 }
 
 const resolveReducers = slices => (state, action) => {
   try {
+    
     let reducerName = action.type.split(' ')[0]
     reducerName = reducerName
       .trim()
@@ -56,7 +59,7 @@ const resolveReducers = slices => (state, action) => {
         return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
       })
     reducerName = `${reducerName.join('')}Reducer`
-
+          
     return slices[reducerName](state, action)
   } catch (error) {
     throw new Error('The reducer must be included in "slices"')

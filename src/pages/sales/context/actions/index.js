@@ -142,6 +142,16 @@ const saleActions = {
   },
 
   setSaleState: async (dispatch, data) => dispatch({ type: 'SET', data }),
+
+  fetchServiceOrders: async (dispatch, params = {}) => {
+    dispatch({ type: 'FETCH_SERVICE_ORDERS START' })
+    try {      
+      const sales = await salesSrc.getServiceOrders({ ...params })
+      dispatch({ type: 'FETCH_SERVICE_ORDERS END', sales })
+    } catch (error) {
+      dispatch({ type: 'FETCH_SERVICE_ORDERS ERROR', error })
+    }
+  },
 }
 
 export default saleActions
