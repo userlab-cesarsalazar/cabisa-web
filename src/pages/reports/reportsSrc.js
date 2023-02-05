@@ -34,6 +34,8 @@ const getCashReceipts = params => api.get(`${urlReport}/getCashReceipts`, { ...p
 const getManualCashReceipts = params => api.get(`${urlReport}/getCashManualReceipts`, { ...params })
 const exportReport = params => api.get(`${urlReport}/exportReport`, { ...params })
 
+const getServiceOrders = params => api.get(`${urlReport}/getServiceOrders`, { ...params })
+
 const ReportsSrc = {
   getSales,
   getInventory,
@@ -49,7 +51,8 @@ const ReportsSrc = {
   getDocumentReport,
   exportReport,
   getCashReceipts,
-  getManualCashReceipts
+  getManualCashReceipts,
+  getServiceOrders
 }
 
 export default ReportsSrc

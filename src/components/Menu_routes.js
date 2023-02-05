@@ -38,11 +38,12 @@ import ReportMachine from '../pages/reports/reportMachine/reportMachineIndex'
 import ReportInventory from '../pages/reports/reportInventory/reportInventoryIndex'
 import ReportClient from '../pages/reports/reportClient/reportClientIndex'
 import ReportAccountsReceivable from '../pages/reports/reportAccountsReceivable/reportAccountsReceivableIndex'
-import ReportSales from '../pages/reports/reportSales/reportSalesIndex'
+//import ReportSales from '../pages/reports/reportSales/reportSalesIndex'
 /*new reports*/
 import ReportDocuments from '../pages/reports/reportDocuments/reportDocumentsIndex'
 import ReportCashReceipts from '../pages/reports/reportCashReceipts/reportCashReceiptsIndex'
 import ReportManualCashReceipts from '../pages/reports/reportManualCashReceipts/reportManualCashReceiptsIndex'
+import ReportServiceOrders from '../pages/reports/reportServiceOrders/reportServiceOrdersIndex'
 
 //billing
 import Billing from '../pages/billing/billingIndex'
@@ -356,7 +357,8 @@ const menu_sub_routes = [
   {
     id: 3,
     route: '/reportSales',
-    component: ReportSales,
+    // component: ReportSales,
+    component: ReportServiceOrders,
   },
   {
     id: 3,
