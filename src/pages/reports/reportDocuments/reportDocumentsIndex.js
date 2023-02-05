@@ -40,8 +40,7 @@ function ReportDocuments(props) {
 
     
   const exportDataAction = () => {
-    setLoading(true)
-    console.log("expor data")
+    setLoading(true)    
     let params = {
             related_internal_document_id: { $like: `%25${filters.related_internal_document_id}%25` }, // Nro nota de servicio
             id: { $like: `%25${filters.id}%25` },
@@ -57,8 +56,7 @@ function ReportDocuments(props) {
 
     ReportsSrc
       .exportReport(params)
-      .then(data => {
-        console.log("export data >> ",data)
+      .then(data => {        
         message.success('Reporte creado')
         exportExcel(data.reportExcel)
       })
