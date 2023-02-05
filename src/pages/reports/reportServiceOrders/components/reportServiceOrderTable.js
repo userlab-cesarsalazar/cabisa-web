@@ -174,8 +174,7 @@ function ReportServiceOrderTable(props) {
     params.reportType = "serviceOrders" 
     setLoadingSecondary(true)
     let data = await ReportsSrc.exportReport(params)
-    exportExcel(data.reportExcel)    
-    console.log(data)
+    exportExcel(data.reportExcel)        
     props.endExcelCreation()
   }
 

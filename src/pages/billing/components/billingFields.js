@@ -32,9 +32,6 @@ import {
   stakeholdersStatus,
   stakeholdersTypes,
 } from '../../../commons/types'
-import moment from 'moment'
-
-
 
 const { Title } = Typography
 const { Option } = Select
