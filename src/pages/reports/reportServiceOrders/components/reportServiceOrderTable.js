@@ -31,8 +31,7 @@ function ReportServiceOrderTable(props) {
   const [{ error, status, loading, ...saleState }, saleDispatch] = useSale()
 
   useEffect(() => {
-    if(props.exportExcel){
-        console.log("EXPORTAR EXCEL")        
+    if(props.exportExcel){                
         createFile()
     }        
     // eslint-disable-next-line react-hooks/exhaustive-deps
