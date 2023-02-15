@@ -33,6 +33,7 @@ import {
   stakeholdersTypes,
 } from '../../../commons/types'
 
+
 const { Title } = Typography
 const { Option } = Select
 const { TextArea } = Input

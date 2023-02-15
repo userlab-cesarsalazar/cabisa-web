@@ -55,13 +55,7 @@ function ReportClientTable(props) {
       dataIndex: 'stakeholder_type', // Field that is goint to be rendered
       key: 'stakeholder_type',
       render: text => <Tag type='stakeholderTypes' value={text} />,
-    },
-    {
-      title: 'Limite de credito',
-      dataIndex: 'credit_limit', // Field that is goint to be rendered
-      key: 'credit_limit',
-      render: text => <span>{ `Q ${getFormattedValue(text ? text.toFixed(2) : (0).toFixed(2))}` }</span>,
-    },
+    },    
     {
       title: 'Cargos',
       dataIndex: 'total_credit', // Field that is goint to be rendered
@@ -69,17 +63,16 @@ function ReportClientTable(props) {
       render: text => <span>{ `Q ${getFormattedValue(text ? text.toFixed(2) : (0).toFixed(2))}` }</span>,
     },
     {
-      title: 'Pagos',
+      title: 'Pagado',
       dataIndex: 'paid_credit', // Field that is goint to be rendered
       key: 'paid_credit',
       render: text => <span>{ `Q ${getFormattedValue(text ? text.toFixed(2) : (0).toFixed(2))}` }</span>,
     },
     {
-      title: 'Credito disponible',
-      dataIndex: 'credit_balance', // Field that is goint to be rendered
-      key: 'credit_balance',
-      render: text => <span>{ `Q ${getFormattedValue(text ? text.toFixed(2) : (0).toFixed(2))}` }</span>,
-    },
+      title: 'Balance',      
+      render: (_,record) => 
+      <span>{ `Q ${getFormattedValue(record.credit_balance)}`}</span>,
+    }    
   ]
 
   const handleChange = (pagination, filters, sorter) =>{    
@@ -230,11 +223,11 @@ function ReportClientTable(props) {
             <Col span={6} style={{ textAlign: 'right' }}>
               <div className={'title-space-field'}>
                 <Statistic
-                  title='Balance de Creditos :'
-                  value={`Q ${getFormattedValue(props.totals.totalCreditBalance)}`}
+                  title='Total Balance :'
+                  value={`Q ${getFormattedValue ((props.totals.totalCreditBalance ? props.totals.totalCreditBalance : 0))}`}
                 />
               </div>
-            </Col>
+            </Col>            
           </Row>
         </>
       ) : null}

@@ -98,20 +98,11 @@ function ReportServiceOrderTable(props) {
 
   const columns = [
     {
-      width:120,
+      width:100,
       title: 'No. de boleta',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
       render: text => <span>{text}</span>,
-    },
-    {
-      width:120,
-      title: 'Fecha',
-      dataIndex: 'start_date', // Field that is goint to be rendered
-      key: 'start_date',
-      render: text => (
-        <span>{text ? moment(text).format('DD-MM-YYYY') : null}</span>
-      ),
     },
     {
       width:300,
@@ -121,7 +112,7 @@ function ReportServiceOrderTable(props) {
       render: text => <span>{text}</span>,
     },
     {
-      width:300,
+      width:200,
       title: 'Proyecto',
       dataIndex: 'project_name', // Field that is goint to be rendered
       key: 'project_name',
@@ -129,13 +120,22 @@ function ReportServiceOrderTable(props) {
     },
     {
       width:100,
-      title: 'Status',
-      dataIndex: 'status', // Field that is goint to be rendered
-      key: 'status',
-      render: text => <Tag type='documentStatus' value={text} />,
-    },   
+      title: 'Fecha Inicio proyecto',
+      dataIndex: 'project_start_date', // Field that is goint to be rendered
+      key: 'project_start_date',
+      render: text => (
+        <span>{text ? moment(text).format('DD-MM-YYYY') : null}</span>
+      ),
+    },        
     {
       width:200,
+      title: 'Observaciones',
+      dataIndex: 'comments', // Field that is goint to be rendered
+      key: 'comments',
+      render: text => <span>{text}</span>,
+    },   
+    {
+      width:100,
       title: '',
       dataIndex: 'id', // Field that is goint to be rendered
       key: 'id',
@@ -263,40 +263,22 @@ function ReportServiceOrderTable(props) {
                   pagination={{ pageSize: 5 }}
                   rowKey='id'
                   expandable={{
-                    expandedRowRender: record => (
+                    expandedRowRender: record =>  (
                       <div className={'text-left'}>
                         <p>
                           <b>Observaciones: </b>{' '}
                           {record.comments !== null
                             ? <AntTag color={'blue'}>{record.comments}</AntTag> 
                             : ''}{' '}
-                        </p>
-                        <p>
-                          <b>Encargado: </b>{' '}
-                          {record.stakeholder_business_man !== null
-                            ? record.stakeholder_business_man
-                            : ''}{' '}
-                        </p>
-                        <p>
-                          <b>Direccion: </b>{' '}
-                          {record.stakeholder_address !== null
-                            ? record.stakeholder_address
-                            : ''}{' '}
-                        </p>
-                        <p>
-                          <b>Telefono: </b>{' '}
-                          {record.stakeholder_phone
-                            ? formatPhone(record.stakeholder_phone)
-                            : ''}{' '}
-                        </p>
+                        </p>                        
                       </div>
                     ),
-                    expandIcon: ({ expanded, onExpand, record }) =>
-                      expanded ? (
-                        <DownOutlined onClick={e => onExpand(record, e)} />
-                      ) : (
-                        <RightOutlined onClick={e => onExpand(record, e)} />
-                      ),
+                    expandIcon: ({ expanded, onExpand, record }) =>    
+                    record.comments && (
+                      expanded  ? 
+                    (<DownOutlined onClick={e => onExpand(record, e)} />) : 
+                    (<RightOutlined onClick={e => onExpand(record, e)} />)          
+                    )                    
                   }}
                 />
               </Col>
