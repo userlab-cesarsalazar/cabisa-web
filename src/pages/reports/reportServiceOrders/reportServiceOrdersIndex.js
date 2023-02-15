@@ -24,7 +24,7 @@ const [exportExcelAction, setExportExcelAction] = useState(false)
   return (
     <>
     <HeaderPage 
-    title={'Reporte - Ordenes de servicio'} 
+    title={'Reporte - Ordenes de servicio en desarrollo'} 
     titleButton={'Exportar'}
     permissions={permissions.REPORTES}
     showDrawer={exportDataAction}
