@@ -42,8 +42,7 @@ function ReportCashReceipts(props) {
             setPaymentMethodsOptionsList(data[0])
             setCreditStatusOptionsList(data[1])
           })
-          .catch(_ => message.error('Error al cargar listados'))
-          .finally(() => setLoading(false))
+          .catch(_ => message.error('Error al cargar listados'))          
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

@@ -256,7 +256,8 @@ function ReportServiceOrderTable(props) {
               <Col xs={24} sm={24} md={24} lg={24}>
                 <Table
                   scroll={{ y: 250 }}
-                  loading={status === 'LOADING' || loadingSecondary}
+                  loading={!(loading === 'fetchServiceOrders' && status === 'SUCCESS') || loadingSecondary}
+                  //SUCCESS
                   className={'CustomTableClass'}
                   dataSource={saleState?.sales}
                   columns={columns}
