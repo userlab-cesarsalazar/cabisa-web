@@ -56,7 +56,8 @@ function InventoryMovementFields({ forbidEdition, editData, ...props }) {
       description: p.description,
       id: p.id,
       quantity: p.product_quantity,
-      inventory_unit_value: Number(p.product_price) + Number(p.unit_tax_amount),
+      // inventory_unit_value: Number(p.product_price) + Number(p.unit_tax_amount),
+      inventory_unit_value: Number(p.product_price).toFixed(2),
       tax_fee: p.tax_fee,
     }))
 

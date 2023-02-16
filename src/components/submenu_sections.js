@@ -20,7 +20,7 @@ const submenu_sections = [
     ),
   },
   {
-    name: 'Estado Cta. Clientes',
+    name: 'Cta. Clientes',
     key: 'reportAccountClient',
     route: '/reportAccountClient',
     component: (
@@ -29,16 +29,16 @@ const submenu_sections = [
       </>
     ),
   },
-  {
-    name: 'Cuentas por cobrar',
-    key: 'reportAccountsReceivable',
-    route: '/reportAccountsReceivable',
-    component: (
-      <>
-        <h1>Cuentas por cobrar</h1>
-      </>
-    ),
-  },
+  // {
+  //   name: 'Cuentas por cobrar',
+  //   key: 'reportAccountsReceivable',
+  //   route: '/reportAccountsReceivable',
+  //   component: (
+  //     <>
+  //       <h1>Cuentas por cobrar</h1>
+  //     </>
+  //   ),
+  // },
   // {
   //   name: 'Equipo / Servicio',
   //   key: 'report_equipment_service',
@@ -49,16 +49,36 @@ const submenu_sections = [
   //     </>
   //   ),
   // },
-  // {
-  //   name: 'Factura Mensual',
-  //   key: 'reportMonthlyBill',
-  //   route: '/reportMonthlyBill',
-  //   component: (
-  //     <>
-  //       <h1>Factura mensual</h1>
-  //     </>
-  //   ),
-  // },
+  {
+    name: 'Facturas',
+    key: 'reportMonthlyBill',
+    route: '/reportMonthlyBill',
+    component: (
+      <>
+        <h1>Factura</h1>
+      </>
+    ),
+  },
+  {
+    name: 'Recibos de caja',
+    key: 'reportCasReceipts',
+    route: '/reportCasReceipts',
+    component: (
+      <>
+        <h1>Recibos</h1>
+      </>
+    ),
+  },
+  {
+    name: 'Recibos',
+    key: 'reportManualCasReceipts',
+    route: '/reportManualCasReceipts',
+    component: (
+      <>
+        <h1>Recibo manual</h1>
+      </>
+    ),
+  },
   // {
   //   name: 'Envios',
   //   key: 'reportShipping',
@@ -70,7 +90,7 @@ const submenu_sections = [
   //   ),
   // },
   {
-    name: 'Ventas',
+    name: 'Ordenes de servicio',
     key: 'reportSales',
     route: '/reportSales',
     component: (

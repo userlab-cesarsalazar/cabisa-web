@@ -12,10 +12,16 @@ const columns = [
     dataIndex: 'created_at', // Field that is goint to be rendered
     key: 'created_at',
     render: text =>
-      text ? <span>{moment(text).format('DD-MM-YYYY')}</span> : null,
+      text ? <span>{moment(text).format('DD-MM-YYYY hh:mm:ss A')}</span> : null,
   },
   {
     title: 'Tipo',
+    dataIndex: 'operation_type', // Field that is goint to be rendered
+    key: 'operation_type',
+    render: text => <Tag type='operationsTypes' value={text} />,
+  },
+  {
+    title: 'Operacion',
     dataIndex: 'movement_type', // Field that is goint to be rendered
     key: 'movement_type',
     render: text => <Tag type='inventoryMovementsTypes' value={text} />,
@@ -45,13 +51,13 @@ const columns = [
     render: text => <span>{getFormattedValue(text)}</span>,
   },
   {
-    title: 'Cantidad Total',
+    title: 'Existencias Actuales',
     dataIndex: 'inventory_quantity', // Field that is goint to be rendered
     key: 'inventory_quantity',
     render: text => <span>{text}</span>,
   },
   {
-    title: 'Valor unitario',
+    title: 'Valor unitario Promedio',
     dataIndex: 'inventory_unit_cost', // Field that is goint to be rendered
     key: 'inventory_unit_cost',
     render: text => <span>{getFormattedValue(text)}</span>,
@@ -64,6 +70,7 @@ const columns = [
   },
 ]
 
+
 function ReportInventoryDetailDrawer(props) {
   return (
     <Drawer
@@ -75,9 +82,14 @@ function ReportInventoryDetailDrawer(props) {
       destroyOnClose
       footer={
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={24} lg={24}>
+          <Col xs={12} sm={12} md={12} lg={12}>
             <Button size='large' type='primary' onClick={props.onClose}>
               Volver
+            </Button>
+          </Col>
+          <Col xs={12} sm={12} md={12} lg={12}>
+            <Button size='large' type='primary' onClick={() => props.exportDataDetailToFile(props.detailData)}>
+              Exportar
             </Button>
           </Col>
         </Row>

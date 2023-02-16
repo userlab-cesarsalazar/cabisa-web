@@ -10,7 +10,7 @@ import {
   Tag as AntTag,
   Spin,
   Statistic,
-  Divider,
+  Divider,message
 } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../../components/actionOptions'
@@ -31,13 +31,7 @@ const getColumns = ({ handlerEditRow }) => [
     dataIndex: 'code', // Field that is goint to be rendered
     key: 'code',
     render: text => <span>{text}</span>,
-  },
-  {
-    title: 'Serie',
-    dataIndex: 'serial_number', // Field that is goint to be rendered
-    key: 'serial_number',
-    render: text => <span>{text}</span>,
-  },
+  },  
   {
     title: 'Nombre',
     dataIndex: 'description', // Field that is goint to be rendered
@@ -45,16 +39,22 @@ const getColumns = ({ handlerEditRow }) => [
     render: text => <span>{text}</span>,
   },
   {
-    title: 'Costo',
+    title: 'Costo Unitario Promedio',
     dataIndex: 'inventory_unit_value', // Field that is goint to be rendered
     key: 'inventory_unit_value',
-    render: text => <span>{text}</span>,
+    render: text => <span>{Number(text).toFixed(2)}</span>,
   },
   {
     title: 'Existencias',
     dataIndex: 'stock', // Field that is goint to be rendered
     key: 'stock',
     render: text => <span>{text}</span>,
+  },
+  {
+    title: 'Valor total',
+    dataIndex: 'inventory_total_value', // Field that is goint to be rendered
+    key: 'inventory_total_value',
+    render: text => <span>{Number(text).toFixed(2)}</span>,
   },
   {
     title: 'Categoria',
@@ -84,16 +84,19 @@ const getColumns = ({ handlerEditRow }) => [
   },
 ]
 
-const getTotals = productsList =>
-  productsList.reduce(
+const getTotals = productsList =>{
+return productsList.reduce(
     (result, p) => ({
       totalValue: result.totalValue + Number(p.inventory_total_value),
+      totalItems: result.totalItems + Number(p.stock)
     }),
     {
       totalValue: 0,
+      totalItems: 0
     }
   )
 
+  }
 function ReportInventoryTable(props) {
   const initFilters = useRef()
 
@@ -113,7 +116,7 @@ function ReportInventoryTable(props) {
   const [detailData, setDetailData] = useState([])
   const [productCategoriesList, setProductCategoriesList] = useState([])
   const [showDrawer, setShowDrawer] = useState(false)
-  const [totals, setTotals] = useState({ totalValue: 0 })
+  const [totals, setTotals] = useState({ totalValue: 0,totalItems: 0 })
 
   useEffect(() => {
     ReportSrc.getProductsCategories()
@@ -121,17 +124,75 @@ function ReportInventoryTable(props) {
       .catch(error => showErrors(error))
   }, [])
 
+  // useEffect(() => {
+  //   if (!props.modalDateRange || props.isModalVisible) return
+  //   setSearchFilters('dateRange')(props.modalDateRange)
+  // }, [props.modalDateRange, props.isModalVisible])
+
+useEffect(() => {
+    if (props.exportData){      
+      exportDataToFile()
+    }     
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.exportData])
+
+  const exportDataToFile = () => {    
+    setLoading(true)    
+    ReportSrc.exportReport({
+      ...getDateRangeFilter(filters.dateRange),
+      code: { $like: `%25${filters.code || ''}%25` },
+      description: { $like: `%25${filters.description || ''}%25` },
+      product_category: filters.product_category,
+      reportType:"inventoryReport"
+    })
+      .then(data => exportExcel(data.reportExcel))
+      .catch(error => showErrors(error))
+      .finally(() => setLoading(false))
+
+    props.exportDataResponse()
+  }
+
+  const exportDataDetailToFile = data => {
+    if(data.length > 0){
+      console.log("exportar la data detalle ***" ,data)    
+      setLoading(true)    
+      ReportSrc.exportReport({
+        ...getDateRangeFilter(filters.dateRange),
+        code: { $like: `%25${filters.code || ''}%25` },
+        description: { $like: `%25${filters.description || ''}%25` },
+        product_category: filters.product_category,
+        reportType:"inventoryReportDetail",
+        product_id:data[0].product_id
+      })
+        .then(data => exportExcel(data.reportExcel))
+        .catch(error => showErrors(error))
+        .finally(() => setLoading(false))
+  
+      props.exportDataResponse()
+    }
+    
+  }
+
+  const exportExcel = (base64Excel) =>{
+    try{      
+      let uri = 'data:application/octet-stream;base64,'+base64Excel;
+      let link = document.createElement('a');
+      link.setAttribute("download", `Reporte-inventario.xls`);
+      link.setAttribute("href", uri);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(document.body.lastChild);                    
+    }catch (e) {
+      console.log('ERROR ON EXPORT MANIFEST',e)            
+      message.warning('Error al exportar el manifiesto')
+    }finally{
+        setLoading(false)
+    }
+  }
+
   useEffect(() => {
-    if (!props.modalDateRange || props.isModalVisible) return
-
-    setSearchFilters('dateRange')(props.modalDateRange)
-  }, [props.modalDateRange, props.isModalVisible])
-
-  useEffect(() => {
-    if (!filters.dateRange) return
-
+    // if (!filters.dateRange) return
     setLoading(true)
-
     ReportSrc.getInventory({
       ...getDateRangeFilter(filters.dateRange),
       code: { $like: `%25${filters.code || ''}%25` },
@@ -153,7 +214,7 @@ function ReportInventoryTable(props) {
   }
 
   const setSearchFilters = field => value => {
-    if (field === 'dateRange' && !value) return
+    // if (field === 'dateRange' && !value) return
 
     setFilters(prevState => ({ ...prevState, [field]: value }))
   }
@@ -243,6 +304,14 @@ function ReportInventoryTable(props) {
               />
             </div>
           </Col>
+          <Col span={6} style={{ textAlign: 'right' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Total articulos del Inventario :'
+                value={totals.totalItems}
+              />
+            </div>
+          </Col>
         </Row>
       </Spin>
 
@@ -250,6 +319,7 @@ function ReportInventoryTable(props) {
         detailData={detailData}
         showDrawer={showDrawer}
         onClose={() => setShowDrawer(false)}
+        exportDataDetailToFile={(data) =>exportDataDetailToFile(data)}
       />
     </>
   )

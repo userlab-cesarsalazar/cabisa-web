@@ -93,6 +93,8 @@ function InventoryProduct(props) {
   const onClose = () => setIsVisible(false)
 
   const searchTextFinder = data => props.searchByTxt(data)
+  
+  const searchTextCodeFinder = data => props.searchByTxtCode(data)
 
   const searchByCategory = data => props.searchByCategory(data)
 
@@ -118,6 +120,7 @@ function InventoryProduct(props) {
         dataSource={dataSource}
         loading={props.loading}
         handlerTextSearch={searchTextFinder}
+        handlerTextSearchCode={searchTextCodeFinder}
         handlerCategorySearch={searchByCategory}
         columns={columns}
         productCategoriesList={props.productCategoriesList}

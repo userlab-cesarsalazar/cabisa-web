@@ -12,6 +12,7 @@ function ProductIndex() {
   const [productStatusList, setProductStatusList] = useState([])
   const [productsTaxesList, setProductsTaxesList] = useState([])
   const [searchText, setSearchText] = useState('')
+  const [searchTextCode, setSearchTextCode] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -20,6 +21,7 @@ function ProductIndex() {
 
     InventorySrc.getProducts({
       description: { $like: `%25${searchText}%25` },
+      code: searchTextCode,
       product_category: categoryFilter,
     })
       .then(result => setInventoryProducts(result))
@@ -28,7 +30,7 @@ function ProductIndex() {
         message.warning('No se ha podido obtener informacion del inventario.')
       })
       .finally(() => setLoading(false))
-  }, [searchText, categoryFilter])
+  }, [searchText, categoryFilter,searchTextCode])
 
   useEffect(() => {
     getProducts()
@@ -55,6 +57,8 @@ function ProductIndex() {
   }, [])
 
   const searchByTxt = description => setSearchText(description)
+  
+  const searchByTxtCode = description => setSearchTextCode(description)
 
   const searchByCategory = data => setCategoryFilter(data)
 
@@ -89,6 +93,7 @@ function ProductIndex() {
         title={'Productos'}
         searchByCategory={searchByCategory}
         searchByTxt={searchByTxt}
+        searchByTxtCode={searchByTxtCode}
         dataSource={inventoryProducts}
         closeAfterSaveWareHouse={clearSearch}
         deleteItemWareHouse={deleteProduct}

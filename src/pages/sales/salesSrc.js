@@ -6,6 +6,8 @@ const urlProduct = stage.productUrl
 const urlStakeholder = stage.stakeholderUrl
 const urlInvoice = stage.invoiceUrl
 
+const urlServiceOrders = stage.reportUrl
+
 const getProjectsOptions = params =>
   api.get(`${urlStakeholder}/projects-options`, params)
 const getProductsOptions = params =>
@@ -19,6 +21,8 @@ const approveSale = data => api.post(`${urlSale}/invoice`, data)
 const createSale = data => api.post(urlSale, data)
 const cancelSale = data => api.put(`${urlSale}/cancel`, data)
 const updateSale = data => api.put(urlSale, data)
+//report
+const getServiceOrders = params => api.get(`${urlServiceOrders}/getServiceOrders`, { ...params })
 
 const InventorySrc = {
   getProjectsOptions,
@@ -31,6 +35,7 @@ const InventorySrc = {
   createSale,
   cancelSale,
   updateSale,
+  getServiceOrders
 }
 
 export default InventorySrc

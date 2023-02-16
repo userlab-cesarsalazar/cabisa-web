@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import moment from 'moment'
 import {
   Card,
@@ -19,14 +19,15 @@ import CloseSquareOutlined from '@ant-design/icons/lib/icons/CloseSquareOutlined
 import DownOutlined from '@ant-design/icons/lib/icons/DownOutlined'
 import RightOutlined from '@ant-design/icons/lib/icons/RightOutlined'
 import Tag from '../../../../components/Tag'
-import { numberFormat, formatPhone } from '../../../../utils'
+import { numberFormat, formatPhone ,sortColumnString} from '../../../../utils'
 
 const { Search } = Input
 const { Option } = Select
 
 function ReportClientTable(props) {
+  
+  const [sortedInfo,setSortedInfo] = useState(null)
   const { getFormattedValue } = numberFormat()
-
   const columns = [
     {
       title: 'Codigo cliente',
@@ -38,6 +39,9 @@ function ReportClientTable(props) {
       title: 'Nombre o Razón social',
       dataIndex: 'name', // Field that is goint to be rendered
       key: 'name',
+      sorter: (a, b) => sortColumnString(a, b, 'name'),
+      sortOrder: sortedInfo && sortedInfo.columnKey === 'name' && sortedInfo.order,   
+      ellipsis: true,   
       render: text => <span>{text}</span>,
     },
     {
@@ -51,32 +55,29 @@ function ReportClientTable(props) {
       dataIndex: 'stakeholder_type', // Field that is goint to be rendered
       key: 'stakeholder_type',
       render: text => <Tag type='stakeholderTypes' value={text} />,
-    },
-    {
-      title: 'Limite de credito',
-      dataIndex: 'credit_limit', // Field that is goint to be rendered
-      key: 'credit_limit',
-      render: text => <span>{text}</span>,
-    },
+    },    
     {
       title: 'Cargos',
       dataIndex: 'total_credit', // Field that is goint to be rendered
       key: 'total_credit',
-      render: text => <span>{text}</span>,
+      render: text => <span>{ `Q ${getFormattedValue(text ? text.toFixed(2) : (0).toFixed(2))}` }</span>,
     },
     {
-      title: 'Pagos',
+      title: 'Pagado',
       dataIndex: 'paid_credit', // Field that is goint to be rendered
       key: 'paid_credit',
-      render: text => <span>{text}</span>,
+      render: text => <span>{ `Q ${getFormattedValue(text ? text.toFixed(2) : (0).toFixed(2))}` }</span>,
     },
     {
-      title: 'Balance',
-      dataIndex: 'credit_balance', // Field that is goint to be rendered
-      key: 'credit_balance',
-      render: text => <span>{text}</span>,
-    },
+      title: 'Balance',      
+      render: (_,record) => 
+      <span>{ `Q ${getFormattedValue(record.credit_balance)}`}</span>,
+    }    
   ]
+
+  const handleChange = (pagination, filters, sorter) =>{    
+    setSortedInfo(sorter)
+  }
 
   return (
     <>
@@ -190,6 +191,7 @@ function ReportClientTable(props) {
                         <RightOutlined onClick={e => onExpand(record, e)} />
                       ),
                   }}
+                  onChange={handleChange}
                 />
               </Col>
             </Row>
@@ -206,26 +208,26 @@ function ReportClientTable(props) {
               <div className={'title-space-field'}>
                 <Statistic
                   title='Total Cargos :'
-                  value={getFormattedValue(props.totals.totalCredit)}
+                  value={`Q ${getFormattedValue(props.totals.totalCredit)}`}
                 />
               </div>
             </Col>
             <Col span={6} style={{ textAlign: 'right' }}>
               <div className={'title-space-field'}>
                 <Statistic
-                  title='Total Pagos :'
-                  value={getFormattedValue(props.totals.totalPaidCredit)}
+                  title='Total Pagado :'
+                  value={`Q ${getFormattedValue(props.totals.totalPaidCredit)}`}
                 />
               </div>
             </Col>
             <Col span={6} style={{ textAlign: 'right' }}>
               <div className={'title-space-field'}>
                 <Statistic
-                  title='Balance de Creditos :'
-                  value={getFormattedValue(props.totals.totalCreditBalance)}
+                  title='Total Balance :'
+                  value={`Q ${getFormattedValue ((props.totals.totalCreditBalance ? props.totals.totalCreditBalance : 0))}`}
                 />
               </div>
-            </Col>
+            </Col>            
           </Row>
         </>
       ) : null}

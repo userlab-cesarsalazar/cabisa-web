@@ -184,3 +184,10 @@ export const getDateRangeFilter = dateRange => {
     },
   }
 }
+
+export const sortColumnString = (a, b, prop) =>
+  (a[prop] ? a[prop].toLowerCase() : a[prop]) < (b[prop] ? b[prop].toLowerCase() : b[prop])
+    ? -1
+    : (a[prop] ? a[prop].toLowerCase() : a[prop]) > (b[prop] ? b[prop].toLowerCase() : b[prop])
+    ? 1
+    : 0
