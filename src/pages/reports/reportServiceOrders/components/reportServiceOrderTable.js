@@ -17,7 +17,7 @@ import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import ActionOptions from '../../../../components/actionOptions'
 import Tag from '../../../../components/Tag'
 import { useSale, saleActions } from '../../../sales/context'
-import { showErrors, formatPhone } from '../../../../utils'
+import { showErrors } from '../../../../utils'
 import ReportsSrc from '../../reportsSrc'
 const { Search } = Input
 const { Option } = Select
