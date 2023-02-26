@@ -105,7 +105,7 @@ function SalesTable(props) {
       dataIndex: 'start_date', // Field that is goint to be rendered
       key: 'start_date',
       render: text => (
-        <span>{text ? moment(text).format('DD-MM-YYYY') : null}</span>
+        <span>{text ? moment.utc(text).format('DD-MM-YYYY') : null}</span>
       ),
     },
     {

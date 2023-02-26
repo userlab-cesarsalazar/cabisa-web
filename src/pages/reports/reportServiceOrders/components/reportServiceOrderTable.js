@@ -66,9 +66,11 @@ function ReportServiceOrderTable(props) {
     
     if (key === 'cliente') return { name: { $like: `%25${value}%25` } }
 
-    if (key === 'date') {            
-        let values = value ? getDateRangeFilterReport(value) : {start_date:'',end_date:''}         
-        return values
+    if (key === 'date') {                    
+        const start_date = value
+        ? { $like: `%25${moment(value).format('YYYY-MM-DD')}%25`}
+        : ''
+      return { start_date }
     }
 
     if (key === 'status') return { status: value }    
@@ -120,11 +122,11 @@ function ReportServiceOrderTable(props) {
     },
     {
       width:100,
-      title: 'Fecha Inicio proyecto',
-      dataIndex: 'project_start_date', // Field that is goint to be rendered
-      key: 'project_start_date',
+      title: 'Fecha Inicio',
+      dataIndex: 'start_date', // Field that is goint to be rendered
+      key: 'start_date',
       render: text => (
-        <span>{text ? moment(text).format('DD-MM-YYYY') : null}</span>
+        <span>{text ? moment.utc(text).format('DD-MM-YYYY') : null}</span>
       ),
     },        
     {
@@ -219,11 +221,17 @@ function ReportServiceOrderTable(props) {
           />
         </Col>
         <Col xs={6} sm={6} md={6} lg={6}>        
-          <RangePicker
+          {/* <RangePicker
               style={{ width: '100%', height: '40px', borderRadius: '6px' }}
               format='DD-MM-YYYY'                          
               onChange={e => getFilteredData('date', e)}
-            />
+            /> */}
+            <DatePicker
+            placeholder={'Fecha de Inicio'}
+            style={{ width: '100%', height: '40px', borderRadius: '8px' }}
+            format='DD-MM-YYYY'
+            onChange={e => getFilteredData('date', e)}
+          />
         </Col>
         <Col xs={6} sm={6} md={6} lg={6}
           className={props.warehouse ? 'stash-component' : ''}

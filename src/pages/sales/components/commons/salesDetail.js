@@ -437,7 +437,7 @@ function SalesDetail({ closable, visible, isAdmin, canEditAndCreate }) {
               <div className={'title-space-field'}>Fecha Inicio</div>
               <DatePicker
                 style={{ width: '100%', height: '37px', borderRadius: '8px' }}
-                value={sale.start_date ? moment(sale.start_date) : ''}
+                value={sale.start_date ? moment.utc(sale.start_date) : ''}
                 onChange={handleChange('start_date')}
                 format='DD-MM-YYYY'
                 disabled
