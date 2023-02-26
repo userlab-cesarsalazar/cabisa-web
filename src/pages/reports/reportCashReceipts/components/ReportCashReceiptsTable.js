@@ -15,6 +15,8 @@ import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
 import Tag from '../../../../components/Tag'
 import moment from 'moment'
 import {numberFormat} from '../../../../utils'
+import ActionOptions from '../../../../components/actionOptions'
+
 
 const { Panel } = Collapse;
 const { Search } = Input
@@ -23,7 +25,7 @@ const { RangePicker } = DatePicker
 const { getFormattedValue } = numberFormat()
 
 function ReportCashReceiptsTable(props) {
-    
+  const handlerEditRow = data => props.handlerEditRow(data)
     const columns = [
         {
           width:120,
@@ -81,7 +83,22 @@ function ReportCashReceiptsTable(props) {
           dataIndex: 'total_amount', // Field that is goint to be rendered
           key: 'total_amount',
           render: text => <span>{ `Q ${getFormattedValue(text.toFixed(2))}` }</span>,      
-        },        
+        },
+        {
+          width: 100,
+          title: '',
+          dataIndex: 'id', // Field that is goint to be rendered
+          key: 'id',
+          render: (_, data) => (
+            <ActionOptions
+              editPermissions={false}
+              data={data}
+              permissionId={10}
+              handlerEditRow={handlerEditRow}
+              editAction={'show'}
+            />
+          ),
+        },
       ]
        
   return (

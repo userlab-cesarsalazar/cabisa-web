@@ -151,7 +151,7 @@ function ReportServiceOrderTable(props) {
           handlerEditRow={handlerEditRow}
           handlerApproveRow={handlerApproveRow}
           deleteAction='nullify'
-          editAction={!data.has_related_invoice ? 'edit' : 'show'}
+          editAction={'show'}
         />
       ),
     },

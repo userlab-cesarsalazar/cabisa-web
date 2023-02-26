@@ -7,6 +7,8 @@ import ReportsSrc from '../reportsSrc'
 import { message } from 'antd'
 import moment from 'moment'
 import PaymentsSrc from '../../payments/paymentsSrc'
+import { getDetailData } from '../../billing/billingIndex'
+import PaymentsDetail from '../../payments/components/paymentsDetail'
 
 function ReportCashReceipts(props) {
 
@@ -31,6 +33,8 @@ function ReportCashReceipts(props) {
     const [filters, setFilters] = useState(initFilters.current)
     const [paymentMethodsOptionsList, setPaymentMethodsOptionsList] = useState([])
     const [creditStatusOptionsList, setCreditStatusOptionsList] = useState([])
+    const [visible, setVisible] = useState(false)
+    const [detailData, setDetailData] = useState(false)
 
     useEffect(() => {    
         setLoading(true)
@@ -139,6 +143,15 @@ function ReportCashReceipts(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadData])
 
+  const handlerEditRow = data => {
+    const detailData = getDetailData(data)
+     detailData.status = "CANCELLED" 
+    setDetailData(detailData)    
+    setVisible(true)
+  }
+  
+  const closeDetail = () => setVisible(false)
+
   return (
     <>
       <HeaderPage 
@@ -154,8 +167,18 @@ function ReportCashReceipts(props) {
         creditStatusOptionsList={creditStatusOptionsList}
         loading={loading}
         isAdmin={true}
+        handlerEditRow={handlerEditRow}
       />
-            
+      <PaymentsDetail
+        closable={closeDetail}
+        visible={visible}
+        loading={loading}
+        setLoading={setLoading}
+        detailData={detailData}
+        loadData={loadData}
+        paymentMethodsOptionsList={paymentMethodsOptionsList}
+        onlyEdit={true}
+      />
     </>
   )
 }
