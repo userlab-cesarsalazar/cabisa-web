@@ -22,7 +22,6 @@ import ReportsSrc from '../../reportsSrc'
 const { Search } = Input
 const { Option } = Select
 const { setSaleState, fetchServiceOrders,fetchSalesStatus, cancelSale } = saleActions
-const { RangePicker } = DatePicker
 
 function ReportServiceOrderTable(props) {
   
@@ -157,19 +156,6 @@ function ReportServiceOrderTable(props) {
       ),
     },
   ]
-
-  const getDateRangeFilterReport = dateRange => {
-    if (!dateRange) return {}
-  
-    return {
-      start_date: {
-        $gte: moment(dateRange[0]).format('YYYY-MM-DD'),
-      },
-      end_date: {
-        $lte: moment(dateRange[1]).add(1, 'days').format('YYYY-MM-DD'),
-      },
-    }
-  }
 
   const createFile = async () => {
     let params = {...searchParams}            

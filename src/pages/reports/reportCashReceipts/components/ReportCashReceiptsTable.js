@@ -45,7 +45,16 @@ function ReportCashReceiptsTable(props) {
           dataIndex: 'created_at', // Field that is goint to be rendered
           key: 'created_at ',
           render: text => (
-            <span>{text ? moment(text).format('DD-MM-YYYY') : ''}</span>
+            <span>{text ? moment.utc(text).format('DD-MM-YYYY') : ''}</span>
+          ),
+        },
+        {
+          width: 115,
+          title: 'Dias de credito',
+          dataIndex: 'created_at', // Field that is goint to be rendered
+          key: 'created_at ',                
+          render: text => (
+            <span>{text ? moment.utc().diff(moment(text),'days') : ''}</span>
           ),
         },
         {
@@ -60,14 +69,7 @@ function ReportCashReceiptsTable(props) {
               <span>Nit: {record.stakeholder_nit}</span>
             </>
           ),
-        },
-        {
-            width: 120,
-            title: 'Monto Pagado',
-            dataIndex: 'due', // Field that is goint to be rendered
-            key: 'due',
-            render: text => <span>{ `Q ${getFormattedValue(text.toFixed(2))}` }</span>,      
-        },
+        },        
         {
             width: 120,
             title: 'Monto pendiente',            
@@ -79,21 +81,7 @@ function ReportCashReceiptsTable(props) {
           dataIndex: 'total_amount', // Field that is goint to be rendered
           key: 'total_amount',
           render: text => <span>{ `Q ${getFormattedValue(text.toFixed(2))}` }</span>,      
-        },
-        {
-          width: 120,
-          title: 'Metodo de pago',
-          dataIndex: 'payment_method', // Field that is goint to be rendered
-          key: 'payment_method',
-          render: text => <Tag type='documentsPaymentMethods' value={text} />,
-        },
-        {
-          width: 120,
-          title: 'Estado de Credito',
-          dataIndex: 'credit_status', // Field that is goint to be rendered
-          key: 'credit_status',
-          render: text => <Tag type='creditStatus' value={text} />,
-        }      
+        },        
       ]
        
   return (
@@ -218,6 +206,17 @@ function ReportCashReceiptsTable(props) {
           <Col span={6} style={{ textAlign: 'left' }}>
             <div className={'title-space-field'}>
               <Statistic
+                title='Balance:'
+                value={`Q ${getFormattedValue(
+                  (props.dataSource.reduce( ( sum, item  ) =>  sum + item.total_amount,0)) - 
+                  (props.dataSource.reduce( ( sum, item  ) =>  sum + item.due,0))                  
+                  )}`}
+              />              
+            </div>            
+          </Col>
+          <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
                 title='Cantidad de Facturas:'
                 value ={props.dataSource.length}
               />              
@@ -251,6 +250,17 @@ function ReportCashReceiptsTable(props) {
           <Col span={6} style={{ textAlign: 'left' }}>
             <div className={'title-space-field'}>
               <Statistic
+                title='Balance:'
+                value={`Q ${getFormattedValue(
+                  (props.dataSource.filter(item=>item.document_number !== null).reduce( ( sum, item  ) =>  sum + item.total_amount,0)) - 
+                  (props.dataSource.filter(item=>item.document_number !== null).reduce( ( sum, item  ) =>  sum + item.due,0))
+                  )}`}
+              />              
+            </div>            
+          </Col>
+          <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
                 title='Cantidad Facturas:'
                 value ={props.dataSource.filter(item=>item.document_number !== null).length}
               />              
@@ -278,6 +288,17 @@ function ReportCashReceiptsTable(props) {
               <Statistic
                 title='Total pagado:'
                 value={`Q ${getFormattedValue(props.dataSource.filter(item=>item.document_number === null).reduce( ( sum, item  ) =>  sum + item.due,0))}`}
+              />              
+            </div>            
+          </Col>
+          <Col span={6} style={{ textAlign: 'left' }}>
+            <div className={'title-space-field'}>
+              <Statistic
+                title='Balance:'
+                value={`Q ${getFormattedValue(
+                  (props.dataSource.filter(item=>item.document_number === null).reduce( ( sum, item  ) =>  sum + item.total_amount,0)) - 
+                  (props.dataSource.filter(item=>item.document_number === null).reduce( ( sum, item  ) =>  sum + item.due,0))
+                  )}`}
               />              
             </div>            
           </Col>
