@@ -72,7 +72,7 @@ function PaymentsList({
                 style={{ width: '100%', height: '40px', borderRadius: '8px' }}
                 placeholder='Fecha de pago'
                 format='DD-MM-YYYY'
-                value={row.payment_date ? moment(row.payment_date) : ''}
+                value={row.payment_date ? moment.utc(row.payment_date) : ''}
                 onChange={value =>
                   handleChangePayments('payment_date', value, index)
                 }
