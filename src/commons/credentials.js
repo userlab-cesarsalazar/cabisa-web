@@ -20,7 +20,7 @@ const develop = {
   repairsUrl:
     'https://tqd5wf5c3i.execute-api.us-east-1.amazonaws.com/dev/repairs',
   reportUrl:
-    'http://localhost:3000/dev/reports',//'https://ueuvc1n3sg.execute-api.us-east-1.amazonaws.com/dev/reports',
+    'https://ueuvc1n3sg.execute-api.us-east-1.amazonaws.com/dev/reports',
   paymentsUrl:
     'https://kqanan1fy6.execute-api.us-east-1.amazonaws.com/dev/payments',
   invoiceFelUrl:

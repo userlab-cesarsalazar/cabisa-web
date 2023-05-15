@@ -99,6 +99,16 @@ const submenu_sections = [
       </>
     ),
   },
+  {
+    name: 'Productos Ventas',
+    key: 'reportSalesProduct',
+    route: '/reportSalesProduct',
+    component: (
+      <>
+        <h1>Ventas de productos</h1>
+      </>
+    ),
+  },
   // {
   //   name: 'Comisiones',
   //   key: 'reportCommissions',
