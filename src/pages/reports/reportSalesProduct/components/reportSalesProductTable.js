@@ -5,18 +5,12 @@ import {
   DatePicker,  
   Input,
   Row,
-  Select,
-  Table,  
-  Statistic,
-  Tag as AntTag,
+  Table,    
 } from 'antd'
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import Tag from '../../../../components/Tag'
-import moment from 'moment'
 import {numberFormat} from '../../../../utils'
 
 const { Search } = Input
-const { Option } = Select
 const { RangePicker } = DatePicker
 const { getFormattedValue } = numberFormat()
 
