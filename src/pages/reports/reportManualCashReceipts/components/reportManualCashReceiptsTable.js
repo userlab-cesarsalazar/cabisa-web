@@ -84,7 +84,7 @@ function ReportManulaCashReceiptsTable(props) {
   return (
     <>
        <Row gutter={16}>      
-        <Col xs={4} sm={4} md={4} lg={4}>
+        <Col xs={6} sm={6} md={6} lg={6}>
           <Search
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
             placeholder='# Recibo'
@@ -93,7 +93,7 @@ function ReportManulaCashReceiptsTable(props) {
             onSearch={props.handleFiltersChange('id')}
           />
         </Col>      
-        <Col xs={4} sm={4} md={4} lg={4}>
+        <Col xs={6} sm={6} md={6} lg={6}>
           <Search            
             prefix={<SearchOutlined className={'cabisa-table-search-icon'} />}
             placeholder='Nombre Cliente'
@@ -102,14 +102,14 @@ function ReportManulaCashReceiptsTable(props) {
             onSearch={props.handleFiltersChange('name')}
           />
         </Col>
-        <Col xs={4} sm={4} md={4} lg={4}>
+        <Col xs={6} sm={6} md={6} lg={6}>
             <RangePicker
               style={{ width: '100%', height: '40px', borderRadius: '6px' }}
               format='DD-MM-YYYY'                          
               onChange={props.handleFiltersChange('created_at')}
             />
         </Col>                
-        <Col xs={4} sm={4} md={4} lg={4}>
+        <Col xs={6} sm={6} md={6} lg={6}>
           <Select
             className={'single-select'}
             placeholder={'Estado'}

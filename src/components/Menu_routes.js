@@ -44,6 +44,7 @@ import ReportDocuments from '../pages/reports/reportDocuments/reportDocumentsInd
 import ReportCashReceipts from '../pages/reports/reportCashReceipts/reportCashReceiptsIndex'
 import ReportManualCashReceipts from '../pages/reports/reportManualCashReceipts/reportManualCashReceiptsIndex'
 import ReportServiceOrders from '../pages/reports/reportServiceOrders/reportServiceOrdersIndex'
+import reportSalesProduct from '../pages/reports/reportSalesProduct/reportSalesProductIndex'
 
 //billing
 import Billing from '../pages/billing/billingIndex'
@@ -192,7 +193,7 @@ const menu_routes = [
     route: '/reports',
     profilePermissions: [53],
     routeGroup: [
-      /^(\/reportInventory)|(\/reportAccountsReceivable)|(\/reportAccountClient)|(\/reportEquipmentService)|(\/reportCasReceipts)|(\/reportManualCasReceipts)|(\/reportMonthlyBill)|(\/reportShipping)|(\/reportSales)|(\/reportCommissions)|(\/reportCostSellingEquipment)/i,
+      /^(\/reportInventory)|(\/reportSalesProduct)|(\/reportAccountsReceivable)|(\/reportAccountClient)|(\/reportEquipmentService)|(\/reportCasReceipts)|(\/reportManualCasReceipts)|(\/reportMonthlyBill)|(\/reportShipping)|(\/reportSales)|(\/reportCommissions)|(\/reportCostSellingEquipment)/i,
     ],
     sub_menu: submenu_sections,
   }  
@@ -356,14 +357,18 @@ const menu_sub_routes = [
   },
   {
     id: 3,
-    route: '/reportSales',
-    // component: ReportSales,
+    route: '/reportSales',    
     component: ReportServiceOrders,
   },
   {
     id: 3,
     route: '/reportCommissions',
     component: genericPage,
+  },
+  {
+    id: 3,
+    route: '/reportSalesProduct',
+    component: reportSalesProduct,
   },
   {
     id: 3,
