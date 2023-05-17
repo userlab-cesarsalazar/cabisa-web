@@ -95,14 +95,15 @@ function BillingView() {
       products,
     } = dataBill
     let items = []
-    items = products.map(product => {
+    items = products.map(product => {      
       const price = product.service_user_price || product.product_user_price
       const description =
         product.product_description || product.service_description
       const quantity = product.product_quantity
       const discount = (product.product_discount_percentage / 100) * price * quantity
       const code = product.code_product
-      return { description, price, discount, quantity, code }
+      const type = product.service_type
+      return { description, price, discount, quantity, code, type }
     })
 
     let newStructure = {
