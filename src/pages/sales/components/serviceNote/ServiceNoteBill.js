@@ -79,7 +79,8 @@ function ServiceNoteBill() {
        const quantity = product.product_quantity
        const discount = ((product.product_discount_percentage/100) * price) * quantity
        const code = product.code_product
-       return { description, price,discount,quantity,code}
+       const type = product.service_type
+       return { description, price,discount,quantity,code,type}
     })
     
     let newStructure = {
