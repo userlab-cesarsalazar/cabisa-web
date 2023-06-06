@@ -58,6 +58,9 @@ import BillingViewOld from '../pages/billingOld/billingViewOld'
 import Payments from '../pages/payments/paymentsIndex'
 import manualPayments from '../pages/manualPayment/manualPaymentsIndex'
 
+//billing management
+import BillingManagementIndex from '../pages/billingManagement/billingManagementIndex'
+
 import genericPage from '../pages/genericPage'
 
 import {
@@ -166,6 +169,15 @@ const menu_routes = [
     routeGroup: [
       /^(\/FactOld)|(\/FactOld\/)|(\/FactViewOld)|(\/FactViewOld\/)|(\/FactViewOld\/[a-zA-z0-9]*)/i,
     ],
+  },
+  {
+    id: 13,
+    name: 'Admin Factura',
+    key: 'billManagement',
+    icon: 'inventory',
+    route: '/billManagement',
+    profilePermissions: [9],
+    routeGroup: [/^(\/billManagement)|(\/billManagement\/)/i],
   },
   {
     id: 10,
@@ -394,6 +406,11 @@ const menu_sub_routes = [
     id: 12,
     route: '/manualPayments',
     component: manualPayments,
+  },
+  {
+    id: 13,
+    route: '/billManagement',
+    component: BillingManagementIndex,
   },
 ]
 export { menu_routes, menu_sub_routes }

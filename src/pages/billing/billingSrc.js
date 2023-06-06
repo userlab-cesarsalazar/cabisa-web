@@ -31,6 +31,10 @@ const getProjectsOptions = params => api.get(`${urlStakeholder}/projects-options
 const getStakeholderTypes = () => api.get(`${urlStakeholder}/types`)
 const getCreditStatusOptions = () => api.get(`${urlInvoice}/credit-status`)
 
+const createDebitCreditNote = data => api.post(`${urlInvoiceFel}/createDebitCreditNote`, data)
+
+const getDebitCreditNotesData = params => api.get(`${urlInvoiceFel}/getDocumentDebitCreditNote`, { ...params })
+
 const InventorySrc = {
   getCreditDays,
   getCreditStatusOptions,
@@ -46,7 +50,9 @@ const InventorySrc = {
   getStakeholderTypes,
   createInvoiceFel,
   getInvoiceFel,
-  cancelInvoiceFel
+  cancelInvoiceFel,
+  createDebitCreditNote,
+  getDebitCreditNotesData
 }
 
 export default InventorySrc
