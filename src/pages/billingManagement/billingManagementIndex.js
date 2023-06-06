@@ -4,8 +4,7 @@ import BillingManagementTable from './components/billingManagementTable'
 import BillingManagementFelTable from './components/billingManagementFelTable'
 import BillingItemList from './components/billingItemList'
 import moment from 'moment'
-import { message, Modal, Row, Col, Input, Divider,Select } from 'antd'
-import { getPercent, showErrors, roundNumber, validateRole } from '../../utils'
+import { message, Modal, Row, Col, Input, Divider,Select, Spin } from 'antd'
 import { permissions } from '../../commons/types'
 import billingSrc from '../billing/billingSrc'
 import { useEditableList } from '../../hooks'
@@ -52,6 +51,8 @@ function BillingManagementIndex(props) {
   const [itemListData, setItemListData] = useState([])
   const [reasonAdjust, setReasonAdjust] = useState('')
   const [creditOrDebit,setCreditOrDebit] = useState(null)
+  
+  const [loadingSpining,setLoadingSpining] = useState(false)
 
   const loadData = useCallback(() => {
     setLoading(true)
@@ -88,8 +89,7 @@ function BillingManagementIndex(props) {
     }
   }
 
-  const newBillAction = () => {
-    console.log('mostrar modal')
+  const newBillAction = () => {    
     getBillData()
     setShowModal(true)
   }
@@ -102,7 +102,7 @@ function BillingManagementIndex(props) {
       {
         payment_amount: null,
         payment_qty: null,
-        payment_method: '',
+        payment_method: 'B',
         description: '',
       },
     ])
@@ -118,18 +118,23 @@ function BillingManagementIndex(props) {
   }
 
   const submitInfo = async () => {
+    setLoadingSpining(true)
     
     const validateListElements = itemListData.every((element) => {
       return !validateObject(element);
     });
   
     if(!reasonAdjust){
-      return message.error("Debes escribir un Motivo de ajuste")
+      setLoadingSpining(false)
+      return message.error("Debes escribir un Motivo de ajuste")      
     }else if(!validateListElements){
+      setLoadingSpining(false)
       return message.error("Todos los elementos de la lista de ajuste son obligatorios, los montos deben ser mayores a 0")
     }else if(!creditOrDebit){
+      setLoadingSpining(false)
       return message.error("Debes seleccionar que tipo de documento deseas crear")
     }else if(!billData.uuid || !billData.document_number){
+      setLoadingSpining(false)
       return message.error("No se puede crear el documento porque no existe Numero de referencia o autorizacion")
     }
 
@@ -224,6 +229,7 @@ function BillingManagementIndex(props) {
     if (showModal) {
       getBillData()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtersFel])
 
   // FORM ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -238,7 +244,7 @@ function BillingManagementIndex(props) {
     initRow: {
       payment_amount: null,
       payment_qty: null,
-      payment_method: '',
+      payment_method: 'B',
       description: ''      
     },
   })
@@ -413,6 +419,7 @@ function BillingManagementIndex(props) {
         onCancel={() => hideBillAction()}
         okButtonProps={{ disabled: disableSubmit }}
       >
+        <Spin spinning={loadingSpining}>
         {showBillForm ? (
           billFormComponent()
         ) : (
@@ -428,6 +435,7 @@ function BillingManagementIndex(props) {
             </Col>
           </Row>
         )}
+        </Spin>
       </Modal>
     </>
   )
