@@ -224,7 +224,7 @@ function PaymentsFields({ detailData, ...props }) {
     <>
       <Row>
         <Col xs={24} sm={24} md={12} lg={12}>
-          <Title>Recibo de caja</Title>
+          <Title>Recibo de caja Manual</Title>
         </Col>        
         <Col xs={24} sm={24} md={12} lg={12} style={{ textAlign: 'right' }}>          
             <Button onClick={printDocument} className='title-cabisa new-button'>

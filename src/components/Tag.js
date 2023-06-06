@@ -66,6 +66,10 @@ const config = {
     CLIENT_COMPANY: { color: 'green', text: 'Cliente empresa' },
     PROVIDER: { color: 'cyan', text: 'Proveedor' },
   },
+  creditDebitNote: {
+    CREDITO: { color: 'geekblue', text: 'Nota de credito' },
+    DEBITO: { color: 'green', text: 'Nota de debito' },    
+  },
 }
 const Tag = ({ type, value }) => {
   const tag = config[type][value]
