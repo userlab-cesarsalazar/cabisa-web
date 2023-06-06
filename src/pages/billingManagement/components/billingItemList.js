@@ -1,5 +1,4 @@
 import React from 'react'
-import moment from 'moment'
 import {
   List,
   Col,
@@ -7,13 +6,11 @@ import {
   Row,
   Button,
   Select,
-  Popconfirm,
-  DatePicker,
+  Popconfirm  
 } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
-import Tag from '../../../components/Tag'
 import CurrencyInput from '../../../components/CurrencyInput'
-import {roundNumber} from '../../../utils'
+
 
 const { TextArea } = Input
 const { Option } = Select
@@ -105,10 +102,7 @@ function BillingItemList({
               >
                     <Option key={"B"} value={"B"}>
                       <span>Bien</span>
-                    </Option>
-                    <Option key={"S"} value={"Servicio"}>
-                      <span>Servicio</span>
-                    </Option>
+                    </Option>                    
               </Select>
             </Col>            
             <Col sm={colConfig.description}>

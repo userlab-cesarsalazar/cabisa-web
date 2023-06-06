@@ -9,16 +9,15 @@ import {
   Tooltip,
   Button    
 } from 'antd'
-import {numberFormat} from '../../../utils'
+
 import Tag from '../../../components/Tag'
 import { 
-  FileAddOutlined,SearchOutlined
+  SearchOutlined
 } from '@ant-design/icons'
 import moment from 'moment'
 
 const { Search } = Input
 const { RangePicker } = DatePicker
-const { getFormattedValue } = numberFormat()
 
 function BillingManagementTable(props) {
     
