@@ -146,8 +146,7 @@ function BillingManagementIndex(props) {
       nit:billData?.stakeholder_nit,
       phone:billData?.stakeholder_phone
    }
-   const UserName = Cache.getItem('currentSession')         
-   console.log(itemListData)
+   const UserName = Cache.getItem('currentSession')            
    const invoiceIntems = {
     items: itemListData.flatMap( p => {return {...p, 
       payment_amount: Number(p.payment_amount.replace(/,/g, "")),
@@ -163,8 +162,7 @@ function BillingManagementIndex(props) {
    }  
     let requestObject = {client:clientObj, invoice:invoiceIntems}
   
-    let infileDoc = await billingSrc.createDebitCreditNote(requestObject)
-    console.log("infileDoc response >> ",infileDoc)
+    let infileDoc = await billingSrc.createDebitCreditNote(requestObject)    
     let infileMessage = infileDoc.message  
     
     if(infileMessage === 'SUCCESSFUL'){ 
@@ -179,8 +177,15 @@ function BillingManagementIndex(props) {
           messageError = infileDoc.data.descripcion_errores
             .map((error) => error.mensaje_error.split("Error -")[1])
             .join(" - ")
+
+        if(messageError.length === 0){
+          messageError = "No se ha podido crear el documento"
+        }
       }
-      message.error(messageError,5)      
+      message.error(messageError,5)
+      setShowModal(false)    
+      clearAll()
+      loadData()
     }         
   }
 
@@ -195,8 +200,7 @@ function BillingManagementIndex(props) {
     setFiltersFel(prevState => ({ ...prevState, [field]: value }))
   }
 
-  const selectDocument = data => {
-    console.log(data)
+  const selectDocument = data => {    
     setBillData(data)
     setShowBillForm(true)
     setDisableSubmit(false)
@@ -231,8 +235,7 @@ function BillingManagementIndex(props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtersFel])
-
-  // FORM ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  
   const {
     handleChange: handleChangeManualPayments,
     handleAdd: handleAddManualPayments,
