@@ -5,7 +5,6 @@ import {
   Input,
   Row,
   Button,
-  Select,
   Popconfirm  
 } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
@@ -13,7 +12,6 @@ import CurrencyInput from '../../../components/CurrencyInput'
 
 
 const { TextArea } = Input
-const { Option } = Select
 
 const getColConfig = forbidEdition => ({  
   paymentAmount: 4,
@@ -49,7 +47,7 @@ function BillingItemList({
             <b className='center-flex-div'>Cantidad</b>
           </Col>
           <Col sm={colConfig.paymentMethod}>
-            <b className='center-flex-div'>Bien/Servicio</b>
+            <b className='center-flex-div'>Codigo</b>
           </Col>          
           <Col sm={colConfig.description}>
             <b className='center-flex-div'>Descripcion</b>
@@ -88,22 +86,18 @@ function BillingItemList({
               />
             </Col>
             <Col sm={colConfig.paymentMethod}>
-              <Select
-                className={'single-select'}
-                placeholder={'Bien/Servicio'}
+              <Input
+                className='product-list-input'
+                placeholder={'Codigo'}
                 size={'large'}
                 style={{ width: '100%', height: '40px' }}
                 getPopupContainer={trigger => trigger.parentNode}
                 onChange={value =>
-                  handleChangeManualPayments('payment_method', value, index)
+                  handleChangeManualPayments('payment_code', value.target.value, index)
                 }
-                value={row.payment_method}
+                value={row.payment_code}
                 disabled={forbidEdition}
-              >
-                    <Option key={"B"} value={"B"}>
-                      <span>Bien</span>
-                    </Option>                    
-              </Select>
+              />                    
             </Col>            
             <Col sm={colConfig.description}>
               <TextArea
