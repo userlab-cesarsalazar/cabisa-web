@@ -102,7 +102,7 @@ function BillingManagementIndex(props) {
       {
         payment_amount: null,
         payment_qty: null,
-        payment_method: 'B',
+        payment_code: '',
         description: '',
       },
     ])
@@ -162,6 +162,8 @@ function BillingManagementIndex(props) {
    }  
     let requestObject = {client:clientObj, invoice:invoiceIntems}
   
+    console.log("request Object ",requestObject);
+
     let infileDoc = await billingSrc.createDebitCreditNote(requestObject)    
     let infileMessage = infileDoc.message  
     
@@ -247,7 +249,7 @@ function BillingManagementIndex(props) {
     initRow: {
       payment_amount: null,
       payment_qty: null,
-      payment_method: 'B',
+      payment_code: '',
       description: ''      
     },
   })
