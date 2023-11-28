@@ -93,6 +93,7 @@ function BillingView() {
       client_data: client,
       description: observations,
       products,
+      credit_days
     } = dataBill
     let items = []
     items = products.map(product => {      
@@ -112,6 +113,7 @@ function BillingView() {
         items,
         observations,
         created_by: UserName ? UserName.userName : 'system',
+        credit_days
       },
     }
     return newStructure
