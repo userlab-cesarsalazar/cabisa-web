@@ -71,7 +71,7 @@ function ServiceNoteBill() {
 
   const createBillStructure = dataBill => {
     const UserName = Cache.getItem('currentSession')
-    const { client_data: client, description: observations, products } = dataBill;
+    const { client_data: client, description: observations, products,credit_days } = dataBill;
     let items = [];
     items = products.map(product => {
        const price = (product.service_user_price || product.product_user_price)
@@ -88,7 +88,8 @@ function ServiceNoteBill() {
        "invoice":{
           items,      
           observations,
-          created_by: UserName ? UserName.userName : 'system'
+          created_by: UserName ? UserName.userName : 'system',
+          credit_days
        }
     }
     return newStructure
